@@ -19,15 +19,19 @@
 
     <div class="tab-pane fade active show" id="studentGrievance-all" role="tabpanel"
       aria-labelledby="studentGrievance-all-tab">
+
+
       <div class="row">
         <div class="col-md-12 stretch-card">
           <div class="card">
             <div class="card-body">
-              <h6 class="card-title d-flex justify-content-center fs-4 text-success">Student Grievance All Cases</h6>
+              <h6 class="card-title d-flex justify-content-center fs-4 text-success">Student
+                Grievance All Cases</h6>
               <div class="col-sm-12">
                 <div class="col-sm-4">
                   <div class="mb-3">
-                    <button (click)="exportToExcel()" class="btn btn-success ">Export to ExcelSheet</button>
+                    <button (click)="exportToExcel()" class="btn btn-success ">Export to
+                      ExcelSheet</button>
                   </div>
                 </div>
                 <div class="col-sm-4">
@@ -47,11 +51,13 @@
                   <ngx-datatable-column name="Download File" [sortable]="false" prop="Id">
                     <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                       <ng-container *ngIf="row.fileName != null">
-                        <button class="btn btn-dark" (click)="onSelectFile(row)"> Download </button>
+                        <button class="btn btn-dark" (click)="onSelectFile(row)">
+                          Download
+                        </button>
                       </ng-container>
                       <ng-container *ngIf="row.fileName == null">
-                        <span style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">No
-                          FIle</span>
+                        <span style="margin: auto;float: left;
+                                    font-weight: bold;padding: 10px 10px 10px 10px;">No FIle</span>
                       </ng-container>
                     </ng-template>
                   </ngx-datatable-column>
@@ -67,9 +73,44 @@
                                     font-weight: bold;padding: 10px 10px 10px 10px;">Ticket
                           Closed</span></ng-container>
                     </ng-template>
+
                   </ngx-datatable-column>
                 </ngx-datatable>
+
+                <!-- <table id="dataTableAll" class="table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                      <th>Nature</th>
+                      <th>Subject</th>
+                      <th>Ticket Number</th>
+                      <th>Description</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let dt of studentLists">
+                      <td>{{dt.name}}</td>
+                      <td>{{dt.email}}</td>
+                      <td>{{dt.phone}}</td>
+                      <td>{{dt.nature}}</td>
+                      <td>{{dt.subject}}</td>
+                      <td>{{dt.ticketNumber}}</td>
+                      <td>{{dt.description}}</td>
+                      <td>{{dt.status}}</td>
+                     
+                      <td> <button class="btn btn-primary" name="{{dt.ticketNumber}}"  >View Rejected Remarks</button>
+                    </tr>
+                 </tbody>
+                </table> -->
+
+
+
               </div>
+
             </div>
           </div>
         </div>
@@ -79,6 +120,8 @@
 
     <!-- Tab Two  Open cases contents -->
     <div class="tab-pane fade" id="studentGrievance-open" role="tabpanel" aria-labelledby="studentGrievance-open-tab">
+
+
       <div class="row">
         <div class="col-md-12 stretch-card">
           <div class="card">
@@ -100,6 +143,9 @@
                 </div>
               </div>
               <div class="table-responsive">
+
+
+
                 <ngx-datatable class="bootstrap table table-striped material" [rows]="studentListsOpenCases"
                   [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
                   [headerHeight]="80" rowHeight="auto">
@@ -121,33 +167,44 @@
                     <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                       <ng-container *ngIf="row.status=='O'">
                         <button class="btn btn-dark" (click)="onSelect(row)">
+                          <!-- Edit{{rowIndex + 1}} -->
                           Take Action
                         </button>
                       </ng-container>
                       <ng-container *ngIf="row.status=='C'"><span style="margin: auto;float: left;
                     font-weight: bold;padding: 10px 10px 10px 10px;">Ticket Closed</span></ng-container>
                     </ng-template>
+
                   </ngx-datatable-column>
                 </ngx-datatable>
+
+
+
               </div>
             </div>
           </div>
         </div>
+
       </div>
     </div>
 
     <!-- Tab Three contents -->
     <div class="tab-pane fade " id="studentGrievance-closed" role="tabpanel"
       aria-labelledby="studentGrievance-closed-tab">
+
+
+
       <div class="row">
         <div class="col-md-12 stretch-card">
           <div class="card">
             <div class="card-body">
-              <h6 class="card-title d-flex justify-content-center fs-4 text-success">Student Grievance Closed Cases</h6>
+              <h6 class="card-title d-flex justify-content-center fs-4 text-success">Student
+                Grievance Close Cases</h6>
               <div class="col-sm-12">
                 <div class="col-sm-4">
                   <div class="mb-3">
-                    <button (click)="exportToExcel()" class="btn btn-success ">Export to Excel</button>
+                    <button (click)="exportToExcel()" class="btn btn-success ">Export to
+                      ExcelSheet</button>
                   </div>
                 </div>
                 <div class="col-sm-4">
@@ -177,23 +234,29 @@
                       </ng-container>
                     </ng-template>
                   </ngx-datatable-column>
-                  <ngx-datatable-column name="Remarks" [sortable]="false" prop="Id">
+                  <ngx-datatable-column name="Actions" [sortable]="false" prop="Id">
                     <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                      <ng-container *ngIf="row.status=='C'">
-                        <button class="btn btn-success" (click)="onSelectClosedcases(row)">
-                          View Remarks
+                      <ng-container *ngIf="row.status=='O'">
+                        <button class="btn btn-dark" (click)="onSelect(row)">
+                          <!-- Edit{{rowIndex + 1}} -->
+                          Take Action
                         </button>
                       </ng-container>
+                      <ng-container *ngIf="row.status=='C'"><span style="margin: auto;float: left;
+                    font-weight: bold;padding: 10px 10px 10px 10px;">Ticket Closed</span></ng-container>
                     </ng-template>
+
                   </ngx-datatable-column>
                 </ngx-datatable>
+
+
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <!-- <ng-template #verticalCenteredModal let-modal>
+    <ng-template #verticalCenteredModal let-modal>
       <div class="modal-header">
         <h5 class="modal-title text-center text-danger" id="exampleModalLabel">Student Grievance Admin Action </h5>
 
@@ -202,9 +265,9 @@
       </div>
       <div class="modal-body">
         <div class="container-fluid d-flex justify-content-between">
-          <div class="table-responsive pt-3 container-fluid"> -->
-    <!-- <h2 mat-dialog-title class="text-center text-danger">Action </h2> -->
-    <!-- <table cellpadding='12' class="table-responsive pt-3" cellspacing='18' border='2' width='100%'>
+          <div class="table-responsive pt-3 container-fluid">
+            <!-- <h2 mat-dialog-title class="text-center text-danger">Action </h2> -->
+            <table cellpadding='12' class="table-responsive pt-3" cellspacing='18' border='2' width='100%'>
               <tbody>
                 <tr>
                   <td>Ticket Id</td>
@@ -241,7 +304,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="modal.close('by: close button')">Close</button>
       </div>
-    </ng-template> -->
+    </ng-template>
     <div class="row">
       <div class="col-md-12 grid-margin stretch-card">
         <div class="card">
@@ -303,61 +366,8 @@
 
               </div>
             </div>
-            <!-- <div class="row mb-4">
-              <div class="col-sm">
-                <table id="dataTableAll" class="table">
-                  <thead>
-                    <tr>
-                      <th>Remarks </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let dt of studentLists">
-                      <td>{{dt.description}}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div> 
-            </div>-->
+            <!-- <div [innerHtml]="viewdescription"></div> -->
 
-          </div>
-        </div>
-      </div>
-    </div>
-  </ng-template>
-
-  <!--  Added  new Model for Showing Closed cases Remarks Data Grid  5-feb-24 -->
-  <ng-template #viewDescModal2 let-modal>
-    <div class="modal-header">
-      <h5 class="modal-title" id="exampleModalLabel">SGRC Closed Cases </h5>
-      <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
-    </div>
-    <div class="modal-body">
-
-      <div class="col-md-12 grid-margin stretch-card">
-        <div class="card">
-          <div class="card-body">
-            <div class="row mb-4">
-              <div class="col-sm">
-                <table id="dataTableAllClosedRemarks" class="table">
-                  <thead>
-                    <tr>
-                      <th class=" fs-4 text-danger">Status</th>
-                      <th class=" fs-4 text-danger">Remarks Details</th>
-                      <th class=" fs-4 text-danger">Updated By</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let dt of studentClosedCasesRemarks">
-                      <td class=" fs-5"><ng-container *ngIf="dt.status=='C'"><span style="margin: auto;float: left;
-                        font-weight: bold;">Ticket Closed</span></ng-container> </td>
-                      <td class=" fs-5 ">{{dt.remarks}} </td>
-                      <td class=" fs-5 ">{{dt.entryBy}} </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
           </div>
         </div>
       </div>

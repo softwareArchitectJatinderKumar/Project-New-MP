@@ -56,19 +56,15 @@ import { StudentFormComponent } from './views/SemesterExchange/StudentForm/Stude
     ReactiveFormsModule,
     ArchwizardModule,
     MaterialModule,
-    NgxDatatableModule,
+    // NgxDatatableModule,
     NgxSpinnerModule,
-    MatSelectModule,
-    MaterialModule,
-    FormsModule,
-    ReactiveFormsModule,
-   //ArchwizardModule,
-    MaterialModule,
-    NgxDatatableModule,
+    MatSelectModule,    
+   //ArchwizardModule,        
     MatTabsModule,
     MatDatepickerModule,
     MatTabsModule,
     MatNativeDateModule,
+    
   ],
   providers: [
     
