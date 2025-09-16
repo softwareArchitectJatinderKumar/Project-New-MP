@@ -1,0 +1,52 @@
+<app-menu-bar></app-menu-bar>
+
+<div class="label container-fluid"> 
+  <h4>Duty Leave Details</h4>
+</div>
+<div class="box container-fluid">
+  <div class="boxa">
+    <button class="export btn" (click)="exportToExcel()">Export to Excel</button>
+
+    <div>
+
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Company Name</th>
+            <th>Drive Code</th>
+            <th>Drive Date</th>
+            <th>Lecture Time Slot</th>
+            <th>Course Code </th>
+
+
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let record of getRecordsForCurrentPage()">
+            <td>{{record.companyName}}</td>
+            <td>{{record.driveCode}}</td>
+            <td>{{record.date}}</td>
+            <td>{{record.attendanceTime}}</td>
+            <td>{{record.courseCode}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="boxb">
+    <div class="num">
+      <mat-paginator [length]="records.length" [pageSize]="recordsPerPage" [pageSizeOptions]="[5, 15, 20, 30, 100]"
+        (page)="onPageChange($event)">
+      </mat-paginator>
+    </div>
+    <div class="page">
+      <button id="pg" *ngFor="let page of pagesArray" (click)="changePage(page)" [class.active]="currentPage === page">
+        {{ page }}
+      </button>
+
+    </div>
+    <div id="total">
+      Total Duty Leave: {{ records.length }}
+    </div>
+  </div>
+</div>

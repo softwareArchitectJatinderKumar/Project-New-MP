@@ -1,0 +1,53 @@
+<!-- 
+<div style="margin-left:10%; margin-right:10%; margin-top:0px;">
+    <ngx-slick-carousel class="carousel"
+        #slickModel="slick-carousel"
+        [config]="slideConfig" style="height: 300px; width: 100%;">
+        
+        <div ngxSlickItem *ngFor="let slide of slides" class="slide">
+            <div class="box">
+                <div class="boxa">
+                   <table class="table table-hower">
+                    <thead>
+                        <tr>
+                         <th></th>
+                         <th>Name</th>
+                         <th>Prov. Registration No</th>
+                         <th>Section</th>
+                         <th>Placed in</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><img src="{{slide.img}}" alt="" class="img-style" height="50px" width="50px"></td>
+                            <td class="data">{{slide.name}}</td>
+                            <td class="data">{{slide.reg}}</td>
+                            <td class="data">{{slide.sec}}</td>
+                            <td class="data">{{slide.placed}}</td>
+                        </tr>
+                    </tbody>
+                   </table> 
+                </div>
+               
+            </div>
+        </div>
+    </ngx-slick-carousel>
+</div> -->
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <owl-carousel-o [options]="autoPlayExampleOptions">
+                <ng-template carouselSlide *ngFor="let slide of slides">
+                    <!-- <img [src]="slide.img" [alt]="slide.name" [title]="slide.name"> -->
+                    <div class="row text-center">
+                        <h4 class="fs-2  ">{{slide.name}} {{slide.reg}}</h4>
+                        <p class="label fs-5 text-danger">{{slide.stream}}<br/>
+                            {{slide.registrationNumber}}<br/>
+                            {{slide.companyName}}
+                        </p>
+                    </div>
+                </ng-template>
+            </owl-carousel-o>
+        </div>
+    </div>
+</div>

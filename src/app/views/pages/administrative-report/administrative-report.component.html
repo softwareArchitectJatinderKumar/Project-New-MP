@@ -1,0 +1,356 @@
+<mat-tab-group (selectedTabChange)="onTabChange($event)">
+  <mat-tab label="RMS">
+  <div class="mt-2">
+  <form #form="ngForm" class="row g-3" class="cheifEng_form">
+    <div class="row">
+
+      <div class="col-sm-4">
+        <div class="form-group uniform-container">
+          <label for="dropdown" class="mr-2"></label>
+          <mat-form-field appearance="fill" class="uniform-form-field" >
+            <mat-label>Select Option</mat-label>
+            <mat-select id="dropdown" ngModel name="RMSType" #Rmstype>
+              <mat-option value="O">Staff</mat-option>
+              <mat-option value="S">Student</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="form-group uniform-container">
+          <label for="dropdown" class="mr-2"></label>
+          <mat-form-field appearance="fill" class="uniform-form-field" >
+            <mat-label>Select Option</mat-label>
+            <mat-select id="dropdown" ngModel name="Category" #category>
+              <mat-option value="1">Maintainance</mat-option>
+              <mat-option value="0">Other</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="form-group uniform-container">
+          <label for="dropdown" class="mr-2"></label>
+          <mat-form-field appearance="fill" class="uniform-form-field" >
+            <mat-label>Select Option</mat-label>
+            <mat-select id="dropdown" #Type="" ngModel name="Status" #status>
+              <mat-option value="O">Open</mat-option>
+              <mat-option value="C">Close</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      
+      <div class="col-sm-4">
+        <div class="form-group uniform-container">
+          <mat-form-field class="uniform-form-field" >
+            <mat-label>From Date</mat-label>
+            <input matInput [matDatepicker]="picker" ngModel name="fromdate" #fromDateRef2 style="width: 100%;">
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+    
+      <div class="col-sm-4">
+        <div class="form-group uniform-container">
+          <mat-form-field class="uniform-form-field" >
+            <mat-label>To Date</mat-label>
+            <input matInput [matDatepicker]="picker1" ngModel name="todate" #toDateRef2  style="width: 100%;">
+            <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+    
+<div>
+    <div class="col-12 text-center">
+      <button  class="btn btn-warning go-btn btn-back-color" mat-raised-button style="color: #fff; width: 80px; background-color: #f68220;" (click)="showDataRMS(Rmstype?.value, category?.value, status?.value, fromDateRef2?.value, toDateRef2?.value)" 
+      class="mx-2">Show</button>
+      <button  class="btn btn-warning go-btn btn-back-color" mat-raised-button style="color: #fff; width: 80px; background-color: #f68220;" (click)="Reset()" 
+      class="mx-2">Rest</button>
+      <button style="float: right;margin-right: 10px;" class="btn btn-outline-warning  mb-12 " (click)="ExportTOExcelRMSData()">Export to Excel</button>
+    </div>
+  </div>
+</form>
+
+
+<div class="table-responsive divcontainer">
+
+  <table id="dataTableExampleNews" class="table">
+    <thead>
+      <tr>
+        <th *ngFor="let dt of rmsDataColumns" >{{dt}}</th>
+        <!-- <th>Noting Sheet Reference No</th>
+        <th> Description</th>
+        <th>Approval Period</th>
+        <th>Start Date</th>
+        <th>Document Name</th>
+        <th>EntryDate</th>
+        <th>EndDate</th>
+        <th>Subject</th>
+        <th>Hard Copy Sent</th>
+        <th>FileNumber</th>
+        <th>Department</th>
+        <th>School Division Name</th> -->
+
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of rmsData">
+        <td *ngFor="let col of rmsDataColumns">
+          {{ row[col] }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<!-- <table mat-table [dataSource]="dataSource1" matSort class="mat-elevation-z8" *ngIf="RMStype===1">
+
+  <ng-container matColumnDef="categoryType">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
+    <td mat-cell *matCellDef="let element">{{ element.category }}</td>
+  </ng-container>
+  <ng-container matColumnDef="categoryType">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>CategoryType</th>
+    <td mat-cell *matCellDef="let element">{{ element.categoryType }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="masterCategory">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>MasterCategory</th>
+    <td mat-cell *matCellDef="let element">{{ element.masterCategory }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="schoolName">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>SchoolName</th>
+    <td mat-cell *matCellDef="let element">{{ element.schoolName }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="category">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
+    <td mat-cell *matCellDef="let element">{{ element.category }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="subCategory">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>SubCategory</th>
+    <td mat-cell *matCellDef="let element">{{ element.subCategory }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="ticketNo">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>TicketNo</th>
+    <td mat-cell *matCellDef="let element">{{ element.ticketNo }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="messageId">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>MessageId</th>
+    <td mat-cell *matCellDef="let element">{{ element.messageId }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="subject">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Subject</th>
+    <td mat-cell *matCellDef="let element">{{ element.subject }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="description">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+    <td mat-cell *matCellDef="let element">{{ element.description }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="loggedDate">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>LoggedDate</th>
+    <td mat-cell *matCellDef="let element">{{ element.loggedDate }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="loggedBy">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>LoggedBy</th>
+    <td mat-cell *matCellDef="let element">{{ element.loggedBy }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="closingRemarks">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>ClosingRemarks</th>
+    <td mat-cell *matCellDef="let element"><a [href]="element.closingRemarks" target="_blank">Download</a></td>
+  </ng-container>
+
+  <ng-container matColumnDef="closingDate">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>ClosingDate</th>
+    <td mat-cell *matCellDef="let element"><a [href]="element.closingDate" target="_blank">Download</a></td>
+  </ng-container>
+
+  <ng-container matColumnDef="taskDays">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>TaskDays</th>
+    <td mat-cell *matCellDef="let element"><a [href]="element.taskDays" target="_blank">Download</a></td>
+  </ng-container>
+
+  <ng-container matColumnDef="rating">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Rating</th>
+    <td mat-cell *matCellDef="let element">{{ element.rating }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="studentRemarks">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>StudentRemarks</th>
+    <td mat-cell *matCellDef="let element">{{ element.studentRemarks }}</td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+</table> -->
+
+  </div>
+</mat-tab>
+
+<mat-tab label="BlockMaster">
+  <div class="container mt-4">
+    <form #form3="ngForm" class="row g-3">
+      <div class="text-center">
+        <button style="text-align: center;" class="btn btn-outline-warning mb-12" (click)="exportExcel4()">Export to Excel</button>
+      </div>
+    </form>
+  </div>
+  <div class="table-container">
+    <table mat-table [dataSource]="dataSource1" matSort class="mat-elevation-z8" *ngIf="blockDataShow === 1">
+      
+      <ng-container matColumnDef="blockNo">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Block Number</th>
+        <td mat-cell *matCellDef="let element">{{ element.blockNo }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="blockName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Block Name</th>
+        <td mat-cell *matCellDef="let element">{{ element.blockName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="ao">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">AO</th>
+        <td mat-cell *matCellDef="let element">{{ element.ao }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="sectorIncharge">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Sector Incharge</th>
+        <td mat-cell *matCellDef="let element">{{ element.sectorIncharge }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns3"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns3;"></tr>
+    </table>
+</div>
+</mat-tab>
+
+  <mat-tab label="IQAC">
+    <div class="container mt-4">
+      <form #form3="ngForm" class="row g-3">
+        <div class="row">
+          <div class="col-sm-3">
+            <mat-form-field class="uniform-form-field" style="width: 100%;">
+              <mat-label>From Date</mat-label>
+              <input matInput [matDatepicker]="fromPicker" name="fromdate" #fromDateRef>
+              <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
+              <mat-datepicker #fromPicker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-4">
+            <mat-form-field class="uniform-form-field" style="width: 100%;">
+              <mat-label>To Date</mat-label>
+              <input matInput [matDatepicker]="toPicker" name="todate" #toDateRef>
+              <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
+              <mat-datepicker #toPicker></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-10 text-center">
+            <button type="button" class="btn btn-warning" mat-raised-button style="color: #fff; background-color: #f68220;" (click)="showData(fromDateRef.value, toDateRef.value)">Show</button>
+            <button type="reset" style="float: right; margin-right: 10px;" class="btn btn-warning mb-12" mat-raised-button color="warning">Reset</button>
+            <button type="button" style="float: right; margin-right: 10px;" class="btn btn-outline-warning mb-12" (click)="exportExcel()">Export to Excel</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8" *ngIf="IQACDataShow==1">
+      <ng-container matColumnDef="eventId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Event ID</th>
+        <td mat-cell *matCellDef="let element">{{ element.eventId }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="eventName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Event Name</th>
+        <td mat-cell *matCellDef="let element">{{ element.eventName }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="eventStartDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Start Date</th>
+        <td mat-cell *matCellDef="let element">{{ element.eventStartDate }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="eventEndDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">End Date</th>
+        <td mat-cell *matCellDef="let element">{{ element.eventEndDate }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="venue">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Venue</th>
+        <td mat-cell *matCellDef="let element">{{ element.venue }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="events">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Events</th>
+        <td mat-cell *matCellDef="let element">{{ element.events }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Category</th>
+        <td mat-cell *matCellDef="let element">{{ element.category }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="otherCategory">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Other Category</th>
+        <td mat-cell *matCellDef="let element">{{ element.otherCategory }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="focusOfEvent">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Focus Of Event</th>
+        <td mat-cell *matCellDef="let element">{{ element.focusOfEvent }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="resourcePersonCategory">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Resource Person Category</th>
+        <td mat-cell *matCellDef="let element">{{ element.resourcePersonCategory }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="resourcePersonDetails">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Resource Person Details</th>
+        <td mat-cell *matCellDef="let element">{{ element.resourcePersonDetails }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="eventReportUploadFile">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Event Report</th>
+        <td mat-cell *matCellDef="let element"><a [href]="element.eventReportUploadFile" target="_blank">Download</a></td>
+      </ng-container>
+  
+      <ng-container matColumnDef="eventSupportDocument">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Support Document</th>
+        <td mat-cell *matCellDef="let element"><a [href]="element.eventSupportDocument" target="_blank">Download</a></td>
+      </ng-container>
+  
+      <ng-container matColumnDef="participantAttendanceUploadFile">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Participant Attendance</th>
+        <td mat-cell *matCellDef="let element"><a [href]="element.participantAttendanceUploadFile" target="_blank">Download</a></td>
+      </ng-container>
+  
+      <ng-container matColumnDef="entryBy">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Entry By</th>
+        <td mat-cell *matCellDef="let element">{{ element.entryBy }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="entryDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="theader">Entry Date</th>
+        <td mat-cell *matCellDef="let element">{{ element.entryDate }}</td>
+      </ng-container>
+  
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </mat-tab>
+
+</mat-tab-group>

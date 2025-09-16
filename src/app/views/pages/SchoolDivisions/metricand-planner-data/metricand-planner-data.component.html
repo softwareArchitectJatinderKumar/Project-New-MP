@@ -1,0 +1,540 @@
+<ng-container class="row" id="myTabs" *ngIf="isLogin; else LoginFailed">
+  <nav>
+    <div class="nav nav-tabs nav nav-tabs d-flex justify-content-center" id="nav-tab" role="tablist">
+      <button class="btn btn-lg btn-primary me-5" id="OBPDepartmentWise" data-bs-toggle="tab"
+        style="padding: .95rem 8rem;" type="button" role="tab" aria-controls="OBP-DepartmentWise"
+        [attr.aria-selected]="activeTab === 'OBP-DepartmentWise'" (click)="setActiveTab('OBP-DepartmentWise'); clearGrid()"
+        [class.active]="activeTab === 'OBP-DepartmentWise'">
+        Progress Report DepartmentWise
+      </button>
+
+      <button class="btn btn-primary btn-lg ms-5" id="OBPUIDWise" data-bs-toggle="tab"
+        style="padding: .95rem 8rem;" type="button" role="tab" aria-controls="OBP-UIDWise"
+        [attr.aria-selected]="activeTab === 'OBP-UIDWise'" (click)="setActiveTab('OBP-UIDWise'); clearGrid()"
+        [class.active]="activeTab === 'OBP-UIDWise'">
+        Progress Report UID Wise
+      </button>
+    </div>
+  </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <!-- Tab one contents -->
+        <!-- <div class="tab-pane fade " id="OBP-DepartmentWise" role="tabpanel" aria-labelledby="OBPDepartmentWise"> -->
+          <div id="OBP-DepartmentWise"  role="tabpanel" aria-labelledby="OBPDepartmentWise" class="tab-pane fade" [class.show]="activeTab === 'OBP-DepartmentWise'" [class.active]="activeTab === 'OBP-DepartmentWise'">
+            <h3 class="text-center fs-2  text-danger mt-4 me-4">Department Wise Progress Details </h3>
+            <div class="div1 d-flex justify-content-center">
+                <div class="planner">
+                    <h4>School/ Division :</h4>
+                    <select class="ui search dropdown ms-5 p-2 fs-4 text-success" id="SchoolId" required
+                        [(ngModel)]="SchoolIndex" (change)="getAllDivisions($event)" (click)="loadData($event)">
+                        <option selected value="-1">Select School Division</option>
+                        <option [value]="School.id" *ngFor="let School of allSchoolDivisions">{{School.schoolDivision}}
+                        <option>
+                    </select>
+                </div>
+                <div class="description" id="Department">
+                    <h4>Select Department :</h4>
+                    <select class="ui search dropdown ms-5 p-2 fs-4 text-success" id="DepartmentId"
+                        [(ngModel)]="DepartmentIndex" (change)="loadPlannerDetails($event)">
+                        <option class="ms-3" selected value="-1">Select Department Name</option>
+                        <option class="ms-3" [value]="data.id" *ngFor="let data of allDepartmentName">
+                          {{data.departmentName}}
+                        </option>
+                        <option class="ms-3" value="0">All</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-responsive" id="ResultTable" *ngIf="OBPFilledDetails?.length > 0 ; else NoDataFound">
+                <!-- <div class="row d-flex justify-content-center">
+                    <div class="text-center mb-3">
+                        <button (click)="exportToExcel()" class="btn btn-success">Export to Excel File</button>
+                    </div>
+                </div> -->
+                <ngx-datatable class="container-fluid bootstrap table-striped material" [rows]="OBPFilledDetails"
+                    [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50"
+                    [limit]="10" [headerHeight]="80" rowHeight="auto" >
+                    <ngx-datatable-column *ngFor="let col of columns" [prop]="col" [width]="8"></ngx-datatable-column>
+
+                    <ngx-datatable-column name="Employee" [sortable]="false" prop="Id">
+                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                            ngx-datatable-cell-template>
+                            <ng-container *ngIf="row.assignedToUID != null" class="text-danger">
+                                <span class="text-danger fs-4"> {{row.assignedToUID}} </span>
+                            </ng-container>
+                        </ng-template>
+                    </ngx-datatable-column>
+
+                    <ngx-datatable-column name="Target Details" [sortable]="false" prop="Id">
+                      <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                        <ng-container *ngIf="row.filledStageQuantity != null">
+                          <span class="fw-bolder">Total Target {{row.totalTargetValue}} {{row.targetValueType =='Percentage'? '%': 'N'}} Filled Qty
+                            {{row.filledStageQuantity}} </span>
+                        </ng-container>
+                      </ng-template>
+                    </ngx-datatable-column>
+
+                    <ngx-datatable-column name="DQA Remarks" [sortable]="false" prop="Id">
+                      <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                        <div class="card-body" *ngIf="row.obpProgressId==null else AlreadyStored">
+                            <form #DQAAction="ngForm" (ngSubmit)="SaveRemarks(row)">
+                              <div class="row align-items-center">
+                                <div class="row">
+                                  <div class="mb-4">
+                                    <label class="fs-4 text-danger">DQA Remarks</label>
+                                  </div>
+                                  <div class="mb-4">
+                                    <textarea rows="4" cols="10" class="form-control" id="DQRemarksText" placeholder="Provide DQA Remarks"
+                                      required [(ngModel)]="row.DQRemarksText" name="DQRemarksText" #DQRemarksTextModel="ngModel">
+                                    </textarea>
+                                    <div *ngIf="DQRemarksTextModel.invalid && DQRemarksTextModel.touched" class="text-danger">
+                                      DQA Remarks is required.
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="row">
+                                  <div class="mb-4">
+                                    <label class="fs-4 text-danger">DQA Satisfaction Level</label>
+                                  </div>
+                                  <div class="mb-4">
+                                    <select class="form-control customSelect" required [(ngModel)]="row.DQRemarks" name="DQRemarks"
+                                      (change)="setDQRemarkss($event)" #DQRemarksSatisfactionModel="ngModel">
+                                      <option selected value="select">Select Level</option>
+                                      <option value="1">Satisfactory</option>
+                                      <option value="2">Not Satisfactory</option>
+                                      <option value="3">Other Remarks</option>
+                                    </select>
+                                    <div *ngIf="DQRemarksSatisfactionModel.touched && row.DQRemarks == 0" class="text-danger">
+                                      Satisfaction Level is required.
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="row" *ngIf="row.DQRemarks == 3">
+                                  <div class="mb-4">
+                                    <label class="fs-4 text-danger">DQA Other Remarks</label>
+                                  </div>
+                                  <div class="mb-4">
+                                    <input type="text" class="form-control" [(ngModel)]="row.otherRemarkText" name="otherRemarkText"
+                                      placeholder="Enter your remarks" required #otherRemarkTextModel="ngModel" />
+                                    <div *ngIf="otherRemarkTextModel.invalid && otherRemarkTextModel.touched" class="text-danger">
+                                      Other remarks are required.
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="row">
+                                  <div class="col-10 text-center">
+                                    <button type="submit" [disabled]="!DQAAction.form.valid || row.DQRemarks == 0"
+                                      class="btn btn-primary me-2">
+                                      Save Remarks
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+
+                          <ng-template #AlreadyStored>
+                            <button class="btn btn-dark " (click)="OpenRemarksModal(row)">
+                              View
+                          </button>
+                            <!-- <div class="card-body">
+                              <div class="row">
+                                  <label class="fs-4">Filled Remarks</label>
+                                </div>
+                                <div class="row">
+                                  <label class="fw-bolder fs-4">{{ row.DQRemarksText || 'Not available' }}</label>
+                                </div>
+                              <div class="row">
+                                  <label class="fs-4">Filled Satisfaction Level</label>
+                                </div>
+                                <div class="row"><label class="fw-bolder fs-4">{{ row.DQRemarks || 'NA' }}</label>
+                                </div>
+
+                                <div class="row">
+                                    <label class="fs-4">Filled Other Remarks</label>
+                                </div>
+                                 <div class="row" *ngIf="row.otherRemarkText?.length > 0">
+                                    <label class="fs-4 fw-bolder">{{ row.otherRemarkText }}</label>
+                                  </div>
+                            </div> -->
+                          </ng-template>
+                        </ng-template>
+                      </ngx-datatable-column>
+
+
+                    <ngx-datatable-column name="Attachment" [sortable]="false" prop="Id">
+                      <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                          ngx-datatable-cell-template>
+                          <ng-container *ngIf="row.supportingDocument != null">
+                              <button class="btn btn-dark " (click)="onSelectFile(row)">
+                                  View
+                              </button>
+                          </ng-container>
+                          <ng-container *ngIf="row.supportingDocument == null">
+                              <span
+                                  style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">No
+                                  FIle</span>
+                          </ng-container>
+                      </ng-template>
+                  </ngx-datatable-column>
+
+
+                </ngx-datatable>
+            </div>
+            <ng-template #NoDataFound>
+                <div class="text-center d-flex align-items-center justify-content-center">
+                    <h3 class="text-center fs-4 text-danger btn btn-warning mt-5"> No data found. </h3>
+                </div>
+            </ng-template>
+        </div>
+
+        <!-- Tab Two contents -->
+        <!-- <div class="tab-pane fade " id="OBP-UIDWise" role="tabpanel" aria-labelledby="OBPUIDWise"> -->
+          <div id="OBP-UIDWise" role="tabpanel" aria-labelledby="OBPUIDWise" class="tab-pane fade" [class.show]="activeTab === 'OBP-UIDWise'" [class.active]="activeTab === 'OBP-UIDWise'">
+            <h3 class="text-center fs-2  text-danger mt-4 me-4">UID Wise Progress Detail </h3>
+            <div class="div1 d-flex justify-content-center">
+                <div class="planner">
+                    <h4 class="text-center fs-2 "> UID <span class=" text-danger" *ngIf="tempId"> {{this.tempId}}</span></h4>
+                    <input type="text" placeholder="Type UID .." autocomplete="off"
+                        class="myTextBox ms-4 ms-5 p-2 fs-4 text-success" [(ngModel)]="userId" required id="UserId"
+                        name="UserId" (change)="setUserID()" (keydown.enter)="setUserID()" />
+                </div>
+                <div class="description " id="DepartmentBtn">
+                    <button class="btn btn-dark myButton fs-4 " [disabled]="userId==null" (click)="setUserID()">Get
+                        Details </button>
+                </div>
+            </div>
+            <div class="table-responsive" id="ResultTableUIDWise"
+                *ngIf="OBPFilledDetailsUidWise?.length > 0 ; else NoData_Found">
+                <!-- <div class="row d-flex justify-content-center mt-2 mb-2">
+                    <div class="mb-3">
+                        <button (click)="exportToExcelUID()" class="btn btn-success myButton">Export to Excel
+                            File</button>
+                    </div>
+                </div> -->
+                <ngx-datatable class="container-fluid bootstrap table-striped material" [rows]="OBPFilledDetailsUidWise"
+                    [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50"
+                    [limit]="10" [headerHeight]="80" rowHeight="auto">
+                    <ngx-datatable-column *ngFor="let col of columns" [prop]="col" [width]="10"></ngx-datatable-column>
+
+                    <ngx-datatable-column name="Employee" [sortable]="false" prop="Id">
+                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                            ngx-datatable-cell-template>
+                            <ng-container *ngIf="row.assignedToUID != null" class="text-danger">
+                               <span class="text-danger fs-4"> {{row.assignedToUID}} </span>
+                            </ng-container>
+                        </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="AllocationId" [sortable]="false" prop="Id">
+                      <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                          ngx-datatable-cell-template>
+                          <ng-container *ngIf="row.allocationId != null; else NoAllocation" class="text-danger">
+                             <span class="text-dark fs-4"> {{row.allocationId}} </span>
+                          </ng-container>
+                          <ng-template #NoAllocation>
+                            <span
+                                style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">No Id</span>
+                        </ng-template>
+                      </ng-template>
+                  </ngx-datatable-column>
+                    <ngx-datatable-column name="Target Details" [sortable]="false" prop="Id">
+                      <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                        <ng-container *ngIf="row.filledStageQuantity != null">
+                          <span class="fw-bolder">Total Target {{row.totalTargetValue}} {{row.targetValueType}} Filled Qty
+                            {{row.filledStageQuantity}}</span>
+                        </ng-container>
+                      </ng-template>
+                    </ngx-datatable-column>
+
+                    <!-- <ngx-datatable-column name="DQA Remarks" [sortable]="false" prop="Id">
+                      <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                        <div class="card-body" *ngIf="!alreadyFilled[row.allocationId]; else AlreadyStored">
+                          <form #DQAAction="ngForm" (ngSubmit)="SaveRemarks(row)">
+                            <div class="row align-items-center">
+                              <div class="row">
+                                <div class="mb-4">
+                                  <label class="fs-4 text-danger">DQA Remarks</label>
+                                </div>
+                                <div class="mb-4">
+                                  <textarea rows="4" cols="10" class="form-control" id="DQRemarksText" placeholder="Provide DQ Remarks"
+                                    required [(ngModel)]="row.DQRemarksText" name="DQRemarksText" #DQRemarksTextModel="ngModel">
+                                  </textarea>
+                                  <div *ngIf="DQRemarksTextModel.invalid && DQRemarksTextModel.touched" class="text-danger">
+                                    DQA Remarks is required.
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="row">
+                                <div class="mb-4">
+                                  <label class="fs-4 text-danger">DQA Satisfaction Level</label>
+                                </div>
+                                <div class="mb-4">
+                                  <select class="form-control" required [(ngModel)]="row.DQRemarks" name="DQRemarks"
+                                    (change)="setDQRemarkss($event)" #DQRemarksSatisfactionModel="ngModel">
+                                    <option selected value="select">Select Level</option>
+                                    <option value="1">Satisfactory</option>
+                                    <option value="2">Not Satisfactory</option>
+                                    <option value="3">Other Remarks</option>
+                                  </select>
+                                  <div *ngIf="DQRemarksSatisfactionModel.touched && row.DQRemarks == 0" class="text-danger">
+                                    Satisfaction Level is required.
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="row" *ngIf="row.DQRemarks == 3">
+                                <div class="mb-4">
+                                  <label class="fs-4 text-danger">DQA Other Remarks</label>
+                                </div>
+                                <div class="mb-4">
+                                  <input type="text" class="form-control" [(ngModel)]="row.otherRemarkText" name="otherRemarkText"
+                                    placeholder="Enter your remarks" required #otherRemarkTextModel="ngModel" />
+                                  <div *ngIf="otherRemarkTextModel.invalid && otherRemarkTextModel.touched" class="text-danger">
+                                    Other remarks are required.
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="row">
+                                <div class="col-10 text-center">
+                                  <button type="submit" [disabled]="!DQAAction.form.valid || row.DQRemarks == 0"
+                                    class="btn btn-primary me-2">
+                                    Save Remarks
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+
+                        <ng-template #AlreadyStored>
+                          <div class="card-body">
+                            <div class="row">
+                                <label class="fs-4">Filled Remarks</label>
+                              </div>
+                              <div class="row">
+                                <label class="fw-bolder fs-4">{{ row.DQRemarksText || 'Not available' }}</label>
+                              </div>
+                            <div class="row">
+                                <label class="fs-4">Filled Satisfaction Level</label>
+                              </div>
+                              <div class="row"><label class="fw-bolder fs-4">{{ row.DQRemarks || 'NA' }}</label>
+                              </div>
+
+                              <div class="row">
+                                  <label class="fs-4">Filled Other Remarks</label>
+                              </div>
+                               <div class="row" *ngIf="row.otherRemarkText?.length > 0">
+                                  <label class="fs-4 fw-bolder">{{ row.otherRemarkText }}</label>
+                                </div>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                    </ngx-datatable-column> -->
+
+
+                    <ngx-datatable-column name="DQA Remarks" [sortable]="false" prop="Id">
+                      <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                        <div class="card-body" *ngIf="row.obpProgressId==null else AlreadyStored">
+                            <form #DQAAction="ngForm" (ngSubmit)="SaveRemarks(row)">
+                              <div class="row align-items-center">
+                                <div class="row">
+                                  <div class="mb-4">
+                                    <label class="fs-4 text-danger">DQA Remarks</label>
+                                  </div>
+                                  <div class="mb-4">
+                                    <textarea rows="4" cols="10" class="form-control" id="DQRemarksText" placeholder="Provide DQA Remarks"
+                                      required [(ngModel)]="row.DQRemarksText" name="DQRemarksText" #DQRemarksTextModel="ngModel">
+                                    </textarea>
+                                    <div *ngIf="DQRemarksTextModel.invalid && DQRemarksTextModel.touched" class="text-danger">
+                                      DQA Remarks is required.
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="row">
+                                  <div class="mb-4">
+                                    <label class="fs-4 text-danger">DQA Satisfaction Level</label>
+                                  </div>
+                                  <div class="mb-4">
+                                    <select class="form-control customSelect" required [(ngModel)]="row.DQRemarks" name="DQRemarks"
+                                      (change)="setDQRemarkss($event)" #DQRemarksSatisfactionModel="ngModel">
+                                      <option selected value="select">Select Level</option>
+                                      <option value="1">Satisfactory</option>
+                                      <option value="2">Not Satisfactory</option>
+                                      <option value="3">Other Remarks</option>
+                                    </select>
+                                    <div *ngIf="DQRemarksSatisfactionModel.touched && row.DQRemarks == 0" class="text-danger">
+                                      Satisfaction Level is required.
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="row" *ngIf="row.DQRemarks == 3">
+                                  <div class="mb-4">
+                                    <label class="fs-4 text-danger">DQA Other Remarks</label>
+                                  </div>
+                                  <div class="mb-4">
+                                    <input type="text" class="form-control" [(ngModel)]="row.otherRemarkText" name="otherRemarkText"
+                                      placeholder="Enter your remarks" required #otherRemarkTextModel="ngModel" />
+                                    <div *ngIf="otherRemarkTextModel.invalid && otherRemarkTextModel.touched" class="text-danger">
+                                      Other remarks are required.
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="row">
+                                  <div class="col-10 text-center">
+                                    <button type="submit" [disabled]="!DQAAction.form.valid || row.DQRemarks == 0"
+                                      class="btn btn-primary me-2">
+                                      Save Remarks
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+
+                          <ng-template #AlreadyStored>
+                            <button class="btn btn-dark " (click)="OpenRemarksModal(row)">
+                              View
+                          </button>
+                          </ng-template>
+                        </ng-template>
+                      </ngx-datatable-column>
+
+
+                    <ngx-datatable-column name="Attachment" [sortable]="false" prop="Id">
+                      <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                        <ng-container *ngIf="row.supportingDocument != null">
+                          <button class="btn btn-dark " (click)="onSelectFile(row)">
+                            View File
+                          </button>
+                        </ng-container>
+                        <ng-container *ngIf="row.supportingDocument == null">
+                          <span style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">No
+                            FIle</span>
+                        </ng-container>
+                      </ng-template>
+                    </ngx-datatable-column>
+                </ngx-datatable>
+            </div>
+            <ng-template #NoData_Found>
+                <div class="d-flex align-items-center justify-content-center">
+                    <h3 class="text-center fs-4 bg-warning text-danger mt-5 mb-5"> No data found. </h3>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</ng-container>
+<ng-template #LoginFailed>
+    <h3 class="text-center fs-2 m-5 text-danger pt-5 "> Error in User Login . </h3>
+    <div class="row mt-4 mb-4">
+        <div class="col-sm-12 text-center">
+            <div class="mb-3 p-4">
+                <Label class="form-label fs-4 text-danger ">Something Wen Wrong. Please Try login again!.</Label>
+            </div>
+        </div>
+    </div>
+</ng-template>
+<ng-template #viewDQARemarksModal let-modal>
+  <div class="modal-header">
+    <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    <div class="col-12 grid-margin stretch-card">
+      <div class="card">
+        <h5 class="fs-3 text-center mt-2 mb-3">DQA Remarks Screen</h5>
+
+        <div class="card-body" *ngIf="!AlreadyFilled; else AlreadyStored">
+          <form #DQAAction="ngForm" (ngSubmit)="SaveRemarks(row)">
+            <div class="row align-items-center">
+              <div class="row">
+                <div class="col-4 mb-4">
+                  <label class="fs-4 text-danger">DQA Remarks </label>
+                </div>
+                <div class="col-4 mb-4">
+                  <textarea rows="4" cols="10" type="text" class="form-control" id="DQRemarksText" placeholder="Provide DQA Remarks" required
+                    [(ngModel)]="row.DQRemarksText" name="DQRemarksText" #DQRemarksTextModel="ngModel" >
+                    </textarea>
+                  <div *ngIf="DQRemarksTextModel.invalid && DQRemarksTextModel.touched" class="text-danger">
+                    DQA Remarks is required.
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-4 mb-4">
+                  <label class="fs-4 text-danger">DQA Statisfaction Level </label>
+                </div>
+                <div class="mb-4 col-4">
+                  <select class="form-control " id="DQRemarks" required [(ngModel)]="row.DQRemarks" name="DQRemarks"
+                    (change)="setDQRemarkss($event)" #DQRemarksSatisfactionModel="ngModel">
+                    <option selected value="select">Select Level</option>
+                    <option value="1">Satisfactory</option>
+                    <option value="2">Not Satisfactory</option>
+                    <option value="3">Other Remarks</option>
+                  </select>
+                  <div *ngIf="DQRemarksSatisfactionModel.touched && row.DQRemarks == 0" class="text-danger">
+                    Satisfaction Level is required.
+                  </div>
+                </div>
+              </div>
+              <div class="row" *ngIf="row.DQRemarks == 3">
+                <div class="col-4 mb-4">
+                  <label class="fs-4 text-danger">DQA Other Remarks </label>
+                </div>
+                <div class="mb-4 col-4">
+                  <input type="text" class="form-control" [(ngModel)]="row.otherRemarkText" name="otherRemarkText"
+                    placeholder="Enter your remarks" required #otherRemarkTextModel="ngModel" />
+                  <div *ngIf="otherRemarkTextModel.invalid && otherRemarkTextModel.touched" class="text-danger">
+                    Other remarks are required.
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-10 text-center">
+                  <button type="submit" [disabled]="!DQAAction.form.valid || row.DQRemarks == 0" class="btn btn-primary me-2">
+                    Save Remarks
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- If AlreadyFilled is true, show the Already Stored remarks -->
+        <ng-template #AlreadyStored>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-3 mb-4">
+                <label class="fs-4">Filled Remarks </label>
+              </div>
+              <div class="col-3 mb-4">
+                <label class="fs-4 text-info">{{row[0]?.dqaRemarks}}</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-3 mb-4">
+                <label class="fs-4">Filled Satisfaction Level </label>
+              </div>
+              <div class="col-3 mb-4">
+                <label class="fs-4 text-info">{{row[0]?.dqaSatisfactionLevel.length>0 ? row[0]?.dqaSatisfactionLevel:'NA'}}</label>
+              </div>
+              <div class="col-3 mb-4">
+                <label class="fs-4">Filled Other Satisfaction Level </label>
+              </div>
+              <div class="col-3 mb-4" *ngIf="row[0]?.dqaOtherRemarks?.length > 0">
+                <label class="fs-4 text-info">{{row[0]?.dqaOtherRemarks}}</label>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
+

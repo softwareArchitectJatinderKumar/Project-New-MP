@@ -1,0 +1,80 @@
+/* Example of custom styles */
+.container {
+    
+    margin: auto;
+    padding-top: 20px;
+    margin-top:2rem;
+    margin-bottom:4rem;
+  }
+  
+  .form-label {
+    font-weight: bold;
+   
+  }
+  
+  .mb-2 {
+    margin-bottom: 0.5rem;
+  }
+  input,select{
+    border-style: outset;
+    
+  }
+  button{
+    color:white;
+    
+  }
+
+  quill-editor .ql-container .ql-editor {
+    max-height: 150px !important;
+    min-height: 150px !important;
+}
+
+
+
+$cell-padding: 8px;
+
+
+
+.ng-select .ng-select-container {
+  min-height: 20px;
+}
+
+.ng-select.ng-select-single .ng-select-container {
+  height: 20px;
+}
+
+table.tid-table {
+  tr {
+    &.tid-detail-row {
+      > td {
+        
+        > div {
+         // width: 100%;
+         // box-sizing: border-box;
+          max-height: 0;
+          transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+          overflow: hidden;
+          
+        }
+      }
+      &.show  > td > div {
+        max-height: 1000px;
+        transition: max-height 1s ease-in-out;
+      }
+    }
+   
+  }
+}
+
+
+.table-striped > tbody > tr:nth-of-type(odd) > *{
+  --bs-table-accent-bg:#cca58a !important;
+  color: #f9f9f9 !important;
+}
+.btn-outline-dark {
+  color: #f9f9f9 !important;
+  --bs-btn-border-color:white !important;
+}
+.btn-primary, .swal2-container .swal2-popup .swal2-actions button.swal2-confirm{
+  --bs-btn-color:#f9f9f9 !important;
+}

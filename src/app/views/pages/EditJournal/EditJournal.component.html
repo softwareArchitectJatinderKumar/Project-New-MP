@@ -1,0 +1,202 @@
+<div>
+  <label for="journalId">Select Journal ID:</label>
+  <input type="text" id="journalId" [(ngModel)]="selectedJournalId" placeholder="Enter Journal ID">
+  <button (click)="filterJournalById()">Load Journal</button>
+</div>
+
+<div *ngIf="filteredJournal">
+  <h2>Edit Journal ID: {{ filteredJournal.id }}</h2>
+
+  <!-- Wizard Navigation -->
+  <!-- <div>
+    <div *ngIf="currentStep === 1">
+      <h3>Step 1: Basic Details</h3>
+      <label>Title:</label>
+      <input type="text" [(ngModel)]="filteredJournal.title">
+      <label>Author:</label>
+      <input type="text" [(ngModel)]="filteredJournal.author">
+    </div>
+
+    <div *ngIf="currentStep === 2">
+      <h3>Step 2: Content Details</h3>
+      <label>Introduction:</label>
+      <textarea [(ngModel)]="filteredJournal.introduction"></textarea>
+      <label>Scope:</label>
+      <textarea [(ngModel)]="filteredJournal.scope"></textarea>
+    </div>
+
+    <div *ngIf="currentStep === 3">
+      <h3>Step 3: Publication Details</h3>
+      <label>Publication Date:</label>
+      <input type="date" [(ngModel)]="filteredJournal.publicationDate">
+      <label>Keywords:</label>
+      <input type="text" [(ngModel)]="filteredJournal.keywords">
+    </div>
+  </div> -->
+  <div class="row">
+    <div class="col-md-12 grid-margin">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Journal Forms</h6>
+
+          <aw-wizard #wizardForm>
+            <aw-wizard-step stepTitle="Journal Basic Information">
+              <form (ngSubmit)="form1Submit()" [formGroup]="validationForm1" style="margin-top: 20px;">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="row mb-3">
+                      <label for="firstName" class="col-sm-3 col-form-label">Journal Title:</label>
+                      <div class="col-sm-9">
+                        <input id="journalTitle" formControlName="journalTitle" class="form-control" placeholder="Journal Title"
+                          [ngClass]="{'is-invalid': isForm1Submitted && form1.journalTitle.errors}">
+                        <div *ngIf="isForm1Submitted && form1.journalTitle.errors?.required" class="invalid-feedback">
+                          Required
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="row mb-3">
+                      <label for="lastName" class="col-sm-3 col-form-label">Journal Sub Title</label>
+                      <div class="col-sm-9">
+                        <input id="subTitle" formControlName="subTitle" class="form-control" placeholder="Journal Sub Title"
+                          [ngClass]="{'is-invalid': isForm1Submitted && form1.subTitle.errors}">
+                        <div *ngIf="isForm1Submitted && form1.subTitle.errors?.required" class="invalid-feedback">
+                          Required
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="row mb-3">
+                      <label for="lastName" class="col-sm-3 col-form-label">Journal Volume</label>
+                      <div class="col-sm-9">
+                        <input id="Volume" formControlName="Volume" class="form-control" placeholder="Journal Volume"
+                          [ngClass]="{'is-invalid': isForm1Submitted && form1.Volume.errors}">
+                        <div *ngIf="isForm1Submitted && form1.Volume.errors?.required" class="invalid-feedback">
+                          Required
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="row mb-3">
+                      <label for="lastName" class="col-sm-3 col-form-label">Journal Publish Date:</label>
+                      <div class="col-sm-9">
+                        <input id="publishDate" type="date" formControlName="publishDate" class="form-control"
+                          [ngClass]="{'is-invalid': isForm1Submitted && form1.publishDate.errors}" placeholder="Journal Publish Date">
+                        <div *ngIf="isForm1Submitted && form1.publishDate.errors?.required" class="invalid-feedback">
+                          Required
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- ScopeOfJournal -->
+                  <!-- <div class="col-md-6">
+                    <div class="row mb-3">
+                      <label for="userName" class="col-sm-3 col-form-label">Journal Introduction:</label>
+                      <div class="col-sm-9">
+                        <quill-editor placeholder="Enter Text" formControlName="Introduction" [modules]="quillConfig"
+                          [(ngModel)]="Introduction" [ngClass]="{'is-invalid': isForm1Submitted && form1.Introduction.errors}"
+                          (onSelectionChanged)="onSelectionChanged($event)" (onContentChanged)="onContentChanged($event)">
+                        </quill-editor>
+                        <div class="mt-3">
+                          <pre class="mb-0">{{Introduction}}</pre>
+                        </div>
+                        <div *ngIf="isForm1Submitted && form1.Introduction.errors?.required" class="invalid-feedback">
+                          Required
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="row mb-3">
+                      <label for="userName" class="col-sm-3 col-form-label">Journal Scope Of Journal:</label>
+                      <div class="col-sm-9">
+                        <quill-editor placeholder="Enter Text" formControlName="scopeofjournals" [(ngModel)]="ScopeOfJournal"
+                          [modules]="quillConfig" [ngClass]="{'is-invalid': isForm1Submitted && form1.scopeofjournals.errors}"
+                          (onSelectionChanged)="onSelectionChanged($event)" (onContentChanged)="onContentChanged($event)">
+                        </quill-editor>
+                        <div class="mt-3">
+                          <pre class="mb-0">{{ScopeOfJournal}}</pre>
+                        </div>
+                        <div *ngIf="isForm1Submitted && form1.scopeofjournals.errors?.required" class="invalid-feedback">
+                          Required
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="row mb-3">
+                      <label for="userName" class="col-sm-3 col-form-label">Journal Thrust Area:</label>
+                      <div class="col-sm-9">
+                        <quill-editor [(ngModel)]="ThrustArea" placeholder="Enter Text" [modules]="quillConfig"
+                          formControlName="thrustArea" [ngClass]="{'is-invalid': isForm1Submitted && form1.thrustArea.errors}"
+                          (onSelectionChanged)="onSelectionChanged($event)" (onContentChanged)="onContentChanged($event)">
+                        </quill-editor>
+                        <div class="mt-3">
+                          <pre class="mb-0">{{ThrustArea}}</pre>
+                        </div>
+                        <div *ngIf="isForm1Submitted && form1.thrustArea.errors?.required" class="invalid-feedback">
+                          Required
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="row mb-3">
+                      <label for="userName" class="col-sm-3 col-form-label">Journal Article Type::</label>
+                      <div class="col-sm-9">
+                        <quill-editor placeholder="Enter Text" [modules]="quillConfig" [(ngModel)]="ArticleType"
+                          [ngClass]="{'is-invalid': isForm1Submitted && form1.ArticleType.errors}" formControlName="ArticleType"
+                          (onSelectionChanged)="onSelectionChanged($event)" (onContentChanged)="onContentChanged($event)">
+                        </quill-editor>
+                        <div class="mt-3">
+                          <pre class="mb-0">{{ArticleType}}</pre>
+                        </div>
+                        <div *ngIf="isForm1Submitted && form1.ArticleType.errors?.required" class="invalid-feedback">
+                          Required
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="row mb-3">
+                      <label for="userName" class="col-sm-3 col-form-label">Journal Image:</label>
+                      <div class="col-sm-9">
+                        <input class="form-control" [(ngModel)]="fileNames" type="file" id="File" name="file"
+                          (change)="onFileSelected($event)" accept=".png, .jpg, .jpeg" formControlName="file" />
+                        <div *ngIf="isForm1Submitted && form1.file.errors?.required" class="invalid-feedback">
+                          Required
+                        </div>
+                      </div>
+                    </div>
+                  </div> -->
+                </div>
+                <div class="d-flex justify-content-center mt-2">
+                  <button class="btn btn-primary" type="submit">Continue</button>
+                </div>
+              </form>
+            </aw-wizard-step>
+            <aw-wizard-step stepTitle="Journal Basic Property Details">
+             
+            </aw-wizard-step>
+            <aw-wizard-step stepTitle="Journal Editor Details">
+             
+            </aw-wizard-step>
+          </aw-wizard>
+        </div>
+      </div>
+    </div>  
+  </div>
+  <!-- Wizard Controls -->
+  <div class="wizard-controls">
+    <button (click)="previousStep()" [disabled]="currentStep === 1">Previous</button>
+    <button (click)="nextStep()" *ngIf="currentStep < 3">Next</button>
+    <button (click)="saveJournal()" *ngIf="currentStep === 3">Save Journal</button>
+  </div>
+</div>
+
+<div *ngIf="!filteredJournal && selectedJournalId">
+  <p>No journal found with ID: {{ selectedJournalId }}</p>
+</div>

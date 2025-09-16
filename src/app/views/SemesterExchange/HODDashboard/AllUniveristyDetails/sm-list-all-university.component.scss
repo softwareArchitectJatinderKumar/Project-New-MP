@@ -1,0 +1,23 @@
+.table-responsive {
+    overflow-x: auto;
+  }
+  
+  table.mat-elevation-z8 {
+    width: 100%;
+  }
+  
+  th.mat-header-cell, td.mat-cell {
+    padding: 8px 16px; /* Adjust as needed */
+    text-align: left;  /* Adjust as needed */
+  }
+  
+  th.mat-header-cell {
+    font-weight: bold;
+  }
+  
+  @media (max-width: 768px) {
+    th.mat-header-cell, td.mat-cell {
+      padding: 4px 8px; /* Adjust for smaller screens */
+    }
+  }
+  

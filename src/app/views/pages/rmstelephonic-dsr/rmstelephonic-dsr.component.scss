@@ -1,0 +1,449 @@
+.table-container {
+    max-height: 400px; 
+    overflow-y: auto;
+  }
+  .blockHeight{
+    height: 80rem;
+  }
+  .mat-elevation-z8 {
+    margin-bottom: 16px; /* Add some spacing at the bottom */
+  }
+  #wrapper1, #wrapper2{width: 100%; border: none 0px RED;
+    overflow-x: scroll; overflow-y:hidden;}
+    #wrapper1{height: 20px; }
+    #wrapper2{height: 500px }
+    #div1 {width:400%; height: 20px; }
+    #div2 {width:400%; height: 500px; background-color: #f68220;
+    overflow: auto;}
+nav.db-nav .navbar-brand img {
+    width: 200px;
+    height: 80px;
+    object-fit: contain;
+}
+.themeClr {
+    color: #fd6c04 !important;
+}
+.metric-search-nav {
+    box-shadow: 0 0 40px rgba(14, 16, 48, .07);
+    background: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+}
+.metric-search-home {
+    font-size: 24px !important;
+    color: #ffab13 !important;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.pd{
+    padding: 0px 15px;
+}
+.ml15{
+    margin-right: 15px;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #ddd;
+}
+
+
+
+
+
+
+/* app.component.css */
+
+.logo-container {
+    /* Set the container to flex to easily manage alignment */
+    display: flex;
+    /* Center the logo horizontally and vertically */
+    justify-content: right;
+    align-items: right;
+    /* Optionally, add padding or other styles as needed */
+    padding: 10px;
+  }
+  
+  /* Optional: Style the logo itself */
+  .logo-container img {
+    /* Set maximum width or height to ensure the logo doesn't exceed container size */
+    max-width: 90%;
+    max-height: 90%;
+    /* Add additional styles as needed */
+  }
+  .mat-toolbar-row, .mat-toolbar-single-row {
+        /* display: flex; */
+        box-sizing: border-box;
+        padding: 0 16px;
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        white-space: nowrap;
+        height: var(--mat-toolbar-standard-height);
+  }
+  .page-content {
+    margin-top: 0px !important;
+}
+
+.p-nav {
+    padding: 10px 15px !important;
+}
+
+.mPIN {
+    --bs-modal-width: 40% !important;
+}
+
+.mPIN-header {
+    height: 80px;
+    background-color: azure;
+    width: 100%;
+    border-radius: var(--bs-modal-border-radius);
+}
+
+.lock_container {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #fff;
+    margin: 0 auto;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    text-align: center;
+    padding: 10px;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.mt-10 {
+    margin-top: 10px;
+}
+
+.full-width {
+    width: 60%;
+}
+
+.pin-icon {
+    width: 75px !important;
+    height: 75px !important;
+}
+
+.center {
+    text-align: center;
+}
+
+.modal-body-mPIN {
+
+
+    background-color: azure;
+
+}
+.table-container {
+    width: 100%;
+    height: 400px; /* Adjust the height as needed */
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  .table-full-width {
+    width: 100%;
+    border-collapse: collapse; /* Optional: for better table styling */
+  }
+  
+  .table-full-width th,
+  .table-full-width td {
+    padding: 8px; /* Adjust the padding as needed */
+    text-align: left; /* Adjust the alignment as needed */
+    border: 1px solid #ddd; /* Optional: for better table styling */
+  }
+
+
+.active {
+    outline: none;
+    background-color: #f68220 !important;
+    color: #fff !important;
+}
+
+.btn-primary {
+    background-color: #f68220 !important;
+    border: none;
+    box-shadow: none;
+}
+
+.btn-primary-btn {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #6571ff;
+    --bs-btn-border-color: #6571ff;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #5660d9;
+    --bs-btn-hover-border-color: #515acc;
+    --bs-btn-focus-shadow-rgb: 124, 134, 255;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #515acc;
+    --bs-btn-active-border-color: #4c55bf;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #6571ff;
+    --bs-btn-disabled-border-color: #6571ff;
+}
+
+
+.logoset{
+    width:150px;
+    height: 75px;
+}
+.text-center {
+    text-align: center;
+    padding: 12px;
+    margin: 0px;
+
+}
+.mr-2{
+    margin-right: 10px;
+}
+.mr-title {
+    margin-right: 20px;
+    margin-left: 20px;
+}
+
+.head-text h3 {
+    color: #333;
+    font-weight: 500;
+    font-size: 30px;
+    text-align: center;
+
+}
+
+.img-responsive {
+    height: 100px;
+}
+
+
+.border-color-P {
+    border-color: #f68220;
+}
+
+
+.ondesktopOnly{
+    display: block;
+}
+
+.flexset{
+    display: flex !important;
+    vertical-align: middle;
+    justify-content: center;
+}
+.v-align{
+    vertical-align: middle;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    -webkit-box-align: center;
+    align-items: center;
+    margin: 0;
+}
+.compose{
+    background-color: #000000;
+    color: white;
+    border:0.5px #000 solid;
+}
+.compose:hover,.compose:focus{
+    background-color: white;
+    color: #000000;
+    border:0.5px #000 solid;
+}
+.fontset{
+    font-size: 15px;
+    color: #000000;
+    font-family: sans-serif;
+}
+.sender-thumb-user {
+ 
+    height: 35px;
+    width: 35px;
+    padding: 5px;
+    overflow: hidden;
+    font-size: 14px;
+    color: #fff;
+    vertical-align: middle;
+    border-radius: 22.5px;
+    background-color: #f68220;
+    text-align: center;
+    justify-content: center;
+    line-height: 27px;
+    align-items: center;
+    vertical-align: middle;
+    display: inline-block;
+    justify-content: center;
+    margin: 2px 2px;
+}
+.sizebrand{
+    width: 50px;
+    height: 55px;
+}
+@media only screen and (max-width: 600px) {
+    .bg-white-on-mobile {
+        background-color: #fff;
+    }
+.ondesktopOnly{
+    display: none;
+}
+.fontset{
+    font-size: 6px;
+   
+}
+.head-text h3 {
+   
+    font-size: 12px;
+    text-align: center;
+}
+}
+
+.nav-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    @media(max-width: 575px) {
+    .logo {
+      display: flex;
+      align-items: center;
+
+     
+        flex-direction: column;
+      }
+    }
+      @media(max-width: 575px) {
+      .navbar-brand {
+          margin-right: 0;
+          padding: 0;
+        }
+    }
+    @media(max-width: 575px) {
+        :is(img) {
+            height: 80px;
+        }
+    }
+
+    @media(max-width: 575px) {
+        .head-text h3 {
+         
+            font-size: 25px;
+            margin-bottom: 5px;
+          }
+    }
+
+      /* .head-text {
+        @media(max-width: 575px) {
+        h3 {
+         
+            font-size: 25px;
+            margin-bottom: 5px;
+          }
+        }
+      } */
+    
+
+      :is(form) {
+        display: flex;
+      
+        .help-btn {
+          padding: 2px 15px;
+      
+          :is(img) {
+            width: 34px;
+          }
+        }
+      }
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.pd{
+    padding: 0px 15px;
+}
+.ml15{
+    margin-right: 15px;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #ddd;
+}
+
+
+.form-inline .form-group {
+    margin-right: 15px;
+}
+
+.table-container {
+    max-width: 100%;
+    max-height: 600px; /* Adjust height as needed */
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+
+  .uniform-form-field {
+    width: 100%;
+    height: 100px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .uniform-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

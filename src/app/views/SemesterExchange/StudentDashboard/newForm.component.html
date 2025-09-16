@@ -1,0 +1,270 @@
+<div class="card shadow-lg p-4" id="StudentDashboard" *ngIf="IsLoginFailed==false; else Error">
+  <h4 class="text-primary m-0">Student Application Form</h4>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <form *ngIf="studentForm" [formGroup]="studentForm" (ngSubmit)="updateData()">
+
+      <h5 class="mt-4 mb-3 text-info">Personal Details</h5>
+      <div class="row">
+        <div class="col-md-4 mb-3"
+          *ngFor="let key of ['applicationId','registrationNo', 'emailId', 'countryName', 'whatsAppNo', 'phoneNumber', 'parentContact']">
+          <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+          <input class="form-control" [type]="key.includes('email') ? 'email' : 'text'" [id]="key"
+            [formControlName]="key" [readonly]="!isEditable || key === 'registrationNo'"
+            [class.is-invalid]="isFieldInvalid(key)" />
+          <div class="invalid-feedback" *ngIf="isFieldInvalid(key)">
+            <ng-container *ngIf="getFieldErrors(key)?.required">{{ beautifyLabel(key) }} is required.</ng-container>
+            <ng-container *ngIf="getFieldErrors(key)?.email">Please enter a valid email.</ng-container>
+          </div>
+        </div>
+      </div>
+
+      <h5 class="mt-4 mb-3 text-info">University Preferences</h5>
+      <div class="row">
+        <div class="col-md-3 mb-3"
+          *ngFor="let key of ['applyingOption', 'universityOption1', 'universityOption2', 'universityOption3']">
+          <label class="form-label text-capitalize">{{ beautifyLabel(key) | titlecase }}</label>
+
+          <select class="form-select" [formControlName]="key" [disabled]="!isEditable"
+            [class.is-invalid]="isFieldInvalid(key)">
+            <option value="" disabled>Select {{ beautifyLabel(key) }}</option>
+
+            <ng-container *ngIf="key === 'applyingOption'">
+              <option *ngFor="let option of applyingOptions" [value]="option">{{ option }}</option>
+            </ng-container>
+
+            <ng-container *ngIf="key !== 'applyingOption'">
+              <option *ngFor="let uni of universityOptions" [value]="uni.universityName">{{ uni.universityName }}
+              </option>
+            </ng-container>
+          </select>
+
+          <div class="invalid-feedback" *ngIf="isFieldInvalid(key)">
+            {{ beautifyLabel(key) }} is required.
+          </div>
+        </div>
+      </div>
+
+      <h5 class="mt-4 mb-3 text-info">Passport Details</h5>
+      <div class="row">
+        <div class="col-md-3 mb-3"
+          *ngFor="let key of ['passportStatus', 'passportNumber', 'passportIssueDate', 'passportValidUpto']">
+          <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+
+
+          <ng-container *ngIf="key === 'passportStatus'">
+            <input class="form-control" [id]="key" [formControlName]="key" [readonly]="!isEditable" [type]="'text'"
+              [class.is-invalid]="isFieldInvalid(key)" />
+            <div class="invalid-feedback" *ngIf="isFieldInvalid(key)">
+              {{ beautifyLabel(key) }} is required.
+            </div>
+          </ng-container>
+          <ng-container *ngIf="key === 'passportNumber'">
+            <input class="form-control" [id]="key" [formControlName]="key" [readonly]="!isEditable" [type]="'text'"
+              [class.is-invalid]="isFieldInvalid(key)" />
+            <div class="invalid-feedback" *ngIf="isFieldInvalid(key)">
+              {{ beautifyLabel(key) }} is required.
+            </div>
+          </ng-container>
+          <ng-container *ngIf="key === 'passportIssueDate'">
+            <input class="form-control" [id]="key" [formControlName]="key" [readonly]="!isEditable" [type]="'Date'"
+              [class.is-invalid]="isFieldInvalid(key)" />
+            <div class="invalid-feedback" *ngIf="isFieldInvalid(key)">
+              {{ beautifyLabel(key) }} is required.
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="key === 'passportValidUpto'">
+            <input class="form-control" [id]="key" [formControlName]="key" [readonly]="!isEditable" [type]="'Date'"
+              [class.is-invalid]="isFieldInvalid(key)" />
+            <div class="invalid-feedback" *ngIf="isFieldInvalid(key)">
+              {{ beautifyLabel(key) }} is required.
+            </div>
+          </ng-container>
+
+        </div>
+      </div>
+
+      <h5 class="mt-4 mb-3 text-info">Visa Details</h5>
+      <div class="row">
+        <div class="col-md-3 mb-3" *ngFor="let key of ['isVisaRejected', 'visaRejectedReason', 'visaRejectedCountry']">
+          <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+          <input class="form-control" [id]="key" [formControlName]="key" [readonly]="!isEditable"
+            [class.is-invalid]="isFieldInvalid(key)" />
+          <div class="invalid-feedback" *ngIf="isFieldInvalid(key)">
+            {{ beautifyLabel(key) }} is required.
+          </div>
+        </div>
+      </div>
+
+      <h5 class="mt-4 mb-3 text-info">English Test Details</h5>
+      <div class="row">
+        <div class="col-md-4 mb-3"
+          *ngFor="let key of ['englishTestType', 'speakingScore', 'listeningScore', 'readingScore', 'writingScore', 'overallScore', 'englishTestYear']">
+          <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+          <input class="form-control" [id]="key" [formControlName]="key" [readonly]="!isEditable"
+            [class.is-invalid]="isFieldInvalid(key)" />
+          <div class="invalid-feedback" *ngIf="isFieldInvalid(key)">
+            {{ beautifyLabel(key) }} is required.
+          </div>
+        </div>
+      </div>
+
+      <h5 class="mt-4 mb-3 text-info">Sponsor Details</h5>
+      <div class="row">
+        <div class="col-md-4 mb-3"
+          *ngFor="let key of ['isSelfFunded', 'sponsorName', 'sponsorRelation', 'sponsorContact', 'sponsorEmail']">
+          <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+          <input class="form-control" [id]="key" [formControlName]="key" [readonly]="!isEditable"
+            [class.is-invalid]="isFieldInvalid(key)" />
+          <div class="invalid-feedback" *ngIf="isFieldInvalid(key)">
+            {{ beautifyLabel(key) }} is required.
+          </div>
+        </div>
+      </div>
+
+      <h5 class="mt-4 mb-3 text-info">Financial & Declaration</h5>
+      <div class="row">
+        <div class="col-md-4 mb-3" *ngFor="let key of ['availableFunds', 'acceptPolicy', 'totalCountGradeF']">
+          <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+
+          <ng-container *ngIf="key === 'acceptPolicy'; else textInput">
+            <div class="form-check mt-2">
+              <input type="checkbox" class="form-check-input" [id]="'acceptPolicy'" formControlName="acceptPolicy"
+                [disabled]="true" [class.is-invalid]="isFieldInvalid('acceptPolicy')" />
+              <label class="form-check-label" for="acceptPolicy">
+                {{ studentForm.get('acceptPolicy')?.value ? 'Accepted' : 'Not Accepted' }}
+              </label>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('acceptPolicy')">
+                You must accept the policy.
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #textInput>
+            <input type="text" class="form-control" [id]="key" [formControlName]="key" [readonly]="!isEditable"
+              [class.is-invalid]="isFieldInvalid(key)" />
+            <div class="invalid-feedback" *ngIf="isFieldInvalid(key)">
+              {{ beautifyLabel(key) }} is required.
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+
+      <h5 class="mt-4 text-info">Documents Upload</h5>
+      <span class="text-danger mt-0 mb-5">All Documents Upload required.** </span>
+      <div class="row">
+        <div class="col-md-4 mt-3 mb-3">
+          <label class="form-label fw-semibold">Fees Proof Document</label>
+          <div class="d-flex align-items-center gap-2"
+            *ngIf="stuApplication?.feesProofFileName.length>0; else UploadFPD">
+            <a class="btn icon-btn"
+              [attr.href]="stuApplication?.feesProofFileName ? (serverUrl + stuApplication.feesProofFileName) : null"
+              [class.disabled]="!stuApplication?.feesProofFileName"
+              [attr.target]="stuApplication?.feesProofFileName ? '_blank' : null" title="View Resume Document"
+              [attr.aria-disabled]="!stuApplication?.feesProofFileName"
+              tabindex="{{stuApplication?.feesProofFileName ? 0 : -1}}">
+              <span class="material-icons md-18">description</span> View Uploaded
+            </a>
+          </div>
+          <ng-template #UploadFPD>
+            <input type="file" (change)="onFileSelectedFeesProof($event)" [disabled]="!isEditable" class="form-control"
+              required />
+            <br />
+          </ng-template>
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label class="form-label fw-semibold">Resume Document</label>
+          <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.resumeFileName.length>0; else UploadRD">
+            <a class="btn icon-btn"
+              [attr.href]="stuApplication?.resumeFileName ? (serverUrl + stuApplication.resumeFileName) : null"
+              [class.disabled]="!stuApplication?.resumeFileName"
+              [attr.target]="stuApplication?.resumeFileName ? '_blank' : null" title="View Resume Document"
+              [attr.aria-disabled]="!stuApplication?.resumeFileName"
+              tabindex="{{stuApplication?.resumeFileName ? 0 : -1}}">
+              <span class="material-icons md-18">description</span>View Uploaded
+            </a>
+          </div>
+          <ng-template #UploadRD>
+            <input type="file" (change)="onFileSelectedResumeFile($event)" [disabled]="!isEditable" class="form-control"
+              required /><br />
+          </ng-template>
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label class="form-label fw-semibold">Consent Letter</label>
+          <div class="d-flex align-items-center gap-2"
+            *ngIf="stuApplication?.consentLetterFileName.length>0; else UploadCL">
+            <a class="btn icon-btn"
+              [attr.href]="stuApplication?.consentLetterFileName ? (serverUrl + stuApplication.consentLetterFileName) : null"
+              [class.disabled]="!stuApplication?.consentLetterFileName"
+              [attr.target]="stuApplication?.consentLetterFileName ? '_blank' : null" title="View Resume Document"
+              [attr.aria-disabled]="!stuApplication?.consentLetterFileName"
+              tabindex="{{stuApplication?.consentLetterFileName ? 0 : -1}}">
+              <span class="material-icons md-18">description</span>View Uploaded
+            </a>
+          </div>
+          <ng-template #UploadCL>
+            <input type="file" (change)="onFileSelectedConsentLetter($event)" [disabled]="!isEditable"
+              class="form-control" required /><br />
+            <!-- <a *ngIf="stuApplication?.consentLetterFileName !== 'undefined'" class="btn btn-outline-primary btn-sm"
+                  [href]="serverUrl + stuApplication.consentLetterFileName" target="_blank">View Old</a> -->
+          </ng-template>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label class="form-label fw-semibold">Passport File</label>
+          <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.passportFileName.length>0; else Upload">
+            <a class="btn icon-btn"
+              [attr.href]="stuApplication?.passportFileName ? (serverUrl + stuApplication.passportFileName) : null"
+              [class.disabled]="!stuApplication?.passportFileName"
+              [attr.target]="stuApplication?.passportFileName ? '_blank' : null" title="View Resume Document"
+              [attr.aria-disabled]="!stuApplication?.passportFileName"
+              tabindex="{{stuApplication?.passportFileName ? 0 : -1}}">
+              <span class="material-icons md-18">description</span>View Uploaded
+            </a>
+          </div>
+          <ng-template #Upload>
+            <input type="file" (change)="onFileSelectedPassportFile($event)" [disabled]="!isEditable"
+              class="form-control" required /><br />
+          </ng-template>
+        </div>
+
+
+      </div>
+      <div *ngIf="!isAdminLocked" class="d-flex justify-content-end gap-2 mt-3">
+        <button class="btn btn-secondary floating-btn edit-btn" *ngIf="!isEditable" (click)="enableEdit()">
+          Edit
+        </button>
+        <button class="btn btn-primary floating-btn update-btn" *ngIf="isEditable" (click)="updateData()"
+          [disabled]="!studentForm.valid || !hasUploadedDocuments()">
+          Update
+        </button>
+
+        <!-- <button class="btn btn-primary floating-btn update-btn" *ngIf="isEditable" (click)="updateData()" [disabled]="!studentForm.valid">
+          Update
+        </button> -->
+      </div>
+    </form>
+  </div>
+</div>
+<ng-template #Error>
+  <div class="row">
+    <div class="col-md-12 d-flex justify-content-center gap-2 mt-3">
+      <div class="card">
+        <div class="card-body ">
+          <h4 class="card-title  text-center fs-3"> <span class="themeClr"> Unauthorise Access! </span> <br />Session
+            expired. </h4>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<div class="full-page-loader" *ngIf="isLoading" aria-label="Loading">
+  <div class="loader-spinner">
+    <span class="material-icons md-48 spin-icon">autorenew</span>
+  </div>
+</div>

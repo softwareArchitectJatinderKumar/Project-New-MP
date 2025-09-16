@@ -1,0 +1,68 @@
+$cell-padding: 8px;
+
+
+
+.ng-select .ng-select-container {
+  min-height: 20px;
+}
+
+.ng-select.ng-select-single .ng-select-container {
+  height: 20px;
+}
+
+table.tid-table {
+  tr {
+    &.tid-detail-row {
+      > td {
+        
+        > div {
+         // width: 100%;
+         // box-sizing: border-box;
+          max-height: 0;
+          transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+          overflow: hidden;
+          
+        }
+      }
+      &.show  > td > div {
+        max-height: 1000px;
+        transition: max-height 1s ease-in-out;
+      }
+    }
+   
+  }
+}
+.radio-inline{
+  margin: 10px !important;
+}
+.ng-untouched{
+  margin-right: 7px !important;
+}
+.ng-touched{
+  margin-right: 7px !important;
+}
+.divcontainer {
+  overflow-x: scroll;
+  overflow-y: auto;
+  transform: rotateX(180deg);
+}
+
+.divcontainer table {
+  transform: rotateX(180deg);
+}
+
+.table-responsive {
+  width: 100%;
+  display: block; overflow-x: scroll;
+}
+.table-striped > tbody > tr:nth-of-type(odd) > *{
+  --bs-table-accent-bg:#FD6C04 !important;
+  color: #f9f9f9 !important;
+}
+.btn-outline-dark {
+  color: #f9f9f9 !important;
+  --bs-btn-border-color:white !important;
+}
+.btn-primary, .swal2-container .swal2-popup .swal2-actions button.swal2-confirm{
+  --bs-btn-color:#f9f9f9 !important;
+}

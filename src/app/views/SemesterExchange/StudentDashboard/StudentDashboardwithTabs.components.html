@@ -1,0 +1,486 @@
+<div class="container-fluid mt-4" id="StudentDashboardWithTabs" *ngIf="!isLoginFailed; else ErrorTemplate">
+  <div class="card shadow-lg p-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="text-primary m-0">My Dashboard</h2>
+      <div><span class=" fs-4 me-3"> Hi! </span> <span [ngClass]="'fs-4 badge'"
+          style=" background-color: #FD6C04 !important; "> {{studentDetailsWithImage?.studentName}} </span>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-3" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" [class.active]="activeTab==='application'" (click)="selectTab('application')"
+          type="button" role="tab">
+          Student Application Details
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" [class.active]="activeTab==='documents'" (click)="selectTab('documents')" type="button"
+          role="tab">
+          Application Documents
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" [class.active]="activeTab==='courses'" (click)="selectTab('courses')" type="button"
+          role="tab">
+          Semester Exchanged Details
+        </button>
+      </li>
+    </ul>
+
+    <!-- Loading indicator -->
+    <div *ngIf="isLoading" class="mb-3">
+      <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+    </div>
+
+    <!-- TAB PANES -->
+    <div class="tab-content">
+
+      <!-- TAB 1: Application Details -->
+      <div class="tab-pane fade" [class.show]="activeTab==='application'" [class.active]="activeTab==='application'">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="ms-5 mb-3 text-center">
+
+            <div class="ms-4" *ngIf="StudentImage else placeholderImg">
+              <img alt="Student Image" class="img-fluid rounded-circle border border-3 border-primary"
+                [src]="StudentImage" style="width: 130px; height: 130px; object-fit: cover;">
+            </div>
+            <ng-template #placeholderImg>
+              <img src="https://placehold.co/150x150" alt="No Image" class="img-thumbnail"
+                style="max-width:150px; max-height:150px; object-fit:cover;" />
+            </ng-template>
+          </div>
+
+          <h2 class="text-info m-0">Application Details</h2>
+          <div>
+            <button class="btn btn-dark  me-2" *ngIf="!isSection1Edit" (click)="enableSection1Edit()">Edit</button>
+            <button class="btn btn-primary" *ngIf="isSection1Edit" (click)="updateApplicationSection()"
+              [disabled]="isLoading || applicationForm.invalid">Update</button>
+          </div>
+
+        </div>
+        <form [formGroup]="applicationForm" (ngSubmit)="updateApplicationSection()" novalidate>
+          <h5 class="mt-4 mb-3 text-info">Personal Details</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3"
+              *ngFor="let key of ['applicationId', 'registrationNo', 'emailId', 'countryName', 'whatsAppNo', 'phoneNumber', 'parentContact']">
+              <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+              <input class="form-control" [type]="key.includes('email') ? 'email' : 'text'" [id]="key" [formControlName]="key"
+                [readonly]="!isSection1Edit || key === 'registrationNo'" [class.is-invalid]="isFieldInvalidApplication(key)" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication(key)">
+                {{ beautifyLabel(key) }} is required.
+              </div>
+            </div>
+          </div>
+
+          <!-- NEW: Relative Details Section -->
+          <h5 class="mt-4 mb-3 text-info">Relative Details</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="relativeName" class="form-label fw-semibold">Relative Name</label>
+              <input class="form-control" id="relativeName" formControlName="relativeName" [readonly]="!isSection1Edit"
+                [class.is-invalid]="isFieldInvalidApplication('relativeName')" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('relativeName')">
+                Relative Name is required.
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="relativeRelation" class="form-label fw-semibold">Relative Relation</label>
+              <input class="form-control" id="relativeRelation" formControlName="relativeRelation" [readonly]="!isSection1Edit"
+                [class.is-invalid]="isFieldInvalidApplication('relativeRelation')" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('relativeRelation')">
+                Relative Relation is required.
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="relativeCountry" class="form-label fw-semibold">Relative Country</label>
+              <select class="form-select" id="relativeCountry" formControlName="relativeCountry"
+                [class.is-invalid]="isFieldInvalidApplication('relativeCountry')">
+                <option value="" disabled>Select a Country</option>
+                <option *ngFor="let country of countriesList" [value]="country.name">{{ country.name }}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('relativeCountry')">
+                Relative Country is required.
+              </div>
+            </div>
+          </div>
+          <!-- END NEW: Relative Details Section -->
+
+          <h5 class="mt-4 mb-3 text-info">Sponsor Details</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="isSelfFunded" class="form-label fw-semibold">Sponsor Type</label>
+              <select class="form-select" id="isSelfFunded" formControlName="isSelfFunded"
+                [class.is-invalid]="isFieldInvalidApplication('isSelfFunded')">
+                <option value="" disabled>Select Sponsor Type</option>
+                <option value="Parent">Parent</option>
+                <option value="Relative">Relative</option>
+                <option value="Other">Other</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('isSelfFunded')">
+                Sponsor Type is required.
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="sponsorName" class="form-label fw-semibold">Sponsor Name</label>
+              <input class="form-control" id="sponsorName" formControlName="sponsorName" [readonly]="!isSection1Edit"
+                [class.is-invalid]="isFieldInvalidApplication('sponsorName')" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('sponsorName')">
+                Sponsor Name is required.
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="sponsorRelation" class="form-label fw-semibold">Sponsor Relation</label>
+              <input class="form-control" id="sponsorRelation" formControlName="sponsorRelation" [readonly]="!isSection1Edit"
+                [class.is-invalid]="isFieldInvalidApplication('sponsorRelation')" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('sponsorRelation')">
+                Sponsor Relation is required.
+              </div>
+            </div>
+          </div>
+        
+          <h5 class="mt-4 mb-3 text-info">Visa Details</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="isVisaRejected" class="form-label fw-semibold">Visa Ever Been Rejected?</label>
+              <select class="form-select" id="isVisaRejected" formControlName="isVisaRejected"
+                [class.is-invalid]="isFieldInvalidApplication('isVisaRejected')">
+                <option value="" disabled>Select</option>
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('isVisaRejected')">
+                Visa Rejection status is required.
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="visaRejectedReason" class="form-label fw-semibold">Reason for Rejection</label>
+              <input class="form-control" id="visaRejectedReason" formControlName="visaRejectedReason"
+                [readonly]="!isSection1Edit" [class.is-invalid]="isFieldInvalidApplication('visaRejectedReason')" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('visaRejectedReason')">
+                Reason for Rejection is required.
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="visaRejectedCountry" class="form-label fw-semibold">Country of Rejection</label>
+              <select class="form-select" id="visaRejectedCountry" formControlName="visaRejectedCountry"
+                [class.is-invalid]="isFieldInvalidApplication('visaRejectedCountry')">
+                <option value="" disabled>Select a Country</option>
+                <option *ngFor="let country of countriesList" [value]="country.name">{{ country.name }}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('visaRejectedCountry')">
+                Visa Rejection Country is required.
+              </div>
+            </div>
+          </div>
+        
+          <h5 class="mt-4 mb-3 text-info">Passport Details</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="passportStatus" class="form-label fw-semibold">Passport Status</label>
+              <select class="form-select" id="passportStatus" formControlName="passportStatus"
+                [class.is-invalid]="isFieldInvalidApplication('passportStatus')">
+                <option value="" disabled>Select</option>
+                <option value="Applied">Applied</option>
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('passportStatus')">
+                Passport Status is required.
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="passportNumber" class="form-label fw-semibold">Passport Number</label>
+              <input class="form-control" id="passportNumber" formControlName="passportNumber" [readonly]="!isSection1Edit"
+                [class.is-invalid]="isFieldInvalidApplication('passportNumber')" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('passportNumber')">
+                Passport Number is required.
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="passportIssueDate" class="form-label fw-semibold">Passport Issue Date</label>
+              <input class="form-control" id="passportIssueDate" formControlName="passportIssueDate"
+                [readonly]="!isSection1Edit" type="date" [class.is-invalid]="isFieldInvalidApplication('passportIssueDate')" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('passportIssueDate')">
+                Passport Issue Date is required.
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="passportValidUpto" class="form-label fw-semibold">Passport Valid Upto</label>
+              <input class="form-control" id="passportValidUpto" formControlName="passportValidUpto"
+                [readonly]="!isSection1Edit" type="date" [class.is-invalid]="isFieldInvalidApplication('passportValidUpto')" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('passportValidUpto')">
+                Passport Valid Upto is required.
+              </div>
+            </div>
+          </div>
+        
+          <h5 class="mt-4 mb-3 text-info">English Test Details</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="englishTestType" class="form-label fw-semibold">English Proficiency Test</label>
+              <select class="form-select" id="englishTestType" formControlName="englishTestType"
+                [class.is-invalid]="isFieldInvalidApplication('englishTestType')">
+                <option value="" disabled>Select</option>
+                <option value="NotGiven">Not Given</option>
+                <option value="Applied">Applied</option>
+                <option value="Appeared">Appeared</option>
+                <option value="PTE">PTE</option>
+                <option value="DULINGO">DULINGO</option>
+                <option value="IELTS">IELTS</option>
+                <option value="TOFEL">TOFEL</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('englishTestType')">
+                English Test Type is required.
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="speakingScore" class="form-label fw-semibold">Speaking Score</label>
+              <input class="form-control" id="speakingScore" formControlName="speakingScore" [readonly]="!isSection1Edit"
+                [class.is-invalid]="isFieldInvalidApplication('speakingScore')" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('speakingScore')">
+                Speaking Score is required.
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="listeningScore" class="form-label fw-semibold">Listening Score</label>
+              <input class="form-control" id="listeningScore" formControlName="listeningScore" [readonly]="!isSection1Edit"
+                [class.is-invalid]="isFieldInvalidApplication('listeningScore')" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('listeningScore')">
+                Listening Score is required.
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="readingScore" class="form-label fw-semibold">Reading Score</label>
+              <input class="form-control" id="readingScore" formControlName="readingScore" [readonly]="!isSection1Edit"
+                [class.is-invalid]="isFieldInvalidApplication('readingScore')" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('readingScore')">
+                Reading Score is required.
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="writingScore" class="form-label fw-semibold">Writing Score</label>
+              <input class="form-control" id="writingScore" formControlName="writingScore" [readonly]="!isSection1Edit"
+                [class.is-invalid]="isFieldInvalidApplication('writingScore')" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('writingScore')">
+                Writing Score is required.
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="overallScore" class="form-label fw-semibold">Overall Score</label>
+              <input class="form-control" id="overallScore" formControlName="overallScore" [readonly]="!isSection1Edit"
+                [class.is-invalid]="isFieldInvalidApplication('overallScore')" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('overallScore')">
+                Overall Score is required.
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="englishTestYear" class="form-label fw-semibold">Year of Test</label>
+              <input class="form-control" id="englishTestYear" formControlName="englishTestYear" [readonly]="!isSection1Edit"
+                [class.is-invalid]="isFieldInvalidApplication('englishTestYear')" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('englishTestYear')">
+                Year of Test is required.
+              </div>
+            </div>
+          </div>
+        
+          <h5 class="mt-4 mb-3 text-info">Financial & Declaration</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="availableFunds" class="form-label fw-semibold">Available Funds</label>
+              <select class="form-select" id="availableFunds" formControlName="availableFunds"
+                [class.is-invalid]="isFieldInvalidApplication('availableFunds')">
+                <option value="" disabled>Select</option>
+                <option value="2to4Lakhs">2 to 4 Lakhs</option>
+                <option value="4to6Lakhs">4 to 6 Lakhs</option>
+                <option value="6to8Lakhs">6 to 8 Lakhs</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('availableFunds')">
+                Available Funds is required.
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <div class="form-check mt-2">
+                <input type="checkbox" class="form-check-input" id="acceptPolicy" formControlName="acceptPolicy"
+                  [disabled]="!isSection1Edit" [class.is-invalid]="isFieldInvalidApplication('acceptPolicy')" />
+                <label class="form-check-label" for="acceptPolicy">
+                  I accept the policy.
+                </label>
+                <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('acceptPolicy')">
+                  You must accept the policy.
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- TAB 2: Documents -->
+      <div class="tab-pane fade" [class.show]="activeTab==='documents'" [class.active]="activeTab==='documents'">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="text-info m-0">Application Documents</h5>
+          <div>
+            <button class="btn btn-outline-secondary me-2" *ngIf="!isSection2Edit"
+              (click)="enableSection2Edit()">Edit</button>
+            <button class="btn btn-primary" *ngIf="isSection2Edit" (click)="Onsubmit()" [disabled]="isLoading">Update
+              Documents</button>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <span class="text-danger mt-0 mb-5">All Documents Upload required.** </span>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-semibold">Fees Proof Document</label>
+              <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.feesProofFileName.length>0; ">
+                <a class="btn icon-btn"
+                  [attr.href]="stuApplication?.feesProofFileName ? (serverUrl + stuApplication.feesProofFileName) : null"
+                  [class.disabled]="!stuApplication?.feesProofFileName"
+                  [attr.target]="stuApplication?.feesProofFileName ? '_blank' : null" title="View Resume Document"
+                  [attr.aria-disabled]="!stuApplication?.feesProofFileName"
+                  tabindex="{{stuApplication?.feesProofFileName ? 0 : -1}}">
+                  <span class="material-icons md-18">description</span> View Uploaded
+                </a>
+              </div>
+              <div>
+                <input type="file" (change)="onFileSelectedFeesProof($event)" [disabled]="!isSection2Edit"
+                  class="form-control" required />
+                <br />
+              </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-semibold">Resume Document</label>
+              <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.resumeFileName.length>0; ">
+                <a class="btn icon-btn"
+                  [attr.href]="stuApplication?.resumeFileName ? (serverUrl + stuApplication.resumeFileName) : null"
+                  [class.disabled]="!stuApplication?.resumeFileName"
+                  [attr.target]="stuApplication?.resumeFileName ? '_blank' : null" title="View Resume Document"
+                  [attr.aria-disabled]="!stuApplication?.resumeFileName"
+                  tabindex="{{stuApplication?.resumeFileName ? 0 : -1}}">
+                  <span class="material-icons md-18">description</span>View Uploaded
+                </a>
+              </div>
+              <div>
+                <input type="file" (change)="onFileSelectedResumeFile($event)" [disabled]="!isSection2Edit"
+                  class="form-control" required /><br />
+              </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-semibold">Consent Letter</label>
+              <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.consentLetterFileName.length>0; ">
+                <a class="btn icon-btn"
+                  [attr.href]="stuApplication?.consentLetterFileName ? (serverUrl + stuApplication.consentLetterFileName) : null"
+                  [class.disabled]="!stuApplication?.consentLetterFileName"
+                  [attr.target]="stuApplication?.consentLetterFileName ? '_blank' : null" title="View Resume Document"
+                  [attr.aria-disabled]="!stuApplication?.consentLetterFileName"
+                  tabindex="{{stuApplication?.consentLetterFileName ? 0 : -1}}">
+                  <span class="material-icons md-18">description</span>View Uploaded
+                </a>
+              </div>
+              <div>
+                <input type="file" (change)="onFileSelectedConsentLetter($event)" [disabled]="!isSection2Edit"
+                  class="form-control" required /><br />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-semibold">Passport File</label>
+              <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.passportFileName.length>0;">
+                <a class="btn icon-btn"
+                  [attr.href]="stuApplication?.passportFileName ? (serverUrl + stuApplication.passportFileName) : null"
+                  [class.disabled]="!stuApplication?.passportFileName"
+                  [attr.target]="stuApplication?.passportFileName ? '_blank' : null" title="View Resume Document"
+                  [attr.aria-disabled]="!stuApplication?.passportFileName"
+                  tabindex="{{stuApplication?.passportFileName ? 0 : -1}}">
+                  <span class="material-icons md-18">description</span>View Uploaded
+                </a>
+              </div>
+              <div>
+                <input type="file" (change)="onFileSelectedPassportFile($event)" [disabled]="!isSection2Edit"
+                  class="form-control" required /><br />
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-semibold">English Test Proof</label>
+              <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.englishProofFileName?.length>0;">
+                <a class="btn icon-btn"
+                  [attr.href]="stuApplication?.englishProofFileName ? (serverUrl + stuApplication.englishProofFileName) : null"
+                  [class.disabled]="!stuApplication?.englishProofFileName"
+                  [attr.target]="stuApplication?.englishProofFileName ? '_blank' : null" title="View Resume Document"
+                  [attr.aria-disabled]="!stuApplication?.englishProofFileName"
+                  tabindex="{{stuApplication?.englishProofFileName ? 0 : -1}}">
+                  <span class="material-icons md-18">description</span>View Uploaded
+                </a>
+              </div>
+              <div>
+                <input type="file" (change)="onFileSelectedEnglishProof($event)" [disabled]="!isSection2Edit"
+                  class="form-control" required /><br />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: Courses -->
+      <div class="tab-pane fade" [class.show]="activeTab==='courses'" [class.active]="activeTab==='courses'">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="text-info m-0">Course Covered & Uploads</h5>
+          <div>
+            <button class="btn btn-success me-2" (click)="addCourseRow()">Add Row</button>
+            <button class="btn btn-primary" (click)="saveAllCourseCovered()"
+              [disabled]="isSavingCourses || courseRows.length===0">Save All</button>
+          </div>
+        </div>
+
+
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Course Name</th>
+                <th>Course Code</th>
+                <th>Hours</th>
+                <th>Upload Document</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of courseRows; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td><input class="form-control" [(ngModel)]="row.courseName" name="courseName{{i}}" /></td>
+                <td><input class="form-control" [(ngModel)]="row.courseCode" name="courseCode{{i}}" /></td>
+                <td><input type="number" min="0" class="form-control" [(ngModel)]="row.hours" name="hours{{i}}" /></td>
+                <td>
+                  <div class="d-flex gap-2 align-items-center">
+                    <input type="file" (change)="onCourseFilePicked($event, i)" />
+                    <a *ngIf="row.fileName" href="#" class="btn btn-outline-secondary btn-sm"
+                      (click)="downloadCourseFile(i, $event)">{{ row.fileName }}</a>
+                  </div>
+                </td>
+                <td>
+                  <button class="btn btn-danger btn-sm" (click)="removeCourseRow(i)">Remove</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<ng-template #ErrorTemplate>
+  <div class="text-center">
+    <h3 class="text-danger mt-5"> Error in User Login. </h3>
+    <p class="text-muted">Unauthorised Access.</p>
+  </div>
+</ng-template>

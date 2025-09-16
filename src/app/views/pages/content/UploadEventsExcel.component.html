@@ -1,0 +1,79 @@
+<div class="row mt-4 mb-4">
+    <div class="card">
+        <div class="card-body">
+            <div class="col-sm-12">
+                <div class="mb-3">
+                    <div class="form-group text-center">
+                        <label class="fs-2 text-center text-danger">For Excel Sheet Entries </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4 mb-4">
+            <div class="col-sm-3">
+                <div class="mb-3 text-center">
+                    <div class="form-group">
+                        <label class="fs-4 text-danger">Upload Data Excel Sheet </label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="mb-3 text-start">
+                    <div class="form-group">
+                        <a type="button" class="btn btn-info" [href]="filePath" target="_blank">Sample Document</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3 me-3">
+                <div class="mb-3 text-start">
+                    <div class="form-group">
+                        <input type="file" class="form-control" style="width: 18rem;" (change)="onFileChange($event);">
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="mb-3">
+                    <div class="form-group">
+                        <label for="Files"> </label>
+                        <button type="button" (click)="confirmUpload()" [disabled]="!file || hasErrors()"
+                            class="btn btn-success pull-right">
+                            <i class="fa fa-save fa-fw"></i> Upload File
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" *ngIf="uploadedData && uploadedData.length > 0">
+    <div class="col-md-12 stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th *ngFor="let header of uploadedData[0]">{{ header }}</th>
+                                <th>Error</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let row of uploadedData.slice(1); let rowIndex = index">
+                                <td *ngFor="let cell of row; let cellIndex = index"
+                                    [ngClass]="{'text-danger': isError(rowIndex + 1, cellIndex)}">{{ cell }}</td>
+                                <td>
+                                    <span *ngIf="validationErrors[rowIndex + 1]" class="text-danger">
+                                        {{ validationErrors[rowIndex + 1] }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn btn-primary mt-3" (click)="confirmUpload()" [disabled]="hasErrors()">Confirm and
+                    Upload</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,879 @@
+<div id="stMain" class="container-fluid" *ngIf="isLoginFailed==false; else loginFailed">
+  <div class="container mt-5">
+    <div class="row align-items-end">
+      <div class="col-md-2">
+        <label class="fs-4">Planner Session:</label>
+      </div>
+      <div class="col-md-4">
+        <select class="form-select fs-5" id="SessionId" name="PlannerSession" required
+          (change)="getStaffConstructionDetails(selectedPlannerSession, this.IsApproved)"
+          [(ngModel)]="selectedPlannerSession">
+          <option value="-1" selected>Select Planner Session</option>
+          <option *ngFor="let session of allPlannerSessions" [value]="session.id">
+            {{ session.session }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loginFailed>
+  <div class="text-center bg-info" *ngIf="isLoginFailed">
+    <h3 class="text-center fs-2 m-5 text-danger pt-5 "> Error in User Login . </h3>
+    <div class="row mt-4 mb-4">
+      <div class="col-sm-12 text-center">
+        <div class="mb-3 p-4">
+          <Label class="form-label fs-4 text-danger ">Unauthorise Access.</Label>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<nav class="mt-5" *ngIf="showTable">
+  <div class="nav nav-tabs nav nav-tabs d-flex justify-content-start " id="nav-tab" role="tablist">
+
+    <button class="btn btn-dark btn-lg ms-2 active" id="OBPConstruction-Pending-tab" data-bs-toggle="tab"
+      style="padding: .15rem 2rem;" data-bs-target="#OBPConstruction-Pending" type="button" role="tab"
+      aria-controls="OBPConstruction-Pending" aria-selected="false" (click)="ReloadData(-1)">
+      Pending
+    </button>
+
+    <button class=" btn btn-lg btn-dark ms-2" id="OBPConstruction-Approved-tab" data-bs-toggle="tab"
+      style="padding: .15rem 2rem;" data-bs-target="#OBPConstruction-Approved" type="button" role="tab"
+      aria-controls="OBPConstruction-Approved" aria-selected="false" (click)="ReloadData(1)">Approved</button>
+
+    <button class=" btn btn-dark btn-lg ms-2" id="OBPConstruction-DisApproved-tab" data-bs-toggle="tab"
+      style="padding: .15rem 2rem;" data-bs-target="#OBPConstruction-DisApproved" type="button" role="tab"
+      (click)="ReloadData(0)" aria-controls="OBPConstruction-DisApproved" aria-selected="false">Not Approved</button>
+
+
+
+  </div>
+</nav>
+
+<div class="tab-content mt-4" *ngIf="showTable">
+
+  <!-- PENDING TAB: Shows inner tabs on click -->
+  <div class="tab-pane fade show active" id="OBPConstruction-Pending" role="tabpanel"
+    aria-labelledby="OBPConstruction-Pending-tab">
+
+    <!-- Inner Tabs -->
+    <ul class="nav nav-tabs mb-3" id="innerPendingTabs" role="tablist">
+     
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="architecture-tab" data-bs-toggle="tab" data-bs-target="#architecture"
+          type="button" role="tab" aria-controls="architecture" aria-selected="false"
+          >Architecture</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="construction-tab" data-bs-toggle="tab" data-bs-target="#construction" type="button"
+          role="tab" aria-controls="construction" aria-selected="false"
+          >Construction</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="electrical-tab" data-bs-toggle="tab" data-bs-target="#electrical" type="button"
+          role="tab" aria-controls="electrical" aria-selected="false"
+          >Electrical</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="projectDataTableGrid-tab" data-bs-toggle="tab"
+          data-bs-target="#projectDataTableGrid" type="button" role="tab" aria-controls="projectDataTableGrid"
+          aria-selected="false" >Project</button>
+      </li>
+    </ul>
+
+    <!-- Inner Tab Content -->
+    <div class="tab-content" id="innerPendingTabsContent">
+      <div class="tab-pane fade show active" id="architecture" role="tabpanel" aria-labelledby="architecture-tab">
+        <div class="tab-pane fade show active" id="OBPConstruction-Pending" role="tabpanel"
+          aria-labelledby="OBPConstruction-Pending-tab" *ngIf="showTable">
+          <div class="container-fluid mt-5" id="adminPage">
+            <div class="row">
+              <div class="col-12 stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="text-center fs-3 themeClr">Pending Request(s) </h5>
+                    <!-- <div class="row p-3 mx-5">
+                      <div class="col-sm-3">
+                        <div class="mb-3">
+                          <button class="btn btn-dark" [disabled]="ArchitecureData.length === 0">
+                            Export to Excel
+                          </button>
+                        </div>
+                      </div>
+                    </div> -->
+
+
+                    <div class="table-responsive mt-5 container-fluid">
+                      <ngx-datatable class="bootstrap table table-striped material" [rows]="ArchitecureData"
+                        [loadingIndicator]="loadingIndicator" [columnMode]="'force'" [footerHeight]="50" [limit]="5"
+                        [headerHeight]="60" [rowHeight]="'auto'" [scrollbarH]="true">
+                        <ng-container *ngFor="let col of columns">
+                          <ng-container *ngIf="!['approvalRemarks','engineerAllocationUId', 'divisionId', 'finalApprovalRemarks'].includes(col.prop)">
+                            <ngx-datatable-column [name]="col.name" [prop]="col.prop">
+                            </ngx-datatable-column>
+                          </ng-container>
+                        </ng-container>
+
+                        <ngx-datatable-column [name]="'Action'" [sortable]="false" [canAutoResize]="false"
+                          [width]="150">
+                          <ng-template let-row="row" ngx-datatable-cell-template>
+                            <button class="btn btn-sm btn-primary" (click)="openStageModal(row)">
+                              View Stages
+                            </button>
+                          </ng-template>
+                        </ngx-datatable-column>
+                      </ngx-datatable>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="construction" role="tabpanel" aria-labelledby="construction-tab">
+        <div class="tab-pane fade show active" id="OBPConstruction-Pending" role="tabpanel"
+          aria-labelledby="OBPConstruction-Pending-tab" *ngIf="showTable">
+          <div class="container-fluid mt-5" id="adminPage">
+            <div class="row">
+              <div class="col-12 stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="text-center fs-3 themeClr">Pending Request(s) </h5>
+                    <!-- Export Button -->
+                    <!-- <div class="row p-3 mx-5">
+                      <div class="col-sm-3">
+                        <div class="mb-3">
+                          <button class="btn btn-dark" [disabled]="ConstructionData.length === 0">
+                            Export to Excel
+                          </button>
+                        </div>
+                      </div>
+                    </div> -->
+
+
+                    <div class="table-responsive mt-5 container-fluid">
+                      <ngx-datatable class="bootstrap table table-striped material" [rows]="ConstructionData"
+                        [loadingIndicator]="loadingIndicator" [columnMode]="'force'" [footerHeight]="50" [limit]="5"
+                        [headerHeight]="60" [rowHeight]="'auto'" [scrollbarH]="true">
+                        <!-- Render columns dynamically, exclude unwanted props using *ngIf -->
+                        <ng-container *ngFor="let col of columns">
+                          <ng-container *ngIf="!['approvalRemarks','engineerAllocationUId', 'divisionId', 'finalApprovalRemarks'].includes(col.prop)">
+                            <ngx-datatable-column [name]="col.name" [prop]="col.prop">
+                            </ngx-datatable-column>
+                          </ng-container>
+                        </ng-container>
+
+                        <!-- Static Action Column -->
+                        <ngx-datatable-column [name]="'Action'" [sortable]="false" [canAutoResize]="false"
+                          [width]="150">
+                          <ng-template let-row="row" ngx-datatable-cell-template>
+                            <button class="btn btn-sm btn-primary" (click)="openStageModal(row)">
+                              View Stages
+                            </button>
+                          </ng-template>
+                        </ngx-datatable-column>
+                      </ngx-datatable>
+                    </div>
+                    <!-- Data Table -->
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="electrical" role="tabpanel" aria-labelledby="electrical-tab">
+        <div class="tab-pane fade show active" id="OBPConstruction-Pending" role="tabpanel"
+          aria-labelledby="OBPConstruction-Pending-tab" *ngIf="showTable">
+          <div class="container-fluid mt-5" id="adminPage">
+            <div class="row">
+              <div class="col-12 stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="text-center fs-3 themeClr">Pending Request(s) </h5>
+                    <!-- <div class="row p-3 mx-5">
+                      <div class="col-sm-3">
+                        <div class="mb-3">
+                          <button class="btn btn-dark" [disabled]="ElectricalData.length === 0">
+                            Export to Excel
+                          </button>
+                        </div>
+                      </div>
+                    </div> -->
+
+
+                    <div class="table-responsive mt-5 container-fluid">
+                      <ngx-datatable class="bootstrap table table-striped material" [rows]="ElectricalData"
+                        [loadingIndicator]="loadingIndicator" [columnMode]="'force'" [footerHeight]="50" [limit]="5"
+                        [headerHeight]="60" [rowHeight]="'auto'" [scrollbarH]="true">
+                        <ng-container *ngFor="let col of columns">
+                          <ng-container *ngIf="!['approvalRemarks','engineerAllocationUId', 'divisionId', 'finalApprovalRemarks'].includes(col.prop)">
+                            <ngx-datatable-column [name]="col.name" [prop]="col.prop">
+                            </ngx-datatable-column>
+                          </ng-container>
+                        </ng-container>
+
+                        <ngx-datatable-column [name]="'Action'" [sortable]="false" [canAutoResize]="false"
+                          [width]="150">
+                          <ng-template let-row="row" ngx-datatable-cell-template>
+                            <button class="btn btn-sm btn-primary" (click)="openStageModal(row)">
+                              View Stages
+                            </button>
+                          </ng-template>
+                        </ngx-datatable-column>
+                      </ngx-datatable>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="projectDataTableGrid" role="tabpanel" aria-labelledby="projectDataTableGrid-tab">
+        <div class="tab-pane fade show active" id="OBPConstruction-Pending" role="tabpanel"
+          aria-labelledby="OBPConstruction-Pending-tab" *ngIf="showTable">
+          <div class="container-fluid mt-5" id="adminPage">
+            <div class="row">
+              <div class="col-12 stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="text-center fs-3 themeClr">Pending Request(s) </h5>
+                    <!-- <div class="row p-3 mx-5">
+                      <div class="col-sm-3">
+                        <div class="mb-3">
+                          <button class="btn btn-dark" [disabled]="ProjectData.length === 0">
+                            Export to Excel
+                          </button>
+                        </div>
+                      </div>
+                    </div> -->
+
+
+                    <div class="table-responsive mt-5 container-fluid">
+                      <ngx-datatable class="bootstrap table table-striped material" [rows]="ProjectData"
+                        [loadingIndicator]="loadingIndicator" [columnMode]="'force'" [footerHeight]="50" [limit]="5"
+                        [headerHeight]="60" [rowHeight]="'auto'" [scrollbarH]="true">
+                        <ng-container *ngFor="let col of columns">
+                          <ng-container *ngIf="!['approvalRemarks','engineerAllocationUId', 'divisionId', 'finalApprovalRemarks','id'].includes(col.prop)">
+                            <ngx-datatable-column [name]="col.name" [prop]="col.prop">
+                            </ngx-datatable-column>
+                          </ng-container>
+                        </ng-container>
+
+                        <ngx-datatable-column [name]="'Action'" [sortable]="false" [canAutoResize]="false"
+                          [width]="150">
+                          <ng-template let-row="row" ngx-datatable-cell-template>
+                            <button class="btn btn-sm btn-primary" (click)="openStageModal(row)">
+                              View Stages
+                            </button>
+                          </ng-template>
+                        </ngx-datatable-column>
+                      </ngx-datatable>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tab-pane fade" id="OBPConstruction-Approved" role="tabpanel"
+    aria-labelledby="OBPConstruction-Approved-tab">
+    <ul class="nav nav-tabs mb-3" id="innerApprovedTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="architecture-approved-tab" data-bs-toggle="tab"
+          data-bs-target="#architecture-approved" type="button" role="tab" aria-selected="false" >Architecture</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="construction-approved-tab" data-bs-toggle="tab"
+          data-bs-target="#construction-approved" type="button" role="tab" aria-selected="false" >Construction</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="electrical-approved-tab" data-bs-toggle="tab" data-bs-target="#electrical-approved"
+          type="button" role="tab" aria-selected="false">Electrical</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="projectDataTableGrid-approved-tab" data-bs-toggle="tab"
+          data-bs-target="#projectDataTableGrid-approved" type="button" role="tab"
+          aria-selected="false">Project</button>
+      </li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane fade show active" id="architecture-approved" role="tabpanel">
+        <div class="container-fluid mt-5" id="adminPage">
+          <div class="row">
+            <div class="col-12 stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="text-center fs-3 themeClr">All Approved Request(s) </h5>
+                  <!-- <div class="row p-3 mx-5">
+                    <div class="col-sm-3">
+                      <div class="mb-3">
+                        <button class="btn btn-dark" [disabled]="ArchitecureData.length === 0">
+                          Export to Excel
+                        </button>
+                      </div>
+                    </div>
+                  </div> -->
+
+
+                  <div class="table-responsive mt-5 container-fluid">
+                    <ngx-datatable class="bootstrap table table-striped material" [rows]="ArchitecureData"
+                      [loadingIndicator]="loadingIndicator" [columnMode]="'force'" [footerHeight]="50" [limit]="5"
+                      [headerHeight]="60" [rowHeight]="'auto'" [scrollbarH]="true">
+                      <ng-container *ngFor="let col of columns">
+                        <ng-container *ngIf="!['approvalRemarks','engineerAllocationUId', 'divisionId'].includes(col.prop)">
+                          <ngx-datatable-column [name]="col.name" [prop]="col.prop">
+                          </ngx-datatable-column>
+                        </ng-container>
+                      </ng-container>
+
+                      <!-- <ngx-datatable-column [name]="'Action'" [sortable]="false" [canAutoResize]="false" [width]="150">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <button class="btn btn-sm btn-primary" (click)="openStageModal(row)">
+                            View Stages
+                          </button>
+                        </ng-template>
+                      </ngx-datatable-column> -->
+                    </ngx-datatable>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="construction-approved" role="tabpanel">
+        <div class="container-fluid mt-5" id="adminPage">
+          <div class="row">
+            <div class="col-12 stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="text-center fs-3 themeClr">All Approved Request(s)</h5>
+                  <!-- <div class="row p-3 mx-5">
+                    <div class="col-sm-3">
+                      <div class="mb-3">
+                        <button class="btn btn-dark" [disabled]="ConstructionData.length === 0">
+                          Export to Excel
+                        </button>
+                      </div>
+                    </div>
+                  </div> -->
+
+
+                  <div class="table-responsive mt-5 container-fluid">
+                    <ngx-datatable class="bootstrap table table-striped material" [rows]="ConstructionData"
+                      [loadingIndicator]="loadingIndicator" [columnMode]="'force'" [footerHeight]="50" [limit]="5"
+                      [headerHeight]="60" [rowHeight]="'auto'" [scrollbarH]="true">
+                      <ng-container *ngFor="let col of columns">
+                        <ng-container *ngIf="!['approvalRemarks','engineerAllocationUId', 'divisionId'].includes(col.prop)">
+                          <ngx-datatable-column [name]="col.name" [prop]="col.prop">
+                          </ngx-datatable-column>
+                        </ng-container>
+                      </ng-container>
+
+                      <!-- <ngx-datatable-column [name]="'Action'" [sortable]="false" [canAutoResize]="false" [width]="150">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <button class="btn btn-sm btn-primary" (click)="openStageModal(row)">
+                            View Stages
+                          </button>
+                        </ng-template>
+                      </ngx-datatable-column> -->
+                    </ngx-datatable>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="electrical-approved" role="tabpanel">
+        <div class="container-fluid mt-5" id="adminPage">
+          <div class="row">
+            <div class="col-12 stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="text-center fs-3 themeClr">All Approved Request(s) </h5>
+                  <!-- <div class="row p-3 mx-5">
+                    <div class="col-sm-3">
+                      <div class="mb-3">
+                        <button class="btn btn-dark" [disabled]="ElectricalData.length === 0">
+                          Export to Excel
+                        </button>
+                      </div>
+                    </div>
+                  </div> -->
+
+
+                  <div class="table-responsive mt-5 container-fluid">
+                    <ngx-datatable class="bootstrap table table-striped material" [rows]="ElectricalData"
+                      [loadingIndicator]="loadingIndicator" [columnMode]="'force'" [footerHeight]="50" [limit]="5"
+                      [headerHeight]="60" [rowHeight]="'auto'" [scrollbarH]="true">
+                      <ng-container *ngFor="let col of columns">
+                        <ng-container *ngIf="!['approvalRemarks','engineerAllocationUId', 'divisionId'].includes(col.prop)">
+                          <ngx-datatable-column [name]="col.name" [prop]="col.prop">
+                          </ngx-datatable-column>
+                        </ng-container>
+                      </ng-container>
+
+                      <!-- <ngx-datatable-column [name]="'Action'" [sortable]="false" [canAutoResize]="false" [width]="150">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <button class="btn btn-sm btn-primary" (click)="openStageModal(row)">
+                            View Stages
+                          </button>
+                        </ng-template>
+                      </ngx-datatable-column> -->
+                    </ngx-datatable>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="projectDataTableGrid-approved" role="tabpanel">
+        <div class="container-fluid mt-5" id="adminPage">
+          <div class="row">
+            <div class="col-12 stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="text-center fs-3 themeClr">All Approved Request(s) </h5>
+                  <!-- <div class="row p-3 mx-5">
+                    <div class="col-sm-3">
+                      <div class="mb-3">
+                        <button class="btn btn-dark" [disabled]="ProjectData.length === 0">
+                          Export to Excel
+                        </button>
+                      </div>
+                    </div>
+                  </div> -->
+
+
+                  <div class="table-responsive mt-5 container-fluid">
+                    <ngx-datatable class="bootstrap table table-striped material" [rows]="ProjectData"
+                      [loadingIndicator]="loadingIndicator" [columnMode]="'force'" [footerHeight]="50" [limit]="5"
+                      [headerHeight]="60" [rowHeight]="'auto'" [scrollbarH]="true">
+                      <ng-container *ngFor="let col of columns">
+                        <ng-container *ngIf="!['approvalRemarks','engineerAllocationUId', 'divisionId'].includes(col.prop)">
+                          <ngx-datatable-column [name]="col.name" [prop]="col.prop">
+                          </ngx-datatable-column>
+                        </ng-container>
+                      </ng-container>
+
+                      <!-- <ngx-datatable-column [name]="'Action'" [sortable]="false" [canAutoResize]="false" [width]="150">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <button class="btn btn-sm btn-primary" (click)="openStageModal(row)">
+                            View Stages
+                          </button>
+                        </ng-template>
+                      </ngx-datatable-column> -->
+                    </ngx-datatable>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-pane fade" id="OBPConstruction-DisApproved" role="tabpanel"
+    aria-labelledby="OBPConstruction-DisApproved-tab">
+    <ul class="nav nav-tabs mb-3" id="innerDisapprovedTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="architecture-dis-tab" data-bs-toggle="tab"
+          data-bs-target="#architecture-dis" type="button" role="tab" aria-selected="false">Architecture</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="construction-dis-tab" data-bs-toggle="tab" data-bs-target="#construction-dis"
+          type="button" role="tab" aria-selected="false">Construction</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="electrical-dis-tab" data-bs-toggle="tab" data-bs-target="#electrical-dis"
+          type="button" role="tab" aria-selected="false">Electrical</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="projectDataTableGrid-dis-tab" data-bs-toggle="tab"
+          data-bs-target="#projectDataTableGrid-dis" type="button" role="tab"
+          aria-selected="false">Project</button>
+      </li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane fade show active" id="architecture-dis" role="tabpanel">
+        <div class="container-fluid mt-5" id="adminPage">
+          <div class="row">
+            <div class="col-12 stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="text-center fs-3 themeClr">All Disapproved Request(s) </h5>
+                  <!-- <div class="row p-3 mx-5">
+                    <div class="col-sm-3">
+                      <div class="mb-3">
+                        <button class="btn btn-dark" [disabled]="ArchitecureData.length === 0">
+                          Export to Excel
+                        </button>
+                      </div>
+                    </div>
+                  </div> -->
+
+
+                  <div class="table-responsive mt-5 container-fluid">
+                    <ngx-datatable class="bootstrap table table-striped material" [rows]="ArchitecureData"
+                      [loadingIndicator]="loadingIndicator" [columnMode]="'force'" [footerHeight]="50" [limit]="5"
+                      [headerHeight]="60" [rowHeight]="'auto'" [scrollbarH]="true">
+                      <ng-container *ngFor="let col of columns">
+                        <ng-container *ngIf="!['approvalRemarks','engineerAllocationUId', 'divisionId'].includes(col.prop)">
+                          <ngx-datatable-column [name]="col.name" [prop]="col.prop">
+                          </ngx-datatable-column>
+                        </ng-container>
+                      </ng-container>
+
+                      <!-- <ngx-datatable-column [name]="'Action'" [sortable]="false" [canAutoResize]="false" [width]="150">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <button class="btn btn-sm btn-primary" (click)="openStageModal(row)">
+                            View Stages
+                          </button>
+                        </ng-template>
+                      </ngx-datatable-column> -->
+                    </ngx-datatable>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="construction-dis" role="tabpanel">
+        <div class="container-fluid mt-5" id="adminPage">
+          <div class="row">
+            <div class="col-12 stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="text-center fs-3 themeClr">All Disapproved Request(s)</h5>
+                  <!-- <div class="row p-3 mx-5">
+                    <div class="col-sm-3">
+                      <div class="mb-3">
+                        <button class="btn btn-dark" [disabled]="ConstructionData.length === 0">
+                          Export to Excel
+                        </button>
+                      </div>
+                    </div>
+                  </div> -->
+
+
+                  <div class="table-responsive mt-5 container-fluid">
+                    <ngx-datatable class="bootstrap table table-striped material" [rows]="ConstructionData"
+                      [loadingIndicator]="loadingIndicator" [columnMode]="'force'" [footerHeight]="50" [limit]="5"
+                      [headerHeight]="60" [rowHeight]="'auto'" [scrollbarH]="true">
+                      <ng-container *ngFor="let col of columns">
+                        <ng-container *ngIf="!['approvalRemarks','engineerAllocationUId', 'divisionId'].includes(col.prop)">
+                          <ngx-datatable-column [name]="col.name" [prop]="col.prop">
+                          </ngx-datatable-column>
+                        </ng-container>
+                      </ng-container>
+
+                      <!-- <ngx-datatable-column [name]="'Action'" [sortable]="false" [canAutoResize]="false" [width]="150">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <button class="btn btn-sm btn-primary" (click)="openStageModal(row)">
+                            View Stages
+                          </button>
+                        </ng-template>
+                      </ngx-datatable-column> -->
+                    </ngx-datatable>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="electrical-dis" role="tabpanel">
+        <div class="container-fluid mt-5" id="adminPage">
+          <div class="row">
+            <div class="col-12 stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="text-center fs-3 themeClr">All Disapproved Request(s) </h5>
+                  <!-- <div class="row p-3 mx-5">
+                    <div class="col-sm-3">
+                      <div class="mb-3">
+                        <button class="btn btn-dark" [disabled]="ElectricalData.length === 0">
+                          Export to Excel
+                        </button>
+                      </div>
+                    </div>
+                  </div> -->
+
+
+                  <div class="table-responsive mt-5 container-fluid">
+                    <ngx-datatable class="bootstrap table table-striped material" [rows]="ElectricalData"
+                      [loadingIndicator]="loadingIndicator" [columnMode]="'force'" [footerHeight]="50" [limit]="5"
+                      [headerHeight]="60" [rowHeight]="'auto'" [scrollbarH]="true">
+                      <ng-container *ngFor="let col of columns">
+                        <ng-container *ngIf="!['approvalRemarks','engineerAllocationUId', 'divisionId'].includes(col.prop)">
+                          <ngx-datatable-column [name]="col.name" [prop]="col.prop">
+                          </ngx-datatable-column>
+                        </ng-container>
+                      </ng-container>
+
+                      <!-- Static Action Column -->
+                      <!-- <ngx-datatable-column [name]="'Action'" [sortable]="false" [canAutoResize]="false" [width]="150">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <button class="btn btn-sm btn-primary" (click)="openStageModal(row)">
+                            View Stages
+                          </button>
+                        </ng-template>
+                      </ngx-datatable-column> -->
+                    </ngx-datatable>
+                  </div>
+                  <!-- Data Table -->
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="projectDataTableGrid-dis" role="tabpanel">
+        <div class="container-fluid mt-5" id="adminPage">
+          <div class="row">
+            <div class="col-12 stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="text-center fs-3 themeClr">All Disapproved Request(s)</h5>
+                  <!-- Export Button -->
+                  <!-- <div class="row p-3 mx-5">
+                    <div class="col-sm-3">
+                      <div class="mb-3">
+                        <button class="btn btn-dark" [disabled]="ProjectData.length === 0">
+                          Export to Excel
+                        </button>
+                      </div>
+                    </div>
+                  </div> -->
+
+
+                  <div class="table-responsive mt-5 container-fluid">
+                    <ngx-datatable class="bootstrap table table-striped material" [rows]="ProjectData"
+                      [loadingIndicator]="loadingIndicator" [columnMode]="'force'" [footerHeight]="50" [limit]="5"
+                      [headerHeight]="60" [rowHeight]="'auto'" [scrollbarH]="true">
+                      <!-- Render columns dynamically, exclude unwanted props using *ngIf -->
+                      <ng-container *ngFor="let col of columns">
+                        <ng-container *ngIf="!['approvalRemarks','engineerAllocationUId', 'divisionId'].includes(col.prop)">
+                          <ngx-datatable-column [name]="col.name" [prop]="col.prop">
+                          </ngx-datatable-column>
+                        </ng-container>
+                      </ng-container>
+
+                      <!-- Static Action Column -->
+                      <!-- <ngx-datatable-column [name]="'Action'" [sortable]="false" [canAutoResize]="false" [width]="150">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <button class="btn btn-sm btn-primary" (click)="openStageModal(row)">
+                            View Stages
+                          </button>
+                        </ng-template>
+                      </ngx-datatable-column> -->
+                    </ngx-datatable>
+                  </div>
+                  <!-- Data Table -->
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #TakeActionModal let-modal>
+  <div class="container-fluid">
+    <div class="modal-header">
+      <h5 class="modal-title">Take Action</h5>
+      <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="modal-title text-center">OBP Target <span class="themeClr">Verification </span></h2>
+          <div class="table-responsive mt-4">
+            <ng-container *ngIf="alltMetricStageAllocationDetails.length > 0; else noData">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th *ngFor="let col of columnX">{{ col.name }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of alltMetricStageAllocationDetails">
+                    <td *ngFor="let col of columnX">{{ row[col.prop] }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </ng-container>
+            <!-- Conditional Section -->
+            <ng-container *ngIf="loadingIndicator; else dataLoadedBlock">
+              <!-- Loader Template -->
+              <div class="text-center">
+                <div class="text-center">
+                  <span class="text-danger fs-3">Loading </span><br />
+                  <div class="spinner-grow text-danger text-center" style="width: 14rem; height: 14rem;" role="status">
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+
+            <!-- Data Loaded Block -->
+            <ng-template #dataLoadedBlock>
+              <div *ngIf="showSupportingDocuments" id="#DocumentDetailsTable" name="DocumentDetailsTable">
+                <hr />
+                <h3 class="modal-title">Supporting <span class="themeClr"> Documents</span></h3>
+                <div class="table-responsive mt-5 container-fluid">
+
+                  <table class="table table-bordered table-striped">
+                    <thead>
+                      <tr>
+                        <ng-container *ngFor="let col of columnY">
+                          <th *ngIf="col.prop !== 'supportingDocument'">
+                            {{ col.name }}
+                          </th>
+                        </ng-container>
+                        <th>Download Document</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let row of allOBPEstateGetSupportingDocuments">
+                        <ng-container *ngFor="let col of columnY">
+                          <td *ngIf="col.prop !== 'supportingDocument'">
+                            {{ row[col.prop] }}
+                          </td>
+                        </ng-container>
+                        <td>
+                          <button class="btn btn-sm btn-primary" (click)="DownloadFile(row)">
+                            Download
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+
+                </div>
+              </div>
+            </ng-template>
+            <ng-template #noData>
+              <div class="text-center text-muted fs-5">
+                No stage allocation found.
+              </div>
+            </ng-template>
+          </div>
+          <div *ngIf="IsApproved==-1">
+            <!-- Action and Remarks Section -->
+            <div class="row mt-4">
+              <div class="col-md-2"><strong>Action:</strong></div>
+              <div class="col-md-10">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" id="approved" name="Action" [value]="1"
+                    [(ngModel)]="Action" required />
+                  <label class="form-check-label" for="approved">Approve</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" id="notApproved" name="Action" [value]="0"
+                    [(ngModel)]="Action" required />
+                  <label class="form-check-label" for="notApproved">Not Approve</label>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="row mt-3">
+              <div class="col-md-2"><strong>Remarks:</strong></div>
+              <div class="col-md-10">
+                <textarea id="remarks" name="remarks" [(ngModel)]="Remarks" rows="5" cols="5" class="form-control"
+                  ></textarea>
+              </div>
+            </div>
+
+            <!-- Update Button -->
+            <div class="row mt-4">
+              <div class="col-md-12 text-center">
+                <button class="btn btn-dark" (click)="updateDetails()">
+                  Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+</ng-template>
+
+
+<ng-template #openStageDocumentModal let-modal>
+  <div class="container-fluid">
+    <div class="modal-header">
+      <h5 class="modal-title">OBP EState Supporting Documents</h5>
+      <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="modal-title text-center">Supporting Documents Details</h2>
+          <div class="table-responsive mt-5 container-fluid">
+            <ngx-datatable class="bootstrap table table-striped material" [rows]="allOBPEstateGetSupportingDocuments"
+              [loadingIndicator]="loadingIndicator" [columnMode]="'force'" [footerHeight]="50" [limit]="5"
+              [headerHeight]="60" [rowHeight]="'auto'" [scrollbarH]="true">
+
+
+              <ng-container *ngFor="let col of columnY">
+                <ng-container *ngIf="!['supportingDocument'].includes(col.prop)">
+                  <ngx-datatable-column [name]="col.name" [prop]="col.prop">
+                  </ngx-datatable-column>
+                </ng-container>
+              </ng-container>
+
+              <ngx-datatable-column [name]="'Download Document'" [sortable]="false" [canAutoResize]="false"
+                [width]="150">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  <button class="btn btn-sm btn-primary" (click)="DownloadFile(row)">
+                    View Stages
+                  </button>
+                </ng-template>
+              </ngx-datatable-column>
+
+
+
+            </ngx-datatable>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

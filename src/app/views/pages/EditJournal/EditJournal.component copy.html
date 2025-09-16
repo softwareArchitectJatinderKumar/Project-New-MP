@@ -1,0 +1,757 @@
+<nav class="page-breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a routerLink=".">Journal</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Journal Form</li>
+  </ol>
+</nav>
+
+<div class="row">
+  <div class="col-md-12 grid-margin">
+    <div class="card">
+      <div class="card-body">
+        <h6 class="card-title">Journal Forms</h6>
+
+        <aw-wizard #wizardForm>
+          
+          <aw-wizard-step stepTitle="Journal Basic Information">
+
+
+
+            <form (ngSubmit)="form1Submit()" [formGroup]="validationForm1" style="margin-top: 20px;" >
+              <div class="row">
+                <div class="col-md-6">
+              <div class="row mb-3">
+                <label for="firstName" class="col-sm-3 col-form-label">Journal Title :</label>
+                <div class="col-sm-9">
+                  <!-- <input type="text" class="form-control" id="firstName" formControlName="firstName" 
+                  [ngClass]="{'is-invalid': isForm1Submitted && form1.firstName.errors}" placeholder="First name"> -->
+                  <input id="journalTitle" formControlName="journalTitle" class="form-control"  placeholder="Journal Title" [(ngModel)]="JournalTitle"
+                  [ngClass]="{'is-invalid': isForm1Submitted && form1.journalTitle.errors}"
+                  >
+                  <div *ngIf="isForm1Submitted && form1.journalTitle.errors?.required" class="invalid-feedback">
+                    Required
+                  </div>
+                </div>
+              </div>
+                </div>
+                <div class="col-md-6">
+              <div class="row mb-3">
+                <label for="lastName" class="col-sm-3 col-form-label">Journal Sub Title</label>
+                <div class="col-sm-9">
+                  <!-- <input type="text" class="form-control" id="lastName" formControlName="lastName" 
+                    [ngClass]="{'is-invalid': isForm1Submitted && form1.lastName.errors}" placeholder="Last name"> -->
+                    <input id="subTitle" formControlName="subTitle" class="form-control" [(ngModel)]="SubTitle"
+                    [ngClass]="{'is-invalid': isForm1Submitted && form1.subTitle.errors}" placeholder="Journal Sub Title"
+                    >
+                  <div *ngIf="isForm1Submitted && form1.subTitle.errors?.required" class="invalid-feedback">
+                    Required
+                  </div>
+                </div>
+              </div>
+</div>
+
+
+<div class="col-md-6">
+  <div class="row mb-3">
+    <label for="lastName" class="col-sm-3 col-form-label">Journal Volume</label>
+    <div class="col-sm-9">
+      <!-- <input type="text" class="form-control" id="lastName" formControlName="lastName" 
+        [ngClass]="{'is-invalid': isForm1Submitted && form1.lastName.errors}" placeholder="Last name"> -->
+        <input id="Volume" formControlName="Volume" class="form-control" [(ngModel)]="Volume"
+        [ngClass]="{'is-invalid': isForm1Submitted && form1.Volume.errors}" placeholder="Journal Volume"
+        >
+      <div *ngIf="isForm1Submitted && form1.Volume.errors?.required" class="invalid-feedback">
+        Required
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="col-md-6">
+  <div class="row mb-3">
+    <label for="lastName" class="col-sm-3 col-form-label">Journal Publish Date:</label>
+    <div class="col-sm-9">
+      <!-- <input type="text" class="form-control" id="lastName" formControlName="lastName" 
+        [ngClass]="{'is-invalid': isForm1Submitted && form1.lastName.errors}" placeholder="Last name"> -->
+        <input id="publishDate"  type="date" formControlName="publishDate" class="form-control" [(ngModel)]="PublishDate"
+        [ngClass]="{'is-invalid': isForm1Submitted && form1.publishDate.errors}" placeholder="Journal Publish Date"
+        >
+      <div *ngIf="isForm1Submitted && form1.publishDate.errors?.required" class="invalid-feedback">
+        Required
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ScopeOfJournal -->
+<div class="col-md-6">
+              <div class="row mb-3">
+                <label for="userName" class="col-sm-3 col-form-label">Journal Introduction:</label>
+                <div class="col-sm-9">
+                  <quill-editor 
+                  placeholder="Enter Text"
+                  formControlName="Introduction" 
+                  [modules]="quillConfig"
+                  [(ngModel)]="Introduction"
+                  [ngClass]="{'is-invalid': isForm1Submitted && form1.Introduction.errors}"
+                  (onSelectionChanged)="onSelectionChanged($event)"
+                  (onContentChanged)="onContentChanged($event)">
+                </quill-editor>
+        
+                <div class="mt-3">
+                  <pre class="mb-0">{{Introduction}}</pre>
+                </div>
+                  <div *ngIf="isForm1Submitted && form1.Introduction.errors?.required" class="invalid-feedback">
+                    Required
+                  </div>
+                </div>
+              </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="row mb-3">
+                  <label for="userName" class="col-sm-3 col-form-label">Journal Scope Of Journal:</label>
+                  <div class="col-sm-9">
+                    <quill-editor 
+                    placeholder="Enter Text"
+                    formControlName="scopeofjournals"
+                    [(ngModel)]="ScopeOfJournal"
+                    [modules]="quillConfig"
+                    [ngClass]="{'is-invalid': isForm1Submitted && form1.scopeofjournals.errors}"
+                    (onSelectionChanged)="onSelectionChanged($event)"
+                    (onContentChanged)="onContentChanged($event)">
+                  </quill-editor>
+          
+                  <div class="mt-3">
+                    <pre class="mb-0">{{ScopeOfJournal}}</pre>
+                  </div>
+                    <div *ngIf="isForm1Submitted && form1.scopeofjournals.errors?.required" class="invalid-feedback">
+                      Required
+                    </div>
+                  </div>
+                </div>
+                </div>
+
+
+                <div class="col-md-6">
+                  <div class="row mb-3">
+                    <label for="userName" class="col-sm-3 col-form-label">Journal Thrust Area:</label>
+                    <div class="col-sm-9">
+                      <quill-editor 
+                      
+                      [(ngModel)]="ThrustArea"
+                      placeholder="Enter Text"
+                      [modules]="quillConfig"
+                      formControlName="thrustArea"
+                      [ngClass]="{'is-invalid': isForm1Submitted && form1.thrustArea.errors}"
+                      (onSelectionChanged)="onSelectionChanged($event)"
+                      (onContentChanged)="onContentChanged($event)">
+                    </quill-editor>
+            
+                    <div class="mt-3">
+                      <pre class="mb-0">{{ThrustArea}}</pre>
+                    </div>
+                      <div *ngIf="isForm1Submitted && form1.thrustArea.errors?.required" class="invalid-feedback">
+                        Required
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+
+
+                  <div class="col-md-6">
+                    <div class="row mb-3">
+                      <label for="userName" class="col-sm-3 col-form-label">Journal Article Type::</label>
+                      <div class="col-sm-9">
+                        <quill-editor 
+                        placeholder="Enter Text"
+                        [modules]="quillConfig"
+                        [(ngModel)]="ArticleType"
+                        [ngClass]="{'is-invalid': isForm1Submitted && form1.ArticleType.errors}"
+                        formControlName="ArticleType"
+                        (onSelectionChanged)="onSelectionChanged($event)"
+                        (onContentChanged)="onContentChanged($event)">
+                      </quill-editor>
+              
+                      <div class="mt-3">
+                        <pre class="mb-0">{{ArticleType}}</pre>
+                      </div>
+                        <div *ngIf="isForm1Submitted && form1.ArticleType.errors?.required" class="invalid-feedback">
+                          Required
+                        </div>
+                      </div>
+                    </div>
+                    </div>
+
+
+
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="userName" class="col-sm-3 col-form-label">Journal Image:</label>
+                        <div class="col-sm-9">
+                          <input  class="form-control"   [(ngModel)]="fileNames"  type="file" id="File" name="file" (change)="onFileSelected($event)"
+                          accept=".png, .jpg, .jpeg" formControlName="file" />
+                          <div *ngIf="isForm1Submitted && form1.file.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                      </div>
+  
+                
+      
+          </div>
+              <div class="d-flex justify-content-center mt-2">
+                <button class="btn btn-primary" type="submit">Continue</button>
+              </div>
+            </form>
+          </aw-wizard-step>
+
+          <aw-wizard-step stepTitle="Journal Basic Property Details">
+            <form (ngSubmit)="form2Submit()" [formGroup]="validationForm2" style="margin-top: 20px;">
+              <div class="row">
+
+                <div class="col-md-6"  >
+                  <div class="row mb-3">
+                    <label for="firstName" class="col-sm-3 col-form-label">ISSN No:</label>
+                    <div class="col-sm-9">
+                      <!-- <input type="text" class="form-control" id="firstName" formControlName="firstName" 
+                      [ngClass]="{'is-invalid': isForm1Submitted && form1.firstName.errors}" placeholder="First name"> -->
+                      <input id="ISSNNo" 
+                      name="ISSNNo"
+                      formControlName="ISSNNo"
+                      [ngClass]="{'is-invalid': isForm1Submitted && form2.ISSNNo.errors}"
+                       class="form-control"  placeholder="ISSN No" [(ngModel)]="ISSNNo"
+                     
+                      >
+                      <div *ngIf="isForm1Submitted && form2.ISSNNo.errors?.required" class="invalid-feedback">
+                        Required
+                      </div>
+                      <!-- [ngClass]="{'is-invalid': isForm1Submitted && form1.journalTitle.errors}" -->
+                    </div>
+                  </div>
+                    </div>
+
+
+
+                    <div class="col-md-6"  >
+                      <div class="row mb-3">
+                        <label for="firstName" class="col-sm-3 col-form-label">Reg No:</label>
+                        <div class="col-sm-9">
+                          <!-- <input type="text" class="form-control" id="firstName" formControlName="firstName" 
+                          [ngClass]="{'is-invalid': isForm1Submitted && form1.firstName.errors}" placeholder="First name"> -->
+                          <input id="RegNo" 
+                          name="RegNo"
+                          formControlName="RegNo"
+                          [ngClass]="{'is-invalid': isForm1Submitted && form2.RegNo.errors}"
+                           class="form-control"  placeholder="Reg No" [(ngModel)]="RegNo"
+                         
+                          >
+                          <div *ngIf="isForm1Submitted && form2.RegNo.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>
+                          <!--  -->
+                        </div>
+                      </div>
+                        </div>
+
+
+                        <div class="col-md-6"  >
+                          <div class="row mb-3">
+                            <label for="firstName" class="col-sm-3 col-form-label">Periodicity:</label>
+                            <div class="col-sm-9">
+                              <!-- <input type="text" class="form-control" id="firstName" formControlName="firstName" 
+                              [ngClass]="{'is-invalid': isForm1Submitted && form1.firstName.errors}" placeholder="First name"> -->
+                              <input id="Periodicity" 
+                              name="Periodicity"
+                              formControlName="Periodicity"
+                              [ngClass]="{'is-invalid': isForm1Submitted && form2.Periodicity.errors}"
+                               class="form-control"  placeholder="Periodicity" [(ngModel)]="Periodicity"
+                             
+                              >
+                              <div *ngIf="isForm1Submitted && form2.Periodicity.errors?.required" class="invalid-feedback">
+                                Required
+                              </div>
+                              <!--  -->
+                            </div>
+                          </div>
+                            </div>
+
+
+                            <div class="col-md-6"  >
+                              <div class="row mb-3">
+                                <label for="firstName" class="col-sm-3 col-form-label">Language:</label>
+                                <div class="col-sm-9">
+                                  <!-- <input type="text" class="form-control" id="firstName" formControlName="firstName" 
+                                  [ngClass]="{'is-invalid': isForm1Submitted && form1.firstName.errors}" placeholder="First name"> -->
+                                  <input id="Language" 
+                                  name="Language"
+                                  formControlName="Language"
+                                  [ngClass]="{'is-invalid': isForm1Submitted && form2.Language.errors}"
+                                   class="form-control"  placeholder="Language" [(ngModel)]="Language"
+                                 
+                                  >
+                                  <div *ngIf="isForm1Submitted && form2.Language.errors?.required" class="invalid-feedback">
+                                    Required
+                                  </div>
+                                  <!--  -->
+                                </div>
+                              </div>
+                                </div>
+
+
+                                <div class="col-md-6"  >
+                                  <div class="row mb-3">
+                                    <label for="firstName" class="col-sm-3 col-form-label">Scope:</label>
+                                    <div class="col-sm-9">
+                                      <!-- <input type="text" class="form-control" id="firstName" formControlName="firstName" 
+                                      [ngClass]="{'is-invalid': isForm1Submitted && form1.firstName.errors}" placeholder="First name"> -->
+                                      <input id="Scope" 
+                                      name="Scope"
+                                      formControlName="Scope"
+                                      [ngClass]="{'is-invalid': isForm1Submitted && form2.Scope.errors}"
+                                       class="form-control"  placeholder="Scope" [(ngModel)]="Scope"
+                                     
+                                      >
+                                      <div *ngIf="isForm1Submitted && form2.Scope.errors?.required" class="invalid-feedback">
+                                        Required
+                                      </div>
+                                      <!--  -->
+                                    </div>
+                                  </div>
+                                    </div>
+
+
+                                    <div class="col-md-6"  >
+                                      <div class="row mb-3">
+                                        <label for="firstName" class="col-sm-3 col-form-label">Article Process Charges:</label>
+                                        <div class="col-sm-9">
+                                          <!-- <input type="text" class="form-control" id="firstName" formControlName="firstName" 
+                                          [ngClass]="{'is-invalid': isForm1Submitted && form1.firstName.errors}" placeholder="First name"> -->
+                                          <input id="ArticleProcessCharges" 
+                                          name="ArticleProcessCharges"
+                                          formControlName="ArticleProcessCharges"
+                                          [ngClass]="{'is-invalid': isForm1Submitted && form2.ArticleProcessCharges.errors}"
+                                           class="form-control"  placeholder="Article Process Charges" [(ngModel)]="ArticleProcessCharges"
+                                         
+                                          >
+                                          <div *ngIf="isForm1Submitted && form2.ArticleProcessCharges.errors?.required" class="invalid-feedback">
+                                            Required
+                                          </div>
+                                          <!--  -->
+                                        </div>
+                                      </div>
+                                        </div>
+
+
+                                        
+                                    <div class="col-md-6"  >
+                                      <div class="row mb-3">
+                                        <label for="firstName" class="col-sm-3 col-form-label">Open Access:</label>
+                                        <div class="col-sm-9">
+                                          <!-- <input type="text" class="form-control" id="firstName" formControlName="firstName" 
+                                          [ngClass]="{'is-invalid': isForm1Submitted && form1.firstName.errors}" placeholder="First name"> -->
+                                          <input id="OpenAccess" 
+                                          name="OpenAccess"
+                                          formControlName="OpenAccess"
+                                          [ngClass]="{'is-invalid': isForm1Submitted && form2.OpenAccess.errors}"
+                                           class="form-control"  placeholder="Open Access" [(ngModel)]="OpenAccess"
+                                         
+                                          >
+                                          <div *ngIf="isForm1Submitted && form2.OpenAccess.errors?.required" class="invalid-feedback">
+                                            Required
+                                          </div>
+                                          <!--  -->
+                                        </div>
+                                      </div>
+                                        </div>
+
+
+                                        <div class="col-md-6"  >
+                                          <div class="row mb-3">
+                                            <label for="firstName" class="col-sm-3 col-form-label">Print:</label>
+                                            <div class="col-sm-9">
+                                              <!-- <input type="text" class="form-control" id="firstName" formControlName="firstName" 
+                                              [ngClass]="{'is-invalid': isForm1Submitted && form1.firstName.errors}" placeholder="First name"> -->
+                                              <input id="Print" 
+                                              name="Print"
+                                              formControlName="Print"
+                                              [ngClass]="{'is-invalid': isForm1Submitted && form2.Print.errors}"
+                                               class="form-control"  placeholder="Print" [(ngModel)]="Print"
+                                             
+                                              >
+                                              <div *ngIf="isForm1Submitted && form2.Print.errors?.required" class="invalid-feedback">
+                                                Required
+                                              </div>
+                                              <!--  -->
+                                            </div>
+                                          </div>
+                                            </div>
+
+
+                                            <div class="col-md-6"  >
+                                              <div class="row mb-3">
+                                                <label for="firstName" class="col-sm-3 col-form-label">Online:</label>
+                                                <div class="col-sm-9">
+                                                  <!-- <input type="text" class="form-control" id="firstName" formControlName="firstName" 
+                                                  [ngClass]="{'is-invalid': isForm1Submitted && form1.firstName.errors}" placeholder="First name"> -->
+                                                  <input id="Online" 
+                                                  name="Online"
+                                                  formControlName="Online"
+                                                  [ngClass]="{'is-invalid': isForm1Submitted && form2.Online.errors}"
+                                                   class="form-control"  placeholder="Online" [(ngModel)]="Online"
+                                                 
+                                                  >
+                                                  <div *ngIf="isForm1Submitted && form2.Online.errors?.required" class="invalid-feedback">
+                                                    Required
+                                                  </div>
+                                                  <!--  -->
+                                                </div>
+                                              </div>
+                                                </div>
+
+
+                                                <div class="col-md-6"  >
+                                                  <div class="row mb-3">
+                                                    <label for="firstName" class="col-sm-3 col-form-label">Review Process:</label>
+                                                    <div class="col-sm-9">
+                                                      <!-- <input type="text" class="form-control" id="firstName" formControlName="firstName" 
+                                                      [ngClass]="{'is-invalid': isForm1Submitted && form1.firstName.errors}" placeholder="First name"> -->
+                                                      <input id="ReviewProcess" 
+                                                      name="ReviewProcess"
+                                                      formControlName="ReviewProcess"
+                                                      [ngClass]="{'is-invalid': isForm1Submitted && form2.ReviewProcess.errors}"
+                                                       class="form-control"  placeholder="Review Process" [(ngModel)]="ReviewProcess"
+                                                     
+                                                      >
+                                                      <div *ngIf="isForm1Submitted && form2.ReviewProcess.errors?.required" class="invalid-feedback">
+                                                        Required
+                                                      </div>
+                                                      <!--  -->
+                                                    </div>
+                                                  </div>
+                                                    </div>
+                 
+
+
+
+                    <!-- <div *ngFor="let row of chunkedProperties" class="row mb-2 mt-2">
+                      <div *ngFor="let property of row" class="col-md-4">
+                        <div class="col-md-6 "><label class="  " [for]="property.items">{{ property.items }}</label>
+                        </div>
+                        <div class="form-group row">
+                          <div class="col-md-10"> 
+                            <input type="text" class="col-8 form-control " [id]="property.items"
+                              [name]="property.items">
+                          </div>
+                        </div>
+                      </div>
+                    </div> -->
+
+              </div>
+              <!-- <div class="row mb-3">
+                <label for="email" class="col-sm-3 col-form-label">Email</label>
+                <div class="col-sm-9">
+                  <input type="email" class="form-control" id="email" formControlName="email"
+                  [ngClass]="{'is-invalid': isForm2Submitted && form2.email.errors}" placeholder="Email">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="mobileNumber" class="col-sm-3 col-form-label">Mobile</label>
+                <div class="col-sm-9">
+                  <input type="number" class="form-control" id="mobileNumber" formControlName="mobileNumber"
+                  [ngClass]="{'is-invalid': isForm2Submitted && form2.mobileNumber.errors}" placeholder="Mobile number">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="password" class="col-sm-3 col-form-label">Password</label>
+                <div class="col-sm-9">
+                  <input type="password" class="form-control" id="password" formControlName="password"
+                  [ngClass]="{'is-invalid': isForm2Submitted && form2.password.errors}" placeholder="Password">
+                </div>
+              </div> -->
+              <div class="d-flex justify-content-center mt-2">
+                <button class="btn btn-secondary me-2" type="button" awPreviousStep>Back</button>
+                <button class="btn btn-primary" type="submit">Continue</button>
+              </div>
+            </form>
+          </aw-wizard-step>
+
+          <aw-wizard-step stepTitle="Journal Editor Details">
+
+            <div class="row" style="margin-top: 20px;">
+              <div class="col-sm-2"> <h4>Editor's</h4> </div>
+              </div>
+              <div>
+              <div class="col-sm-12"><button style="float: right;" type="submit" (click)="addQuantity()" class="btn btn-primary me-2">Add Editor Cheif</button></div>
+              </div>
+               <form [formGroup]="editorForm" (ngSubmit)="onSubmitFinal()" style="margin-top: 4rem;">  
+               <div  formArrayName="EditorinChief">  
+                
+                 <div class="row" *ngFor="let quantity of quantities().controls; let i=index" [formGroupName]="i">
+                   <hr>
+   
+                   <div class="col-md-6">
+                     <div class="row mb-3">
+                       <label for="lastName" class="col-sm-3 col-form-label">Editor Type</label>
+                       <div class="col-sm-9">
+                         <select id="editorType" formControlName="EditorType" class="form-select">
+                           <option value="" selected="selected">Select</option>
+                           <option value="Editor in Chief">Editor in Chief</option>
+                           <option value="Managing Editor">Managing Editor</option>
+                           <option value="Associate Editors">Associate Editors</option>
+                           <option value=" Editorial board members National"> Editorial board members National</option>
+                           <option value="Editorial board members International">Editorial board members International</option>
+                           <option value="Reviewers ">Reviewers </option>
+                         </select>
+                      
+                       </div>
+                     </div>
+                   </div>
+                   <div class="col-md-6">
+                     <div class="row mb-3">
+                       <label for="lastName" class="col-sm-3 col-form-label">Editor Name</label>
+                       <div class="col-sm-9">
+                           <input id="EditorName" formControlName="EditorName" class="form-control" 
+                            placeholder="EditorName"
+                           >
+                      
+                       </div>
+                     </div>
+                   </div>
+   
+                   <div class="col-md-6">
+                     <div class="row mb-3">
+                       <label for="lastName" class="col-sm-3 col-form-label">Designation</label>
+                       <div class="col-sm-9">
+                           <input id="Designation" formControlName="Designation" class="form-control" 
+                            placeholder="Designation"
+                           >
+                      
+                       </div>
+                     </div>
+                   </div>
+   
+   
+   
+                   <div class="col-md-6">
+                     <div class="row mb-3">
+                       <label for="lastName" class="col-sm-3 col-form-label">Email</label>
+                       <div class="col-sm-9">
+                           <input id="Email" formControlName="Email" class="form-control" 
+                            placeholder="Email"
+                           >
+                      
+                       </div>
+                     </div>
+                   </div>
+   
+                   <div class="col-md-6">
+                     <div class="row mb-3">
+                       <label for="lastName" class="col-sm-3 col-form-label">Editor Address</label>
+                       <div class="col-sm-9">
+                           <textarea id="EditorAddress" formControlName="EditorAddress" class="form-control" 
+                            placeholder="EditorAddress"
+                           ></textarea>
+                      
+                       </div>
+                     </div>
+                   </div>
+   
+                   
+            
+   <div class="col-md-6">
+     <div class="row mb-3">
+       <div class="col-sm-3">
+     <button (click)="removeQuantity(i)" class="btn btn-danger">Remove</button>  
+     </div>
+   </div>
+   </div>
+   
+                 </div>
+             
+               </div>  
+               <div class="d-flex justify-content-center mt-2">
+                <button class="btn btn-secondary me-2" type="button" awPreviousStep>Back</button>
+                <button class="btn btn-success" type="button" (click)="finishFunction()">Finish</button>
+              </div>
+               </form>
+            <!-- <div class="text-center">
+              <i data-feather="check-circle" appFeatherIcon class="text-success mt-4 mb-2 icon-xxl"></i>
+              <h3 class="text-muted mb-3">Thank you !</h3>
+              <p class="w-75 mx-auto mb-4 text-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ut nulla nunc. Maecenas arcu sem, hendrerit a tempor quis, sagittis accumsan tellus. In hac habitasse platea dictumst</p>
+            </div>
+            <div class="d-flex justify-content-center mt-2">
+              <button class="btn btn-secondary me-2" type="button" awPreviousStep>Back</button>
+              <button class="btn btn-success" type="button" (click)="finishFunction()">Finish</button>
+            </div> -->
+          </aw-wizard-step>
+
+        </aw-wizard>
+
+      </div>
+    </div>
+  </div> <!-- col -->
+  </div>
+<!-- <div class="container-fluid" id="JournalForm" *ngIf="isLoginFailed==false; else loginFailed"
+  style="background-color: white; height: 85rem;">
+  <div class="container-fluid ">
+    <form [formGroup]="journalForm" (ngSubmit)="addJournal()" class="container mt-4">
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label for="journalTitle" class="col-sm-5 col-form-label   ">Journal Title :</label>
+          <div class="col-sm-7">
+            <input id="journalTitle" formControlName="journalTitle" class="form-control" [(ngModel)]="JournalTitle">
+            <div *ngIf="journalTitle?.invalid && (journalTitle?.dirty || journalTitle?.touched)" class="text-danger">
+              <div *ngIf="journalTitle?.errors?.['required']">Title is required.</div>
+              <div *ngIf="journalTitle?.errors?.['maxLength']">Title cannot exceed 200 characters.</div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="col-md-4">
+          <label for="subTitle" class="col-sm-5 col-form-label   ">Journal Sub Title:</label>
+          <div class="col-sm-7">
+            <input id="subTitle" formControlName="subTitle" class="form-control" >
+            <div *ngIf="subTitle?.invalid && (subTitle?.dirty || subTitle?.touched)" class="text-danger">
+              <div *ngIf="subTitle?.errors?.['required']">Sub Title is required.</div>
+              <div *ngIf="subTitle?.errors?.['maxLength']">Sub Title cannot exceed 500 characters.</div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="col-md-4">
+          <label for="introduction" class="col-sm-6 col-form-label   ">Journal Introduction:</label>
+          <div class="col-sm-6">
+            <textarea id="introduction" formControlName="introduction" class="form-control"
+              ></textarea>
+            <div *ngIf="introduction?.invalid && (introduction?.dirty || introduction?.touched)" class="text-danger">
+              <div *ngIf="introduction?.errors?.['required']">Introduction is required.</div>
+              <div *ngIf="introduction?.errors?.['maxLength']">Introduction cannot exceed 1000 characters.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class=" row mb-3">
+        <div class="col-md-4">
+          <label for="volume" class="col-sm-5 col-form-label   ">Journal Volume:</label>
+          <div class="col-sm-7">
+            <input id="volume" formControlName="volume" class="form-control" >
+            <div *ngIf="volume?.invalid && (volume?.dirty || volume?.touched)" class="text-danger">
+              <div *ngIf="volume?.errors?.['required']">Volume is required.</div>
+              <div *ngIf="volume?.errors?.['maxLength']">Volume cannot exceed 20 characters.</div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="col-md-4">
+          <label for="publishDate" class="col-sm-5 col-form-label   ">Publish Date:</label>
+          <div class="col-sm-7">
+            <input id="publishDate" type="date" formControlName="publishDate" class="form-control"
+              >
+            <div *ngIf="publishDate?.invalid && (publishDate?.dirty || publishDate?.touched)" class="text-danger">
+              <div *ngIf="publishDate?.errors?.['required']">Publish Date is required.</div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="col-md-4">
+          <label for="scopeOfJournal" class="col-sm-6 col-form-label   ">Scope of Journal:</label>
+          <div class="col-sm-6">
+            <textarea id="scopeOfJournal" formControlName="scopeofjournals" class="form-control"
+              ></textarea>
+            <div *ngIf="scopeOfJournal?.invalid && (scopeOfJournal?.dirty || scopeOfJournal?.touched)" class="text-danger">
+              <div *ngIf="scopeOfJournal?.errors?.['required']">Scope of Journal is required.</div>
+              <div *ngIf="scopeOfJournal?.errors?.['maxLength']">Scope of Journal cannot exceed 1000 characters.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="form-group row">
+        <div class="col-md-4">
+          <label for="thrustArea" class="col-sm-6 col-form-label   ">Journal Thrust Area:</label>
+          <div class="col-sm-6">
+            <textarea id="thrustArea" formControlName="thrustArea" class="form-control" [(ngModel)]="ThrustArea"></textarea>
+            <div *ngIf="thrustArea?.invalid && (thrustArea?.dirty || thrustArea?.touched)" class="text-danger">
+              <div *ngIf="thrustArea?.errors?.['required']">Thrust Area is required.</div>
+              <div *ngIf="thrustArea?.errors?.['maxLength']">Thrust Area cannot exceed 1000 characters.</div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="col-md-4">
+          <label for="articleType" class="col-sm-4 col-form-label   ">Article Type:</label>
+          <div class="col-sm-8">
+            <textarea id="articleType" formControlName="articleType" class="form-control"
+              [(ngModel)]="ArticleType"></textarea>
+            <div *ngIf="articleType?.invalid && (articleType?.dirty || articleType?.touched)" class="text-danger">
+              <div *ngIf="articleType?.errors?.['required']">Article Type is required.</div>
+              <div *ngIf="articleType?.errors?.['maxLength']">Article Type cannot exceed 1000 characters.</div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="col-md-4">
+          <label for="File" class="col-form-label   ">Journal Image :</label>
+          <div class="col-md-3">
+            <input class="w-30" required type="file" id="File" name="File" (change)="onFileSelected($event)"
+              accept=".png, .jpg, .jpeg" formControlName="file" />
+            <div *ngIf="journalForm.get('file')?.invalid && journalForm.get('file')?.touched" class="text-danger">
+              File is required. Allowed Image format png, jpg , jpeg and of Max size 1MB.
+            </div>
+            <div class="text-danger fs-6 mt-2" style="width: 16rem;">
+              File is required. Allowed Image format png, jpg , jpeg and of Max size 1MB.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col-md-12 m-4 ">
+          <br />
+        </div>
+      </div>
+      
+      <div *ngFor="let row of chunkedProperties" class="row mb-2 mt-2">
+        <div *ngFor="let property of row" class="col-md-4">
+          <div class="col-md-6 "><label class="  " [for]="property.items">{{ property.items }}</label>
+          </div>
+          <div class="form-group row">
+            <div class="col-md-10"> 
+              <input type="text" class="col-8 form-control " [id]="property.items"
+                [name]="property.items">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col-md-12 m-4 ">
+          <br />
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col-md-12 m-4  d-flex justify-content-center align-items-center">
+          <button type="submit" [disabled]="journalForm.invalid || this.uploadEnabled===false"
+            class="btn btn-primary col-md-4">Add Journal</button>
+        </div>
+      </div>
+    </form>
+    
+  </div>
+</div> -->
+<ng-template #loginFailed>
+  <div class="text-center bg-danger" *ngIf="isLoginFailed">
+    <h3 class="text-center fs-2 m-5 text-warn pt-5 "> Error in User Login . </h3>
+    <div class="row mt-4 mb-4">
+      <div class="col-sm-12 text-center">
+        <div class="mb-3 p-4">
+          <Label class="form-label fs-4 text-warn ">Something Wen Wrong. Please Try login again!.</Label>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)"  [fullScreen]="true" size="default" type="ball-spin-clockwise">
+  <p style="color: white">Please Wait... </p>
+</ngx-spinner>

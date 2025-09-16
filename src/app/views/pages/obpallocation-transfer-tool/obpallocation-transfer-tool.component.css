@@ -1,0 +1,361 @@
+.login-page header {
+  background-color: #fff;
+  border-bottom: 1px solid rgba(8, 7, 8, 0.1);
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.login-page header .name {
+  margin-left: -250px;
+}
+.login-page header .name h1 {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  color: #000;
+  margin: 5px 0;
+}
+.login-page header h1 span.obp-text {
+  color: #f15822;
+}
+
+.login-page .logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  gap: 10px;
+}
+
+.login-page .logo img.ums-logo {
+  height: 35px;
+}
+.login-page .logo img.ums-logo-s {
+  display: none;
+}
+.login-page .logo img.lpu-seal {
+  height: 50px;
+}
+.login-page .main-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width: 1024px) {
+  .login-page header .name {
+    margin-left: -150px;
+  }
+  .login-page header h1 {
+    text-align: center;
+    line-height: 18px;
+  }
+  .login-page header h1 span.obp-text {
+    display: block;
+  }
+  .login-page header h1 span.dash {
+    display: none;
+  }
+  .login-page .logo img.ums-logo {
+    display: none;
+  }
+  .login-page .logo img.ums-logo-s {
+    display: block;
+    height: 35px;
+  }
+}
+
+@media (max-width: 767px) {
+  .login-page header .name {
+    margin-left: -100px;
+  }
+  .login-page header h1 {
+    font-size: 18px !important;
+  }
+}
+
+@media (max-width: 575px) {
+  header {
+    flex-direction: column;
+  }
+  .login-page header .name {
+    margin-left: 0;
+  }
+  .login-page header h1 {
+    width: 100%;
+    white-space: nowrap;
+  }
+
+  .login-page header h1 span.obp-text {
+    display: unset;
+  }
+  .login-page header h1 span.dash {
+    display: unset;
+  }
+  .login-page .logo img.ums-logo {
+    display: unset;
+  }
+
+  .login-page .logo img.ums-logo-s,
+  .login-page .lpu-social {
+    display: none;
+  }
+}
+/* .custom-dropdown {
+  background-color: #fd6c04; /* Custom background color */
+  /* color: rgb(3, 3, 3); /* Text color */
+  /* border: 1px solid rgb(43, 128, 81); /* Border color */
+  /* border-radius: 0.25rem; /* Slightly rounded corners */
+  /* padding: 0.375rem 0.75rem; /* Padding for the dropdown */
+  /* width: 200px;
+} */
+
+/* Optional: Change the appearance when hovering or focusing */
+/* .custom-dropdown:focus {
+  border-color: rgb(43, 128, 81); /* Focus border color */
+ /* box-shadow: 0 0 0 0.2rem rgba(43, 128, 81, 0.25); /* Focus shadow */
+/*} */
+
+/* Adjust the dropdown options */
+.custom-dropdown option {
+  background-color: #fff; /* Option background color */
+  color: #000; /* Option text color */
+}
+
+@media (max-width: 450px) {
+  header {
+    flex-direction: column;
+  }
+  .login-page header .name {
+    margin-left: 0;
+  }
+  .login-page header h1 {
+    width: 100%;
+    white-space: nowrap;
+  }
+
+  .login-page header h1 span.obp-text {
+    display: block;
+  }
+  .login-page header h1 span.dash {
+    display: none;
+  }
+  .login-page .logo img.ums-logo {
+    display: unset;
+  }
+
+  .login-page .logo img.ums-logo-s,
+  .login-page .lpu-social {
+    display: none;
+  }
+  .login-page .logo img.ums-logo {
+    height: 23px;
+  }
+}
+
+.nav-tabs {
+  background-color: #e7ac82; /* Tab background color */
+}
+.nav-tabs .nav-link:not(.active) {
+  background-color: #eb8b48; /* Ensure unselected tabs have the same background */
+  border: 1px solid transparent; /* Optional: border for unselected tabs */
+}
+  .custom-dropdown {
+    width: 50%; /* Full width of the cell */
+    height: 100%; /* Full height of the cell */
+    border: none; /* Remove border if needed */
+    background-color: transparent; /* Make background transparent */
+    font-size: 14px; /* Set font size */
+    padding: 0; /* Remove padding to keep height down */
+    margin: 0; /* Remove margin */
+    box-sizing: border-box; /* Ensure padding is included in height */
+  }
+  
+  /* Optional: Style for hover and focus */
+  .custom-dropdown:focus {
+    outline: none; /* Remove default focus outline */
+  }
+
+  .container-fluid {
+    padding: 20px; /* Add padding to the container */
+    background-color: #f8f9fa; /* Light background color for contrast */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+ 
+.nav-tabs .nav-link {
+  color: white; /* Tab text color */
+  padding: 10px 20px; /* Padding for better click area */
+  font-weight: bold; /* Bold text for better readability */
+}
+
+.nav-tabs .nav-link.active {
+  background-color: #45a742; /* Darker shade for active tab */
+  color: white; /* Keep text color white for active tab */
+  border: 1px solid #bba9a3; /* Optional: Add border for active tab */
+}
+
+.nav-tabs .nav-link:hover {
+  background-color: rgb(134, 129, 126); /* Hover color */
+  color: white; /* Maintain text color on hover */
+}
+
+.card-body {
+    margin-top: 20px; /* Space between sections */
+    background-color: white; /* Card background */
+    border-radius: 8px; /* Rounded corners for cards */
+    padding: 20px; /* Padding inside the card */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow for card effect */
+}
+.table-responsive {
+  max-height: 300px; /* Set the maximum height for the scrollable area */
+  overflow-y: auto; /* Enable vertical scrolling */
+  position: relative;
+}
+.table {
+  position: relative; /* Ensure the table has a positioning context */
+  border-collapse: collapse; /* Collapsed borders */
+  width: 100%; /* Full width */
+  overflow: auto; /* Enable scrolling */
+}
+
+.table thead {
+  position: sticky; /* Make the header sticky */
+  top: 0; /* Position it at the top */
+  z-index: 10; /* Ensure it stays above other content */
+  background-color: #f05120; /* Background color for the header */
+  color: white; /* Text color for the header */
+}
+.table th {
+    background-color: #ec673e; /* Header background color */
+    color: white; /* Header text color */
+    padding: 10px; /* Padding in header cells */
+}
+
+.table td {
+    padding: 10px; /* Padding in body cells */
+    vertical-align: middle; /* Align content to the middle */
+    font-weight: bold; /* Make table cell text bold */
+}
+.table tbody tr:hover {
+  background-color: rgba(192, 245, 108, 0.3); /* Light yellow background on hover */
+  transition: background-color 0.3s; /* Smooth transition */
+}
+.btn-block {
+    padding: 10px 15px; /* Adjust padding for buttons */
+    font-size: 1rem; /* Consistent font size */
+}
+
+/* Custom dropdown styles */
+.custom-dropdown {
+  /*  background-color: #fd6c04; /* Custom dropdown background */
+    color: rgb(0, 0, 0); /* Dropdown text color */
+    border: 1px solid rgb(43, 128, 81); /* Dropdown border color */
+    border-radius: 4px; /* Rounded corners for dropdown */
+    
+}
+
+.custom-dropdown:focus {
+    background-color: rgb(255, 255, 255); /* Focus background */
+    border-color: rgb(60, 150, 90); /* Focus border */
+    color: rgb(14, 14, 14); /* Maintain text color */
+    font-weight: bold;
+}
+
+.form-group {
+    margin-bottom: 20px; /* Space below form groups */
+}
+.custom-button {
+    width: 120px; /* Set button width */
+ /*   font-weight: bold; /* Set text weight */
+    font-size: 1rem; /* Font size */
+    text-align: center; /* Center text */
+    padding: 8px; /* Padding for better spacing */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s ease; /* Smooth background transition */
+}
+
+.custom-button:hover {
+    background-color: #007bff; /* Change background color on hover */
+    color: white; /* Text color on hover */
+}
+
+.custom-modal {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Shadow effect */
+  border-radius: 10px; /* Optional: rounded corners */
+}
+
+.modal-header {
+  background-color: #007bff; /* Header background color */
+  color: white; /* Text color in the header */
+}
+
+.modal-footer {
+  justify-content: flex-end; /* Align footer buttons to the right */
+}
+
+.form-field-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center;    /* Center vertically if needed */
+  height: 100%;           /* Adjust height as needed */
+}
+.custom-width {
+  width: 300px; /* Adjust width as needed */
+}
+.loading-alert {
+  position: fixed; /* Fixed position to overlay the viewport */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+/*  background-color: rgba(0, 0, 0, 0.3); Lower opacity for semi-transparency*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it appears above other content */
+}
+
+.alert-content {
+  background: rgba(255, 255, 255, 0.9); /* Slightly transparent white background */
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.loader {
+  border: 8px solid #f3f3f3; /* Light grey */
+  border-top: 8px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  margin-top: 15px;
+  font-size: 16px;
+  color: #333; /* Text color */
+}
+ 
+.wrapped-header {
+  white-space: normal;  /* Allow the text to wrap to multiple lines */
+  word-wrap: break-word; /* Ensure long words break to the next line */
+  text-align: center;    /* Center align the text within the header cell */
+  height: 60px;          /* Control the height of the header row */
+  padding: 8px;          /* Optional: Add padding to space text out */
+  line-height: 0.5;      /* Control the line height for better wrapping */
+}
+
+

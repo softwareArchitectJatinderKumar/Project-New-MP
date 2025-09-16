@@ -1,0 +1,36 @@
+<div class="boxha">
+  <div>
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Company Name</th>
+          <th>Drive Code</th>
+          <th>Drive Date</th>
+          <th>Stream</th>
+          <th>Salary Package</th>
+
+
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let record of getRecordsForCurrentPage()">
+          <td>{{record.companyName}}</td>
+          <td>{{record.driveCode}}</td>
+          <td>{{record.driveDate}}</td>
+          <td>{{record.stream}}</td>
+          <td>{{record.salaryPackage}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+<div class="boxhb">
+  <div class="page">
+    <button id="pg" *ngFor="let page of pagesArray" (click)="changePage(page)" [class.active]="currentPage === page">
+      {{ page }}
+    </button>
+
+  </div>
+</div>

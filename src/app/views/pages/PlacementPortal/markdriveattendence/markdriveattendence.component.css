@@ -1,0 +1,66 @@
+.label
+{
+    height:3.125rem;
+    /* width:76.875rem; */
+    background-color: brown;
+    color:white;
+    margin-top:0.625rem;
+}
+h4{
+    margin-left:30.375rem;
+    padding:0.625rem;
+}
+.box
+{
+    height:30.25rem;
+    /* width:76.875rem; */
+    border-style: outset;
+    display: flex;
+    justify-content: center;
+}
+.field
+{
+   
+    margin-left: 15.5rem;
+    margin-top: 3.0625rem;/*1px;*/
+    width:50rem;
+    height: 18rem;
+    
+}
+label{
+    font-weight: bold;
+    color:brown;
+    padding:0.5rem;
+    width: 12rem;
+}
+.details
+{
+    /* width:30.875rem; */
+    margin-left:6.5rem;
+    display: inline-flex;
+    height:3.5rem;
+    padding-top: 1rem;
+    
+  
+}
+select{
+    border-style: outset;
+    height:3rem;
+}
+.btt
+{
+    width:21.875rem;
+    margin-top:75rem;
+    margin-left: 35rem;
+   
+}
+button{
+    background-color: #fd6c04!important;
+    color:white;
+    margin-top: 0rem;
+}
+button:hover
+{
+    background-color: brown!important;
+    color:white;
+}

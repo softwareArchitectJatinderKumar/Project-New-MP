@@ -1,0 +1,87 @@
+.label
+{
+    height:3.125rem;
+    width:76.875rem;
+    background-color: brown;
+    color:white;
+    /* margin-left:3.125rem; */
+    margin-top:0.625rem;
+}
+h4{
+    margin-left:32.5rem;
+    padding:0.625rem;
+}
+.box
+{
+    height:auto;
+    width:76.875rem;
+    /* margin-left:3.125rem; */
+    border-style: outset;
+    
+}
+.boxa
+{
+    height:auto;
+    width:75rem;
+    margin-left:0.625rem;
+    border-style: outset;
+    margin-top:1.25rem;
+    margin-bottom:0.3125rem;/*5px;*/
+    margin-right: 0.625rem;  /*10px;*/
+}
+
+.boxb
+{
+    height:3.75rem;;
+    width:75rem;
+    margin-left:0.625rem;
+    border-style: outset;
+    margin-top:0.625rem;
+    margin-bottom:0.3125rem;/*5px;*/
+    margin-right: 0.625rem;
+    display: inline-flex;
+}
+.page
+{
+    margin-left:6.25rem;
+    display: inline-flex;
+    padding:0.3125rem;/*5px;*/
+    height:0.625rem;
+    width:0.625rem;
+    padding-top: 1.25rem;
+}
+#pg
+{
+    height:1.5625rem; /*25px;*/
+    width:1.875rem;
+    padding-left:0.3125rem;/*5px;*/
+    background-color: #fd6c04;
+    margin-left: 0.3125rem;/*5px;*/
+    color:white;
+  
+}
+.export
+{
+    margin-left:62.5rem;
+    background-color: brown;
+    height:2.1875rem;/*35px;*/
+    width:9.375rem; /*150px;*/
+    padding:0.3125rem;/*5px;*/
+    margin-top: 0.625rem;
+    color:white;
+    
+}
+.num
+{
+    margin-left:0rem; 
+    height:0.625rem; 
+   
+}
+#total
+{
+    margin-left:31.25rem;
+    font-weight: bold;
+   margin-top:1.25rem;
+
+    
+}

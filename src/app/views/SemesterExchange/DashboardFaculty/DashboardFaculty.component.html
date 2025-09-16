@@ -1,0 +1,162 @@
+<div class="container-fluid mt-4" id="UserDashboardId" *ngIf="!isLoginFailed; else ErrorApplication">
+  <ngx-datatable class="bootstrap table table-striped material" [rows]="AllApplications"
+    [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="5"
+    [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true">
+
+    <ngx-datatable-column name="Application Id" prop="applicationId" [width]="80">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        {{row.applicationId}}
+      </ng-template>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column name="Contact No" prop="phoneNumber" [width]="80">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        {{row.phoneNumber}}
+      </ng-template>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column name="WhatsApp No" prop="whatsAppNo" [width]="80">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        {{row.whatsAppNo}}
+      </ng-template>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column name="Parent Phone" prop="parentContact" [width]="80">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        {{row.parentContact}}
+      </ng-template>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column name="Counselling Status" prop="counsellingStatus" [width]="80">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        <span class="badge"
+          [ngClass]="{'bg-success': row.counsellingStatus === '1', 'bg-danger': row.counsellingStatus === '0'}">
+          {{ row.counsellingStatus === '1' ? 'Verified' : 'Rejected' }}
+        </span>
+      </ng-template>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column name="Application Status" prop="applicationStatus" [width]="80">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        {{row.applicationStatus}}
+      </ng-template>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column name="Dealing User Id" prop="dealingUId" *ngIf="isHOD" [width]="80">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        {{row.dealingUId}}
+      </ng-template>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column name="Dealing User Remarks" prop="dealingUser InterviewRemarks" *ngIf="isHOD" [width]="80">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        {{row.dealingUserInterviewRemarks}}
+      </ng-template>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column name="Dealing HOD Remarks" prop="dealingHODRemarks" *ngIf="isHoW" [width]="80">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        {{row.dealingHODRemarks}}
+      </ng-template>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column name="Actions" [sortable]="false" prop="Id">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        <button class="btn icon-btn me-2" (click)="GetStudentApplication(row)">View Application</button>
+        <button class="btn btn-success" *ngIf="(isHOD || isHoW) && row.applicationStatus === 'Pending'"
+          (click)="acceptApplication(row)">Accept</button>
+        <button class="btn btn-danger" *ngIf="(isHOD || isHoW) && row.applicationStatus === 'Pending'"
+          (click)="disapproveApplication(row)">Reject</button>
+        <button class="btn btn-primary" *ngIf="isHOD" (click)="ForwardToHod(row, 'How')">Forward to HoW</button>
+        <button class="btn btn-primary" *ngIf="isDealingAuthority" (click)="ForwardToHod(row, 'Hod')">Forward to
+          HoD</button>
+        <button class="btn btn-primary" (click)="submitCounsellingRemarks(row)">Submit Counselling Remarks</button>
+        <button class="btn btn-primary" *ngIf="isDealingAuthority" (click)="UploadEvaluationRemarks(row, 'HOD')">Submit
+          Evaluation Remarks</button>
+      </ng-template>
+    </ngx-datatable-column>
+  </ngx-datatable>
+</div>
+<div class="full-page-loader" *ngIf="loadingIndicator" aria-label="Loading">
+  <div class="loader-spinner">
+    <span class="material-icons md-48 spin-icon">autorenew</span>
+  </div>
+</div>
+
+
+
+<ng-template #EvaluationModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Evaluation Form</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="EvaluationForm" (ngSubmit)="submitEvaluationForm()" class="forms-sample">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Application ID:</label>
+          <input type="text" class="form-control" [value]="ApplicationId" disabled />
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Registration Number:</label>
+          <input type="text" class="form-control" [value]="RegistrationNo" disabled />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4 mb-3" *ngFor="let field of [
+          {label: 'Academics Marks', name: 'AcademicsMarks'},
+          {label: 'Communication Skills Marks', name: 'CommunicationSkillsMarks'},
+          {label: 'Attitude Marks', name: 'AttitudeMarks'},
+          {label: 'Extra-Curricular Activities Marks', name: 'ExtraCurricularMarks'},
+          {label: 'Knowledge Marks', name: 'KnowledgeMarks'}
+        ]">
+          <label class="form-label">{{field.label}}:</label>
+          <input type="number" class="form-control" [formControlName]="field.name" min="0" max="100" />
+          <div
+            *ngIf="EvaluationForm.get(field.name)?.invalid && (EvaluationForm.get(field.name)?.touched || isForm1Submitted)"
+            class="text-danger">
+            Please enter a valid {{field.label}} (0-100).
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12 mb-3">
+          <label class="form-label">Comments:</label>
+          <textarea class="form-control" rows="3" formControlName="Comments"></textarea>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Upload Evaluation Form Document <span class="text-danger">*</span></label>
+          <input type="file" class="form-control" (change)="onFileSelectedEvaluationForm($event)"
+            [ngClass]="{ 'is-invalid': EvaluationForm.get('EvalutionDocumentPath')?.invalid && (isForm1Submitted || EvaluationForm.get('EvalutionDocumentPath')?.touched) }" />
+          <div
+            *ngIf="EvaluationForm.get('EvalutionDocumentPath')?.invalid && (isForm1Submitted || EvaluationForm.get('EvalutionDocumentPath')?.touched)"
+            class="text-danger">
+            Please upload a valid evaluation document.
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cancel click')">Cancel</button>
+        <button type="submit" class="btn btn-success" [disabled]="EvaluationForm.invalid">Submit Evaluation</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+<ng-template #ErrorApplication>
+  <div class="text-center" *ngIf="isLoginFailed">
+    <h3 class="text-center fs-2 m-5 text-danger pt-5 "> Error in User Login . </h3>
+    <div class="row mt-4 mb-4">
+      <div class="col-sm-12 text-center">
+        <div class="mb-3 p-4">
+          <Label class="form-label fs-4 text-danger ">Unauthorise Access.</Label>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

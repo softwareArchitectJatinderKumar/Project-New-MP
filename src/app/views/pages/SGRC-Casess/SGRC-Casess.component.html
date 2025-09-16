@@ -1,0 +1,430 @@
+<div class="row">
+  <nav>
+    <div class="nav nav-tabs nav nav-tabs d-flex justify-content-center active" id="nav-tab" role="tablist">
+      <button class="btn btn-danger me-5 active" id="studentGrievance-all-tab" data-bs-toggle="tab"
+        style="padding: .95rem 8rem;" data-bs-target="#studentGrievance-all" type="button" role="tab"
+        aria-controls="studentGrievance-all" aria-selected="true">All cases</button>
+
+      <button class=" btn btn-danger btn-lg ms-5" id="studentGrievance-open-tab" data-bs-toggle="tab"
+        style="padding: .95rem 8rem;" data-bs-target="#studentGrievance-open" type="button" role="tab"
+        aria-controls="studentGrievance-open" aria-selected="false">Open Cases</button>
+
+      <button class=" btn btn-danger btn-lg ms-5" id="studentGrievance-closed-tab" data-bs-toggle="tab"
+        style="padding: .95rem 8rem;" data-bs-target="#studentGrievance-closed" type="button" role="tab"
+        aria-controls="studentGrievance-closed" aria-selected="false">Closed Cases</button>
+    </div>
+  </nav>
+  <div class="tab-content" id="nav-tabContent">
+    <!-- Tab one contents -->
+
+    <div class="tab-pane fade active show" id="studentGrievance-all" role="tabpanel"
+      aria-labelledby="studentGrievance-all-tab">
+
+     
+      <div class="row">
+        <div class="col-md-12 stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <h6 class="card-title d-flex justify-content-center fs-4 text-success">Student
+                Grievance All Cases</h6>
+              <div class="col-sm-12">
+                <div class="col-sm-4">
+                <div class="mb-3">
+                  <button (click)="exportToExcel()" class="btn btn-success ">Export to
+                    ExcelSheet</button>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="mb-3">
+                  <input
+                  #search
+                  id="search"
+                  type="text"
+                  class="form-control"
+                  placeholder="Search"
+                  aria-label="Search"
+                  aria-describedby="basic-addon1"
+                />
+                </div>
+              </div>
+              </div>
+              
+              <div class="table-responsive">
+           
+<ngx-datatable
+                                class="bootstrap table table-striped material"
+                                [rows]="studentLists"
+                               
+                                [loadingIndicator]="loadingIndicator"
+                                [columnMode]="ColumnMode.force"
+                                [footerHeight]="50"
+                                [limit]="10"
+                                [headerHeight]="80"
+                                rowHeight="auto"
+                              >
+                              <ngx-datatable-column *ngFor="let col of columns" 
+                              
+                              [prop]="col"></ngx-datatable-column>
+                              <ngx-datatable-column name="Download File" [sortable]="false" prop="Id">
+                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                 ngx-datatable-cell-template>
+                                 <ng-container *ngIf="row.fileName != null">
+                                  <button class="btn btn-dark" (click)="onSelectFile(row)">
+                                    Download
+                                  </button>
+                                  </ng-container>
+                                  <ng-container *ngIf="row.fileName == null">
+                                    <span style="margin: auto;float: left;
+                                    font-weight: bold;padding: 10px 10px 10px 10px;">No FIle</span>
+                                  </ng-container>
+                                </ng-template>
+                              </ngx-datatable-column>
+                                <ngx-datatable-column name="Actions" [sortable]="false" prop="Id">
+                                  <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                   ngx-datatable-cell-template>
+                                   <ng-container *ngIf="row.status=='O'">
+                                    <button class="btn btn-dark" (click)="onSelect(row)">
+                                      <!-- Edit{{rowIndex + 1}} -->
+                                      Take Action
+                                    </button>
+                                  </ng-container>
+                                  <ng-container *ngIf="row.status=='C'"><span style="margin: auto;float: left;
+                                    font-weight: bold;padding: 10px 10px 10px 10px;">Ticket Closed</span></ng-container>
+                                  </ng-template>
+
+                              </ngx-datatable-column>
+</ngx-datatable>
+
+                <!-- <table id="dataTableAll" class="table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                      <th>Nature</th>
+                      <th>Subject</th>
+                      <th>Ticket Number</th>
+                      <th>Description</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let dt of studentLists">
+                      <td>{{dt.name}}</td>
+                      <td>{{dt.email}}</td>
+                      <td>{{dt.phone}}</td>
+                      <td>{{dt.nature}}</td>
+                      <td>{{dt.subject}}</td>
+                      <td>{{dt.ticketNumber}}</td>
+                      <td>{{dt.description}}</td>
+                      <td>{{dt.status}}</td>
+                     
+                      <td> <button class="btn btn-primary" name="{{dt.ticketNumber}}"  >View Rejected Remarks</button>
+                    </tr>
+                 </tbody>
+                </table> -->
+
+
+
+              </div>
+           
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Tab Two  Open cases contents -->
+    <div class="tab-pane fade" id="studentGrievance-open" role="tabpanel" aria-labelledby="studentGrievance-open-tab">
+
+   
+      <div class="row">
+        <div class="col-md-12 stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <h6 class="card-title d-flex justify-content-center fs-4 text-success">Student
+                Grievance Open Cases</h6>
+                <div class="col-sm-12">
+                  <div class="col-sm-4">
+                  <div class="mb-3">
+                    <button (click)="exportToExcel()" class="btn btn-success ">Export to
+                      ExcelSheet</button>
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="mb-3">
+                    <input
+                    #searchOpen
+                    id="searchOpen"
+                    type="text"
+                    class="form-control"
+                    placeholder="Search"
+                    aria-label="Search"
+                    aria-describedby="basic-addon1"
+                  />
+                  </div>
+                </div>
+                </div>
+              <div class="table-responsive">
+
+
+
+                <ngx-datatable
+                class="bootstrap table table-striped material"
+                [rows]="studentListsOpenCases"
+               
+                [loadingIndicator]="loadingIndicator"
+                [columnMode]="ColumnMode.force"
+                [footerHeight]="50"
+                [limit]="10"
+                [headerHeight]="80"
+                rowHeight="auto"
+              >
+              <ngx-datatable-column *ngFor="let col of columns" 
+              
+              [prop]="col"></ngx-datatable-column>
+              <ngx-datatable-column name="Download File" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                 ngx-datatable-cell-template>
+                 <ng-container *ngIf="row.fileName != null">
+                  <button class="btn btn-dark" (click)="onSelectFile(row)">
+                    Download
+                  </button>
+                  </ng-container>
+                  <ng-container *ngIf="row.fileName == null">
+                    <span style="margin: auto;float: left;
+                    font-weight: bold;padding: 10px 10px 10px 10px;">No FIle</span>
+                  </ng-container>
+                </ng-template>
+              </ngx-datatable-column>
+                <ngx-datatable-column name="Actions" [sortable]="false" prop="Id">
+                  <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                   ngx-datatable-cell-template>
+                   <ng-container *ngIf="row.status=='O'">
+                    <button class="btn btn-dark" (click)="onSelect(row)">
+                      <!-- Edit{{rowIndex + 1}} -->
+                      Take Action
+                    </button>
+                  </ng-container>
+                  <ng-container *ngIf="row.status=='C'"><span style="margin: auto;float: left;
+                    font-weight: bold;padding: 10px 10px 10px 10px;">Ticket Closed</span></ng-container>
+                  </ng-template>
+
+              </ngx-datatable-column>
+</ngx-datatable>
+
+
+               
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div>
+
+    <!-- Tab Three contents -->
+    <div class="tab-pane fade " id="studentGrievance-closed" role="tabpanel"
+      aria-labelledby="studentGrievance-closed-tab">
+
+  
+
+      <div class="row">
+        <div class="col-md-12 stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <h6 class="card-title d-flex justify-content-center fs-4 text-success">Student
+                Grievance Close Cases</h6>
+                <div class="col-sm-12">
+                  <div class="col-sm-4">
+                  <div class="mb-3">
+                    <button (click)="exportToExcel()" class="btn btn-success ">Export to
+                      ExcelSheet</button>
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="mb-3">
+                    <input
+                    #searchClose
+                    id="searchClose"
+                    type="text"
+                    class="form-control"
+                    placeholder="Search"
+                    aria-label="Search"
+                    aria-describedby="basic-addon1"
+                  />
+                  </div>
+                </div>
+                </div>
+              <div class="table-responsive">
+
+            
+                <ngx-datatable
+                class="bootstrap table table-striped material"
+                [rows]="studentListsClosedCases"
+               
+                [loadingIndicator]="loadingIndicator"
+                [columnMode]="ColumnMode.force"
+                [footerHeight]="50"
+                [limit]="10"
+                [headerHeight]="80"
+                rowHeight="auto"
+              >
+              <ngx-datatable-column *ngFor="let col of columns" 
+              
+              [prop]="col"></ngx-datatable-column>
+              <ngx-datatable-column name="Download File" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                 ngx-datatable-cell-template>
+                 <ng-container *ngIf="row.fileName != null">
+                  <button class="btn btn-dark" (click)="onSelectFile(row)">
+                    Download
+                  </button>
+                  </ng-container>
+                  <ng-container *ngIf="row.fileName == null">
+                    <span style="margin: auto;float: left;
+                    font-weight: bold;padding: 10px 10px 10px 10px;">No FIle</span>
+                  </ng-container>
+                </ng-template>
+              </ngx-datatable-column>
+                <ngx-datatable-column name="Actions" [sortable]="false" prop="Id">
+                  <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                   ngx-datatable-cell-template>
+                   <ng-container *ngIf="row.status=='O'">
+                    <button class="btn btn-dark" (click)="onSelect(row)">
+                      <!-- Edit{{rowIndex + 1}} -->
+                      Take Action
+                    </button>
+                  </ng-container>
+                  <ng-container *ngIf="row.status=='C'"><span style="margin: auto;float: left;
+                    font-weight: bold;padding: 10px 10px 10px 10px;">Ticket Closed</span></ng-container>
+                  </ng-template>
+
+              </ngx-datatable-column>
+</ngx-datatable>
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #verticalCenteredModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title text-center text-danger" id="exampleModalLabel">Student Grievance Admin Action </h5>
+       
+            <button type="button" class="btn-close" (click)="modal.close('by: close icon')"
+            aria-label="Close"></button>
+            
+    </div>
+    <div class="modal-body">
+        <div class="container-fluid d-flex justify-content-between">
+            <div class="table-responsive pt-3 container-fluid">
+                <!-- <h2 mat-dialog-title class="text-center text-danger">Action </h2> -->
+                <table cellpadding='12' class="table-responsive pt-3" cellspacing='18' border='2' width='100%'>
+                    <tbody>
+                        <tr>
+                            <td>Ticket Id</td>
+                            <td>
+                                <div class="card-text text-danger">
+                                    {{this.ticketNumber}}
+                                </div>
+                            </td>
+                           
+                            <td>Provide Remarks</td>
+                            <td>
+                                <div class="card-text text-danger">
+                                    <input type="text" class="text-danger" style="border: 12;" placeholder="Enter remarks" [(ngModel)]="remarks">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Action </td>
+                            <td>
+                                <div class="card-text text-danger">
+                                    <button mat-button class="btn btn-secondary" (click)="onSave()">Save</button>
+                                </div>
+                            </td>
+                            
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+     
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary"
+            (click)="modal.close('by: close button')">Close</button>
+    </div>
+</ng-template>
+  <div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title text-center fs-3 text-success"> </h4>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #viewDescModal let-modal>
+  <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLabel">SGRC Status Action</h5>
+      <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+
+      <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            
+            <div class="card-body">
+
+              <div class="row mb-4">
+                <div class="col-sm">
+                    <label for="MOUName" class="form-label">Status:</label>
+                    <br>
+                    <!-- <input class="form-control"  type="text" [disabled]="isInputDisabled" (keyup)="sendit()"   [(ngModel)]="notingSheetRefNo" placeholder="Noting Sheet Reference Number">
+                     -->
+                     <select class="form-select" id="ddlSelect" [(ngModel)]="sgrcStatus">
+                        <option value="">Select Status</option>
+                        <option value="O">Open</option>
+                        <option value="C">Close</option>
+
+                     </select>
+                 
+                </div>
+                <div class="col-sm">
+                
+                  <label for="MOUName" class="form-label">Remarks:</label>
+                  <br>
+                  <!-- <input class="form-control"  type="text" [disabled]="isInputDisabled" (keyup)="sendit()"   [(ngModel)]="notingSheetRefNo" placeholder="Noting Sheet Reference Number">
+                   -->
+                        <textarea id="txtRemarks" [(ngModel)]="sgrcRemarks" class="form-control"></textarea>
+               
+                </div>
+                </div>
+                <div class="row mb-4">
+                <div class="col-sm">
+                  <label for="MOUName" class="form-label">&nbsp;</label>
+                  <button style="margin-top: 27px;" class="btn btn-primary" *ngIf="isInputDisabled" type="button" disabled>
+                  <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                  Please wait...
+                </button> &nbsp;
+                  <button type="submit" style="    margin-top: 27px;"  *ngIf="!isInputDisabled" class="btn btn-primary me-2" (click)="VerifyData();">Submit</button>
+                  <!-- <button type="submit" style="    margin-top: 27px; background-color: black;color:white;border-color:black !important;"  *ngIf="!isInputDisabled" class="btn btn-primary me-2" (click)="resetNoting();">Close</button> -->
+
+              </div>
+            </div>
+  <!-- <div [innerHtml]="viewdescription"></div> -->
+  
+            </div>
+            </div>
+            </div>
+            </div>
+</ng-template>

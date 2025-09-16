@@ -1,0 +1,266 @@
+.label
+{
+    height:3.125rem;
+    width:76.875rem;
+    background-color: brown;
+    color:white;    
+    margin-top:0.625rem;
+}
+.labela
+{
+    height:3.125rem;
+    width:76.875rem;
+    background-color: whitesmoke;
+    color:white;
+    
+   
+}
+
+h4{
+    margin-left:28rem;
+    padding:0.625rem;
+}
+.box
+{
+    height:auto;
+    width:76.875rem;    
+    border-style: outset;
+    
+}
+#branch
+{
+    color:black;
+    margin-left:30rem;
+}
+.dp
+{
+    margin-right:1rem;
+    margin-top:2rem;
+    height:7rem;
+    width:7.5rem;
+    border-style: outset;
+    color:black;
+    font-weight: bold;
+}
+
+img{
+    margin-left:0.2rem;
+    margin-right:0.2rem;
+    margin-top:0.2rem;
+}
+
+.tab
+{
+    width:74.5rem;
+    margin-left:1rem;
+    margin-right:1.18rem;
+    margin-top:0.5rem;
+    border-style: outset;
+    display: inline-flex;
+}
+
+
+ table.data tr, table.data th , table.data td  {
+    padding-top:  0.01rem; /*2px;*/
+    padding-bottom: 0.01rem; /*2px;*/
+    padding-left:0.5rem; /*5px;*/
+    padding-right: 0.5rem; /*5px;*/
+    padding-top:  0.5rem; /*2px;*/
+    padding-bottom: 0.5rem; /*2px;*/
+    color:sienna;
+  }
+  .labelb
+{
+    height:3.125rem;
+    width:74.4rem;
+    background-color: whitesmoke;
+    color:white;
+    margin-left:1.18rem;
+    margin-top:0.5rem;
+   
+}
+#branchh
+{
+    color:black;
+    margin-left:29rem;
+}
+.details
+{
+    width:74.5rem;
+    margin-left:1rem;
+    margin-right:1.18rem;
+    margin-top:0.5rem;
+    border-style: outset;
+   
+}
+
+table.record tr,table.record th ,table.record td  {
+    padding-top:  0.3rem; /*2px;*/
+    padding-left:1.3rem; /*5px;*/
+    padding-right: 1.315rem; /*5px;*/
+    color:sienna;
+    padding-bottom:  0.3rem;
+   
+  }
+  .qualification   
+{
+    width:74.5rem;
+    margin-left:1rem;
+    margin-right:1.18rem;
+    margin-top:0.5rem;
+    border-style: outset;
+    height:16.5rem;
+   
+}
+  
+.labelq
+{
+   
+    height:3.125rem;
+    width:74.4rem;
+    background-color: brown;
+    color:white;
+    margin-left:1.18rem;
+    margin-top:0.5rem;
+    
+   
+}
+.qualification tbody th,.qualification thead th{
+    color:brown;
+}
+.labelc
+{
+    height:3.125rem;
+    width:74.4rem;
+    background-color: brown;
+    color:white;
+    margin-left:1.18rem;
+    margin-top:0.5rem;
+   
+}
+.contact   
+{
+    width:74.5rem;
+    margin-left:1rem;
+    margin-right:1.18rem;
+    margin-top:0.5rem;
+    border-style: outset;
+    height:12rem;
+   
+}
+.contact tbody th,.contact thead th{
+    color:brown;
+}
+.labeld
+{
+    height:3.125rem;
+    width:74.4rem;
+    background-color: brown;
+    color:white;
+    margin-left:1.18rem;
+    margin-top:0.5rem;
+   
+}
+.fine
+{
+    width:74.5rem;
+    margin-left:1rem;
+    margin-right:1.18rem;
+    margin-top:0.5rem;
+    border-style: outset;
+    height:10rem;
+}
+.labele
+{
+    height:3.125rem;
+    width:74.4rem;
+    background-color: brown;
+    color:white;
+    margin-left:1.18rem;
+    margin-top:0.5rem; 
+}
+.summary
+{
+    width:74.5rem;
+    margin-left:1rem;
+    margin-right:1.18rem;
+    margin-top:0.5rem;
+    border-style: outset;
+    height:40rem;
+}
+.labelf
+{
+    height:3.125rem;
+    width:74.4rem;
+    background-color: brown;
+    color:white;
+    margin-left:1.18rem;
+    margin-top:0.5rem; 
+}
+.drive
+{
+    width:74.5rem;
+    margin-left:1rem;
+    margin-right:1.18rem;
+    margin-top:0.5rem;
+    border-style: outset;
+    height:40rem;
+    overflow-y: auto;
+}
+.labelg
+{
+    height:3.125rem;
+    width:74.4rem;
+    background-color: brown;
+    color:white;
+    margin-left:1.18rem;
+    margin-top:0.5rem; 
+}
+.round
+{
+    width:74.5rem;
+    margin-left:1rem;
+    margin-right:1.18rem;
+    margin-top:0.5rem;
+    border-style: outset;
+    height:25rem;
+    overflow-y: auto;
+}
+.round th{
+    color:brown;
+}
+.labelh
+{
+    height:3.125rem;
+    width:74.4rem;
+    background-color: brown;
+    color:white;
+    margin-left:1.18rem;
+    margin-top:0.5rem; 
+}
+.performance
+{
+    width:74.5rem;
+    margin-left:1rem;
+    margin-right:1.18rem;
+    margin-top:0.5rem;
+    border-style: outset;
+    height:20rem;
+    display:inline-flex;
+}
+.boxa
+{
+    height:12.5rem;
+    width:47.5rem;
+    border-style: outset;  
+}
+.boxb
+{
+    height:12.5rem;
+    width:31.75rem;
+    border-style: outset;
+    margin-left:0.625rem;  
+    overflow-y: scroll;
+    overflow-x: scroll;
+    
+}

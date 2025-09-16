@@ -1,0 +1,752 @@
+<ul ngbNav #horizontalCenterNav="ngbNav" class="nav-tabs justify-content-center">
+    <li [ngbNavItem]="1">
+      <a ngbNavLink>MOU Approval</a>
+      <ng-template ngbNavContent>
+
+        <div class="h-100 d-flex p-2 align-items-center justify-content-center">
+            <div class="container ">
+
+                <div class="row">
+                    <div class="col-md-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <!-- <h6 class="card-title" style="text-align: center">Placement</h6> -->
+                                
+                                <div class="row mb-4">
+                                    <div class="col-sm">
+                                        <label for="MOUName" class="form-label">MOU Noting Sheet Reference Number:</label>
+                                        <br>
+                                        <input class="form-control"  type="text" [disabled]="isInputDisabled" (keyup)="sendit()"   [(ngModel)]="notingSheetRefNo" placeholder="Noting Sheet Reference Number">
+                                     
+                                    </div>
+                                    <div class="col-sm">
+                                        <label for="MOUName" class="form-label">&nbsp;</label>
+                                        <button style="margin-top: 27px;" class="btn btn-primary" *ngIf="isInputDisabled" type="button" disabled>
+                                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                        Please wait...
+                                      </button> &nbsp;
+                                        <button type="submit" style="    margin-top: 27px;"  *ngIf="!isInputDisabled" class="btn btn-primary me-2" (click)="VerifyData();">Click here to Verify Noting sheet</button>
+                                        <button type="submit" style="    margin-top: 27px; background-color: black;color:white;border-color:black !important;"  *ngIf="!isInputDisabled" class="btn btn-primary me-2" (click)="resetNoting();">Reset</button>
+    
+                                    </div>
+                                </div>
+                            
+                                <div class="row mb-4" *ngIf="showApprovalMou">
+        
+                       
+                                    <div class="col-sm">
+                                        <label for="MOUName" class="form-label">Collaboration With:</label>
+                                        <input class="form-control" type="text"  [(ngModel)]="enterMouName" placeholder="Collaboration With">
+                                    </div>
+        
+                                            
+                                    <div class="col-sm">
+                                        <label class="form-label">Collaboration Type:</label>
+                                        <ng-select 
+                                        [items]="Type"  #ngSelectComponentStream
+                                        [multiple]=false
+                                        bindLabel="stream"
+                                        [clearable]="false"
+                                        placeholder="Select Collaboration Type"
+                                        (change)="onchangeAgreementTypes($event)"
+                                        bindValue="id"
+                                        [hideSelected]="true"
+                                        [(ngModel)]="selectCollabType"
+                                       
+                                        >
+                                        </ng-select>
+        
+                                    </div>
+
+                                    <div class="col-sm" *ngIf="agrrentmentShowing">
+                                        <label class="form-label">{{selectCollabTypeName}} Sub Type:</label>
+                                        <ng-select 
+                                        [items]="AgreementTypeDisplay2"  #ngSelectComponentStream
+                                        [multiple]=true
+                                        bindLabel="value"
+                                        [clearable]="false"
+                                        placeholder="Select Collaboration Sub Type"
+                                        (change)="changeSubType($event)"
+                                        bindValue="value"
+                                        [hideSelected]="true"
+                                        [(ngModel)]="selectCollabSubType"
+                                        >
+                                        </ng-select>
+                                    </div>
+        
+                                   
+                                </div>
+        
+                                <div class="row mb-4" *ngIf="showApprovalMou">
+                                    <div class="col-sm">
+                                    <label class="form-label" for="formFile">{{selectCollabTypeName}} File</label>
+                                    <input class="form-control" #userPhoto (change)="onFileSelected($event)" type="file" id="formFile">
+                                    </div>
+                                    <div class="col-sm">
+                                        <label class="form-label">Document Responsible:</label>
+                                        <ng-select 
+                                        [items]="Allemployee"  #ngSelectComponentStream
+                                        [multiple]=false
+                                        bindLabel="allocatedTo"
+                                        [clearable]="false"
+                                        [virtualScroll]="true"
+                                        placeholder="Select"
+                                        (change)="changeResponsible($event)"
+                                        bindValue="emp_code"
+                                        [hideSelected]="true"
+                                        [(ngModel)]="selectResponsible"
+                                        >
+                                        </ng-select>
+                                        
+                                    </div>
+                                    <div class="col-sm">
+                                    </div>
+
+                                    
+                    
+                                </div>
+        
+                                <div class="text-center mt-3" *ngIf="showApprovalMou">
+                                    <button class="btn btn-primary" *ngIf="isButtonShwoing" type="button" disabled>
+                                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                        Loading...
+                                      </button> &nbsp;
+                                    <button type="submit" *ngIf="!isButtonShwoing" class="btn btn-primary me-2" (click)="AddMouApprovalData();">Submit</button>
+                                    <button type="button" class="btn btn-secondary" (click)="resetData();">Reset</button>
+                                </div>
+<br>
+<br>
+                                <div class="row mb-4" *ngIf="showApprovalMou">
+                                    <h6 class="card-title">Noting Sheet Details</h6>
+                                    <div class="table-responsive divcontainer">
+                    
+                                        <table id="dataTableExampleNews" class="table">
+                                          <thead>
+                                            <tr>
+                                              <th>Noting Sheet Reference No</th>
+                                              <th> Description</th>
+                                              <th>Approval Period</th>
+                                              <th>Start Date</th>
+                                              <th>Document Name</th>
+                                              <th>EntryDate</th>
+                                              <th>EndDate</th>
+                                              <th>Subject</th>
+                                              <th>Hard Copy Sent</th>
+                                              <th>FileNumber</th>
+                                              <th>Department</th>
+                                              <th>School Division Name</th>
+                                            
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            <tr *ngFor="let dt of TableData">
+                                              <td>{{dt.notingSheetReferenceNo}}</td>
+                                              <td> <button class="btn btn-primary"  (click)="viewdesc(dt.description)"  >View Description</button>
+                                                <!-- <span [innerHtml]="dt.description"></span> -->
+                                            </td>
+                                              <td>{{dt.approvalPeriod}}</td>
+                                              <td>{{dt.startDate}}</td>
+                                              <td *ngIf="dt.documentName != ''">
+                                                <a target="_blank" href="https://files.lpu.in/umsweb/OnlineNotingSheetDocuments/SupportingDocuments/{{dt.documentName}}">View Upload Document</a>
+                                                <!-- {{dt.documentName}} -->
+                                                </td>
+                                                <td *ngIf="dt.documentName == ''">
+                                                    No Document Uploaded
+                                                    <!-- {{dt.documentName}} -->
+                                                    </td>
+                                              <td>{{dt.entryDate}}</td>
+                                              <td>{{dt.endDate}}</td>
+                                              <td>{{dt.subject}}</td>
+                                              <td>{{dt.hardCopySent}}</td>
+                                              <td>{{dt.fileNumber}}</td>
+                                              <td>{{dt.department}}</td>
+                                              <td>{{dt.schoolDivisionName}}</td>
+                                           
+                                            </tr>
+                                         </tbody>
+                                        </table>
+                                      </div>
+                                </div>
+                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+
+</ng-template>
+</li>
+<li [ngbNavItem]="2">
+  <a ngbNavLink>MOU Entry</a>
+  <ng-template ngbNavContent>
+
+<div class="h-100 d-flex p-2 align-items-center justify-content-center">
+    <div class="container ">
+      
+      
+
+        <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row mb-4">
+
+                            <div class="col-sm">
+
+                               
+                            </div>
+
+                            <div class="col-sm">
+                                <label for="MoUName" class="form-label">MoU Name:	</label>
+                                <ng-select [items]="ddlMoUName" #ngSelectComponent
+                                [clearable]="false"
+                                bindLabel="name"
+                                (change)="onddlMoUName($event)"
+                                bindValue="id"
+                                placeholder="Select Mou Name"
+                               
+                                >
+                              </ng-select>
+                              <!-- [(ngModel)]="ddlMoUName_ID" -->
+                            </div>
+
+                            <div class="col-sm">
+
+                            </div>
+
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- <div class="row" *ngIf="ddlMoUName_ID !=''">  -->
+          <div class="row" > 
+          <!-- <div class="row" > -->
+            
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- <h6 class="card-title" style="text-align: center">Placement</h6> -->
+                        
+                        
+                        <div class="row mb-4">
+
+                            <div class="col-sm">
+                                <label for="session" class="form-label">Session:</label>
+
+                                <ng-select [items]="session"
+                                bindLabel="plannerSessionName"
+                                (change)="onSessionChange($event)"
+                                bindValue="sessionId"
+                                
+                                placeholder="Select Session"
+                                [clearable]="false"
+                                >
+
+                                >
+                              </ng-select>
+
+                               
+                            </div>
+
+                            <div class="col-sm">
+                                <label for="metricbysessionid" class="form-label">Metric Description:	</label>
+                                <ng-select [items]="metricbysessionid" #ngSelectComponent
+                                [clearable]="false"
+                                bindLabel="metricDescription"
+                                (change)="changeCompany($event)"
+                                bindValue="metricId"
+                                placeholder="Select Metric"
+
+                                >
+                              </ng-select>
+                            </div>
+
+                            <!-- <div class="col-sm">
+                                <label class="form-label">Agreement Type:</label>
+                                <ng-select 
+                                [items]="batchYearStreamData"  #ngSelectComponentStream
+                                [multiple]=true
+                                bindLabel="stream"
+                                (change)="changeCompanyStream($event)"
+                                bindValue="id"
+                                [hideSelected]="true"
+                                [(ngModel)]="selectedStreams">
+                                </ng-select>
+
+                            </div> -->
+
+                           
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-sm">
+                                <label class="form-label">Signing Date :</label>
+                                <div class="mb-3">
+                                    <div class="input-group">
+                                      <input class="form-control" placeholder="yyyy-mm-dd"
+                                          name="dp" [(ngModel)]="SigningDate" ngbDatepicker #d="ngbDatepicker">
+                                      <button class="input-group-text" type="button" (click)="d.toggle()">
+                                        <i class="feather icon-calendar icon-md text-muted"></i>
+                                      </button>
+                                    </div>
+                                  </div>
+                            </div>
+                            <div class="col-sm">
+                                <label class="form-label">Start Date :</label>
+                                <div class="mb-3">
+                                    <div class="input-group">
+                                      <input class="form-control" placeholder="yyyy-mm-dd"
+                                          name="dp" [(ngModel)]="StartDate" ngbDatepicker #d1="ngbDatepicker">
+                                      <button class="input-group-text" type="button" (click)="d1.toggle()">
+                                        <i class="feather icon-calendar icon-md text-muted"></i>
+                                      </button>
+                                    </div>
+                                  </div>
+                                
+
+                            </div>
+                            <div class="col-sm">
+                                <label class="form-label">End Date :</label>
+                                <div class="mb-3">
+                                    <div class="input-group">
+                                      <input class="form-control" placeholder="yyyy-mm-dd"
+                                          name="dp" [(ngModel)]="EndDate" ngbDatepicker #d2="ngbDatepicker">
+                                      <button class="input-group-text" type="button" (click)="d2.toggle()">
+                                        <i class="feather icon-calendar icon-md text-muted"></i>
+                                      </button>
+                                    </div>
+                                  </div>
+                            </div>
+            
+                        </div>
+
+                        
+                       
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-header">
+                        Organization Details
+                    </div>
+                    <div class="card-body">
+                        <!-- <h6 class="card-title" style="text-align: center">Placement</h6> -->
+            
+            
+                        <div class="row mb-4">
+                            <div class="col-sm">
+                                <label class="form-label">Organization Name :</label>
+                                <input class="form-control" [(ngModel)]="OrganizationName" type="text" placeholder="Enter Organization Name">
+
+                            </div>
+                            <div class="col-sm">
+                                <label class="form-label">Organization Category :</label>
+                                <br/>
+                                <div style="display: block; justify-content: space-evenly;">
+
+                                <label class="radio-inline">
+                                    <input type="radio" value="A" [(ngModel)]="OrganizationCategory" name="OrganizationCategory" >A
+                                  </label>
+                                  <label class="radio-inline">
+                                    <input type="radio" value="A+" [(ngModel)]="OrganizationCategory" name="OrganizationCategory">A+
+                                  </label>
+                                  <label class="radio-inline">
+                                    <input type="radio" value="Z" [(ngModel)]="OrganizationCategory" name="OrganizationCategory">Z
+                                  </label>
+                                  <label class="radio-inline">
+                                    <input type="radio" value="NA" [(ngModel)]="OrganizationCategory" name="OrganizationCategory">NA
+                                  </label>
+                                  </div>
+
+                            </div>
+                            <div class="col-sm">
+                                <label class="form-label">Website (Optional) :</label>
+                                <input class="form-control" [(ngModel)]="Website" type="text" placeholder="Enter Website">
+
+                            </div>
+            
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-sm">
+                                <label class="form-label">Name of Organization's Contact Person :</label>
+                                <input class="form-control" [(ngModel)]="ContactPerson" type="text" placeholder="Enter Contact Person">
+
+                            </div>
+                            <div class="col-sm">
+                                <label class="form-label">Designation:</label>
+                                <input class="form-control" [(ngModel)]="Designation" type="text" placeholder="Enter Person Designation">
+
+                                
+
+                            </div>
+                            <div class="col-sm">
+                                <label class="form-label">Contact Number :</label>
+                                <input class="form-control" [(ngModel)]="ContactNo" type="text" placeholder="Enter Contact">
+
+                            </div>
+            
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-sm">
+                                <label class="form-label">Email:</label>
+                                <input class="form-control" [(ngModel)]="Email" type="text" placeholder="Enter Email">
+                        
+                            </div>
+                            <div class="col-sm"></div>
+                            <div class="col-sm"></div>
+                        
+                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-header">
+                        Agreement Details
+                    </div>
+                    <div class="card-body">
+                        <!-- <h6 class="card-title" style="text-align: center">Placement</h6> -->
+            
+            
+                        <div class="row mb-4">
+                            <div class="col-sm">
+                                <label class="form-label">Name of Division/School :</label>
+                                <ng-select [items]="eGovDivisionMaster"
+                                [searchable]="false"
+                                bindLabel="name"
+                                bindValue="id"
+                                [clearable]="false"
+                                [virtualScroll]="true"
+                                placeholder="Select Name of Division/School"
+                                (change)="changeSchoolDivision($event)"
+                                >
+                              </ng-select>
+                              <!-- [(ngModel)]="selectedSchoolDiv" -->
+
+
+                            </div>
+                            <div class="col-sm">
+                                <label class="form-label">Responsible SPOC :</label>
+                                <ng-select 
+                                [items]="Allemployee"  
+                                [multiple]=false
+                                bindLabel="allocatedTo"
+                                [clearable]="false"
+                                [virtualScroll]="true"
+                                (change)="changeCompanyStream($event)"
+                                bindValue="emp_code"
+                                placeholder="Select Responsible SPOC"
+                               >
+                                </ng-select>
+                                <!-- [(ngModel)]="selectedSPOC" -->
+                                
+                            </div>
+                            <div class="col-sm">
+                                <label class="form-label">MOU Time Period Category :</label>
+                                <br/>
+                                <div style="display: block; justify-content: space-evenly;">
+                                <label class="radio-inline">
+                                    <input type="radio" [(ngModel)]="MOUTimePeriod" value="TimeBound" name="MOUTimePeriod" >Time-Bound
+                                  </label>
+                                  <label class="radio-inline">
+                                    <input type="radio" [(ngModel)]="MOUTimePeriod" value="Indefinite" name="MOUTimePeriod">Indefinite
+                                  </label>
+                                  </div>
+                            
+                            </div>
+            
+                        </div>
+
+                        
+
+                        <div class="row mb-4">
+                            <div class="col-sm">
+                                <label class="form-label">MOU Classification :</label>
+                                <br/>
+                                <div style="display: block; justify-content: space-evenly;">
+                                    <label class="radio-inline">
+                                    <input type="radio" value="National" [(ngModel)]="MOUClassification" name="MOUClassification" >National
+                                  </label>
+                                  <label class="radio-inline">
+                                    <input type="radio" value="International" [(ngModel)]="MOUClassification" name="MOUClassification">International
+                                  </label>
+                                  </div>
+                        
+                            </div>
+                            <div class="col-sm">
+                                <label class="form-label">MOU Type :</label>
+                                <br/>
+                                <div style="display: block; justify-content: space-evenly;">
+                                    <label class="radio-inline">
+                                    <input type="radio" value="Government" [(ngModel)]="MOUTypeA" name="MOUType" >Government
+                                  </label>
+                                  <label class="radio-inline">
+                                    <input type="radio" value="NonGovernment" [(ngModel)]="MOUTypeA" name="MOUType">Non-Government
+                                  </label>
+                                  </div>
+                            </div>
+                            <div class="col-sm">
+                                <label class="form-label">Commercial Involved :</label>
+                                <br/>
+                                <div style="display: block; justify-content: space-evenly;">
+                                    <label class="radio-inline">
+                                    <input type="radio" value="Yes" (change)="changeCommercialInvolved($event)" [(ngModel)]="CommercialInvolved" name="CommercialInvolved" >Yes
+                                  </label>
+                                  <label class="radio-inline">
+                                    <input type="radio" value="No" (change)="changeCommercialInvolved($event)"  [(ngModel)]="CommercialInvolved" name="CommercialInvolved">No
+                                  </label>
+                                  </div>
+                            </div>
+                        
+                        
+                        </div>
+
+                        <div class="row mb-4" *ngIf="isCommercialShowing">
+                          <div class="col-sm" style="    max-width: 3%;">
+                          <i class="feather icon-plus-square icon-md text-muted" (click)="addCommercialRow()" style="font-size: 22px;"></i>
+                         
+                         </div>
+                         <div class="col-sm" style="    max-width: 3%;">
+                          <i class="feather icon-minus-square icon-md text-muted" (click)="minusCommercialRow()" style="font-size: 22px;"></i>
+                         </div>
+                         <div class="row mb-4" 
+                         *ngFor="let i of Arr(commercialRows).fill(1);let index=index;">
+                          <div class="col-sm">
+                              <label class="form-label">Enter Commercial Amount {{index+1}}:</label>
+                              <input class="form-control" id="txtCoomercialAmount{{index+1}}" type="text" placeholder="Enter Commercial Amount">
+                      
+                          </div>
+                          <div class="col-sm">
+                            <label class="form-label">Enter Commercial Amount Remarks {{index+1}}:</label>
+                            <input class="form-control" id="txtCoomercialAmountRemarks{{index+1}}" type="text" placeholder="Enter Commercial Amount Remarks">
+                    
+                        </div>
+                      </div>
+                          </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-header">
+                        Area of Collaboration
+                    </div>
+                    <div class="card-body">
+                        <!-- <h6 class="card-title" style="text-align: center">Placement</h6> -->
+            
+            
+                        <div class="row mb-4">
+                            <div class="col-sm">
+                                <label class="form-label">Select Area of Collaboration :</label>
+
+                            
+
+                                <ng-select 
+                                [items]="AreaofCollaboration"  #ngSelectComponentStream
+                                [multiple]=true
+                                bindLabel="areaDescription"
+                                (change)="changeCollab($event)"
+                                bindValue="areaId"
+                                [clearable]="false"
+                                placeholder="Select Area of Collaboration"
+                               
+
+                                >
+                                </ng-select>
+                                <!-- [(ngModel)]="AreaofCollaborationA" -->
+                            </div>
+                            <div class="col-sm">
+                                <label class="form-label">Select Activity :</label>
+                                <ng-select 
+                                [items]="ActivityByAoC"  #ngSelectComponentStream
+                                [multiple]=true
+                                bindLabel="areaDescription"
+                                bindValue="areaId"
+                                [hideSelected]="true"
+                                placeholder="Select Activity"
+                                (change)="changeActivityNew($event)"
+                                >
+                                </ng-select>
+                                <!-- [(ngModel)]="ActivityA" -->
+                                
+                            </div>
+                            <div class="col-sm"></div>
+            
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-header">
+                        Additional
+                    </div>
+                    <div class="card-body">
+                        <!-- <h6 class="card-title" style="text-align: center">Placement</h6> -->
+            
+            
+                        <div class="row mb-4">
+                            <div class="col-sm">
+                                <label class="form-label">Schools Involved :</label>
+                                <ng-select 
+                                [items]="SchoolsInvolved_"  #ngSelectComponentStream
+                                [multiple]=true
+                                bindLabel="name"
+                                bindValue="id"
+                                [hideSelected]="true"
+                                placeholder="Schools Involved"
+                                (change)="changeSchoolInvolved($event)"
+                                >
+                                </ng-select>
+                                <!-- [(ngModel)]="SchoolsInvolvedA" -->
+                            </div>
+                            <div class="col-sm">
+                                <label class="form-label">Divisions Involved :</label>
+                                <ng-select 
+                                [items]="DivisionsInvolved_"  #ngSelectComponentStream
+                                [multiple]=true
+                                bindLabel="name"
+                                (change)="changeDivisionInvolved($event)"
+                                bindValue="id"
+                                [hideSelected]="true"
+                                placeholder="Select Division Involved"
+                                
+                                >
+                                </ng-select>
+                                <!-- [(ngModel)]="DivisionsInvolvedA" -->
+                            </div>
+                            <div class="col-sm"></div>
+
+            
+                        </div>
+
+                        <div class="text-center mt-3">
+
+                          <div class="text-center mt-3" >
+                            <button class="btn btn-primary" *ngIf="isButtonShwoingNew" type="button" disabled>
+                                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                Loading...
+                              </button> &nbsp;
+                            <button type="submit" *ngIf="!isButtonShwoingNew"  class="btn btn-primary me-2" (click)="AddMouEntryData();">Submit</button>
+                            <button type="button" class="btn btn-secondary" (click)="resetData();">Reset</button>
+                        </div>
+
+
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+
+        </div>
+      
+    </div>
+</div>
+
+</ng-template>
+</li>
+
+<li [ngbNavItem]="3">
+    <a ngbNavLink>MOU </a>
+    <ng-template ngbNavContent>
+
+<div class="row">
+    <div class="col-md-12 stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Pending</h6>
+          <div class="table-responsive">
+            
+            <table id="dataTableExample" class="table">
+              <thead>
+                <tr>
+                  <th>id</th>
+                  <th>name</th>
+                  <th>session Year</th>
+                  <th>type</th>
+                  <th>sub Type</th>
+                  <th>Vetting Status</th>
+                  <th>vetting Date</th>
+                  <th>vetting By</th>
+                  <th>document Responsible Person</th>
+                  <!-- <th>Forward To UID</th>
+                  <th>Forward User Vetting Date</th>
+                  <th>Forward User Vetting Status</th> -->
+                  <th>File</th>
+                  <th>View Remarks</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let dt of TableDataCreatedBy">
+                  <td>{{dt.id}}</td>
+                  <td>{{dt.name}}</td>
+                  <td>{{dt.sessionYear}}</td>
+                  <td>{{dt.type}}</td>
+                  <td>{{dt.subType}}</td>
+                  <td>{{dt.isVetting}}</td>
+                  <td>{{dt.vettingDate}}</td>
+                  <td>{{dt.vettingBy}}</td>
+                  <td>{{dt.documentResponsiblePerson}}</td>
+                  <!-- <td>{{dt.forwardToUID}}</td>
+                  <td>{{dt.forwardUserVetting}}</td>
+                  <td>{{dt.forwardUserVettingDate}}</td> -->
+                  <td>
+                    <a href={{dt.filePath}} class="btn btn-secondary btn-lg active" target="_blank" role="button" aria-pressed="true">View</a>
+                  </td>
+                  <!-- <td>
+                    <button class="btn btn-primary"  name="{{dt.id}}"  >Chat</button>
+
+                  </td> -->
+                </tr>
+             </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+    </ng-template>
+</li>
+
+</ul>
+
+<div [ngbNavOutlet]="horizontalCenterNav" class="border border-top-0 p-3"></div>
+
+
+<ng-template #viewDescModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Vetting</h5>
+        <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <div class="col-md-12 grid-margin stretch-card">
+          <div class="card">
+              
+              <div class="card-body">
+    <div [innerHtml]="viewdescription"></div>
+              </div>
+              </div>
+              </div>
+              </div>
+  </ng-template>

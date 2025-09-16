@@ -1,0 +1,1054 @@
+<div class="container-fluid" id="EventCalender" *ngIf="isLoginFailed==false; else loginFailed">
+  <nav>
+    <div class="nav nav-tabs nav nav-tabs d-flex justify-content-center active" id="nav-tab" role="tablist">
+      <button class="btn me-5 active" id="NewEventForm-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
+        data-bs-target="#NewEventForm" type="button" role="tab" aria-controls="NewEventForm"
+        (click)="GetAllEventsData()" aria-selected="true"><label style="font-size:1.2rem;">New Event(s)</label></button>
+
+      <button class=" btn btn-lg ms-5" id="MyAllNewEventForm-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
+        data-bs-target="#MyAllNewEventForm" type="button" role="tab" aria-controls="MyAllNewEventForm"
+        (click)="GetAllEventsData()" aria-selected="false"><label style="font-size:1.2rem;">Show Events
+        </label></button>
+    </div>
+  </nav>
+  <div class="tab-content" id="nav-tabContent">
+    <!-- Tab one contents -->
+    <div class="tab-pane fade active show" id="NewEventForm" role="tabpanel" aria-labelledby="NewEventForm-tab">
+      <ng-container *ngIf="loadingIndicator; else dataLoadedBlock">
+        <!-- Loader Template -->
+        <div class="text-center">
+          <div class="text-center">
+            <span class="text-danger fs-3">Loading </span><br />
+            <div class="spinner-grow text-danger text-center" style="width: 14rem; height: 14rem;" role="status">
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #dataLoadedBlock>
+
+        <div class="row vh-100 mb-2">
+          <div class="card">
+            <div class="card-body">
+              <h2 class=" text-center m-3 text-success">Event Registration Form</h2>
+              <div class="container-fluid ">
+                <form [formGroup]="formdata" (ngSubmit)="Onsubmit()" class="forms-sample mt-4">
+
+                  <!-- Row 1 -->
+                  <div class="row mb-3 mt-4">
+                    <div class="col-md-4">
+                      <label class="form-label">School Name:</label>
+                      <select class="form-select" formControlName="schoolname" [(ngModel)]="schoolname"
+                        [ngClass]="{'is-invalid': isTouchedInvalid('schoolname')}">
+                        <option value="">Select</option>
+                        <option *ngFor="let option of allSchoolDivisions" [value]="option.id">{{ option.schoolDivision
+                          }}
+                        </option>
+                      </select>
+                      <div class="text-danger" *ngIf="isTouchedInvalid('schoolname')">School Name is required.</div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Event Objective:</label>
+                      <input type="text" class="form-control" formControlName="EventObjective"
+                        placeholder="Objective for Event" [(ngModel)]="EventObjective"
+                        [ngClass]="{'is-invalid': isTouchedInvalid('EventObjective')}">
+                      <div class="text-danger" *ngIf="isTouchedInvalid('EventObjective')">Event Objective is required.
+                      </div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Event Name:</label>
+                      <input type="text" class="form-control" formControlName="eventname" [(ngModel)]="eventname"
+                        placeholder=" Event Name.." [ngClass]="{'is-invalid': isTouchedInvalid('eventname')}">
+                      <div class="text-danger" *ngIf="isTouchedInvalid('eventname')">Event Name is required.</div>
+                    </div>
+                  </div>
+
+                  <!-- Row 2 -->
+                  <div class="row mb-3">
+                    <div class="col-md-4">
+                      <label class="form-label">Event Category:</label>
+                      <select class="form-select" formControlName="eventcalender" [(ngModel)]="eventcalender"
+                        [ngClass]="{'is-invalid': isTouchedInvalid('eventcalender')}">
+                        <option value="">Select</option>
+                        <option value="Major">Major</option>
+                        <option value="Minor">Minor</option>
+                      </select>
+                      <div class="text-danger" *ngIf="isTouchedInvalid('eventcalender')">Event Category is required.
+                      </div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Total No of Students Impacted:</label>
+                      <input type="text" class="form-control" formControlName="totalstudent"
+                        placeholder="Expected Students Count"
+                        [ngClass]="{'is-invalid': isTouchedInvalid('totalstudent')}" [(ngModel)]="totalstudent">
+                      <div class="text-danger" *ngIf="isTouchedInvalid('totalstudent')">This field is required.</div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">OBP Criteria:</label>
+                      <select class="form-select" formControlName="obpcriteria" [(ngModel)]="obpcriteria"
+                        [ngClass]="{'is-invalid': isTouchedInvalid('obpcriteria')}">
+                        <option value="">Select</option>
+                        <option *ngFor="let option of properties" [value]="option">{{ option }}</option>
+                      </select>
+                      <div class="text-danger" *ngIf="isTouchedInvalid('obpcriteria')">OBP Criteria is required.</div>
+                    </div>
+                  </div>
+
+                  <!-- Row 3 -->
+                  <div class="row mb-3">
+                    <div class="col-md-4">
+                      <label class="form-label">Mode Of Conduct:</label>
+                      <select class="form-select" formControlName="mode" [(ngModel)]="mode"
+                        [ngClass]="{'is-invalid': isTouchedInvalid('mode')}">
+                        <option value="">Select</option>
+                        <option value="OFFCampus">OFFCampus</option>
+                        <option value="OnCampus">OnCampus</option>
+                        <option value="Hybrid">Hybrid</option>
+                        <option value="Online">Online</option>
+                        <option value="Offline">Offline</option>
+                      </select>
+                      <div class="text-danger" *ngIf="isTouchedInvalid('mode')">Mode is required.</div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">External:</label>
+                      <select class="form-select" formControlName="external" [(ngModel)]="ExternalLevel"
+                        [ngClass]="{'is-invalid': isTouchedInvalid('external')}">
+                        <option value="">Select</option>
+                        <option value="International">International</option>
+                        <option value="National">National</option>
+                        <option value="Regional">Regional</option>
+                        <option value="InterUniversity">InterUniversity</option>
+                      </select>
+                      <div class="text-danger" *ngIf="isTouchedInvalid('external')">External level is required.</div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Internal:</label>
+                      <select class="form-select" formControlName="internal" [(ngModel)]="InternalLevels"
+                        [ngClass]="{'is-invalid': isTouchedInvalid('internal')}">
+                        <option value="">Select</option>
+                        <option value="Inter School">Inter School</option>
+                        <option value="Intra School">Intra School</option>
+                      </select>
+                      <div class="text-danger" *ngIf="isTouchedInvalid('internal')">Internal level is required.</div>
+                    </div>
+                  </div>
+
+                  <!-- Row 4 -->
+                  <div class="row mb-3">
+                    <div class="col-md-4">
+                      <label class="form-label">Category:</label>
+                      <select class="form-select" formControlName="category" [(ngModel)]="CategoryId"
+                        [ngClass]="{'is-invalid': isTouchedInvalid('category')}">
+                        <option value="">Select</option>
+                        <option value="Conference">Conference</option>
+                        <option value="Symposium">Symposium</option>
+                        <option value="Seminar">Seminar</option>
+                        <option value="Competition">Competition</option>
+                        <option value="Day Celebration">Day Celebration</option>
+                        <option value="Workshop">Workshop</option>
+                        <option value="Guest Lecture">Guest Lecture</option>
+                        <option value="Guest Lecture Other than DAA">Guest Lecture Other than DAA</option>
+                        <option value="Offcampus Participation">Offcampus Participation</option>
+                      </select>
+                      <div class="text-danger" *ngIf="isTouchedInvalid('category')">Category is required.</div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Semester:</label>
+                      <select class="form-select" formControlName="semester" [(ngModel)]="semester"
+                        [ngClass]="{'is-invalid': isTouchedInvalid('semester')}">
+                        <option value="">Select</option>
+                        <option value="Semester-I">Semester I</option>
+                        <option value="Semester-II">Semester II</option>
+                      </select>
+                      <div class="text-danger" *ngIf="isTouchedInvalid('semester')">Semester is required.</div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Start Date:</label>
+                      <input type="date" class="form-control" formControlName="startdate" [(ngModel)]="startdate"
+                        [ngClass]="{'is-invalid': isTouchedInvalid('startdate')}">
+                      <div class="text-danger" *ngIf="isTouchedInvalid('startdate')">Start Date is required.</div>
+                    </div>
+                  </div>
+
+                  <!-- Row 5 -->
+                  <div class="row mb-3">
+                    <div class="col-md-4">
+                      <label class="form-label">End Date:</label>
+                      <input type="date" class="form-control" formControlName="enddate" [(ngModel)]="enddate"
+                        [ngClass]="{'is-invalid': isTouchedInvalid('enddate')}">
+                      <div class="text-danger" *ngIf="isTouchedInvalid('enddate')">End Date is required.</div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Budget Type:</label>
+                      <select class="form-select" formControlName="budgettype" [(ngModel)]="budgettype"
+                        [ngClass]="{'is-invalid': isTouchedInvalid('budgettype')}">
+                        <option value="Select">Select</option>
+                        <option value="Flexes">Flexes</option>
+                        <option value="Certificates">Certificates</option>
+                        <option value="Gifts">Gifts</option>
+                      </select>
+                      <div class="text-danger" *ngIf="isTouchedInvalid('budgettype')">Budget Type is required.</div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Total Budget:</label>
+                      <input type="text" class="form-control" formControlName="budget" [(ngModel)]="budget"
+                        [attr.disabled]="formdata.get('budgettype')?.value === 'Select' ? true : null"
+                        [ngClass]="{'is-invalid': isTouchedInvalid('budget')}">
+                      <div class="text-danger" *ngIf="isTouchedInvalid('budget')">Budget amount is required.</div>
+                    </div>
+                  </div>
+
+                  <!-- Row 6 -->
+                  <div class="row mb-3">
+                    <div class="col-md-4">
+                      <label class="form-label">Remarks:</label>
+                      <textarea class="form-control" formControlName="remarks" placeholder="Enter Remarks"
+                        [(ngModel)]="remarks" [ngClass]="{'is-invalid': isTouchedInvalid('remarks')}"></textarea>
+                      <div class="text-danger" *ngIf="isTouchedInvalid('remarks')">Remarks are required.</div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Session :</label>
+                      <input type="text" class="form-control" [value]="allPlannerSessions[0]?.session"
+                        [disabled]="allPlannerSessions[0]?.id > 0">
+
+                      <!-- <select class="form-select" formControlName="SessionId"
+                                        [ngClass]="{'is-invalid': isTouchedInvalid('SessionId')}">
+                                  <option [value]="allPlannerSessions[0].id">{{allPlannerSessions[0].session}}</option>
+                                </select> -->
+                      <div class="text-danger" *ngIf="isTouchedInvalid('SessionId')">Session is required.</div>
+                    </div>
+
+                    <div class="col-md-4 text-center">
+                      <label class="form-label">&nbsp;</label>
+                      <button type="submit" class="btn btn-primary mt-4 col-md-6"
+                        [disabled]="formdata.invalid">Submit</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="row mt-5 d-flex justify-content-center">
+          <div class="card">
+            <div class="card-body">
+              <h2 class="text-center m-4  text-success">Bulk Event Registrations</h2>
+
+
+              <div class="row mb-3">
+                <div class="col-md-3 mb-3 mb-md-0">
+                  <button class="btn btn-primary col-md-6" (click)="UploadExcelData()">
+                    <i class="fas fa-file-excel me-2"></i> Upload File
+                  </button>
+                </div>
+
+                <div class="col-md-3">
+                  <div class="mb-3 text-start">
+                    <div class="form-group">
+                      <button type="button" class="btn btn-dark" (click)="downloadSampleDocument()"><i
+                          class="fas fa-file-excel mr-2"></i> Download Sample Excel sheet</button>
+
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 mt-2">
+                  <h4 class=" text-danger">Please Ensure the excel sheet should match the Sample Excel
+                    Format </h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Tab two contents -->
+  <div class="tab-pane fade" id="MyAllNewEventForm" role="tabpanel" aria-labelledby="MyAllNewEventForm-tab">
+    <div class="row vh-100 ">
+
+      <div class="col-12 stretch-card">
+        <ng-container *ngIf="this.EventRegisterationData.length > 0; else noRecords">
+          <div class="card shadow-sm mb-4 " *ngIf="EventRegisterationData.length > 0; else noRecords">
+            <h2 class=" text-center m-3 text-success">Event Registration Details</h2>
+            <div class="card-body">
+              <div class="row mb-3 g-3">
+                <div class="col-md-3">
+                  <button class="btn btn-dark" (click)="exportToExcel()">
+                    <i class="fas fa-file-excel me-2"></i>Export to Excel
+                  </button>
+                </div>
+                <!-- <div class="col-md-3">
+                        <button class="btn btn-success" (click)="UploadExcelData()">
+                            <i class="fas fa-file-excel me-2"></i>Upload Excel
+                        </button>
+                    </div> -->
+                <div class="col-md-3">
+                  <div class="input-group">
+                    <input type="text" class="form-control" [(ngModel)]="filterText" (ngModelChange)="filterData()"
+                      placeholder="Search events...">
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <button (click)="toggleAdvancedSearch()" class="btn btn-dark w-100">
+                    {{ showAdvancedSearch ? 'Hide Advanced' : 'Advanced Search' }}
+                  </button>
+                </div>
+              </div>
+
+
+              <!-- <div *ngIf="showAdvancedSearch" class="row mb-3 p-3 bg-light rounded">
+
+                    <div class="col-12 col-md-3 mb-3 mb-md-0">
+                        <select class="form-select" [(ngModel)]="advancedSearch.sessionId"
+                            (ngModelChange)="checkSearchCriteria()">
+                            <option value="">Select Session</option>
+                            <option value="0">All Sessions</option>
+                            <option *ngFor="let session of allPlannerSessionDatas" [value]="session.id">
+                                {{ session.session }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-3 mb-3 mb-md-0">
+                        <select class="form-select" [(ngModel)]="advancedSearch.schoolName"
+                            (ngModelChange)="checkSearchCriteria()">
+                            <option value="">Select School</option>
+                            <option *ngFor="let school of allSchoolDivisions" [value]="school.schoolDivision">
+                                {{ school.schoolDivision }}
+                            </option>
+                        </select>
+                    
+                    </div>
+
+                    <div class="col-12 col-md-3 mb-3 mb-md-0">
+                        <select class="form-select" [(ngModel)]="advancedSearch.semester"
+                            (ngModelChange)="checkSearchCriteria()">
+                            <option value="">Select Semester</option>
+                            <option value="Semester-I">Semester-I</option>
+                            <option value="Semester-II">Semester-II</option>
+                        </select>
+                    </div>-->
+
+              <!-- <div class="col-12 col-md-3 mb-3 mb-md-0">
+                    <input type="text" [(ngModel)]="advancedSearch.eventName" placeholder="Event Name" class="form-control" (ngModelChange)="checkSearchCriteria()"/>
+                </div> -->
+
+              <!-- Second Row -->
+              <!-- <div class="col-12 col-md-3 mb-3 mb-md-0 mt-2">
+                    <input type="text" [(ngModel)]="advancedSearch.objective" placeholder="Objective" class="form-control" (ngModelChange)="checkSearchCriteria()" />
+                </div> -->
+
+              <!-- <div class="col-12 col-md-3 mb-3 mb-md-0">
+                    <select class="form-select" [(ngModel)]="advancedSearch.eventCategory" (ngModelChange)="checkSearchCriteria()">
+                    <option value="">Event Category</option>
+                    <option value="Major">Major</option>
+                    <option value="Minor">Minor</option>
+                    </select>
+                </div> -->
+
+              <!--<div class="col-12 col-md-3 mb-3 mb-md-0 ">
+                        <select class="form-select" [(ngModel)]="advancedSearch.obpCriteria"
+                            (ngModelChange)="checkSearchCriteria()">
+                            <option value="">Select OBP Criteria</option>
+                            <option *ngFor="let criteria of properties" [value]="criteria">
+                                {{criteria}}
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-12 col-md-3  mt-2">
+                        <select class="form-select" [(ngModel)]="advancedSearch.eventType"
+                            (ngModelChange)="checkSearchCriteria()">
+                            <option value="">Select Event Type</option>
+                            <option value="Major">Major</option>
+                            <option value="Minor">Minor</option>
+                        </select>
+                    </div>-->
+
+              <!-- <div class="col-12 col-md-3 mb-3 mb-md-0 mt-2">
+                    <select class="form-select" [(ngModel)]="advancedSearch.internal" (ngModelChange)="checkSearchCriteria()">
+                        
+                <option value="">Select School(s)</option>
+                <option value="Inter School">Inter School</option>
+                <option value="Intra School">Intra School</option>
+                </select>
+                </div> -->
+
+              <!-- Third Row -->
+              <!-- <div class="col-12 col-md-3 mb-3 mb-md-0 mt-2">
+                    <input type="date" [(ngModel)]="advancedSearch.startDate" class="form-control" placeholder="Start Date" (ngModelChange)="checkSearchCriteria()">
+                    </div>
+                    
+                    <div class="12 col-md-3 mb-3 mb-md-0 mt-2">
+                    <input type="date" [(ngModel)]="advancedSearch.endDate" class="form-control" placeholder="End Date" (ngModelChange)="checkSearchCriteria()">
+                    </div> -->
+
+              <!--<div class="col-12 col-md-3 mt-2">
+                        <button (click)="applyAdvancedSearch()" class="btn btn-dark w-100"
+                            [disabled]="!hasAnySearchCriteria" [class.btn-disabled]="!hasAnySearchCriteria">
+                            Apply Filters
+                        </button>
+                    </div>
+
+                    <div class="col-12 col-md-3 mt-2">
+                        <button (click)="resetAdvancedSearch()" class="btn btn-dark w-100">
+                            Reset Filters
+                        </button>
+                    </div>
+                </div> -->
+              <div *ngIf="showAdvancedSearch" class="row mb-3 p-3 bg-light rounded">
+
+                <div class="col-12 col-md-3 mb-3 mb-md-0">
+                  <select class="form-select" [(ngModel)]="advancedSearch.sessionId"
+                    (ngModelChange)="checkSearchCriteria()">
+                    <option value="">Select Session</option>
+                    <option value="0">All Sessions</option>
+                    <option *ngFor="let session of allPlannerSessionDatas" [value]="session.id">
+                      {{ session.session }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="col-12 col-md-3 mb-3 mb-md-0">
+                  <!-- <input type="text" [(ngModel)]="advancedSearch.schoolName" placeholder="School Name" class="form-control" (ngModelChange)="checkSearchCriteria()" /> -->
+                  <select class="form-select" [(ngModel)]="advancedSearch.schoolName"
+                    (ngModelChange)="checkSearchCriteria()">
+                    <option value="">Select School</option>
+                    <option *ngFor="let school of allSchoolDivisions" [value]="school.schoolDivision">
+                      {{ school.schoolDivision }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="col-12 col-md-3 mb-3 mb-md-0">
+                  <select class="form-select" [(ngModel)]="advancedSearch.semester"
+                    (ngModelChange)="checkSearchCriteria()">
+                    <option value="">Select Semester</option>
+                    <option value="Semester-I">Semester-I</option>
+                    <option value="Semester-II">Semester-II</option>
+                  </select>
+                </div>
+
+                <div class="col-12 col-md-3 mb-3 mb-md-0">
+                  <select class="form-select" [(ngModel)]="advancedSearch.obpCriteria"
+                    (ngModelChange)="checkSearchCriteria()">
+                    <option value="">Select OBP Criteria</option>
+                    <option *ngFor="let criteria of properties" [value]="criteria">
+                      {{criteria}}
+                    </option>
+                  </select>
+                </div>
+                <!-- // Added on 4-Sep-25 -->
+                <div class="col-12 col-md-3 mt-2">
+                  <select class="form-select" [(ngModel)]="advancedSearch.eventType"
+                    (ngModelChange)="checkSearchCriteria()">
+                    <option value="">Select Event Type</option>
+                    <option value="Major">Major</option>
+                    <option value="Minor">Minor</option>
+                  </select>
+                </div>
+                <!-- // added on 9-Sep-25
+                                                                       
+                                                                      
+                                                                      -->
+                <div class="col-12 col-md-3 mt-2">
+                  <select class="form-select" [(ngModel)]="advancedSearch.categoryId"
+                    (ngModelChange)="checkSearchCriteria()">
+                    <option value="">Select OBP Category </option>
+                    <option value="Conference">Conference</option>
+                    <option value="Symposium">Symposium</option>
+                    <option value="Seminar">Seminar</option>
+                    <option value="Competition">Competition</option>
+                    <option value="Day Celebration">Day Celebration</option>
+                    <option value="Workshop">Workshop</option>
+                    <option value="Guest Lecture">Guest Lecture</option>
+                    <option value="Guest Lecture Other than DAA">Guest Lecture Other than DAA</option>
+                    <option value="Offcampus Participation">Offcampus Participation</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-3 mb-3 mb-md-0 mt-2">
+                  <input type="date" [(ngModel)]="advancedSearch.startDate" class="form-control" placeholder="From Date"
+                    (ngModelChange)="checkSearchCriteria()">
+                </div>
+
+                <div class="col-12 col-md-3 mb-3 mb-md-0 mt-2">
+                  <input type="date" [(ngModel)]="advancedSearch.endDate" class="form-control" placeholder="To Date"
+                    (ngModelChange)="checkSearchCriteria()">
+                </div>
+
+
+                <div class="col-12 col-md-3 mt-2">
+                  <button (click)="applyAdvancedSearch()" class="btn btn-dark w-100" [disabled]="!hasAnySearchCriteria"
+                    [class.btn-disabled]="!hasAnySearchCriteria">
+                    Apply Filters
+                  </button>
+                </div>
+
+                <div class="col-12 col-md-3 mt-2">
+                  <button (click)="resetAdvancedSearch()" class="btn btn-dark w-100">
+                    Reset Filters
+                  </button>
+                </div>
+              </div>
+              <div class="row m-4 p-2 ">
+                <span class="fs-3 themeClr" *ngIf="hasAnySearchCriteria || filterText">
+                  Search Result :- <span class="text-muted">Found {{ filteredEventRegisterationData.length }}
+                    Records</span>
+                </span>
+              </div>
+              <!-- </div> -->
+
+              <!-- <div class="badge fs-3 bg-info mb-4">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Please ensure the record you're modifying is correct.
+                </div> -->
+
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead class="table-light">
+                    <tr>
+                      <th>School</th>
+                      <th>Session</th>
+                      <th>Event Name</th>
+                      <th>Objective</th>
+                      <th>Students</th>
+                      <th>Start Date</th>
+                      <th>End Date</th>
+                      <th>Semester</th>
+                      <th>OBP Category</th>
+                      <th>OBP Criteria</th>
+                      <th>Remarks</th>
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let event of getRecordsForCurrentPage()">
+                      <td>{{ getDivisionNameById(event.schoolId) }}</td>
+                      <td>{{ getSessionNameById(event.sessionId) }}</td>
+                      <td>{{ event.eventName }}</td>
+                      <td>{{ event.eventObjective }}</td>
+                      <td>{{ event.alternativelyStudentCounts }}</td>
+                      <td>{{ event.startDate | date:'dd MMM yyyy' }}</td>
+                      <td>{{ event.endDate | date:'dd MMM yyyy' }}</td>
+                      <td>{{ event.semester }}</td>
+                      <td>{{ event.categoryId }}</td>
+                      <td>{{ event.obpCriteria }}</td>
+                      <td>{{ event.remarks }}</td>
+
+                    </tr>
+                    <tr *ngIf="filteredEventRegisterationData.length === 0">
+                      <td colspan="10" class="text-center py-4 text-muted">
+                        <i class="fas fa-info-circle fa-2x mb-2"></i>
+                        <p>No matching records found</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="col-3">
+                  <span class="text-muted">
+                    Showing {{ (currentPage - 1) * recordsPerPage + 1 }} to
+                    {{ (currentPage * recordsPerPage > filteredEventRegisterationData.length) ?
+                    filteredEventRegisterationData.length : currentPage * recordsPerPage }}
+                    of {{ filteredEventRegisterationData.length }} entries
+                  </span>
+                </div>
+
+                <!-- <div class="d-flex justify-content-between align-items-center mt-3"> -->
+              
+                <div class="col-3 me-2 text-end">                  <label for="recordsPerPageSelect" class="me-2 mb-0">Records per page:</label></div>
+                  <div class="col-3">
+                  <select id="recordsPerPageSelect" class="form-select form-select-sm w-auto" [(ngModel)]="recordsPerPage"
+                    (change)="onRecordsPerPageChange()">
+                    <option *ngFor="let option of recordsPerPageOptions" [value]="option">{{ option }}</option>
+                  </select>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-dark me-2" (click)="prevPage()" [disabled]="currentPage === 1">
+                    <i class="mdi-arrow-left-bold mdi"></i>
+                  </button>
+                  <button class="btn btn-dark ms-2" (click)="nextPage()" [disabled]="currentPage === AtotalPages()">
+                    <i class="mdi-arrow-right-bold mdi"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- <div class="container-fluid">
+            <div class="card">
+              <div class="card-body">
+                <h2 class="text-center mb-5 " style="font-size: 2rem;">All Event Details</h2>
+    
+                <div class="row mb-3">
+                  <div class="col-12 col-md-3 mb-3 mb-md-0">
+                    <button (click)="exportToExcel()" class="btn btn-dark w-40">Export to Excel</button>
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <input type="text" [(ngModel)]="filterText" (ngModelChange)="filterData()" placeholder="Search by any Field Text"
+                      class="form-control" />
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <button (click)="toggleAdvancedSearch()" class="btn btn-dark w-100">
+                      {{ showAdvancedSearch ? 'Hide Advanced' : 'Advanced Search' }}
+                    </button>
+                  </div>
+                </div>
+                  <div *ngIf="showAdvancedSearch" class="row mb-3 p-3 bg-light rounded">
+                  
+                    <div class="col-12 col-md-3 mb-3 mb-md-0">
+                      <select class="form-select" [(ngModel)]="advancedSearch.sessionId" (ngModelChange)="checkSearchCriteria()">
+                        <option value="">Select Session</option>
+                        <option value="0">All Sessions</option>
+                        <option *ngFor="let session of allPlannerSessionDatas" [value]="session.id">
+                          {{ session.session }}
+                        </option>
+                      </select>
+                    </div>
+                  
+                    <div class="col-12 col-md-3 mb-3 mb-md-0">
+                      
+                      <select class="form-select" [(ngModel)]="advancedSearch.schoolName" (ngModelChange)="checkSearchCriteria()">
+                        <option value="">Select School</option>
+                        <option *ngFor="let school of allSchoolDivisions" [value]="school.schoolDivision">
+                          {{ school.schoolDivision }}
+                        </option>
+                      </select>
+                    </div>
+                  
+                    <div class="col-12 col-md-3 mb-3 mb-md-0">
+                      <select class="form-select" [(ngModel)]="advancedSearch.semester" (ngModelChange)="checkSearchCriteria()">
+                        <option value="">Select Semester</option>
+                        <option value="Semester-I">Semester-I</option>
+                        <option value="Semester-II">Semester-II</option>
+                      </select>
+                    </div>
+                  
+                    <div class="col-12 col-md-3 mb-3 mb-md-0">
+                      <select class="form-select" [(ngModel)]="advancedSearch.obpCriteria" (ngModelChange)="checkSearchCriteria()">
+                        <option value="">Select OBP Criteria</option>
+                        <option *ngFor="let criteria of properties" [value]="criteria">
+                          {{criteria}}
+                        </option>
+                      </select>
+                    </div>
+                     
+                    <div class="col-12 col-md-3 mt-2">
+                      
+                      <select class="form-select" [(ngModel)]="advancedSearch.eventType" (ngModelChange)="checkSearchCriteria()">
+                        <option value="">Select Event Type</option>
+                        <option value="Major">Major</option>
+                        <option value="Minor">Minor</option>
+                      </select>
+                    </div>
+                    
+                                       
+                                     
+                    <div class="col-12 col-md-3 mt-2">
+                       
+                      <select class="form-select" [(ngModel)]="advancedSearch.categoryId" (ngModelChange)="checkSearchCriteria()">
+                        <option value="">Select OBP Category</option>
+                        <option value="Conference">Conference</option>
+                        <option value="Symposium">Symposium</option>
+                        <option value="Seminar">Seminar</option>
+                        <option value="Competition">Competition</option>
+                        <option value="Day Celebration">Day Celebration</option>
+                        <option value="Workshop">Workshop</option>
+                        <option value="Guest Lecture">Guest Lecture</option>
+                        <option value="Guest Lecture Other than DAA">Guest Lecture Other than DAA</option>
+                        <option value="Offcampus Participation">Offcampus Participation</option>
+                      </select>
+                    </div>
+                    <div class="col-12 col-md-3 mb-3 mb-md-0 mt-2">
+                      
+                      <input type="date" [(ngModel)]="advancedSearch.startDate" class="form-control" placeholder="From Date"
+                        (ngModelChange)="checkSearchCriteria()">
+                    </div>
+                  
+                    <div class="col-12 col-md-3 mb-3 mb-md-0 mt-2">
+                      
+                      <input type="date" [(ngModel)]="advancedSearch.endDate" class="form-control" placeholder="To Date"  
+                        (ngModelChange)="checkSearchCriteria()">
+                    </div>
+                  
+                  
+                    <div class="col-12 col-md-3 mt-2">
+                      <button (click)="applyAdvancedSearch()" class="btn btn-dark w-100" [disabled]="!hasAnySearchCriteria"
+                        [class.btn-disabled]="!hasAnySearchCriteria">
+                        Apply Filters
+                      </button>
+                    </div>
+                  
+                    <div class="col-12 col-md-3 mt-2">
+                      <button (click)="resetAdvancedSearch()" class="btn btn-dark w-100">
+                        Reset Filters
+                      </button>
+                    </div>
+                  </div>
+                  <div class="row m-4 p-2 ">
+                    <span class="fs-3 themeClr" *ngIf="hasAnySearchCriteria || filterText">
+                      Search Result :- <span class="text-muted">Found {{ filteredEventRegisterationData.length }} Records</span>
+                    </span>                  
+                  </div>
+              
+                <ng-container *ngIf="loadingIndicator; else dataLoadedBlock">
+                 
+                  <div class="text-center">
+                    <span class="text-danger fs-3">Loading </span><br />
+                    <div class="spinner-grow text-danger text-center" style="width: 14rem; height: 14rem;" role="status">
+                    </div>
+                  </div>
+                </ng-container>
+    
+                <ng-template #dataLoadedBlock>
+                  <div *ngIf="this.filteredEventRegisterationData.length > 0; else SeachNoRecords">
+                    <div class="table-responsive">
+                      <table id="dataTableExample" class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th class="form-label fw-bolder fs-6">School Name</th>
+                            <th class="form-label fw-bolder fs-6">Session </th>
+                            <th class="form-label fw-bolder fs-6">Event Name</th>
+                            <th class="form-label fw-bolder fs-6">Objective</th>
+                            <th class="form-label fw-bolder fs-6">Student Count</th>
+                            <th class="form-label fw-bolder fs-6">Start Date</th>
+                            <th class="form-label fw-bolder fs-6">End Date</th>
+                            <th class="form-label fw-bolder fs-6">Semester</th>
+                            <th class="form-label fw-bolder fs-6">ObpCategory</th>
+                            <th class="form-label fw-bolder fs-6">ObpCriteria</th>
+                            <th class="form-label fw-bolder fs-6">Remarks</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <ng-container *ngFor="let DocumentRow of getRecordsForCurrentPage()">
+                            <tr>
+                              <td class="fs-6">{{ getDivisionNameById(DocumentRow.schoolId) }}</td>
+                              <td class="fs-6">{{getSessionNameById(DocumentRow.sessionId)}}</td>
+                              <td class="fs-6">{{DocumentRow.eventName}}</td>
+                              <td class="fs-6">{{DocumentRow.eventObjective}}</td>
+                              <td class="fs-6">{{DocumentRow.alternativelyStudentCounts}}</td>
+                              <td class="fs-6">{{formatDate(DocumentRow.startDate)}}</td>
+                              <td class="fs-6">{{formatDate(DocumentRow.endDate)}}</td>
+                              <td class="fs-6">{{DocumentRow.semester}}</td>
+                              <td class="fs-6">{{DocumentRow.categoryId}}</td>
+                              <td class="fs-6">{{DocumentRow.obpCriteria}}</td>
+                              <td class="fs-6">{{DocumentRow.remarks}}</td>
+                            </tr>
+                          </ng-container>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="row d-flex justify-content-between mt-5 mb-3 align-items-center">
+                      <div class="col-12 col-md-6 text-end">
+                        <mat-paginator [length]="filteredEventRegisterationData.length" [pageSize]="recordsPerPage"
+                          [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange($event)">
+                        </mat-paginator>
+                      </div>
+                      <div class="col-12 col-md-6 text-danger fs-5 text-end">
+                        Total Records: {{ filteredEventRegisterationData.length }}
+                      </div>
+                    </div>
+                  </div>
+                  <ng-template #SeachNoRecords>
+                    <div class="table-responsive">
+                      <table id="dataTableExample" class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th class="form-label fs-6 text-danger">School Name</th>
+                            <th class="form-label fs-6 text-danger">Session </th>
+                            <th class="form-label fs-6 text-danger">Event Name</th>
+                            <th class="form-label fs-6 text-danger">Objective</th>
+                            <th class="form-label fs-6 text-danger">Student Count</th>
+                            <th class="form-label fs-6 text-danger">Start Date</th>
+                            <th class="form-label fs-6 text-danger">End Date</th>
+                            <th class="form-label fs-6 text-danger">Semester</th>
+                            <th class="form-label fs-6 text-danger">ObpCategory</th>
+                            <th class="form-label fs-6 text-danger">Remarks</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td colspan="10" class="text-center">
+                              <label class="fs-2 text-danger">No Record(s) found.</label>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </ng-template>
+                </ng-template>
+              </div>
+            </div>
+          </div> -->
+        </ng-container>
+        <ng-template #noRecords>
+          <div class="container-fluid">
+            <div class="card">
+              <div class="card-body">
+                <label class="text-center fs-2 text-danger d-flex justify-content-center"> No Record(s) are
+                  Available .</label>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+    <!-- <div class="row vh-100">
+      <div class="col-12 stretch-card">
+        <ng-container *ngIf="this.EventRegisterationData.length > 0 ; else noRecords">
+          <div class="container-fluid">
+            <div class="card">
+              <div class="card-body">
+                <h6 class="card-title text-center fs-4 text-success">Event Registration Details</h6>
+                <div class="row mb-3">
+                  <div class="col-12 col-md-3 mb-3 mb-md-0">
+                    <button (click)="exportToExcel()" class="btn btn-success w-40">Export to Excel</button>
+                  </div>
+                  <div class="col-md-3">
+                    <select class="form-select fs-5 text-danger" id="SessionId" name="PlannerSession"
+                      [(ngModel)]="selectedPlannerSession" (change)="setSessionId($event)">
+                      <option value="0" selected>All</option>
+                      <option *ngFor="let session of allPlannerSessionDatas" [value]="session.id">
+                        {{ session.session }}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <input type="text" [(ngModel)]="filterText" (ngModelChange)="filterData()"
+                      placeholder="Search by any Field Text" class="form-control" />
+                  </div>
+                </div>
+
+
+                
+                <ng-container *ngIf="loadingIndicator; else dataLoadedBlock">
+                  
+                  <div class="text-center">
+                    <div class="text-center">
+                      <span class="text-danger fs-3">Loading </span><br />
+                      <div class="spinner-grow text-danger text-center" style="width: 14rem; height: 14rem;"
+                        role="status">
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+
+
+                <ng-template #dataLoadedBlock>
+                  <div *ngIf="this.filteredEventRegisterationData.length > 0; else SeachNoRecords">
+                    <div class="table-responsive">
+                      <table id="dataTableExample" class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th class="form-label fs-6 text-danger">School Name</th>
+                            <th class="form-label fs-6 text-danger">Session </th>
+                            <th class="form-label fs-6 text-danger">Event Name</th>
+                            <th class="form-label fs-6 text-danger">Objective</th>
+                            <th class="form-label fs-6 text-danger">Student Count</th>
+                            <th class="form-label fs-6 text-danger">Start Date</th>
+                            <th class="form-label fs-6 text-danger">End Date</th>
+                            <th class="form-label fs-6 text-danger">Semester</th>
+                            <th class="form-label fs-6 text-danger">ObpCategory</th>
+                            <th class="form-label fs-6 text-danger">Remarks</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <ng-container *ngFor="let DocumentRow of getRecordsForCurrentPage()">
+                            <tr>
+                              <td class="fw-bold fs-6 text-success">
+                                <label class="form-label text-success">{{ DocumentRow.schoolId + "::"+
+                                  getDivisionNameById(DocumentRow.schoolId) }}</label>
+                              </td>
+                              <td class="fw-bold fs-6 text-success">{{DocumentRow.sessionId}}</td>
+                              <td class="fw-bold fs-6 text-success">
+                                <label class="form-label text-success">{{DocumentRow.eventName}}</label>
+                              </td>
+                              <td class="fw-bold fs-6 text-success">{{DocumentRow.eventObjective}}</td>
+                              <td class="fw-bold fs-6 text-success">{{DocumentRow.alternativelyStudentCounts}}</td>
+                              <td class="fw-bold fs-6 text-success">{{formatDate(DocumentRow.startDate)}}</td>
+                              <td class="fw-bold fs-6 text-success">{{formatDate(DocumentRow.endDate)}}</td>
+                              <td class="fw-bold fs-6 text-success">{{DocumentRow.semester}}</td>
+                              <td class="fw-bold fs-6 text-success">{{DocumentRow.categoryId}}</td>
+                              <td class="fw-bold fs-6 text-success">{{DocumentRow.remarks}}</td>
+                            </tr>
+                          </ng-container>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="row d-flex justify-content-between mt-5 mb-3 align-items-center">
+                      <div class="col-12 col-md-6 text-end">
+                        <mat-paginator [length]="filteredEventRegisterationData.length" [pageSize]="recordsPerPage"
+                          [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange($event)">
+                        </mat-paginator>
+                      </div>
+                      <div class="col-12 col-md-6 text-danger fs-5 text-end">
+                        Total Records: {{ filteredEventRegisterationData.length }}
+                      </div>
+                    </div>
+                  </div>
+                  <ng-template #SeachNoRecords>
+                    <div class="table-responsive">
+                      <table id="dataTableExample" class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th class="form-label fs-6 text-danger">School Name</th>
+                            <th class="form-label fs-6 text-danger">Session </th>
+                            <th class="form-label fs-6 text-danger">Event Name</th>
+                            <th class="form-label fs-6 text-danger">Objective</th>
+                            <th class="form-label fs-6 text-danger">Student Count</th>
+                            <th class="form-label fs-6 text-danger">Start Date</th>
+                            <th class="form-label fs-6 text-danger">End Date</th>
+                            <th class="form-label fs-6 text-danger">Semester</th>
+                            <th class="form-label fs-6 text-danger">ObpCategory</th>
+                            <th class="form-label fs-6 text-danger">Remarks</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td colspan="10" class="text-center">
+                              <label class="fs-2 text-danger">No Record(s) found.</label>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </ng-template>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+
+        </ng-container>
+        <ng-template #noRecords>
+          <div class="container-fluid">
+            <div class="card">
+              <div class="card-body">
+                <label class="text-center fs-2 text-danger d-flex justify-content-center"> No Record(s) are
+                  Available .</label>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div> -->
+  </div>
+</div>
+
+
+<ng-template #loginFailed>
+  <div class="card shadow-sm">
+    <div class="card-body text-center py-5">
+      <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+      <h4 class="text-danger">Access Denied</h4>
+      <!-- <p class="text-muted">You are not authorized to view this page</p> -->
+      <!-- <button class="btn btn-primary mt-3" routerLink="/login">Login Again</button> -->
+    </div>
+  </div>
+</ng-template>
+
+
+
+<!-- // Add using Excel sheet modal -->
+
+<ng-template #BulkEventModal let-modal>
+  <div class="modal-header bg-info text-white d-flex justify-content-between">
+    <h5 class="modal-title me-2">Bulk Event Registrations</h5>
+    <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row mt-4 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="col-sm-12">
+            <div class="mb-3">
+              <div class="form-group text-center">
+                <label class="fs-2 text-center text-danger">Bulk Event Registrations </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-4 mb-4">
+          <div class="col-sm-3">
+            <div class="mb-3 text-center">
+              <div class="form-group">
+                <label class="fs-4 text-danger">Download sample Excel Sheet </label>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-2">
+            <div class="mb-3 text-start">
+              <div class="form-group">
+                <a type="button" class="btn btn-primary" [href]="filePath" target="_blank">Sample Document</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-3 me-3">
+            <div class="mb-3 text-start">
+              <div class="form-group">
+                <input type="file" class="form-control" style="width: 18rem;" (change)="onFileChange($event);">
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="mb-3">
+              <div class="form-group">
+                <label for="Files"> </label>
+                <button class="btn btn-primary mt-4 col-md-6" (click)="confirmUpload()"
+                  [disabled]="!file || hasErrors()" class="btn btn-success pull-right">
+                  <i class="fa fa-save fa-fw"></i> Upload File
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row" *ngIf="uploadedDataForDisplay && uploadedDataForDisplay.length > 0">
+      <div class="col-md-12 stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th *ngFor="let header of uploadedDataForDisplay[0]">{{ header }}</th>
+                    <th>Error</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of uploadedDataForDisplay.slice(1); let rowIndex = index">
+                    <td *ngFor="let cell of row; let cellIndex = index"
+                      [ngClass]="{'text-danger': isError(rowIndex + 1, cellIndex)}">{{ cell }}</td>
+                    <td>
+                      <span *ngIf="validationErrors[rowIndex + 1]" class="text-danger">
+                        {{ validationErrors[rowIndex + 1] }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <button class="btn btn-primary mt-3" (click)="confirmUpload()" [disabled]="hasErrors()">Confirm and
+              Upload</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

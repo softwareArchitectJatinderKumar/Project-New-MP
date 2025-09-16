@@ -1,0 +1,136 @@
+.label
+{
+    /* height:3.125rem; */
+    /* width:76.875rem; */
+    background-color: brown;
+    color:white;
+    margin-top:0.625rem;
+}
+h4{
+    margin-left:33.375rem;
+    padding:0.625rem;
+}
+.box
+{
+    /* height:30.25rem; */
+    /* width:76.875rem; */
+    border-style: outset;
+    
+}
+#head
+{
+    text-align: center;
+    font-weight: bold;
+    color:brown;
+    margin-top: 1rem;
+    font-size: medium;
+}
+.txt
+{
+   /* margin-left: 15rem; */
+   padding: 1rem;
+   margin-top: 3rem;
+   display: inline-flex;
+}
+#note
+{
+    color:red;
+    font-weight: bold;
+    font-size: larger;
+}
+#al
+{
+    font-weight: bold;
+    
+}
+.cmp
+{
+    margin-left:1rem;
+    padding: 1rem;
+    margin-top:1rem;
+    font-weight: bold;
+}
+.decla
+{
+    /* margin-left:5rem; */
+    margin-top:1rem;
+    padding: 1rem;
+    font-weight: bold; 
+}
+#de
+{
+    color:red;
+    font-weight:bold;
+    font-size: larger;
+}
+.form-check
+{
+    margin-left:5rem;
+    margin-top:1rem;
+    font-weight: bold; 
+}
+button
+{
+     background-color: #fd6c04;
+     color:white;
+}
+button:disabled
+{
+     background-color: #fd6c04;
+     color:white;
+}
+button:hover
+{
+    background-color: brown;
+    color:white;
+}
+.btt
+{
+    text-align: center;
+    /* margin-left:38rem; */
+    margin-top:1rem;
+   
+   
+}
+#checkbox1
+{
+    border-style: outset;
+}
+/* Add this CSS to your existing styles or create a new CSS file */
+
+/* Radio button */
+input[type="radio"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 1px solid brown; /* Brown color */
+    border-style: outset;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    outline: none;
+    margin-right: 5px;
+  }
+  
+  input[type="radio"]:checked {
+    background-color: brown; /* Brown color */
+  }
+  
+  /* Checkbox */
+  input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 1px solid brown; /* Brown color */
+    border-radius: 4px;
+    width: 15px;
+    height: 15px;
+    outline: none;
+    margin-right: 5px;
+  }
+  
+  input[type="checkbox"]:checked {
+    background-color: brown; /* Brown color */
+  }
+  
+  

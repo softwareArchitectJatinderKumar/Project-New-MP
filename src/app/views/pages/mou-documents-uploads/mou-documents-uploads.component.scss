@@ -1,0 +1,66 @@
+.disabled-input {
+  pointer-events: none;
+  background-color: #e9ecef;
+}
+
+.FormHeight{
+    height: 20rem;
+}
+
+.planner {
+    display: inline-flex;
+    padding: 10px;
+}
+
+select {
+    font-size: medium;
+    width: 180px;
+    height: 40px;
+}
+
+.description {
+    display: inline-flex;
+    padding: 10px;
+    margin-left: 50px;
+}
+
+.div2 {
+    display: inline-flex;
+    margin-top: 20px;
+    margin-left: 30px;
+    color: brown;
+}
+
+.priority {
+    display: inline-flex;
+
+}
+
+
+
+/* multiple-division-select.component.css */  
+  input[type="checkbox"] {
+    margin-right: 5px;
+  }
+ 
+  // .dropdown-menu {
+  // //  display: none;
+  // }
+  
+  .dropdown-menu.show {
+    display: block !important;
+  }
+  
+  .scrollable-dropdown-menu {
+    max-height: 200px; /* Adjust the height as needed */
+    overflow-y: auto;
+  }
+  
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+  }
+  
+  .dropdown-item input[type="checkbox"] {
+    margin-right: 5px;
+  }

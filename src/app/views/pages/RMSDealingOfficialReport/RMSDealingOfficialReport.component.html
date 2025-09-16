@@ -1,0 +1,142 @@
+<div class="h-100 d-flex p-2 align-items-center justify-content-center">
+  <div class="container ">
+    <div class="row">
+
+      <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <div class="row d-flex justify-content-center">
+              <div class="col-sm-3">
+                <div class="form-group">
+                  <label for="fromDate">From Date</label>
+                  <input type="date" class="form-control" bsDatepicker [(ngModel)]="fromDate" name="fromdate">
+                </div>
+              </div>
+              <div class="col-sm-3">
+                <div class="form-group">
+                  <label for="toDate">To Date</label>
+                  <input type="date" class="form-control" bsDatepicker [(ngModel)]="toDate" name="todate">
+                </div>
+              </div>
+              <div class="col-sm-3 d-flex justify-content-center align-items-center">
+                <div class="form-group">
+                  <label for="action" class="mb-3"></label>
+                  <button type="button" class="btn btn-warning mt-3" style="color: #fff; background-color: #f68220;"
+                    (click)="showData()" [disabled]="fromDate?.length <1 || toDate?.length<1">Get Details</button>
+                </div>
+              </div>
+              <div class="col-sm-3 d-flex align-items-center">
+                <div class="form-group">
+                  <label for="action" class="mb-2"></label>
+                  <button type="reset" style="margin-right: 3rem; float:left" class="btn btn-dark btn-warning mt-3"
+                    (click)="ResetData()">Reset Form</button>
+                </div>
+              </div>
+            </div>
+            <div class="row m-4">
+              <div class="col-sm-12 text-center">
+                <button type="button" style="margin-right: 1rem;" class="btn btn-dark btn-outline-warning mb-12"
+                  (click)="exportExcel()" *ngIf="rmsData?.length > 0" [disabled]="rmsData?.length===0">Export to
+                  Excel</button>
+              </div>
+            </div>
+            <!-- <div class="row">
+              <div class="col-sm-3">
+                <div class="form-group">
+                  <label for="fromDate">From Date</label>
+                  <input type="date" class="form-control" bsDatepicker [(ngModel)]="fromDate" name="fromdate">
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="form-group">
+                  <label for="toDate">To Date</label>
+                  <input type="date" class="form-control" bsDatepicker [(ngModel)]="toDate" name="todate">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-10 text-center">
+                <button type="button" class="btn btn-warning" style="color: #fff; background-color: #f68220;"
+                  (click)="showData()">Show</button>
+                <button type="reset" style="float: right; margin-right: 10px;"
+                  class="btn btn-warning mb-12">Reset</button>
+                <button type="button" style="float: right; margin-right: 10px;" class="btn btn-outline-warning mb-12"
+                  (click)="exportExcel()">Export to Excel</button>
+              </div>
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="isLoading" class="spinner-container">
+      <div class="col-sm-12" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+        <div class="d-flex justify-content-center align-item-center">
+          <span class="text-danger fs-3">Loading </span><br />
+          <div class="spinner-grow text-danger tex-center" style=" width: 28rem; height: 28rem;" role="status">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="!isLoading && rmsData?.length > 0; else NoRecords">
+      <div class="col-md-12 stretch-card">
+        <div class="card">
+          <div class="card-body" *ngIf="dataShowing===true">
+            <h6 class="card-title">Data Table</h6>
+            <div class="table-responsive">
+              <div id="wrapper1">
+                <div id="div1">
+                </div>
+              </div>
+              <div id="wrapper2">
+                <div id="div2">
+                  <table id="dataTableExampleNews" class="table table-responsive table-full-width">
+                    <thead>
+                      <tr>
+                        <th *ngFor="let dt of rmsDataColumns">{{dt}}</th>
+
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let row of rmsData">
+                        <td *ngFor="let col of rmsDataColumns">
+                          {{ row[col] }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- <table class="table table-striped" id="RMSDatawise">
+        <thead  *ngIf="dataLoaded">
+          <tr>
+           
+            <th *ngFor="let dt of rmsDataColumns" >{{dt}}</th>
+            
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of rmsData">
+            <td *ngFor="let col of rmsDataColumns">
+              {{ row[col] }}
+            </td>
+          </tr>
+        </tbody>
+      </table> -->
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+    <ng-template #NoRecords>
+      <div class="themeClr">
+        <h1 class="fs-2 text-center vh-50 p-3 m-4 "> No Data Found </h1>
+      </div>
+    </ng-template>
+  </div>

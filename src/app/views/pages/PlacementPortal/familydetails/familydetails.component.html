@@ -1,0 +1,230 @@
+<app-menu-bar></app-menu-bar>
+<ng-container *ngIf="FamilyData?.length >0; else noRecords">
+    <div class="label container-fluid">
+        <h4>Family Details Details</h4>
+    </div>
+    <div class="box container-fluid">
+        <form #StudentFamilyDetails="ngForm" (ngSubmit)="UpdateFamilyDetails(StudentFamilyDetails.value)">
+            <table class="table table-hower">
+                <thead>
+                    <th class="fs-5 text-center text-danger">Relation*</th>
+                    <th class="fs-5 text-center text-danger">Name *</th>
+                    <th class="fs-5 text-center text-danger">Age(Yrs.)*</th>
+                    <th class="fs-5 text-center text-danger">Status</th>
+                    <th class="fs-5 text-center text-danger">Designation</th>
+                    <th class="fs-5 text-center text-danger">Employer Name</th>
+                    <th class="fs-5 text-center text-danger">Employer Address</th>
+                    <th class="fs-5 text-center text-danger">Contact No</th>
+                    <th class="fs-5 text-center text-danger">Email Id</th>
+                </thead>
+                <tbody>
+    
+                    <tr *ngFor="let record of Father">
+                        <td>
+                            <div class="details ">
+                                <input type="text" class="form-control" [(ngModel)]="RelationI" name="RelationI" id="RelationI" readonly>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="details ">
+                                <input type="text" class="form-control" [(ngModel)]="FatherName" name="FatherName" id="FatherName" required>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="details ">
+                                <input type="text" class="form-control"  [(ngModel)]="FatherAge" name="FatherAge" id="FatherAge" required>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="details" *ngIf="FatherStatus.toLocaleLowerCase() != 'select'; else selectFData">
+                                <input type="text" class="form-control" [(ngModel)]="FatherStatus" name="FatherStatus" id="FatherStatus" required>
+                            </div>
+                            <ng-template #selectFData>
+                                <div class="details ">
+                                    <select class="form-select" aria-label="Default select example" [(ngModel)]="FatherStatus" name="FatherStatus" id="FatherStatus" required>
+                                        <option selected [value]="FatherStatus"> {{FatherStatus}} </option>
+                                        <option value="Service">Service</option>
+                                        <option value="Self Employed">Self Employed</option>
+                                        <option value="Home Maker">Home Maker</option>
+                                        <option value="Student">Student</option>
+                                        <option value="Retired">Retired</option>
+                                        <option value="Not Alive">Not Alive</option>
+                                        <option value="Others">Others</option>
+                                    </select>
+                                </div>
+                            </ng-template>
+                        </td>
+                        <td>
+                            <div class="details ">
+                                <input type="text" class="form-control"  [(ngModel)]="FatherOccupation" name="FatherDesignation" id="FatherDesignation">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="details ">
+                                <input type="text" class="form-control" [(ngModel)]="FatherEmpolyer" name="FatherEmployerName" id="FatherEmployerName">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="details ">
+                                <input type="text" class="form-control" [(ngModel)]="FatherEmployerAddress" name="FatheremployerAddress" id="FatheremployerAddress">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="details ">
+                                <input type="text" class="form-control" [(ngModel)]="FatherContact" name="FathercontactNumber" id="FathercontactNumber">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="details ">
+                                <input type="text" class="form-control" [(ngModel)]="FatherEmaiId" name="FatherEmployeremailId" id="FatherEmployeremailId">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngFor="let record of Mother">
+                      <td>
+                            <div class="details ">
+                                <input type="text" class="form-control" [(ngModel)]="RelationII" name="RelationII" id="RelationII" readonly>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="details ">
+                                <input type="text" class="form-control" [(ngModel)]="MotherName" name="MotherName" id="MotherName" required>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="details ">
+                                <input type="text" class="form-control"  [(ngModel)]="MotherAge" name="MotherAge" id="MotherAge" required>
+                            </div>
+                        </td>
+                        <td>                            
+                            <div class="details" *ngIf="MotherStatus.toLocaleLowerCase() != 'select'; else selectData">
+                                <input type="text" class="form-control" [(ngModel)]="MotherStatus" name="MotherStatus" id="MotherStatus" required>
+                            </div>
+                            <ng-template #selectData>
+                                <div class="details ">
+                                    <select class="form-select" aria-label="Default select example" [(ngModel)]="MotherStatus" name="MotherStatus" id="MotherStatus" required>
+                                        <option selected [value]="MotherStatus"> {{MotherStatus}} </option>
+                                        <option value="Service">Service</option>
+                                        <option value="Self Employed">Self Employed</option>
+                                        <option value="Home Maker">Home Maker</option>
+                                        <option value="Student">Student</option>
+                                        <option value="Retired">Retired</option>
+                                        <option value="Not Alive">Not Alive</option>
+                                        <option value="Others">Others</option>
+                                    </select>
+                                </div>
+                            </ng-template>
+                        </td>
+                        <td>
+                            <div class="details ">
+                                <input type="text" class="form-control"  [(ngModel)]="MotherOccupation" name="MotherDesignation" id="MotherDesignation">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="details ">
+                                <input type="text" class="form-control" [(ngModel)]="MotherEmpolyer" name="MotherEmployerName" id="MotherEmployerName">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="details ">
+                                <input type="text" class="form-control" [(ngModel)]="MotherEmployerAddress" name="MotheremployerAddress" id="MotheremployerAddress">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="details ">
+                                <input type="text" class="form-control" [(ngModel)]="MotherContact" name="MothercontactNumber" id="MothercontactNumber">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="details ">
+                                <input type="text" class="form-control" [(ngModel)]="MotherEmaiId" name="MotherEmployeremailId" id="MotherEmployeremailId">
+                            </div>
+                        </td>
+                    </tr>
+                   <tr *ngFor="let record of selectData">
+                        <td>
+                            <!-- <div class="details" *ngIf="RelationX.toLocaleLowerCase() != 'select'; else selectData">
+                                  <input type="text" class="form-control" [(ngModel)]="RelationX" name="RelationX" id="RelationX" >
+                              </div>
+                                <ng-template  #selectData> -->
+                                    <select class="form-select" aria-label="Default select example" [(ngModel)]="RelationX" name="Relations" id="Relations">
+                                        <option selected [value]="RelationX"> select </option>
+                                        <option value="Service">Brother</option>
+                                        <option value="Self Employed">Sister</option>
+                                        <option value="Maker">Friend</option>
+                                        <option value="Student">Guardian</option>
+                                        <option value="Others">Others</option>
+                                    </select>
+                                <!-- </ng-template> -->
+                          </td>
+                          <td>
+                              <div class="details ">
+                                  <input type="text" class="form-control" [(ngModel)]="selectDataName" name="selectDataName" id="selectDataName" required>
+                              </div>
+                          </td>
+                          <td>
+                              <div class="details ">
+                                  <input type="text" class="form-control"  [(ngModel)]="selectDataAge" name="selectDataAge" id="selectDataAge" required>
+                              </div>
+                          </td>
+                          <td>                            
+                              <div class="details" *ngIf="selectDataStatus.toLocaleLowerCase() != 'select'; else selectData">
+                                  <input type="text" class="form-control" [(ngModel)]="selectDataStatus" name="selectDataStatus" id="selectDataStatus" required>
+                              </div>
+                              <ng-template #selectData>
+                                  <div class="details ">
+                                      <select class="form-select" aria-label="Default select example" [(ngModel)]="selectDataStatus" name="selectDataStatus" id="selectDataStatus" required>
+                                          <option selected [value]="selectDataStatus"> {{selectDataStatus}} </option>
+                                          <option value="Service">Service</option>
+                                          <option value="Self Employed">Self Employed</option>
+                                          <option value="Home Maker">Home Maker</option>
+                                          <option value="Student">Student</option>
+                                          <option value="Retired">Retired</option>
+                                          <option value="Not Alive">Not Alive</option>
+                                          <option value="Others">Others</option>
+                                      </select>
+                                  </div>
+                              </ng-template>
+                          </td>
+                          <td>
+                              <div class="details ">
+                                  <input type="text" class="form-control"  [(ngModel)]="selectDataOccupation" name="selectDataDesignation" id="selectDataDesignation">
+                              </div>
+                          </td>
+                          <td>
+                              <div class="details ">
+                                  <input type="text" class="form-control" [(ngModel)]="selectDataEmpolyer" name="selectDataEmployerName" id="selectDataEmployerName">
+                              </div>
+                          </td>
+                          <td>
+                              <div class="details ">
+                                  <input type="text" class="form-control" [(ngModel)]="selectDataEmployerAddress" name="selectDataemployerAddress" id="selectDataemployerAddress">
+                              </div>
+                          </td>
+                          <td>
+                              <div class="details ">
+                                  <input type="text" class="form-control" [(ngModel)]="selectDataContact" name="selectDatacontactNumber" id="selectDatacontactNumber">
+                              </div>
+                          </td>
+                          <td>
+                              <div class="details ">
+                                  <input type="text" class="form-control" [(ngModel)]="selectDataEmaiId" name="selectDataEmployeremailId" id="selectDataEmployeremailId">
+                              </div>
+                          </td>
+                      </tr>
+    
+                </tbody>
+            </table>
+            <div class="btt mt-2 d-flex justify-content-center">
+                <button type="submit" class="btn text-center">Update</button>
+            </div>
+        </form>
+    </div>
+</ng-container>
+<ng-template #noRecords>
+    <div class="d-flex justify-content-center">
+        <p class="fs-2 ms-5 text-danger text-center mb-5 "> Database Error.
+        </p><br />
+        <!-- <div class="spinner-grow text-danger tex-center mt-5" style=" width: 14rem; height: 14rem;" role="status"></div> -->
+    </div>
+</ng-template>

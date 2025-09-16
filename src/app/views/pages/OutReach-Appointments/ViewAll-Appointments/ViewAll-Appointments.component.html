@@ -1,0 +1,197 @@
+<div class="container-fluid" id="adminPage" *ngIf="isLoginFailed==false; else loginFailed">
+    <div class="row">
+        <div class="col-12 stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row  p-3 mx-5 ">
+                        <div class="col-sm-3">
+                            <div class="mb-3">
+                                <button (click)="exportToExcel()" class="btn btn-dark " [disabled]="this.filteredMouDocumentDetails.length ==0">Export to Excel</button>
+                            </div>
+                        </div>
+                       
+                        <div class="col-sm-3">
+                            <div class="mb-3">
+                                <input [(ngModel)]="searchQuery" (keyup)="search()" id="search" type="text"
+                                    class="form-control" placeholder="Search Your Text Here" aria-label="Search"
+                                    aria-describedby="basic-addon1" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <ngx-datatable class="bootstrap table table-striped material"
+                            [rows]="filteredMouDocumentDetails" [loadingIndicator]="loadingIndicator"
+                            [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="5" [headerHeight]="80"
+                            [rowHeight]="'auto'"
+                            [scrollbarH]="true"
+                            [limit]="15">
+                           
+                            
+                            <ngx-datatable-column *ngFor="let col of columns" [prop]="col"></ngx-datatable-column>
+
+                             
+                        </ngx-datatable>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #loginFailed>
+    <div class="text-center bg-danger" *ngIf="isLoginFailed">
+        <h3 class="text-center fs-2 m-5 text-warn pt-5 "> Error in User Login . </h3>
+        <div class="row mt-4 mb-4">
+            <div class="col-sm-12 text-center">
+                <div class="mb-3 p-4">
+                    <Label class="form-label fs-4 text-warn ">Something Wen Wrong. Please Try login again!.</Label>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #ChangeSchoolDivisionModal let-modal>
+    <div class="container-fluid">
+        <div class="modal-header">
+            <h5 class="modal-title" id="ActivityActionTakenModalModalLabel"> Change School Division Involved </h5>
+            <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body ">
+                        <h2 class="modal-title text-center" >MOU Edit/Update Details </h2>
+                        <div class="table-responsive">
+                            <div class="row mb-4 mt-5">
+                                <div class="col-md-2">
+                                    <label class="form-label fw-bolder"> MOU Id </label>
+                                </div>
+                                <div class="col-md-1">
+                                    <label class="form-label fw-bold text-danger"> MOU/{{this.mouId}}</label>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <label class="form-label fw-bolder "> Current School/Division Involved Id </label> <br/>
+                                </div>
+                                <div class="col-md-1 text-start">
+                                    <label class="form-label fw-bolder text-danger">  {{this.CurrentSchool}}</label>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <label class="form-label fw-bolder "> Change School/Division Involved </label> <br/>
+
+                                </div>
+                                <div class="col-md-2">
+                                    <ng-select [items]="allSchoolDivisions" #ngSelectComponentStream [multiple]="true"
+                                        bindLabel="schoolDivision" [clearable]="true" [virtualScroll]="true" placeholder="Select"
+                                        (change)="changeResponsiblePlanned($event)" bindValue="id" [hideSelected]="true"
+                                        [(ngModel)]="selectedSchoolDivisions">
+                                    </ng-select>
+                                    <div *ngIf="hasSelectionError" class="themeClr">One school division is Required</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="row mb-4 mt-4">
+                                    <div class="col-2">
+                                      <label class="form-label">MOU Start Date</label>
+                                    </div>
+                                    <div class="col-2">
+                                      <input type="date" class="form-control w-10 text-dark" name="MouStartDate" [style]="{ width: '89%' }"
+                                        autocomplete="off" placeholder="Provide Mou Start Date" required [(ngModel)]="MouStartDate"
+                                        (change)="updateMouStatus()" />
+                                      <div *ngIf="!MouStartDate" class="themeClr">
+                                        MOU Start Date is required.
+                                      </div>
+                                    </div>
+                    
+                    
+                                    <div class="col-2">
+                                      <label class="form-label">MOU End Date </label>
+                                     </div>
+                                    
+                                    <div class="col-2">
+                                      <input type="date" class="form-control" [disabled]="isIndefiniteMou" name="MouEndDate"
+                                        autocomplete="off" placeholder="Provide Mou End Date" [(ngModel)]="MouEndDate"
+                                        (change)="updateMouStatus()" />
+                                      <div *ngIf="!isIndefiniteMou && !MouEndDate && MouStartDate" class="themeClr">
+                                        Mou End Date is optional.
+                                      </div>
+                                    </div>
+                                    <div class="col-2">
+                                        Check if the Mou is Indefinite
+                                        <input type="checkbox" id="IndefiniteMou" [(ngModel)]="isIndefiniteMou" (change)="toggleEndDate()" />
+                                      </div>
+                                    <div class="col-2">
+                                      <p [ngStyle]="{ color: moustatus === 'Active' ? 'green' : 'red' }">
+                                        <span class="text-dark">Status </span> : {{ moustatus }}
+                                      </p>
+                                    </div>
+                                  </div>
+                            </div>
+                            <!--  SPOC Person details  -->
+                            <div class="row">
+                                <div class="row mb-4 mt-4">
+                                    <div class="col-2">
+                                      <label class="form-label">SPOC Person Name</label>
+                                    </div>
+                                    <div class="col-2">
+                                      <input type="text" class="form-control w-10 text-dark" name="SPOCPerson" [style]="{ width: '89%' }"
+                                        autocomplete="off" placeholder="Provide SPOCPerson Name " required [(ngModel)]="SPOCPerson"
+                                          />
+                                      <div *ngIf="!SPOCPerson" class="themeClr">
+                                        SPOCPerson Name Required is required.
+                                      </div>
+                                    </div>
+                    
+                    
+                                    <div class="col-2">
+                                      <label class="form-label">SPOC PersonEmail</label>
+                                    </div>
+                                    <div class="col-2">
+                                      <input type="text" class="form-control"  name="SPOCPersonEmail"
+                                        autocomplete="off" placeholder="Provide Mou End Date" [(ngModel)]="SPOCPersonEmail"
+                                        />
+                                      <div *ngIf="!SPOCPersonEmail " class="themeClr">
+                                        Required SPOC PersonEmail.
+                                      </div>
+                                    </div>
+                                    <div class="col-2">
+                                      <label class="form-label">SPOC Contact No</label>
+                                    </div>
+                                    <div class="col-2">
+                                      <input type="text" class="form-control"  name="SPOCPersonContact"
+                                        autocomplete="off" placeholder="Provide SPOCPerson Contact no" [(ngModel)]="SPOCPersonContact"
+                                        />
+                                      <div *ngIf="!SPOCPersonContact " class="themeClr">
+                                        Required SPOC  PersonContact.
+                                      </div>
+                                    </div>
+                                  </div>
+                            </div>
+                            <div class="row">
+                                <br/>
+                                <br/>
+                                <br/>
+                                <div class="col-md-12 text-center">
+                                    <button class="btn btn-dark me-2" (click)="ChangeUpdateSchoolDivision(this.mouId, this.selectedSchoolDivisions.length>0 ? this.selectedSchoolDivisions: this.CurrentSchool   ,this.MouStartDate, this.MouEndDate, this.moustatus, this.SPOCPerson, this.SPOCPersonContact, this.SPOCPersonEmail)" >
+                                        Update Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+

@@ -1,0 +1,311 @@
+<div class="sticky-bar" id="stickBar" style="cursor: pointer;" >
+    <ul>
+      
+        <li class="liNew" id="liNews">
+            <div class="li-header" 
+  >
+            <a  href="javascript:void(0)" (click)="callfxn()" >
+                <span class="st-label">Share your Feedback</span>
+<img width="auto" height="auto" src="https://www.lpu.in/images/feedback-icon.png" alt="feedback-icon">
+            </a>
+            <a href="javascript:void(0)" (click)="closeData()" class="close-btn-feed"><i data-feather="x-circle"></i></a>
+        </div>
+            <div class="feed-back-form" id="fdNew" style="margin-left:10px;">
+            <br/>
+                <ul class="feedback" id="fBack">
+                    <li class="angry" (click)="ratingData(1);">
+                        <div>
+                            <svg class="eye left">
+                                <use xlink:href="#eye"/>
+                            </svg>
+                            <svg class="eye right">
+                                <use xlink:href="#eye"/>
+                            </svg>
+                            <svg class="mouth">
+                                <use xlink:href="#mouth"/>
+                            </svg>
+                        </div>
+                    </li>
+                    <li class="sad" (click)="ratingData(2);">
+                        <div>
+                            <svg class="eye left">
+                                <use xlink:href="#eye"/>
+                            </svg>
+                            <svg class="eye right">
+                                <use xlink:href="#eye"/>
+                            </svg>
+                            <svg class="mouth">
+                                <use xlink:href="#mouth"/>
+                            </svg>
+                        </div>
+                    </li>
+                    <li class="ok" (click)="ratingData(3);">
+                        <div></div>
+                    </li>
+                    <li class="good" (click)="ratingData(4);">
+                        <div>
+                            <svg class="eye left">
+                                <use xlink:href="#eye"/>
+                            </svg>
+                            <svg class="eye right">
+                                <use xlink:href="#eye"/>
+                            </svg>
+                            <svg class="mouth">
+                                <use xlink:href="#mouth"/>
+                            </svg>
+                        </div>
+                    </li>
+                    <li class="happy active" (click)="ratingData(5);">
+                        <div>
+                            <svg class="eye left">
+                                <use xlink:href="#eye"/>
+                            </svg>
+                            <svg class="eye right">
+                                <use xlink:href="#eye"/>
+                            </svg>
+                        </div>
+                    </li>
+                </ul>
+                <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                    <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 7 4" id="eye">
+                        <path d="M1,1 C1.83333333,2.16666667 2.66666667,2.75 3.5,2.75 C4.33333333,2.75 5.16666667,2.16666667 6,1"></path>
+                    </symbol>
+                    <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 7" id="mouth">
+                        <path d="M1,5.5 C3.66666667,2.5 6.33333333,1 9,1 C11.6666667,1 14.3333333,2.5 17,5.5"></path>
+                    </symbol>
+                </svg> 
+              <br/>
+                <!-- <textarea class="form-control" id="txtFeedback" [(ngModel)]="areaFeedback" rows="4" placeholder="Feedback"></textarea> -->
+                <input type="button" name="" (click)="addFeedback();" style="margin-bottom: 10px;
+                margin-left: 14px;" value="Submit Feedback" class="btn btn-secondary mt-2">
+             
+              </div>
+        </li>
+    </ul>
+</div>
+<div class="">
+    <div class="">
+        <div class="row">
+            <div style="float: right;">
+            <ul class="navbar-nav" id="ulmenu1" style="    position: relative;
+            margin-left: 80%;
+            margin-top: -30px;">
+       
+                <li class="nav-item nav-apps" ngbDropdown>
+                  <a href="https://ums.lpu.in/lpuums/Default.aspx" class="dropdown-item d-flex flex-column align-items-center justify-content-center wd-70 ht-70"><i class="feather icon-home icon-lg mb-1"></i><p class="tx-12">UMS Home</p></a>
+                </li>
+               
+              </ul>
+            </div>
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                   
+                    <div class="card-body">
+                        <!-- <h6 class="card-title" style="text-align: center">Placement</h6> -->
+                        
+                        
+                            <div class="row">
+
+                            <div class="col-sm">
+                                <label for="BatchYear" class="form-label">Planner Session Year:</label>
+
+                                <ng-select [items]="batchYearData"
+                                bindLabel="session"
+                                (change)="changeLeagueOwner($event)"
+                                bindValue="id"
+                                placeholder="type to search"
+                                [(ngModel)]="selectedBatchyear">
+                              </ng-select>
+
+                               
+                            </div>
+
+                            <div class="col-sm">
+                                <label for="Company" class="form-label">Report Type:</label>
+                                <ng-select [items]="batchYearCompanyData" #ngSelectComponent
+                                [clearable]="true"
+                                bindLabel="queryType"
+                                (change)="changeCompany($event)"
+                                bindValue="id"
+                                placeholder="type to search"
+                                [(ngModel)]="selection">
+                              </ng-select>
+                            </div>
+
+                        
+                           
+                        </div>
+                        <div class="text-center mt-3">
+                           
+                            <div class="spinner-border" role="status" *ngIf="isLoadderBtn==0">
+                                <span class="visually-hidden">Loading...</span>
+                              </div>
+                              <button type="submit" *ngIf="isLoadderBtn==1" class="btn btn-primary me-2" (click)="showPlannerReportData();">Show</button>
+                            <button type="button" class="btn btn-secondary" (click)="resetData();">Reset</button>
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 stretch-card">
+              
+            
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">OBP Report</h6>
+                        <div class="table-responsive">
+                            <div class="mt-3" *ngIf="showExcelButton == 1">
+                                <button type="submit" class="btn btn-primary me-2" (click)="ExportTOExcel();">Export To Excel</button>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-10">&nbsp;</div>
+                                  <div class="col-md-2">
+                                    <input
+                                     
+                                      type="text"
+                                      class="form-control"
+                                      placeholder="Search"
+                                      aria-label="Search"
+                                      (keyup)="updateFilter($event)"
+                                      aria-describedby="basic-addon1"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            <div class="table-responsive custom-datatable"  >
+                            <ngx-datatable
+                            class="bootstrap table table-striped material"
+                            [rows]="htmlData"
+                           
+                            [loadingIndicator]="loadingIndicator"
+                            [columnMode]="ColumnMode.force"
+                            [footerHeight]="50"
+                            [limit]="10"
+                            [headerHeight]="80"
+                            rowHeight="auto"
+                          >
+                          <ngx-datatable-column *ngFor="let col of columns" [prop]="col"></ngx-datatable-column>
+                          </ngx-datatable>
+                            
+                             </div>  
+                        
+                            <!-- <table id="dataTableExample" datatable [dtOptions]="dtoptions" [dtTrigger]="dtTrigger"  class="table table-striped" style="width:100%;">
+                                <thead>
+                                    <tr >
+                                        <ng-container *ngFor="let item of headHtmlData | keyvalue">
+                                            <th>{{item.key}}</th>
+                                        </ng-container>
+                                      
+                                      
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-container *ngFor="let row of htmlData; let index=index; let even=even">
+                                        <tr class="tid-data-row" [ngClass]="{'tid-even': even}">
+                                            <ng-container *ngFor="let item of row | keyvalue;let index1=index; let even1=even">
+                                              <ng-container *ngIf="checkContains(item.value)">
+                                                <td><a href="javascript:void(0)" [ngClass]="getExactParamValue(item.value)"  >{{getExactValueNew(item.value,item.key)}}</a> </td>
+                                              </ng-container>
+                                              <ng-container *ngIf="!checkContains(item.value)">
+                                                <td >{{item.value}}</td>
+                                              </ng-container>
+                                                
+                                            </ng-container>
+                                        </tr>
+                                   
+                                    </ng-container>
+                                </tbody>
+
+                            </table>
+                                 -->
+
+                            <table id="dataTableExample1" style="display: none;" class="table table-striped" >
+                                <thead>
+                                    <tr >
+                                        <ng-container *ngFor="let item of headHtmlData | keyvalue">
+                                            <th>{{item.key}}</th>
+                                        </ng-container>
+                                      
+                                      
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-container *ngFor="let row of htmlData; let index=index; let even=even">
+                                        <tr class="tid-data-row" [ngClass]="{'tid-even': even}">
+                                            <ng-container *ngFor="let item of row | keyvalue;let index1=index; let even1=even">
+                                            <ng-container *ngIf="checkContains(item.value)">
+                                                <!-- <td><span [innerHTML]="getExactValue(item.value)"></span></td> -->
+                                                <td>{{getExactValue(item.value)}}</td>
+                                              </ng-container>
+                                              <ng-container *ngIf="!checkContains(item.value)">
+                                                <td >{{item.value}}</td>
+                                              </ng-container>
+                                              </ng-container>
+                                        </tr>
+                                   
+                                    </ng-container>
+                                </tbody>
+
+                            </table>
+                            <div class="text-center mt-3">
+
+</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+</div>
+<ng-template #basicModal let-modal style="max-width: 100% !important;">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLabel">Details</h5>
+      <button type="button" class="btn-close" (click)="modal.close('by: close button')"  aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <table id="dataTableExampleNew"  class="table table-striped" >
+            <thead>
+                <tr >
+                    <ng-container *ngFor="let item of linkedheadHtmlData | keyvalue">
+                        <th>{{item.key}}</th>
+                    </ng-container>
+                  
+                  
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let row of linkedHtmlData; let index=index; let even=even">
+                    <tr class="tid-data-row tid-even" >
+                        <ng-container *ngFor="let item of row | keyvalue;let index1=index; let even1=even">
+                            <!-- <td><span [innerHTML]="getExactValue(item.value)"></span></td> -->
+                            <ng-container *ngIf="checkhttplink(item.value)">
+                          <td> <span>    
+                            <a [href]="item.value" target="_blank" class="btn btn-secondary" >View Data</a>
+                            <!-- <button type="button" (click)="viewData(item.value)" class="btn btn-secondary" >View Data</button></span></td> -->
+                        </span></td>
+                            </ng-container>
+                            <ng-container *ngIf="!checkhttplink(item.value)">
+                                <td >{{item.value}}</td>
+                            </ng-container>
+                            
+                            </ng-container>
+                          
+                    </tr>
+               
+                </ng-container>
+            </tbody>
+
+        </table>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="modal.close('by: close button')">Close</button>
+    </div>
+  </ng-template>
+
+

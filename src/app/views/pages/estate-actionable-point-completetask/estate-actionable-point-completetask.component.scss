@@ -1,0 +1,126 @@
+ 
+// @import "../../../../assets/obp_planner_score/css/custom.css";
+ 
+.card {
+    width: 100%;
+    max-width: 250px;
+    text-align: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+}
+ 
+
+.table-success {
+  background-color: #d4edda !important;
+}
+ 
+  @media (max-width: 500px) {
+    .form-select, .form-control, textarea {
+      font-size: 14px;
+    }
+  
+    .radio-box {
+      flex-direction: column !important;
+      gap: 0.5rem;
+    }
+  
+    .btn {
+      width: 100%;
+    }
+  
+    .card-body {
+      padding: 1rem !important;
+    }
+  }
+
+  .form-label {
+  font-weight: bold;
+  font-size: 16px;
+  display: block;
+  margin-bottom: 6px;
+  color: #f7614d; /* default text color */
+}
+
+//add Date picker
+.date-range-picker-custom .col-lg-3 {
+  position: relative; /* To position the custom display */
+}
+
+/* Hide the actual Angular Material input but keep the picker functionality */
+.custom-date-picker-field {
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0; /* Ensures it's not visible but still interactive */
+  pointer-events: none; /* Allows clicks to pass through to the custom display */
+}
+
+/* Custom Date Label Styling */
+.custom-date-label {
+  font-weight: bold;
+  font-size: 0.85em; /* Adjust as needed */
+  margin-bottom: 5px; /* Space between label and custom display */
+  display: block; /* Ensures it takes full width */
+}
+
+.start-date-label {
+  color: #28a745; /* Greenish color from your image */
+}
+
+.end-date-label {
+  color: #dc3545; /* Reddish color from your image */
+}
+
+
+.custom-date-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 120px; /* Adjust width as needed */
+  height: 120px; /* Adjust height to make it square or desired shape */
+  background-color: #fff;
+  border-radius: 8px; /* Slightly rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  padding: 10px; /* Internal padding */
+}
+
+.custom-date-display:hover {
+  transform: translateY(-2px);
+}
+
+.custom-date-display .day {
+  font-size: 3em; /* Large number for the day */
+  font-weight: bold;
+  color: #333; /* Darker color for the day */
+  line-height: 1; /* Adjust line height for vertical centering */
+  margin-bottom: 5px; /* Space between day and month/year */
+}
+
+.custom-date-display .month-year {
+  font-size: 1.1em; /* Smaller text for month and year */
+  color: #666; /* Lighter color for month/year */
+  text-transform: uppercase; /* Match the image style */
+  font-weight: 500;
+}
+
+/* Specific styling for the border/highlight on top */
+.start-date-display {
+  border-top: 5px solid #28a745; /* Green border top */
+}
+
+.end-date-display {
+  border-top: 5px solid #dc3545; /* Red border top */
+}
+
+/* To hide the default date input in mat-date-range-input */
+.hidden-date-input input {
+  display: none;
+}
+//End 

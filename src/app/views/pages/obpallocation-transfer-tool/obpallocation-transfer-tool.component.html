@@ -1,0 +1,405 @@
+<div class="sticky-bar" id="stickBar" style="cursor: pointer;">
+  <ul class="main">
+  </ul>
+</div>
+<div *ngIf="!isLoading">
+  <div class="wrapper login-page">
+    <header>
+      <div class="logo">
+        <img src="assets/obp_planner_score/images/lpu-seal.svg" class="lpu-seal" />
+        <img src="assets/obp_planner_score/images/ums-logo.svg" class="ums-logo" />
+        <img src="assets/obp_planner_score/images/ums-logo-s.svg" class="ums-logo-s" />
+      </div>
+      <div class="name">
+        <h1><span class="obp-text">OutCome Based Planner</span> <span class="dash"> - </span> Allocation Tool
+          &nbsp;&nbsp;&nbsp;
+          <!-- <span style="font-size: 25px;  font-style: italic;color:#f15822">"I AM IMPORTANT"</span> -->
+        </h1>
+      </div>
+
+      <div class="lpu-social">
+        <img src="assets/obp_planner_score/images/lpu-social.svg" />
+      </div>
+
+    </header>
+    <div class="form-field-container">
+      <mat-form-field appearance="fill" class="custom-width">
+        <mat-label>Choose Planner Session</mat-label>
+        <input type="text" matInput [formControl]="sessioncontrol" [matAutocomplete]="sessionauto">
+        <mat-autocomplete #sessionauto="matAutocomplete" (optionSelected)="onOptionSelected($event.option.value)">
+          <mat-option *ngFor="let optionsessionvalue of optionsSession" [value]="optionsessionvalue">
+            {{optionsessionvalue.session}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+    <div class="container-fluid mt-4">
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="selectedTab === 'tab1'" (click)="selectTab('tab1')"> Division To Division
+            / School to School</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="selectedTab === 'tab2'" (click)="selectTab('tab2')">Within Division /
+            Within School</a>
+        </li>
+      </ul>
+
+      <div class="tab-content mt-3">
+        <div *ngIf="selectedTab === 'tab1'" class="tab-pane fade show active">
+          <div class="search-container">
+            <mat-form-field appearance="fill">
+              <mat-label>Search</mat-label>
+              <input matInput [(ngModel)]="searchTerm" (ngModelChange)="filterTable()" placeholder="Search by UID">
+            </mat-form-field>
+          </div>
+          <div class="card-body" id="dv_positiveachievement"
+            style="width:100%; height:500px; overflow:auto;padding:0px;">
+
+            <div class="table-responsive" style="max-height: 1000px;"> <!-- Set max height for scrolling -->
+              <div>
+                <table class="table" class="table table-bordered">
+                  <thead>
+                    <th>Employee Code</th>
+                    <th>Employee Name</th>
+                    <th>Current Division</th>
+                    <th>Current Department</th>
+                    <th>Current Department Name</th>
+                    <th>Actions</th>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of filteredData; let i = index">
+
+                      <td>{{ item.employeeCode }}</td>
+                      <td>{{ item.employeeName }}</td>
+                      <td>{{item.currentDivisionName}}</td>
+                      <td>{{item.currentDepartment}}</td>
+                      <td>{{item.currentDepartmentName}}</td>
+
+                      <td>
+                        <button class="btn btn-info btn-sm custom-button" (click)="openModalTransfer(item,'Divisions')">
+                          <i class="fas fa-eye"></i> View </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <ngb-pagination [(page)]="currentPage" [pageSize]="itemsPerPage" [collectionSize]="totalItems"
+                  (pageChange)="onPageChange($event)">
+                </ngb-pagination>
+              </div>
+              <!-- Modal -->
+              <div class="modal" tabindex="-1" role="dialog" *ngIf="selectedemployeeCode" style="display: block;">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content custom-modal">
+                    <div class="modal-header" style="background-color: #007bff; color: white;">
+                      <h5 class="modal-title">Metrics Details</h5>
+                      <button type="button" class="close" (click)="closeModal()" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th style="width: 10%;">ID</th>
+                            <th style="width: 25%;">Name</th>
+                            <th style="width: 20%;">Current Department</th>
+                            <th style="width: 30%;">Current Department Name</th>
+                            <th style="width: 20%;">Current Division Name</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>{{ selectedemployeeCode.employeeCode }}</td>
+                            <td>{{ selectedemployeeCode.employeeName }}</td>
+                            <td>{{ selectedemployeeCode.currentDepartment }}</td>
+                            <td>{{ selectedemployeeCode.currentDepartmentName }}</td>
+                            <td>{{ selectedemployeeCode.currentDivisionName }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <!-- <p><strong>ID:</strong> {{ selectedemployeeCode.employeeCode }}</p>
+          <p><strong>Name:</strong> {{ selectedemployeeCode.employeeName }}</p>
+          <p><strong>Current Department </strong> {{ selectedemployeeCode.currentDepartment }}</p>
+          <p><strong>Current DepartmentName </strong> {{ selectedemployeeCode.currentDepartmentName }}</p>
+          <p><strong>Current DivisionName</strong> {{ selectedemployeeCode.currentDivisionName }}</p> -->
+
+                      <div class="card-body" id="dv_positiveachievement"
+                        style="width:100%; height:400px; overflow:auto;padding:0px;">
+                        <div class="col-md-4 form-group">
+                          <label style=" color: #f05120; font-size: 1.2rem;"> Outcome Based Planner -
+                            Allocations</label>
+                        </div>
+                        <div class="table-responsive" style="max-height: 400px;"> <!-- Set max height for scrolling -->
+                          <table class="table" class="table table-bordered">
+                            <thead>
+                              <th style="width: 20px;"><input type="checkbox" name="websitecheck"
+                                  [checked]="isCheckedpositive" [(ngModel)]="selectAllmarkcomplete"
+                                  (change)="toggleSelectAllMarkasComplete()">All</th>
+                              <th style="width: 50px;">Srno</th>
+                              <th>MetricId</th>
+                              <th>Metric Description</th>
+                              <th>Source Division Name </th>
+                              <th> Transfer To UID</th>
+                              <th>Transfer To Name</th>
+                              <th>Total Target</th>
+                              <th style="width: 50px;">Completed Value</th>
+                              <th style="width: 50px;">Assign To Type</th>
+                              <th>Allocated Division Name</th>
+                              <th style="width: 60px;">Allocated Department Code</th>
+                              <th>Allocated Department Name</th>
+
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let item of MarkasCompleteFilteredRecords; let i = index">
+                                <td><input type="checkbox" class="checkboxCls" name="websitecheck"
+                                    [(ngModel)]="item.selected"></td>
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ item.metricId}}</td>
+                                <td>{{ item.metricDescription}}</td>
+                                <td>{{ item.sourceDivisionName}}</td>
+                                <td>{{ item.currentApprovingAuth}}</td>
+                                <td>{{ item.currentApprovingAuthName}}</td>
+                                <td>{{ item.totalTarget}}</td>
+                                <td>{{ item.completedValue }}</td>
+                                <td>{{ item.assignToType }}</td>
+                                <td>{{ item.allocationDivisionName }}</td>
+                                <td>{{ item.allocationdepartment }}</td>
+                                <td>{{ item.allocationdepartmentName }}</td>
+
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                      <div class="form-group" style="text-align: center;margin-top:20px;">
+                        <button type="button" class="btn btn-success btn-block"
+                          (click)="getSelectedModalData()">Transfer / Deactivate</button>
+                      </div>
+                      <!-- <div class="card-body" id="dv_zeroachievement" style="width:100%; height:200px; overflow:auto;padding:0px;">
+          <div class="col-md-4 form-group">
+          <label style=" color: #f05120; font-size: 1.2rem;">Zero Achievement</label>
+          </div>
+      <table class="table">
+        <thead>
+          <th style="width: 180px;"><input type="checkbox" name="websitecheck" [checked]="isCheckedzero" (change)="checkuncheckallzero()">Select All</th>   
+            <th style="width: 50px;">#</th>
+            <th>Name</th>
+            <th>Age</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of tab1Data; let i = index">
+              <td><input type="checkbox" class="checkboxCls" name="websitecheck" [checked]="isCheckedzero"  (change)="changeSelection()"></td>
+            <td>{{ i + 1 }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.age }}</td>
+          </tr>
+        </tbody>
+      </table>
+     
+      </div> -->
+                      <!-- <div class="form-group" style="text-align: center;margin-top:20px;">
+          <button type="button" class="btn btn-success btn-block" >Submit</button>
+       </div> -->
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="search-container">
+        <mat-form-field appearance="fill">
+          <mat-label>Search</mat-label>
+          <input matInput [(ngModel)]="searchTermDept" (ngModelChange)="filterTableDept()" placeholder="Search by UID">
+        </mat-form-field>
+      </div>
+      <div *ngIf="selectedTab === 'tab2'" class="tab-pane fade show active">
+        <div class="card-body" id="divisionchange" style="width:100%; height:500px; overflow:auto;padding:0px;">
+          <table class="table">
+            <thead>
+              <tr>
+                <!-- <th>
+              <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()" /> 
+            </th> -->
+                <th>Sr No</th>
+                <th>Employee Code</th>
+                <th>EmployeeName</th>
+                <th>Current Department</th>
+                <th>Current DepartmentName</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredDataDept  let i = index">
+                <!-- <td>
+              <input type="checkbox" [(ngModel)]="item.selected" />
+            </td> -->
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.employeeCode }}</td>
+                <td>{{ item.employeeName }}</td>
+                <td>{{ item.currentDepartment }}</td>
+                <td>{{ item.currentDepartmentName }}</td>
+
+                <td>
+                  <button class="btn btn-info btn-sm custom-button" (click)="openModalTransfer(item,'Dept')">
+                    <i class="fas fa-eye"></i> View </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="modal" tabindex="-1" role="dialog" *ngIf="selectedDeptemployeeCode" style="display: block;">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content custom-modal">
+                <div class="modal-header" style="background-color: #007bff; color: white;">
+                  <h5 class="modal-title">Metrics Details</h5>
+                  <button type="button" class="close" (click)="closeModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th style="width: 10%;">ID</th>
+                        <th style="width: 25%;">Name</th>
+                        <th style="width: 20%;">Current Department</th>
+                        <th style="width: 30%;">Current Department Name</th>
+                        <th style="width: 20%;">Current Division Name</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{{ selectedDeptemployeeCode.employeeCode }}</td>
+                        <td>{{ selectedDeptemployeeCode.employeeName }}</td>
+                        <td>{{ selectedDeptemployeeCode.currentDepartment }}</td>
+                        <td>{{ selectedDeptemployeeCode.currentDepartmentName }}</td>
+                        <td>{{ selectedDeptemployeeCode.currentDivisionName }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <!-- <p><strong>ID:</strong> {{ selectedemployeeCode.employeeCode }}</p>
+              <p><strong>Name:</strong> {{ selectedemployeeCode.employeeName }}</p>
+              <p><strong>Current Department </strong> {{ selectedemployeeCode.currentDepartment }}</p>
+              <p><strong>Current DepartmentName </strong> {{ selectedemployeeCode.currentDepartmentName }}</p>
+              <p><strong>Current DivisionName</strong> {{ selectedemployeeCode.currentDivisionName }}</p> -->
+
+                  <div class="card-body" id="dv_positiveachievement"
+                    style="width:100%; height:400px; overflow:auto;padding:0px;">
+                    <div class="col-md-4 form-group">
+                      <label style=" color: #f05120; font-size: 1.2rem;"> Outcome Based Planner - Allocations</label>
+                    </div>
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                      <!-- Set max height for scrolling -->
+                      <table class="table" class="table table-bordered">
+                        <thead>
+                          <th style="width: 50px;"><input type="checkbox" name="websitecheck"
+                              [checked]="isCheckedpositive" [(ngModel)]="selectAllDeptShift"
+                              (change)="toggleSelectAllDeptShift()">Select All</th>
+                          <th style="width: 50px;">Srno</th>
+                          <th>MetricId</th>
+                          <th>Metric Description</th>
+                          <th>Source Division</th>
+                          <th> Transfer To UID</th>
+                          <th>Transfer To Name</th>
+                          <th>Total Target</th>
+                          <th>Completed Value</th>
+                          <th>Assigned Type</th>
+                          <th>Allocated Division Name</th>
+                          <th>Allocated Department Code</th>
+                          <th>Allocated Department Name</th>
+                          <th>Assigned UID</th>
+                          <th>Select Department</th>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let item of DeptShiftRecords; let i = index">
+                            <td><input type="checkbox" class="checkboxCls" name="websitecheck"
+                                [(ngModel)]="item.selected"></td>
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ item.metricId}}</td>
+                            <td>{{item.metricDescription}}</td>
+                            <td>{{item.sourceDivisionName}}</td>
+                            <td>{{item.currentApprovingAuth}}</td>
+                            <td>{{item.currentApprovingAuthName}}</td>
+                            <td>{{item.totalTarget}}</td>
+                            <td>{{ item.completedValue }}</td>
+                            <td>{{ item.assignToType }}</td>
+                            <td>{{ item.allocationDivisionName }}</td>
+                            <td>{{ item.allocationdepartment }}</td>
+                            <td>{{ item.allocationdepartmentName }}</td>
+                            <td>{{ selectedDeptemployeeCode.employeeCode }}</td>
+                            <!-- <td>{{ item.allocationdepartmentName }}</td> -->
+                            <td>
+                              <!-- <select class="custom-dropdown" [(ngModel)]="item.selectedOption"class="custom-dropdown form-select" style="width: 300px;" >
+                      <option *ngFor="let option of fetchdepartments" [value]="option.departmentCode">{{ option.departmentName }}</option>
+                    </select> -->
+                              <ng-select [items]="fetchdepartments" bindLabel="departmentName" [virtualScroll]="true"
+                                bindValue="departmentCode" [(ngModel)]="item.selectedOption">
+                              </ng-select>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="form-group" style="text-align: center;margin-top:20px;">
+                    <button type="button" class="btn btn-success btn-block"
+                      (click)="ChangeDeptAllocations()">Submit</button>
+                  </div>
+                  <!-- <div class="card-body" id="dv_zeroachievement" style="width:100%; height:200px; overflow:auto;padding:0px;">
+              <div class="col-md-4 form-group">
+              <label style=" color: #f05120; font-size: 1.2rem;">Zero Achievement</label>
+              </div>
+          <table class="table">
+            <thead>
+              <th style="width: 180px;"><input type="checkbox" name="websitecheck" [checked]="isCheckedzero" (change)="checkuncheckallzero()">Select All</th>   
+                <th style="width: 50px;">#</th>
+                <th>Name</th>
+                <th>Age</th>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of tab1Data; let i = index">
+                  <td><input type="checkbox" class="checkboxCls" name="websitecheck" [checked]="isCheckedzero"  (change)="changeSelection()"></td>
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.age }}</td>
+              </tr>
+            </tbody>
+          </table>
+         
+          </div> -->
+                  <!-- <div class="form-group" style="text-align: center;margin-top:20px;">
+              <button type="button" class="btn btn-success btn-block" >Submit</button>
+           </div> -->
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <div *ngIf="isLoading" class="spinner-wrapper">
+  <div class="spinner">Loading...</div>
+   
+</div> -->
+<div *ngIf="isLoading" class="loading-alert">
+  <div class="alert-content">
+    <div class="loader"></div>
+    <div class="loading-text">Loading, please wait...</div>
+  </div>
+</div>

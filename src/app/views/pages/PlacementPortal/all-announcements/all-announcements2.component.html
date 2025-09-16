@@ -1,0 +1,39 @@
+<div class="label">
+  <h4>Placement Messages</h4>
+</div>
+<div class="box">
+  <div class="boxa">
+    <button class="export btn" (click)="exportToExcel()">Export to Excel</button>
+    <div class="details">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>All Announcements/th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let record of getRecordsForCurrentPage()">
+            <td>{{record.subject+record.entryDate}}</td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="boxb">
+    <div class="num">
+      <mat-paginator [length]="records.length" [pageSize]="recordsPerPage" [pageSizeOptions]="[5, 10, 25, 100]"
+        (page)="onPageChange($event)">
+      </mat-paginator>
+    </div>
+    <div class="page">
+      <button id="pg" *ngFor="let page of pagesArray" (click)="changePage(page)" [class.active]="currentPage === page">
+        {{ page }}
+      </button>
+
+    </div>
+    <div id="total">
+      Total Message: {{ records.length }}
+    </div>
+  </div>
+</div>

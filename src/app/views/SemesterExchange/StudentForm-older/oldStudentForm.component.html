@@ -1,0 +1,600 @@
+<!-- <div *ngIf="isLoading" class="loader-overlay">
+    <div class="spinner-border text-primary loader-spinner" role="status" aria-live="polite" aria-busy="true">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div> -->
+
+<!-- <div class="full-page-loader" *ngIf="isLoading" aria-label="Loading">
+    <div class="loader-spinner">
+        <span class="material-icons lg-48 spin-icon">autorenew</span>
+    </div>
+</div>
+<div class="container mt-4" id="NewRegsiterPage" *ngIf="loginFailed==false; else ErrorApplication">
+    <div class="card shadow-sm p-4" *ngIf="eligible; else NotElgible">
+        <h2 class="text-center text-dark mb-5">New Application Form</h2>
+        <h3 class="text-info fs-2">
+            Dear <span class="text-danger">{{studentName}}</span>, Current Semester
+            <span class="text-danger">{{CurrentTerm}}</span> <br />
+        </h3> -->
+
+
+        
+        <!-- <div class="row g-4 mb-4">
+            <div class="mt-3">
+                <p><strong>Total Subjects with Grade ≤ 6:</strong>
+                    <input type="hidden" name="TotalCountGradeF" id="TotalCountGradeF" [(ngModel)]="GradeFcount" />{{
+                    GradeFcount }}
+                </p>
+                <p>
+                    <strong>Eligibility:</strong>
+                    <span [ngClass]="{ 'text-success': eligible, 'text-danger': !eligible }">
+                        {{ eligible ? 'Eligible' : 'Not Eligible' }}
+                    </span>
+                </p>
+            </div>
+        </div> -->
+
+        <!-- <form [formGroup]="SemesterExchangeRegistration" (ngSubmit)="Onsubmit()" class="forms-sample">
+        
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <label class="form-label">Country Code <span class="text-danger">*</span></label>
+                    <input type="text" id="CountryCode" formControlName="CountryCode" class="form-control"
+                        placeholder="Enter Country Code"
+                        [ngClass]="{'is-invalid': form1['CountryCode'].invalid && (form1['CountryCode'].touched || isForm1Submitted)}" />
+                    <div *ngIf="form1['CountryCode'].invalid && (form1['CountryCode'].touched || isForm1Submitted)"
+                        class="invalid-feedback d-block">
+                        Please enter a valid Country Code.
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Country Name <span class="text-danger">*</span></label>
+                    <input type="text" id="CountryName" formControlName="CountryName" class="form-control"
+                        placeholder="Enter Country Name"
+                        [ngClass]="{'is-invalid': form1['CountryName'].invalid && (form1['CountryName'].touched || isForm1Submitted)}" />
+                    <div *ngIf="form1['CountryName'].invalid && (form1['CountryName'].touched || isForm1Submitted)"
+                        class="invalid-feedback d-block">
+                        Please enter a valid Country Name.
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">WhatsApp Number <span class="text-danger">*</span></label>
+                    <input type="text" id="WhatsAppNo" formControlName="WhatsAppNo" class="form-control"
+                        placeholder="Enter WhatsApp Number"
+                        [ngClass]="{'is-invalid': form1['WhatsAppNo'].invalid && (form1['WhatsAppNo'].touched || isForm1Submitted)}" />
+                    <div *ngIf="form1['WhatsAppNo'].invalid && (form1['WhatsAppNo'].touched || isForm1Submitted)"
+                        class="invalid-feedback d-block">
+                        Please enter a valid WhatsApp Number.
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                    <input type="text" id="PhoneNumber" formControlName="PhoneNumber" class="form-control"
+                        placeholder="Enter Phone Number"
+                        [ngClass]="{'is-invalid': form1['PhoneNumber'].invalid && (form1['PhoneNumber'].touched || isForm1Submitted)}" />
+                    <div *ngIf="form1['PhoneNumber'].invalid && (form1['PhoneNumber'].touched || isForm1Submitted)"
+                        class="invalid-feedback d-block">
+                        Please enter a valid Phone Number.
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <label class="form-label">Parent Contact Number <span class="text-danger">*</span></label>
+                    <input type="text" id="ParentContact" formControlName="ParentContact" class="form-control"
+                        placeholder="Enter Parent Phone Number"
+                        [ngClass]="{'is-invalid': form1['ParentContact'].invalid && (form1['ParentContact'].touched || isForm1Submitted)}" />
+                    <div *ngIf="form1['ParentContact'].invalid && (form1['ParentContact'].touched || isForm1Submitted)"
+                        class="invalid-feedback d-block">
+                        Please enter a valid Parent Contact Number.
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                    <input type="email" id="EmailId" formControlName="EmailId" class="form-control"
+                        placeholder="Enter Email"
+                        [ngClass]="{'is-invalid': form1['EmailId'].invalid && (form1['EmailId'].touched || isForm1Submitted)}" />
+                    <div *ngIf="form1['EmailId'].invalid && (form1['EmailId'].touched || isForm1Submitted)"
+                        class="invalid-feedback d-block">
+                        Please enter a valid Email Address.
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Applying In <span class="text-danger">*</span></label>
+                    <select class="form-select" id="ApplyingOption" formControlName="ApplyingOption"
+                        [ngClass]="{'is-invalid': form1['ApplyingOption'].invalid && (form1['ApplyingOption'].touched || isForm1Submitted)}">
+                        <option value="">Select</option>
+                        <option value="Spring">Spring</option>
+                        <option value="Fall">Fall</option>
+                    </select>
+                    <div *ngIf="form1['ApplyingOption'].invalid && (form1['ApplyingOption'].touched || isForm1Submitted)"
+                        class="invalid-feedback d-block">
+                        Please select an applying option.
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <label class="form-label">Preference 1 <span class="text-danger">*</span></label>
+                    <select class="form-select" id="UniversityOption1" formControlName="UniversityOption1"
+                        [ngModel]="UniversityOption1" (ngModelChange)="UniversityOption1 = $event" [ngClass]="{
+                              'is-invalid':
+                                form1['UniversityOption1'].invalid &&
+                                (form1['UniversityOption1'].touched || isForm1Submitted)
+                            }">
+                        <option value="">Select University</option>
+                        <option *ngFor="let university of uniData" [value]="university.universityName">
+                            {{ university.universityName }}
+                        </option>
+                    </select>
+                    <div *ngIf="
+                              form1['UniversityOption1'].invalid &&
+                              (form1['UniversityOption1'].touched || isForm1Submitted)
+                            " class="invalid-feedback d-block">
+                        Please select a valid University (Preference 1).
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Preference 2 <span class="text-danger">*</span></label>
+                    <select class="form-select" id="UniversityOption2" formControlName="UniversityOption2"
+                        [ngModel]="UniversityOption2" (ngModelChange)="UniversityOption2 = $event"
+                        [disabled]="!UniversityOption1" [ngClass]="{
+                              'is-invalid':
+                                form1['UniversityOption2'].invalid &&
+                                (form1['UniversityOption2'].touched || isForm1Submitted)
+                            }">
+                        <option value="">Select University</option>
+                        <ng-container *ngFor="let university of uniData">
+                            <option *ngIf="university.universityName !== UniversityOption1"
+                                [value]="university.universityName">
+                                {{ university.universityName }}
+                            </option>
+                        </ng-container>
+                    </select>
+                    <div *ngIf="
+                              form1['UniversityOption2'].invalid &&
+                              (form1['UniversityOption2'].touched || isForm1Submitted)
+                            " class="invalid-feedback d-block">
+                        Please select a valid University (Preference 2).
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Preference 3 <span class="text-danger">*</span></label>
+                    <select class="form-select" id="UniversityOption3" formControlName="UniversityOption3"
+                        [ngModel]="UniversityOption3" (ngModelChange)="UniversityOption3 = $event"
+                        [disabled]="!UniversityOption1 || !UniversityOption2" [ngClass]="{
+                              'is-invalid':
+                                form1['UniversityOption3'].invalid &&
+                                (form1['UniversityOption3'].touched || isForm1Submitted)
+                            }">
+                        <option value="">Select University</option>
+                        <ng-container *ngFor="let university of uniData">
+                            <option *ngIf="
+                                  university.universityName !== UniversityOption1 &&
+                                  university.universityName !== UniversityOption2
+                                " [value]="university.universityName">
+                                {{ university.universityName }}
+                            </option>
+                        </ng-container>
+                    </select>
+                    <div *ngIf="
+                              form1['UniversityOption3'].invalid &&
+                              (form1['UniversityOption3'].touched || isForm1Submitted)
+                            " class="invalid-feedback d-block">
+                        Please select a valid University (Preference 3).
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="RegistrationNo" [(ngModel)]="RegistrationNo" name="RegistrationNo"
+                [(ngModel)]="RegistrationNo" id="RegistrationNo" formControlName="RegistrationNo"
+                class="form-control" />
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <label class="form-label">Passport Status <span class="text-danger">*</span></label>
+                    <select id="PassportStatus" name="PassportStatus" formControlName="PassportStatus"
+                        [(ngModel)]="PassportStatus" class="form-select" placeholder="Select Passport Status" [ngClass]="{
+                              'is-invalid': form1['PassportStatus'].invalid && (form1['PassportStatus'].touched || isForm1Submitted)
+                            }">
+                        <option value="">Select</option>
+                        <option value="Applied">Applied</option>
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                    </select>
+                    <div *ngIf="form1['PassportStatus'].invalid && (form1['PassportStatus'].touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please select a valid Passport Status.
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4" *ngIf="PassportStatus === 'Yes'">
+                <div class="col-md-3">
+                    <label class="form-label">Passport Number <span class="text-danger">*</span></label>
+                    <input type="text" id="PassportNumber" name="PassportNumber" formControlName="PassportNumber"
+                        [(ngModel)]="PassportNumber" class="form-control" placeholder="Passport Number"
+                        [disabled]="PassportStatus !== 'Yes'" [ngClass]="{
+                              'is-invalid': form1['PassportNumber'].invalid && (form1['PassportNumber'].touched || isForm1Submitted)
+                            }" />
+                    <div *ngIf="form1['PassportNumber'].invalid && (form1['PassportNumber'].touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please provide Passport Number.
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Issue Date <span class="text-danger">*</span></label>
+                    <input type="date" id="PassportIssueDate" name="PassportIssueDate"
+                        formControlName="PassportIssueDate" [(ngModel)]="PassportIssueDate" class="form-control"
+                        placeholder="Passport Issue Date" [disabled]="PassportStatus !== 'Yes'" [ngClass]="{
+                              'is-invalid': form1['PassportIssueDate'].invalid && (form1['PassportIssueDate'].touched || isForm1Submitted)
+                            }" />
+                    <div *ngIf="form1['PassportIssueDate'].invalid && (form1['PassportIssueDate'].touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please provide Passport Issue Date.
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Valid Upto <span class="text-danger">*</span></label>
+                    <input type="date" id="PassportValidUpto" name="PassportValidUpto"
+                        formControlName="PassportValidUpto" [(ngModel)]="PassportValidUpto" class="form-control"
+                        placeholder="Passport Valid Upto" [disabled]="PassportStatus !== 'Yes'" [ngClass]="{
+                              'is-invalid': form1['PassportValidUpto'].invalid && (form1['PassportValidUpto'].touched || isForm1Submitted)
+                            }" />
+                    <div *ngIf="form1['PassportValidUpto'].invalid && (form1['PassportValidUpto'].touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please select valid Passport Valid Date.
+                    </div>
+                </div>
+
+
+            </div>
+
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-3"><label class="form-label">Visa Ever Been Rejected?</label></div>
+                <div class="col-md-3">
+                    <select id="IsVisaRejected" name="IsVisaRejected" formControlName="IsVisaRejected"
+                        [(ngModel)]="IsVisaRejected" class="form-select" placeholder="Select VisaRejected" [ngClass]="{
+                              'is-invalid': form1['IsVisaRejected'].invalid && (form1['IsVisaRejected'].touched || isForm1Submitted)
+                            }">
+                        <option value="">Select</option>
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                    </select>
+
+                    <div *ngIf="form1['IsVisaRejected'].invalid && (form1['IsVisaRejected'].touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please Select valid Visa Rejected.
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4" *ngIf="IsVisaRejected == 'Yes'">
+                <div class="col-md-3">
+                    <label class="form-label">Reason for Rejection</label>
+                    <input type="text" id="VisaRejectionReason" name="VisaRejectionReason"
+                        formControlName="VisaRejectionReason" [(ngModel)]="VisaRejectionReason" class="form-control"
+                        placeholder="Visa Rejection Reason" [ngClass]="{
+                              'is-invalid': form1['IsVisaRejected'].invalid && (form1['IsVisaRejected'].touched || isForm1Submitted)
+                            }" />
+                    <div *ngIf="form1['VisaRejectionReason'].invalid && (form1['VisaRejectionReason'].touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please Provide Visa Rejection Reason.
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Country</label>
+                    <input type="text" class="form-control" name="VisaRejectionCountry" id="VisaRejectionCountry"
+                        formControlName="VisaRejectionCountry" [(ngModel)]="VisaRejectionCountry" class="form-control"
+                        placeholder="Visa Rejection Country" [ngClass]="{
+                              'is-invalid': form1['VisaRejectionCountry'].invalid && (form1['VisaRejectionCountry'].touched || isForm1Submitted)
+                            }" />
+                    <div *ngIf="form1['VisaRejectionCountry'].invalid && (form1['VisaRejectionCountry'].touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please Provide Visa Rejection Country.
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4 mb-4">
+                <div class="col-md-3"><label class="form-label">English Proficiency</label></div>
+                <div class="col-md-3">
+                    <select class="form-select" id="EnglishTestType" formControlName="EnglishTestType"
+                        [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('EnglishTestType')?.invalid}"
+                        required>
+                        <option value="">Select</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                        <option value="Applied">Applied</option>
+                    </select>
+                    <div *ngIf="SemesterExchangeRegistration.get('EnglishTestType')?.invalid && (SemesterExchangeRegistration.get('EnglishTestType')?.touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please select valid English Proficiency.
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4" *ngIf="SemesterExchangeRegistration.get('EnglishTestType')?.value === 'Yes'">
+                <div class="col-md-2">
+                    <label class="form-label">Listening Score</label>
+                    <input type="text" class="form-control" id="ListeningScore" formControlName="ListeningScore"
+                        [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('ListeningScore')?.invalid}"
+                        placeholder="Listening Score" required />
+                    <div *ngIf="SemesterExchangeRegistration.get('ListeningScore')?.invalid && (SemesterExchangeRegistration.get('ListeningScore')?.touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please enter valid Listening Score.
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Speaking Score</label>
+                    <input type="text" class="form-control" id="SpeakingScore" formControlName="SpeakingScore"
+                        [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('SpeakingScore')?.invalid}"
+                        placeholder="Speaking Score" required />
+                    <div *ngIf="SemesterExchangeRegistration.get('SpeakingScore')?.invalid && (SemesterExchangeRegistration.get('SpeakingScore')?.touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please enter valid Speaking Score.
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Reading Score</label>
+                    <input type="text" class="form-control" id="ReadingScore" formControlName="ReadingScore"
+                        [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('ReadingScore')?.invalid}"
+                        placeholder="Reading Score" required />
+                    <div *ngIf="SemesterExchangeRegistration.get('ReadingScore')?.invalid && (SemesterExchangeRegistration.get('ReadingScore')?.touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please enter valid Reading Score.
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Writing Score</label>
+                    <input type="text" class="form-control" id="WritingScore" formControlName="WritingScore"
+                        [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('WritingScore')?.invalid}"
+                        placeholder="Writing Score" required />
+                    <div *ngIf="SemesterExchangeRegistration.get('WritingScore')?.invalid && (SemesterExchangeRegistration.get('WritingScore')?.touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please enter valid Writing Score.
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Overall Score</label>
+                    <input type="text" class="form-control" id="OverallScore" formControlName="OverallScore"
+                        [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('OverallScore')?.invalid}"
+                        placeholder="Overall Score" required />
+                    <div *ngIf="SemesterExchangeRegistration.get('OverallScore')?.invalid && (SemesterExchangeRegistration.get('OverallScore')?.touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please enter valid Overall Score.
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Year of Test</label>
+                    <input type="text" class="form-control" id="EnglishTestYear" formControlName="EnglishTestYear"
+                        [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('EnglishTestYear')?.invalid}"
+                        placeholder="Year of Test" required />
+                    <div *ngIf="SemesterExchangeRegistration.get('EnglishTestYear')?.invalid && (SemesterExchangeRegistration.get('EnglishTestYear')?.touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please enter valid Year of Test.
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4" *ngIf="SemesterExchangeRegistration.get('EnglishTestType')?.value === 'Applied'">
+                <div class="col-md-3">
+                    <input formControlName="testDate" placeholder="Test Date" type="date" class="form-control"
+                        [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('testDate')?.invalid}"
+                        required />
+                    <div *ngIf="SemesterExchangeRegistration.get('testDate')?.invalid && (SemesterExchangeRegistration.get('testDate')?.touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please enter Test Date.
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <label class="form-label">Sponsor Type</label>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="IsSelfFunded" formControlName="IsSelfFunded"
+                        [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('IsSelfFunded')?.invalid}"
+                        required>
+                        <option value="">Select</option>
+                        <option value="Parent">Parent</option>
+                        <option value="Relative">Relative</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <div *ngIf="SemesterExchangeRegistration.get('IsSelfFunded')?.invalid && (SemesterExchangeRegistration.get('IsSelfFunded')?.touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please select valid Sponsor Type.
+                    </div>
+                </div>
+
+                <div class="col-md-3"><label class="form-label">Available Funds & Budget</label></div>
+                <div class="col-md-3">
+                    <select class="form-select" id="AvailableFunds" formControlName="AvailableFunds"
+                        [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('AvailableFunds')?.invalid}"
+                        required>
+                        <option value="">Select</option>
+                        <option value="2to4Lakhs">2 to 4 Lakhs</option>
+                        <option value="4to6Lakhs">4 to 6 Lakhs</option>
+                        <option value="6to8Lakhs">6 to 8 Lakhs</option>
+                    </select>
+                    <div *ngIf="SemesterExchangeRegistration.get('AvailableFunds')?.invalid && (SemesterExchangeRegistration.get('AvailableFunds')?.touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please select available funds.
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4" *ngIf="SemesterExchangeRegistration.get('IsSelfFunded')?.value === 'Other'">
+                <div class="col-md-3">
+                    <input formControlName="SponsorName" placeholder="Sponsor Name" class="form-control"
+                        id="SponsorName"
+                        [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('SponsorName')?.invalid}"
+                        required />
+                    <div *ngIf="SemesterExchangeRegistration.get('SponsorName')?.invalid && (SemesterExchangeRegistration.get('SponsorName')?.touched || isForm1Submitted)"
+                        class="text-danger">
+                        Sponsor Name is required.
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <input formControlName="SponsorRelation" placeholder="Sponsor Relation" class="form-control"
+                        id="SponsorRelation"
+                        [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('SponsorRelation')?.invalid}"
+                        required />
+                    <div *ngIf="SemesterExchangeRegistration.get('SponsorRelation')?.invalid && (SemesterExchangeRegistration.get('SponsorRelation')?.touched || isForm1Submitted)"
+                        class="text-danger">
+                        Sponsor Relation is required.
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <input type="checkbox" class="form-check-input" formControlName="AcceptPolicy" [ngClass]="{
+                  'is-invalid':
+                    isForm1Submitted &&
+                    SemesterExchangeRegistration.get('AcceptPolicy')?.invalid
+                }" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-check-label">
+                        I agree to the
+                        <a href="#" (click)="togglePolicy($event)">Our Policy</a>
+                    </label>
+                    <div *ngIf="SemesterExchangeRegistration.get('AcceptPolicy')?.invalid && (SemesterExchangeRegistration.get('AcceptPolicy')?.touched || isForm1Submitted)"
+                        class="text-danger">
+                        You must accept the policy to proceed.
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="showPolicy" class="mb-4">
+                <p><strong>Policy details:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit. (You can
+                    replace
+                    this with actual content.)</p>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <label class="form-label">Fee Receipt Upload</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="file" name="FeesProofDocumentPath" id="FeesProofDocumentPath" class="form-control"
+                        (change)="onFileSelectedFeesProof($event)" class="form-control" required [ngClass]="{
+                                        'is-invalid': form1['FeesProofDocumentPath'].invalid && (form1['FeesProofDocumentPath'].touched || isForm1Submitted)
+                                      }" />
+
+                    <div *ngIf="form1['FeesProofDocumentPath'].invalid && (form1['FeesProofDocumentPath'].touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please upload FeesProof Document .
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Upload CV / Resume</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="file" name="ResumeDocumentPath" id="ResumeDocumentPath" class="form-control"
+                        (change)="onFileSelectedResumeFile($event)" required [ngClass]="{
+                                        'is-invalid': form1['ResumeDocumentPath'].invalid && (form1['ResumeDocumentPath'].touched || isForm1Submitted)
+                                      }" />
+
+                    <div *ngIf="form1['ResumeDocumentPath'].invalid && (form1['ResumeDocumentPath'].touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please upload Resume Document .
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <label class="form-label">Consent Letter</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="file" name="ConsentLetterDocumentPath" id="ConsentLetterDocumentPath"
+                        class="form-control" (change)="onFileSelectedConsentLetter($event)" required [ngClass]="{
+                                        'is-invalid': form1['ConsentLetterDocumentPath'].invalid && (form1['ConsentLetterDocumentPath'].touched || isForm1Submitted)
+                                      }" />
+
+                    <div *ngIf="form1['ConsentLetterDocumentPath'].invalid && (form1['ConsentLetterDocumentPath'].touched || isForm1Submitted)"
+                        class="text-danger">
+                        Please upload ConsentLetterDocument .
+                    </div>
+                </div>
+                <div class="col-md-3"><label class="form-label">Upload Passport Document <span
+                            class="text-danger">*</span></label>
+                </div>
+                <div class="col-md-3"> <input type="file" name="PassportDocumentPath" id="PassportDocumentPath"
+                        class="form-control" (change)="onFileSelectedPassportFile($event)" [ngClass]="{
+                            'is-invalid': form1['PassportDocumentPath'].invalid && (form1['PassportDocumentPath'].touched || isForm1Submitted)
+                          }" />
+                </div>
+                <div *ngIf="form1['PassportDocumentPath'].invalid && (form1['PassportDocumentPath'].touched || isForm1Submitted)"
+                    class="text-danger">
+                    Please upload Passport File.
+                </div>
+            </div>
+
+            <div class="col-md-3">
+
+            </div>
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary px-5" [disabled]="!SemesterExchangeRegistration.valid">
+                    Create Your Application
+                </button>
+            </div>
+
+        </form>
+
+
+    </div>
+
+    <ng-template #NotElgible>
+        <div class="card p-5 mt-4 text-center">
+            <h3 class="text-info fs-2">
+                Dear <span class="text-danger">{{studentName}}</span>, You are in
+                <span class="text-danger">{{CurrentTerm}}</span> semester<br />
+            </h3>
+            <div class="row mt-4 mb-4">
+                <div class="col-sm-12 text-center">
+                    <div class="mb-3 p-4">
+                        <p><span class="ms-5 fs-3 text-info">Total Subjects with Grade ≤ 6:</span>
+                            <input type="hidden" name="TotalCountGradeF" id="TotalCountGradeF"
+                                [(ngModel)]="GradeFcount" />
+                            <span class="ms-5 fs-3 text-danger">{{ GradeFcount }}</span>
+                        </p>
+                        <p>
+                            <span class="ms-5 fs-3 text-dark">Eligibility Check :</span>
+                            <span
+                                [ngClass]=" { 'text-success fs-3 ms-5 ': eligible, 'text-danger ms-5 fs-3': !eligible }">
+                                {{ eligible ? 'Eligible' : 'Not Eligible' }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</div>
+
+<ng-template #ErrorApplication>
+    <div class="text-center bg-info" *ngIf="loginFailed">
+        <h3 class="text-center fs-2 m-5 text-danger pt-5 "> Error in User Login . </h3>
+        <div class="row mt-4 mb-4">
+            <div class="col-sm-12 text-center">
+                <div class="mb-3 p-4">
+                    <Label class="form-label fs-4 text-danger ">Unauthorise Access.</Label>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template> -->

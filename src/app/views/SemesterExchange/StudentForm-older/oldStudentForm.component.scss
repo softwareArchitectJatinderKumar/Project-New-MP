@@ -1,0 +1,121 @@
+.navTabColor{
+    /* Your active tab styles */
+    background-color: #007bff !important;
+    color: #fff !important;
+}
+.navTabColor.active{
+    background-color: #cf9800 !important;
+    color: #080808 !important;
+}
+
+/* Container styling */
+.application-form-container {
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Header */
+  .application-form-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  /* Label styling */
+  .application-form label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Input and Select */
+  .application-form input,
+  .application-form select,
+  .application-form .form-control {
+    font-size: 1rem;
+    color: #212529;
+    border-radius: 0.5rem;
+  }
+  
+  /* Dropdown styling inside select labels */
+  select.form-select {
+    padding: 0.5rem;
+  }
+  
+  /* File input styling */
+  input[type="file"] {
+    padding: 0.4rem;
+  }
+  
+  /* Radio buttons group spacing */
+  .application-form .form-check {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Submit button */
+  .application-form button[type="submit"] {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+  }
+  
+  /* Section spacing */
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #212529;
+  }
+  
+  /* For ng-template message */
+  .not-eligible-box {
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 1rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  .not-eligible-box h3 {
+    font-size: 1.5rem;
+    line-height: 1.6;
+  }
+  
+
+  
+
+.full-page-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999; /* very high to overlay all content */
+}
+.loader-spinner {
+  background: #222;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.spin-icon {
+  animation: spin 1.5s linear infinite;
+  color: #61dafb;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}

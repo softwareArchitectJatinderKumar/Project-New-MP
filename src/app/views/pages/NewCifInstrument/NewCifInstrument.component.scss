@@ -1,0 +1,48 @@
+/* Example of custom styles */
+
+
+.custom-btn-NewJournal {
+  margin: 20px;
+}
+
+.custom-btn-AllJournals {
+    margin-left: 20px;
+}
+
+#nav-tab .btn.active {
+  background-color: black;
+  color: white;
+}
+
+.container {
+    
+    margin: auto;
+    padding-top: 20px;
+    margin-top:2rem;
+    margin-bottom:4rem;
+  }
+  
+  .form-label {
+    font-weight: bold;
+   
+  }
+  
+  .mb-2 {
+    margin-bottom: 0.5rem;
+  }
+  input,select{
+    border-style: outset;
+    
+  }
+  button{
+    color:white;
+    
+  }
+
+  quill-editor .ql-container .ql-editor {
+    max-height: 150px !important;
+    min-height: 150px !important;
+}
+.table > :not(caption) > * > *{
+  background-color: #FD6C04 !important;
+}

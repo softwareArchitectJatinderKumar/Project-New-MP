@@ -1,0 +1,69 @@
+<app-menu-bar></app-menu-bar>
+    <div class="label container-fluid">
+        <h4>Update Contact Details</h4>
+    </div>
+    <div class="box container-fluid" *ngFor="let item of CandidateContactData">
+        <form #StudentDetails="ngForm" (ngSubmit)="UpdateDetails(StudentDetails.value)">
+            <input type="text" style="display: none;" name="Id" id="Id" [(ngModel)]="placementId" />
+            <div class="field">
+                <div class="details mt-2">
+                    <label class="form-label">Email:</label>
+                    <input type="text" class="form-control" name="EmailId" id="EmailId" [(ngModel)]="EmailId" required autocomplete="off" />
+                </div>
+                <div class="details mt-2 ">
+                    <label class="form-label">Mobile No (+91):</label>
+                    <input type="text" class="form-control" [(ngModel)]="Mobile" name="Mobile" id="Mobile" required autocomplete="off">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="details mt-2">
+                    <label class="form-label">Linked-In URL:</label>
+                    <input type="text" class="form-control" [(ngModel)]="LinkedInUrl" name="LinkedInUrl" id="LinkedInUrl" required autocomplete="off" >
+                </div>
+                <div class="details mt-2 ">
+                    <label class="form-label">Skype Id:</label>
+                    <input type="text" class="form-control" [(ngModel)]="SkypId" name="SkypeId" id="SkypeId" placeholder=""  required autocomplete="off" >
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="details mt-2">
+                    <label class="form-label">WhatsApp No:</label>
+                    <input type="text" class="form-control" [(ngModel)]="WhatsAppNo" name="WhatsAppNo" id="WhatsAppNo" placeholder={{item.whatsAppNo}} ngModel required autocomplete="off" >
+                </div>
+                <div class="details mt-2 ">
+                    <label class="form-label">Microsoft Id:</label>
+                    <input type="text" class="form-control" [(ngModel)]="MicrosoftId" name="MicrosoftId" id="MicrosoftId" placeholder="" ngModel required autocomplete="off" >
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="details mt-2">
+                    <label class="form-label">Pan Card No.:</label>
+                    <input type="text" class="form-control" [(ngModel)]="PanCardNo" name="PanCardNo" id="PanCardNo" placeholder={{item.panCardNo}}  required autocomplete="off" >
+                </div>
+                <div class="details mt-2 ">
+                    <label class="form-label">Aadhar No.:</label>
+                    <input type="text" class="form-control" [(ngModel)]="AadhaarNo" name="AadhaarNo" id="AadhaarNo" placeholder={{item.aadhaarNo}}  required autocomplete="off" >
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="details mt-2">
+                    <label class="form-label">Driving License No.:</label>
+                    <input type="text" class="form-control" [(ngModel)]="DrivingLicenseNo" name="DrivingLicenseNo" id="DrivingLicenseNo" placeholder={{item.drivingLicenseNo}}  required autocomplete="off" >
+                </div>
+                <div class="details mt-2 ">
+                    <label class="form-label">Passport No.:</label>
+                    <input type="text" class="form-control"  [(ngModel)]="PassportNo" name="PassportNo" id="PassportNo"  required autocomplete="off" value={{item.passportNo}} >
+                </div>
+            </div>
+            <div class="field">
+                <div class="btt mt-2">
+                    <button type="submit" class="btn btn-warning ps-5 pe-5" [disabled]="!StudentDetails.valid">Update Details </button>
+                </div>
+            </div>
+
+        </form>
+    </div>

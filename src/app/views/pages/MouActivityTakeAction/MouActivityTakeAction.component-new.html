@@ -1,0 +1,619 @@
+<div class="container-fluid" id="ActivityTakeActionPage" *ngIf="isLoginFailed==false; else loginFailed">
+<!-- <div class="row  mt-4 mb-4 ">
+    <div class="col-12 stretch-card">
+        <div class="card">
+            <div class="card-body">
+                    <div class="mb-3">
+                        <h2 class="card-title fs-4 text-center "> Details of Mous Assigned </h2>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+    <div class="row">
+        <div class="col-12 stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row  p-3 mx-5 ">
+                        <div class="col-sm-3">
+                        <div class="mb-3">
+                            <button (click)="MyActionTkenData()" class="btn btn-dark">My Action Taken List</button>
+                        </div>
+                    </div>
+                        <div class="col-sm-3">
+                            <div class="mb-3">
+                                <button (click)="exportToExcel()" class="btn btn-dark " [disabled]="this.filteredMouActivityDocuments.length==0">Export to Excel</button>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <div class="mb-3">
+                                <input [(ngModel)]="searchQuery" (keyup)="search()" id="search" type="text"
+                                    class="form-control" placeholder="Search" aria-label="Search"
+                                    aria-describedby="basic-addon1" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <ngx-datatable class="bootstrap table table-striped material"
+                            [rows]="filteredMouActivityDocuments" [loadingIndicator]="loadingIndicator"
+                            [columnMode]="ColumnMode.force" [footerHeight]="80"   [headerHeight]="80"
+                            [rowHeight]="'auto'"
+                            [scrollbarH]="true"
+                            [limit]="15"
+                            rowHeight="auto">
+                            <ngx-datatable-column name="MOU Id" [sortable]="false" prop="Id">
+                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                    ngx-datatable-cell-template>
+                                    <ng-container *ngIf="row.id != null">
+                                        <span
+                                        style="margin: auto;float: left; padding: 10px 10px 10px 10px;">MOU/{{row.mouId}}</span>
+                                    </ng-container>
+                                </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column name="Mou Status" [sortable]="false" prop="Id">
+                              <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                                  <ng-container *ngIf="row.mouStatus != null " >
+                                      <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;" >
+                                      {{ row.mouStatus}}
+                                      </span>
+                                  </ng-container>
+                                  <ng-container *ngIf="row.mouStatus == null">
+                                      <span class="fw-bold text-danger" style=" margin: auto;float: left; padding: 10px 10px 10px 10px;"> Not Applicable </span>
+                                  </ng-container>
+                              </ng-template>
+                          </ngx-datatable-column>
+
+                            <ngx-datatable-column *ngFor="let col of columns" [prop]="col"></ngx-datatable-column>
+                            <ngx-datatable-column name="Activity Alloted" [sortable]="false" prop="Id">
+                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                                    <ng-container *ngIf="row.activityDetails != null " >
+                                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;" >
+                                        {{ row.activityDetails}}
+                                        </span>
+                                    </ng-container>
+                                    <ng-container *ngIf="row.activityDetails == null">
+                                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;"> Not Given </span>
+                                    </ng-container>
+                                </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column name="MOU Document" [sortable]="false" prop="Id">
+                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                                        <ng-container *ngIf="row.filePath != null">
+                                            <button class="btn btn-dark" (click)="onSelectFileX(row)"> View MOU Document </button>
+                                        </ng-container>
+                                    </ng-template>
+                            </ngx-datatable-column>
+
+                            <!-- <ngx-datatable-column name="Approval Date" [sortable]="false" prop="Id">
+                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                    ngx-datatable-cell-template>
+                                    <ng-container *ngIf="row.approvalDate?.length>0; else NA">
+                                        <span
+                                        style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.approvalDate}}</span>
+                                    </ng-container>
+                                </ng-template>
+                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template #NA>
+                                    <span
+                                        style="margin: auto;float: left; padding: 10px 10px 10px 10px;">NA</span>
+                               </ng-template>
+                            </ngx-datatable-column> -->
+
+                            <ngx-datatable-column name="Take Action" [sortable]="false" prop="Id">
+                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                                <ng-container *ngIf="row.disapprovalReason?.length>0; else NotApplicable">
+                                        <!-- <button class="btn btn-danger" (click)="onSelect(row)"> Retake Action </button> -->
+                                         <span class="text-center"> --</span>
+                                        <!-- <span
+                                        style="margin: auto;float: left; padding: 10px 10px 10px 10px; font-weight: bold;">Kindly Take a new Action</span>   -->
+                                        <!-- <div class="col-">
+                                            <input class="w-30" required type="file" id="FileX"
+                                                name="FileX"
+                                                (change)="onFileXSelected($event, row.id)"
+                                                accept=".pdf, .doc, .docx" #fileInput />
+                                        </div>
+                                    </div>
+                                    <div class="row ">
+                                        <div class="col- ">
+                                            <br /><button type="submit" [disabled]="!fileChosen[row.id]" class="btn btn-primary"
+                                                (click)="UpdateFileDocument(row.id);">Upload New Document </button>
+                                        </div> -->
+                                </ng-container>
+                                <ng-template #NotApplicable>
+                                  <button class="btn btn-dark" (click)="onSelect(row)" [disabled]="row.mouStatus=='Expired' ">
+                                    Take Action
+                                  </button>
+                                </ng-template>
+                                </ng-template>
+                            </ngx-datatable-column>
+                        </ngx-datatable>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #loginFailed>
+    <div class="text-center bg-info" *ngIf="isLoginFailed">
+        <h3 class="text-center fs-2 m-5 text-danger pt-5 "> Error in User Login . </h3>
+        <div class="row mt-4 mb-4">
+            <div class="col-sm-12 text-center">
+                <div class="mb-3 p-4">
+                    <Label class="form-label fs-4 text-danger ">Unauthorise Access.</Label>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #viewDescModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">MOU Taken Action for MOU/{{this.mouId}} </h5>
+    <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    <div class="col-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body ">
+          <!-- <h2 class="modal-title text-center" id="exampleModalLabel">MOU Taken Action Screen </h2> -->
+          <!-- <form #TakeAction="ngForm" (ngSubmit)="UploadActivity()" >
+            <div class="row d-flex justify-content-around mb-4 mt-5">
+              <div class="col-3">
+                <label for="mouActivity" class=" ">MOU Activity</label>
+              </div>
+              <ng-container *ngIf="this.ActivityDetails?.length > 0 ; else NewActivity">
+                <div class="col-3">
+                  <label for="mouActivity" class="text-danger ">MOU Activity {{this.DocumentName}}</label>
+                  
+                </div>
+                <div class="col-3">
+                  <label for="sampleFile" class="">Download MOU activity Format File</label>
+                </div>
+                <div class="col-3">
+                  <a (click)="testClick(this.selectedActivityId)" class="btn btn-dark">Download Format</a>
+                </div>
+              </ng-container>
+              <ng-template #NewActivity>
+                <div class="col-3">
+                  <select id="mouActivity" (change)="onActivitySelected($event)" class="col-12 p-2 form-control"
+                    required ngModel name="mouActivity" #mouActivity="ngModel">
+                    <option value="" selected>Select MOU Activity to be Conducted</option>
+                    <option *ngFor="let activity of mouActivities" class="  " [value]="activity.id">
+                      {{ activity.description }}
+                    </option>
+                  </select>
+                  <div *ngIf="mouActivity.invalid && mouActivity.touched" class="text-danger">
+                    <div *ngIf="mouActivity.errors?.required">MOU Activity is required.</div>
+                  </div>
+                  <label class=" col-12 text-danger">{{this.DocumentName.length>0 ? this.DocumentName: ''}}</label>
+                </div>
+
+                <div class="col-3">
+                  <label for="sampleFile" class="">Download MOU activity Format File</label>
+                </div>
+                <div class="col-3">
+                  <a (click)="testClick(this.selectedActivityId)" class="btn btn-dark">Download Format</a>
+                </div>
+              </ng-template>
+            </div>
+
+            <div class="row mb-4 mt-5">
+              <div class="col-3">
+                <label class="">Expected Start Date </label>
+              </div>
+              <div class="col-3">
+                <label class=" ">{{this.ExpectedstartDate!=''? this.ExpectedstartDate :''}} </label>
+              </div>
+              <div class="col-3">
+                <label class=" ">Expected End Date</label>
+              </div>
+              <div class="col-3">
+                <label class=" ">{{this.ExpectedEndDate!=''? this.ExpectedEndDate :''}} </label>
+              </div>
+            </div>
+            <div class="row mb-4 mt-5">
+              <div class="col-3">
+                <label for="remarks" class=" ">Your Remarks</label>
+              </div>
+              <div class="col-3">
+                <textarea required name="remarks" [(ngModel)]="Remarks" rows="5" cols="30"
+                  class="col-12 p-2 form-control" (change)="checkFormValidity()" id="remarks" #remarks="ngModel"
+                  autocomplete="off">
+                        </textarea>
+                <div *ngIf="remarks.invalid && remarks.touched" class="text-danger">
+                  <div *ngIf="remarks.errors?.required">Remarks are required.</div>
+                </div>
+              </div>
+              <div class="col-3">
+                <label for="CompletedDate" class=" ">Completed Date:</label>
+              </div>
+              <div class="col-3">
+                <input type="date" class="col-12 p-2 form-control" required ngModel name="CompletedDate"
+                  id="CompletedDate" #CompletedDate="ngModel" (change)="checkFormValidity()" autocomplete="off" />
+                <div *ngIf="CompletedDate.invalid && CompletedDate.touched" class="text-danger">
+                  <div *ngIf="CompletedDate.errors?.required">Completed Date is required.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-4 mt-5">
+              <div class="col-3">
+                <label class="form-label p-3">Upload Document</label>
+              </div>
+              <div class="col-3">
+                <input type="file" id="File" name="File" class=" p-3" required ngModel class="form-control"
+                  (change)="onFileSelected($event)" accept=".zip, .rar, .7z" #file="ngModel" />
+                <div *ngIf="file.invalid && file.touched" class="text-danger">
+                  <div *ngIf="file.errors?.required">File is required. Allowed formats: .zip, .rar (Max size: 5MB).
+                  </div>
+                </div>
+                <span class="text-danger "><br />Allowed Documents format rar, zip and of Max size 5MB</span>
+              </div>
+              <ng-container *ngIf="this.CurrentdisapprovalReason?.length>0;">
+                <div class="col-3">
+                  <label class="form-label p-3 text-danger">Older Rejected Document</label>
+                </div>
+                <div class="col-3">
+                  <a class="btn btn-dark ms-3" [href]="this.UploadedFileUrl" target="_blank"> Download </a>
+                </div>
+              </ng-container>
+
+               
+              <div class="col-3">
+                <label class="form-label p-3">Session </label>
+              </div>
+              
+              <div class="col-3">
+                <select class="form-control" [(ngModel)]="sessionId" name="sessionId" (change)="onSessionChange($event)"
+                  #sessionId="ngModel" required>
+                  <option value="">Select Session</option>
+                  <option *ngFor="let item of items" [value]="item.id">
+                    {{ item.session }}
+                  </option>
+                </select>
+                
+                <div *ngIf="sessionId.invalid && sessionId.touched" class="text-danger">
+                  Required
+                </div>
+              </div> 
+            </div>
+            <div class="row d-flex justify-content-around mb-4 mt-5">
+              <div class="col-12 text-center">
+                <button type="submit" [disabled]="!TakeAction.valid" class="btn btn-primary me-2 col-5">Apply
+                  Action</button>
+              </div>
+            </div>
+          </form> -->
+<!-- Reactive form  -->
+          <!-- <form [formGroup]="takeActionForm" (ngSubmit)="UploadActivity()">
+            <div class="row d-flex justify-content-around mb-4 mt-5">
+              <div class="col-3">
+                <label for="mouActivity">MOU Activity</label>
+              </div>
+          
+              <ng-container *ngIf="mouActivities.length > 0; else NewActivity">
+                <div class="col-3">
+                  <label class="text-danger">MOU Activity {{ DocumentName }}</label>
+                </div>
+                <div class="col-3">
+                  <label>Download MOU activity Format File</label>
+                </div>
+                <div class="col-3">
+                  <a (click)="testClick(selectedActivityId)" class="btn btn-dark">Download Format</a>
+                </div>
+              </ng-container>
+          
+              <ng-template #NewActivity>
+                <div class="col-3">
+                  <select id="mouActivity" formControlName="mouActivity" class="col-12 p-2 form-control" (change)="onActivitySelected($event)">
+                    <option value="" selected>Select MOU Activity to be Conducted</option>
+                    <option *ngFor="let activity of mouActivities" [value]="activity.id">{{ activity.description }}</option>
+                  </select>
+                  <div *ngIf="takeActionForm.controls['mouActivity'].invalid && takeActionForm.controls['mouActivity'].touched" class="text-danger">
+                    MOU Activity is required.
+                  </div>
+                </div>
+          
+                <div class="col-3">
+                  <label>Download MOU activity Format File</label>
+                </div>
+                <div class="col-3">
+                  <a (click)="testClick(selectedActivityId)" class="btn btn-dark">Download Format</a>
+                </div>
+              </ng-template>
+            </div>
+          
+            <div class="row mb-4 mt-5">
+              <div class="col-3"><label>Expected Start Date</label></div>
+              <div class="col-3"><label>{{this.ExpectedstartDate!=''? this.ExpectedstartDate :''}}</label></div>
+              <div class="col-3"><label>Expected End Date</label></div>
+              <div class="col-3"><label>{{this.ExpectedEndDate!=''? this.ExpectedEndDate :''}}</label></div>
+            </div>
+          
+            <div class="row mb-4 mt-5">
+              <div class="col-3"><label>Your Remarks</label></div>
+              <div class="col-3">
+                <textarea formControlName="remarks" rows="5" class="col-12 p-2 form-control"></textarea>
+                <div *ngIf="takeActionForm.controls['remarks'].invalid && takeActionForm.controls['remarks'].touched" class="text-danger">
+                  Remarks are required.
+                </div>
+              </div>
+          
+              <div class="col-3"><label>Completed Date:</label></div>
+              <div class="col-3">
+                <input type="date" formControlName="completedDate" class="col-12 p-2 form-control" />
+                <div *ngIf="takeActionForm.controls['completedDate'].invalid && takeActionForm.controls['completedDate'].touched" class="text-danger">
+                  Completed Date is required.
+                </div>
+              </div>
+            </div>
+          
+            <div class="row mb-4 mt-5">
+              <div class="col-3"><label>Upload Document</label></div>
+              <div class="col-3">
+                <input type="file" (change)="onFileSelected($event)" accept=".zip, .rar, .7z" class="form-control" />
+                <div *ngIf="takeActionForm.controls['file'].invalid && takeActionForm.controls['file'].touched" class="text-danger">
+                  File is required. Allowed formats: .zip, .rar (Max size: 5MB).
+                </div>
+                <span class="text-danger">Allowed formats: .rar, .zip (Max size: 5MB)</span>
+              </div>
+          
+              <ng-container *ngIf="CurrentdisapprovalReason?.length > 0">
+                <div class="col-3"><label class="text-danger">Older Rejected Document</label></div>
+                <div class="col-3"><a class="btn btn-dark ms-3" [href]="uploadedFileUrl" target="_blank">Download</a></div>
+              </ng-container>
+          
+              <div class="col-3"><label>Session</label></div>
+              <div class="col-3">
+                <select formControlName="sessionId" class="form-control" (change)="onSessionChange($event)">
+                  <option value="">Select Session</option>
+                  <option *ngFor="let item of items" [value]="item.id">{{ item.session }}</option>
+                </select>
+                <div *ngIf="takeActionForm.controls['sessionId'].invalid && takeActionForm.controls['sessionId'].touched" class="text-danger">
+                  Required
+                </div>
+              </div>
+            </div>
+          
+            <div class="row d-flex justify-content-around mb-4 mt-5">
+              <div class="col-12 text-center">
+                <button type="submit" [disabled]="takeActionForm.invalid" class="btn btn-primary col-5">Apply Action</button>
+              </div>
+            </div>
+          </form> --> 
+
+          <!-- Template form  -->
+          <form #TakeAction="ngForm" (ngSubmit)="UploadActivity()">
+            <div class="row d-flex justify-content-around mb-4 mt-5">
+              <div class="col-3">
+                <label for="mouActivity">MOU Activity</label>
+              </div>
+          
+              <ng-container *ngIf="ActivityDetails?.length > 0; else NewActivity">
+                <div class="col-3">
+                  <label class="text-danger">MOU Activity {{ DocumentName }}</label>
+                </div>
+                <div class="col-3">
+                  <label>Download MOU activity Format File</label>
+                </div>
+                <div class="col-3">
+                  <a (click)="testClick(selectedActivityId)" class="btn btn-dark">Download Format</a>
+                </div>
+              </ng-container>
+          
+              <ng-template #NewActivity>
+                <div class="col-3">
+                  <select
+                    id="mouActivity"
+                    (change)="onActivitySelected($event)"
+                    class="col-12 p-2 form-control"
+                    required
+                    ngModel
+                    name="mouActivity"
+                    #mouActivity="ngModel"
+                  >
+                    <option value="" selected>Select MOU Activity to be Conducted</option>
+                    <option *ngFor="let activity of mouActivities" [value]="activity.id">
+                      {{ activity.description }}
+                    </option>
+                  </select>
+                  <div *ngIf="mouActivity.invalid && mouActivity.touched" class="text-danger">
+                    MOU Activity is required.
+                  </div>
+                </div>
+          
+                <div class="col-3">
+                  <label>Download MOU activity Format File</label>
+                </div>
+                <div class="col-3">
+                  <a (click)="testClick(selectedActivityId)" class="btn btn-dark">Download Format</a>
+                </div>
+              </ng-template>
+            </div>
+          
+            <div class="row mb-4 mt-5">
+              <div class="col-3">
+                <label>Expected Start Date</label>
+              </div>
+              <div class="col-3">
+                <label>{{ ExpectedstartDate || '' }}</label>
+              </div>
+              <div class="col-3">
+                <label>Expected End Date</label>
+              </div>
+              <div class="col-3">
+                <label>{{ ExpectedEndDate || '' }}</label>
+              </div>
+            </div>
+          
+            <div class="row mb-4 mt-5">
+              <div class="col-3">
+                <label for="remarks">Your Remarks</label>
+              </div>
+              <div class="col-3">
+                <textarea
+                  required
+                  name="remarks"
+                  [(ngModel)]="Remarks"
+                  rows="5"
+                  cols="30"
+                  class="col-12 p-2 form-control"
+                  (change)="checkFormValidity()"
+                  id="remarks"
+                  #remarks="ngModel"
+                  autocomplete="off"
+                ></textarea>
+                <div *ngIf="remarks.invalid && remarks.touched" class="text-danger">
+                  Remarks are required.
+                </div>
+              </div>
+          
+              <div class="col-3">
+                <label for="CompletedDate">Completed Date:</label>
+              </div>
+              <div class="col-3">
+                <input
+                  type="date"
+                  class="col-12 p-2 form-control"
+                  required
+                  ngModel
+                  name="CompletedDate"
+                  id="CompletedDate"
+                  #CompletedDate="ngModel"
+                  (change)="checkFormValidity()"
+                  autocomplete="off"
+                />
+                <div *ngIf="CompletedDate.invalid && CompletedDate.touched" class="text-danger">
+                  Completed Date is required.
+                </div>
+              </div>
+            </div>
+          
+            <div class="row mb-4 mt-5">
+              <div class="col-3">
+                <label class="form-label p-3">Upload Document</label>
+              </div>
+              <div class="col-3">
+                <input
+                  type="file"
+                  id="File"
+                  name="File"
+                  class="p-3 form-control"
+                  required
+                  ngModel
+                  (change)="onFileSelected($event)"
+                  accept=".zip, .rar, .7z"
+                  #file="ngModel"
+                />
+                <div *ngIf="file.invalid && file.touched" class="text-danger">
+                  File is required. Allowed formats: .zip, .rar (Max size: 5MB).
+                </div>
+                <span class="text-danger"><br />Allowed Documents format rar, zip and of Max size 5MB</span>
+              </div>
+          
+              <ng-container *ngIf="CurrentdisapprovalReason?.length > 0;">
+                <div class="col-3">
+                  <label class="form-label p-3 text-danger">Older Rejected Document</label>
+                </div>
+                <div class="col-3">
+                  <a class="btn btn-dark ms-3" [href]="UploadedFileUrl" target="_blank">Download</a>
+                </div>
+              </ng-container>
+          
+              <div class="col-3">
+                <label class="form-label p-3">Session</label>
+              </div>
+              <div class="col-3">
+                <select class="form-control" [(ngModel)]="sessionId" name="sessionId" (change)="onSessionChange($event)" #sessionId="ngModel" required>
+                  <option value="">Select Session</option>
+                  <option *ngFor="let item of items" [value]="item.id">{{ item.session }}</option>
+                </select>
+                <div *ngIf="sessionId.invalid && sessionId.touched" class="text-danger">Required</div>
+              </div>
+            </div>
+          
+            <div class="row d-flex justify-content-around mb-4 mt-5">
+              <div class="col-12 text-center">
+                <button type="submit" [disabled]="!TakeAction.valid" class="btn btn-primary me-2 col-5">Apply Action</button>
+              </div>
+            </div>
+          </form>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
+<ng-template #viewActivityActionTakenModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title" id="ActivityActionTakenModalModalLabel"> Activity Action Taken Grid </h5>
+        <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div class="col-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body ">
+                    <h2 class="modal-title text-center fs-2 " id="exampleModalLabel">MOU Activity Action Taken  </h2>
+                    <div class="table-responsive">
+                        <ngx-datatable class="bootstrap table table-striped material"
+                            [rows]="filteredMouActionTakenDocuments" [loadingIndicator]="loadingIndicator"
+                            [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="5" [headerHeight]="80"
+                            rowHeight="auto">
+
+
+                            <ngx-datatable-column name="MOU Id" [sortable]="false" prop="Id">
+                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                    ngx-datatable-cell-template>
+                                    <ng-container *ngIf="row.id != null">
+                                        <span
+                                        style="margin: auto;float: left; padding: 10px 10px 10px 10px;">MOU/{{row.mouId}}</span>
+                                    </ng-container>
+                                </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column *ngFor="let col of columns" [prop]="col"></ngx-datatable-column>
+                            <ngx-datatable-column name="Approval Status" [sortable]="false" prop="Id">
+                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                    ngx-datatable-cell-template>
+                                    <ng-container [ngSwitch]="row.isApproved">
+                                        <ng-container *ngSwitchCase="'True'">
+                                            <div class="p-2 fw-bold  text-dark">Approved By<br/>
+                                                {{row.approvedBy}} - {{row.approvalDate}}
+                                            </div>
+                                        </ng-container>
+                                        <ng-container *ngSwitchCase="'False'">
+                                            <div class="p-2 fw-bold  text-dark">Reason <br />
+                                                <span > {{row.disapprovalReason }} {{row.approvedBy}}
+                                                    </span>
+                                            </div>
+                                        </ng-container>
+                                        <ng-container *ngSwitchDefault>
+                                            <div class="fw-bold  text-dark p-3">Pending </div>
+                                        </ng-container>
+                                    </ng-container>
+                                </ng-template>
+                            </ngx-datatable-column>
+
+                            <ngx-datatable-column name="Download File" [sortable]="false" prop="Id">
+                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                    ngx-datatable-cell-template>
+                                    <ng-container *ngIf="row.filePath != null">
+                                        <button class="btn btn-dark" (click)="onSelectFile(row)"> Download </button>
+                                    </ng-container>
+                                    <ng-container *ngIf="row.filePath == null">
+                                        <span
+                                            style="margin: auto;float: left; padding: 10px 10px 10px 10px;">No
+                                            FIle</span>
+                                    </ng-container>
+                                </ng-template>
+                            </ngx-datatable-column>
+                        </ngx-datatable>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

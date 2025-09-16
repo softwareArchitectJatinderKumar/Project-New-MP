@@ -1,0 +1,193 @@
+<div class="card shadow-lg p-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="text-primary m-0">Student Application Form</h4>
+    <div>
+      <button
+  class="btn btn-secondary floating-btn edit-btn"
+  *ngIf="!isEditable"
+  (click)="enableEdit()"
+>
+  Edit
+</button>
+
+<button
+  class="btn btn-primary floating-btn update-btn"
+  *ngIf="isEditable"
+  (click)="updateData()"
+  [disabled]="!studentForm.valid"
+>
+  Update
+</button>
+
+    </div>
+  </div>
+
+  <form *ngIf="studentForm" [formGroup]="studentForm" (ngSubmit)="updateData()">
+
+    <!-- Personal Details -->
+    <h5 class="mt-4 mb-3 text-info">Personal Details</h5>
+    <div class="row">
+      <div class="col-md-4 mb-3"
+        *ngFor="let key of ['registrationNo', 'emailId', 'countryName', 'whatsAppNo', 'phoneNumber', 'parentContact']">
+        <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+        <input class="form-control" [type]="key.includes('email') ? 'email' : 'text'" [id]="key" [formControlName]="key"
+          [readonly]="!isEditable || key === 'registrationNo'" />
+      </div>
+    </div>
+
+    <!-- University Options -->
+    <h5 class="mt-4 mb-3 text-info">University Preferences</h5>
+    <div class="row">
+      <div class="col-md-3 mb-3"
+        *ngFor="let key of ['applyingOption', 'universityOption1', 'universityOption2', 'universityOption3']">
+        <label class="form-label text-capitalize">{{ beautifyLabel(key) | titlecase }}</label>
+
+        <select class="form-select" [formControlName]="key" [disabled]="!isEditable">
+          <option value="" disabled>Select {{ key }}</option>
+
+          <!-- For Applying Option -->
+          <ng-container *ngIf="key === 'applyingOption'">
+            <option *ngFor="let option of applyingOptions" [value]="option">
+              {{ option }}
+            </option>
+          </ng-container>
+
+          <!-- For University Options -->
+          <ng-container *ngIf="key==='universityOption1'">
+
+            <option *ngFor="let uni of universityOptions" [value]="uni.universityName">
+              {{ uni.universityName }}
+            </option>
+          </ng-container>
+          <!-- For University Options -->
+          <ng-container *ngIf="key==='universityOption2'">
+
+            <option *ngFor="let uni of universityOptions" [value]="uni.universityName">
+              {{ uni.universityName }}
+            </option>
+          </ng-container>
+          <!-- For University Options -->
+          <ng-container *ngIf="key==='universityOption3'">
+
+            <option *ngFor="let uni of universityOptions" [value]="uni.universityName">
+              {{ uni.universityName }}
+            </option>
+          </ng-container>
+
+        </select>
+      </div>
+    </div>
+
+    <!-- Passport Details -->
+    <h5 class="mt-4 mb-3 text-info">Passport Details</h5>
+    <div class="row">
+      <div class="col-md-3 mb-3"
+        *ngFor="let key of ['passportStatus', 'passportNumber', 'passportIssueDate', 'passportValidUpto']">
+        <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+        <input class="form-control" [id]="key" [formControlName]="key" [readonly]="!isEditable"
+          [type]="key.includes('Date') ? 'date' : 'text'" />
+      </div>
+    </div>
+
+    <!-- Visa Details -->
+    <h5 class="mt-4 mb-3 text-info">Visa Details</h5>
+    <div class="row">
+      <div class="col-md-3 mb-3" *ngFor="let key of ['isVisaRejected', 'visaRejectedReason', 'visaRejectedCountry']">
+        <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+        <input class="form-control" [id]="key" [formControlName]="key" [readonly]="!isEditable" />
+      </div>
+    </div>
+
+    <!-- English Test Details -->
+    <h5 class="mt-4 mb-3 text-info">English Test Details</h5>
+    <div class="row">
+      <div class="col-md-4 mb-3"
+        *ngFor="let key of ['englishTestType', 'speakingScore', 'listeningScore', 'readingScore', 'writingScore', 'overallScore', 'englishTestYear']">
+        <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+        <input class="form-control" [id]="key" [formControlName]="key" [readonly]="!isEditable" />
+      </div>
+    </div>
+
+    <!-- Sponsor Details -->
+    <h5 class="mt-4 mb-3 text-info">Sponsor Details</h5>
+    <div class="row">
+      <div class="col-md-4 mb-3"
+        *ngFor="let key of ['isSelfFunded', 'sponsorName', 'sponsorRelation', 'sponsorContact', 'sponsorEmail']">
+        <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+        <input class="form-control" [id]="key" [formControlName]="key" [readonly]="!isEditable" />
+      </div>
+    </div>
+
+    <!-- Financial & Declaration -->
+    <h5 class="mt-4 mb-3 text-info">Financial & Declaration</h5>
+    <div class="row">
+      <div class="col-md-4 mb-3" *ngFor="let key of ['availableFunds', 'acceptPolicy', 'totalCountGradeF']">
+        <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+        <!-- If the field is 'acceptPolicy', use a checkbox -->
+       <!-- If acceptPolicy: Show disabled checkbox with value -->
+    <ng-container *ngIf="key === 'acceptPolicy'; else textInput">
+      <div class="form-check mt-2">
+        <input
+          type="checkbox"
+          class="form-check-input"
+          [id]="'acceptPolicy'"
+          formControlName="acceptPolicy"
+          [disabled]="true"
+        />
+        <label class="form-check-label" for="acceptPolicy">
+          {{ studentForm.get('acceptPolicy')?.value ? 'Accepted' : 'Not Accepted' }}
+        </label>
+      </div>
+      
+    </ng-container>
+
+    <!-- All other fields: input box -->
+    <ng-template #textInput>
+      <input
+        type="text"
+        class="form-control"
+        [id]="key"
+        [formControlName]="key"
+        [readonly]="!isEditable"
+      />
+    </ng-template>
+      </div>
+    </div>
+
+    <h5 class="mt-4 mb-3 text-info">Documents Upload</h5>
+    <div class="row">
+      <!-- Fees Proof Document -->
+      <div class="col-md-4 mb-3">
+        <label class="form-label fw-semibold">Fees Proof Document</label>
+        <div class="d-flex align-items-center gap-2">
+          <input type="file" (change)="onFileSelected($event, 'feesProofDocumentPath')" [disabled]="!isEditable"
+            class="form-control" />
+          <a *ngIf="stuApplication?.feesProofDocumentPath !== 'undefined'" class="btn btn-outline-primary btn-sm"
+            [href]="serverUrl + stuApplication.feesProofDocumentPath" target="_blank">Download</a>
+        </div>
+      </div>
+
+      <!-- Resume Document -->
+      <div class="col-md-4 mb-3">
+        <label class="form-label fw-semibold">Resume Document</label>
+        <div class="d-flex align-items-center gap-2">
+          <input type="file" (change)="onFileSelected($event, 'resumeDocumentPath')" [disabled]="!isEditable"
+            class="form-control" />
+          <a *ngIf="stuApplication?.resumeDocumentPath !== 'undefined'" class="btn btn-outline-primary btn-sm"
+            [href]="serverUrl + stuApplication.resumeDocumentPath" target="_blank">Download</a>
+        </div>
+      </div>
+
+      <!-- Consent Letter -->
+      <div class="col-md-4 mb-3">
+        <label class="form-label fw-semibold">Consent Letter</label>
+        <div class="d-flex align-items-center gap-2">
+          <input type="file" (change)="onFileSelected($event, 'consentLetterDocumentPath')" [disabled]="!isEditable"
+            class="form-control" />
+          <a *ngIf="stuApplication?.consentLetterDocumentPath !== 'undefined'" class="btn btn-outline-primary btn-sm"
+            [href]="serverUrl + stuApplication.consentLetterDocumentPath" target="_blank">Download</a>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

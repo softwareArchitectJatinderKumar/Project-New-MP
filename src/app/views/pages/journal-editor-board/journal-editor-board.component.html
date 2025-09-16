@@ -1,0 +1,487 @@
+<!-- <section>
+    <div class="container" *ngIf="!loadingData; else noDataFound">
+        <div class="row">
+            <div class="col-md-12 mb-3">
+                <div class="main-heading">
+                    <h1>{{ name }}</h1>
+                </div>
+                <div class="sub-heading">
+                    <h3>Editorial Board</h3>
+                </div>
+                <div class="text-end mb-3">
+                    <button *ngIf="!isEditMode" class="btn btn-primary" (click)="toggleEditMode()">Edit</button>
+                    <button *ngIf="isEditMode" class="btn btn-success" (click)="saveAll()">Save All</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion accordion-flush" id="accordionFlushExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                        Editor in Chief
+                    </button>
+                </h2>
+                <div id="flush-collapseOne" class="accordion-collapse collapse show" aria-labelledby="flush-headingOne"
+                    data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">
+                        <div class="row" *ngIf="EditorInChief?.length; else noEditorChief">
+                            <div class="col-md-6" *ngFor="let editor of EditorInChief">
+                                <div class="sect-president">
+                                    <div *ngIf="isEditMode; else viewMode">
+                                        <h3><input [(ngModel)]="editor.editorName" placeholder="Editor Name" class="form-control" /></h3>
+                                        <h4><input [(ngModel)]="editor.designation" placeholder="Designation" class="form-control" /></h4>
+                                        <p>
+                                            <input [(ngModel)]="editor.department" placeholder="Department" class="form-control" /><br />
+                                            <textarea [(ngModel)]="editor.editorAddress" placeholder="Address" class="form-control"></textarea><br />
+                                        <p><strong>Email:</strong> <input [(ngModel)]="editor.email" placeholder="Email" class="form-control" /></p>
+                                        
+                                    </div>
+                                    <ng-template #viewMode>
+                                        <h3>{{ editor.editorName }}</h3>
+                                        <h4>{{ editor.designation }}</h4>
+                                        <p>
+                                            {{ editor.department }} <br />
+                                            {{ editor.editorAddress }} <br />
+                                        <p><strong>Email:</strong> <a>{{ editor.email }}</a></p>
+                                    </ng-template>
+                                </div>
+                            </div>
+                        </div>
+                        <ng-template #noEditorChief>
+                            <p class="fs-4 text-danger text-center">No Record Found!</p>
+                        </ng-template>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="flush-headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                                Managing Editor
+                            </button>
+                        </h2>
+                        <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo"
+                            data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body">
+                                <div class="row" *ngIf="ManagingEditor != null ;else noMeditor">
+                                    <div class="col-md-6" *ngFor="let editor of ManagingEditor">
+                                        <div class="sect-president">
+                                            <div *ngIf="isEditMode; else viewMode">
+                                                <h3><input [(ngModel)]="editor.editorName" placeholder="Editor Name" class="form-control" /></h3>
+                                                <h4><input [(ngModel)]="editor.designation" placeholder="Designation" class="form-control" /></h4>
+                                                <p>
+                                                    <input [(ngModel)]="editor.department" placeholder="Department" class="form-control" /><br />
+                                                    <textarea [(ngModel)]="editor.editorAddress" placeholder="Address" class="form-control"></textarea><br />
+                                                <p><strong>Email:</strong> <input [(ngModel)]="editor.email" placeholder="Email" class="form-control" /></p>
+                                                
+                                            </div>
+                                            <ng-template #viewMode>
+                                                <h3>{{ editor.editorName }}</h3>
+                                                <h4>{{ editor.designation }}</h4>
+                                                <p>
+                                                    {{ editor.department }} <br />
+                                                    {{ editor.editorAddress }} <br />
+                                                <p><strong>Email:</strong> <a>{{ editor.email }}</a></p>
+                                            </ng-template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ng-template #noMeditor>
+                                    <p class="fs-2 text-danger text-center "> No Record Found! </p>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="flush-headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                                Associate Editors
+                            </button>
+                        </h2>
+                        <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree"
+                            data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body" >
+                                 
+                                <div class="row" *ngIf="AssociateEditor != null ;else noAssociateEditor">
+                                    <div class="col-md-6" *ngFor="let editor of AssociateEditor">
+                                        <div class="sect-president">
+                                            <div *ngIf="isEditMode; else viewMode">
+                                                <h3><input [(ngModel)]="editor.editorName" placeholder="Editor Name" class="form-control" /></h3>
+                                                <h4><input [(ngModel)]="editor.designation" placeholder="Designation" class="form-control" /></h4>
+                                                <p>
+                                                    <input [(ngModel)]="editor.department" placeholder="Department" class="form-control" /><br />
+                                                    <textarea [(ngModel)]="editor.editorAddress" placeholder="Address"
+                                                        class="form-control"></textarea><br />
+                                                <p><strong>Email:</strong> <input [(ngModel)]="editor.email" placeholder="Email" class="form-control" /></p>
+                                    
+                                            </div>
+                                            <ng-template #viewMode>
+                                                <h3>{{ editor.editorName }}</h3>
+                                                <h4>{{ editor.designation }}</h4>
+                                                <p>
+                                                    {{ editor.department }} <br />
+                                                    {{ editor.editorAddress }} <br />
+                                                <p><strong>Email:</strong> <a>{{ editor.email }}</a></p>
+                                            </ng-template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ng-template #noAssociateEditor>
+                                    <p class="fs-4 text-danger text-center "> No Record Found! </p>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="flush-headingFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
+                                Editorial board members <span class="small-heading">National</span>
+                            </button>
+                        </h2>
+                        <div id="flush-collapseFour" class="accordion-collapse collapse" aria-labelledby="flush-headingFour"
+                            data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body">                       
+                                <div class="row" *ngIf="EditorialboardmembersNational != null ;else noEditorialboardmembersNational">
+                                    <div class="col-md-6" *ngFor="let editor of EditorialboardmembersNational">
+                                        <div class="sect-president">
+                                            <div *ngIf="isEditMode; else viewMode">
+                                                <h3><input [(ngModel)]="editor.editorName" placeholder="Editor Name" class="form-control" /></h3>
+                                                <h4><input [(ngModel)]="editor.designation" placeholder="Designation" class="form-control" /></h4>
+                                                <p>
+                                                    <input [(ngModel)]="editor.department" placeholder="Department" class="form-control" /><br />
+                                                    <textarea [(ngModel)]="editor.editorAddress" placeholder="Address"
+                                                        class="form-control"></textarea><br />
+                                                <p><strong>Email:</strong> <input [(ngModel)]="editor.email" placeholder="Email" class="form-control" /></p>
+                                    
+                                            </div>
+                                            <ng-template #viewMode>
+                                                <h3>{{ editor.editorName }}</h3>
+                                                <h4>{{ editor.designation }}</h4>
+                                                <p>
+                                                    {{ editor.department }} <br />
+                                                    {{ editor.editorAddress }} <br />
+                                                <p><strong>Email:</strong> <a>{{ editor.email }}</a></p>
+                                            </ng-template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ng-template #noEditorialboardmembersNational>
+                                    <p class="fs-4 text-danger text-center "> No Record Found! </p>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="flush-headingFive">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#flush-collapseFive" aria-expanded="false" aria-controls="flush-collapseFive">
+                                Editorial board members <span class="small-heading">International</span>
+                            </button>
+                        </h2>
+                        <div id="flush-collapseFive" class="accordion-collapse collapse" aria-labelledby="flush-headingFive"
+                            data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body">                        
+                                <div class="row" *ngIf="EditorialboardmembersInterNational!=null ;else noEditorialboardmembersInterNational"> 
+                                    <div class="col-md-6" *ngFor="let editor of EditorialboardmembersInterNational">
+                                        <div class="sect-president">
+                                            <div *ngIf="isEditMode; else viewMode">
+                                                <h3><input [(ngModel)]="editor.editorName" placeholder="Editor Name" class="form-control" /></h3>
+                                                <h4><input [(ngModel)]="editor.designation" placeholder="Designation" class="form-control" /></h4>
+                                                <p>
+                                                    <input [(ngModel)]="editor.department" placeholder="Department" class="form-control" /><br />
+                                                    <textarea [(ngModel)]="editor.editorAddress" placeholder="Address"
+                                                        class="form-control"></textarea><br />
+                                                <p><strong>Email:</strong> <input [(ngModel)]="editor.email" placeholder="Email" class="form-control" /></p>
+                                    
+                                            </div>
+                                            <ng-template #viewMode>
+                                                <h3>{{ editor.editorName }}</h3>
+                                                <h4>{{ editor.designation }}</h4>
+                                                <p>
+                                                    {{ editor.department }} <br />
+                                                    {{ editor.editorAddress }} <br />
+                                                <p><strong>Email:</strong> <a>{{ editor.email }}</a></p>
+                                            </ng-template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ng-template #noEditorialboardmembersInterNational>
+                                    <p class="fs-4 text-danger text-center "> No Record Found! </p>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ng-template #noDataFound>
+        <div id="ServerError">
+            <div class="col-sm-12 mt-5 mb-5"
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                <div class="d-flex justify-content-center align-item-center mt-5 ">
+                    <span class="text-danger fs-3">Loading Data .. </span><br />
+                    <div class="spinner-grow text-danger tex-center mb-5" style=" width: 14rem; height: 14rem;"
+                        role="status">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</section> -->
+  
+  
+ <section>
+    <div class="container" *ngIf="LoadingData==false ; else NoDataFound">
+        <div class="row">
+            <div class="col-md-12 mb-3">
+                <div class="main-heading">
+                    <h1>
+                       {{this.name}} 
+                    </h1>
+                </div>
+                <div class="sub-heading">
+                    <h3>Editorial Board</h3>
+                </div>
+                <div class="text-end mb-3">
+                    <button *ngIf="!isEditMode" class="btn btn-primary" (click)="toggleEditMode()">Edit</button>
+                    <button *ngIf="isEditMode" class="btn btn-success" (click)="saveAll()">Save All</button>
+                </div>
+            </div>
+        </div>
+        <div class="accordion accordion-flush editorial-accordian" id="accordionFlushExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                        Editor in Chief
+                    </button>
+                </h2>
+                <div id="flush-collapseOne" class="accordion-collapse collapse show" aria-labelledby="flush-headingOne"
+                    data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">
+                        <div class="row"  *ngIf="EditorInChief != null; else noEditorChief">
+                            <div class="col-md-6" *ngFor="let editor of EditorInChief">
+                                <div class="sect-president">
+                                    <div *ngIf="isEditMode; else viewMode">
+                                        <h3><input [(ngModel)]="editor.editorName" placeholder="Editor Name" class="form-control" /></h3>
+                                        <h4><input [(ngModel)]="editor.designation" placeholder="Designation" class="form-control" /></h4>
+                                        <p>
+                                            <input [(ngModel)]="editor.department" placeholder="Department" class="form-control" /><br />
+                                            <textarea [(ngModel)]="editor.editorAddress" placeholder="Address" class="form-control"></textarea><br />
+                                        <p><strong>Email:</strong> <input [(ngModel)]="editor.email" placeholder="Email" class="form-control" /></p>
+                                        
+                                    </div>
+                                    <ng-template #viewMode>
+                                        <h3>{{ editor.editorName }}</h3>
+                                        <h4>{{ editor.designation }}</h4>
+                                        <p>
+                                            {{ editor.department }} <br />
+                                            {{ editor.editorAddress }} <br />
+                                        <p><strong>Email:</strong> <a>{{ editor.email }}</a></p>
+                                    </ng-template>
+                                </div>
+                            </div>
+                        </div>
+                        <ng-template #noEditorChief>
+                            <p class="fs-4 text-danger text-center "> No Record Found! </p>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                        Managing Editor
+                    </button>
+                </h2>
+                <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo"
+                    data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">
+                        <div class="row" *ngIf="ManagingEditor != null ;else noMeditor">
+                            <div class="col-md-6" *ngFor="let editor of ManagingEditor">
+                                <div class="sect-president">
+                                    <div *ngIf="isEditMode; else viewMode">
+                                        <h3><input [(ngModel)]="editor.editorName" placeholder="Editor Name" class="form-control" /></h3>
+                                        <h4><input [(ngModel)]="editor.designation" placeholder="Designation" class="form-control" /></h4>
+                                        <p>
+                                            <input [(ngModel)]="editor.department" placeholder="Department" class="form-control" /><br />
+                                            <textarea [(ngModel)]="editor.editorAddress" placeholder="Address" class="form-control"></textarea><br />
+                                        <p><strong>Email:</strong> <input [(ngModel)]="editor.email" placeholder="Email" class="form-control" /></p>
+                                        
+                                    </div>
+                                    <ng-template #viewMode>
+                                        <h3>{{ editor.editorName }}</h3>
+                                        <h4>{{ editor.designation }}</h4>
+                                        <p>
+                                            {{ editor.department }} <br />
+                                            {{ editor.editorAddress }} <br />
+                                        <p><strong>Email:</strong> <a>{{ editor.email }}</a></p>
+                                    </ng-template>
+                                </div>
+                            </div>
+                        </div>
+                        <ng-template #noMeditor>
+                            <p class="fs-2 text-danger text-center "> No Record Found! </p>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                        Associate Editors
+                    </button>
+                </h2>
+                <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree"
+                    data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body" >
+                         
+                        <div class="row" *ngIf="AssociateEditor != null ;else noAssociateEditor">
+                            <div class="col-md-6" *ngFor="let editor of AssociateEditor">
+                                <div class="sect-president">
+                                    <div *ngIf="isEditMode; else viewMode">
+                                        <h3><input [(ngModel)]="editor.editorName" placeholder="Editor Name" class="form-control" /></h3>
+                                        <h4><input [(ngModel)]="editor.designation" placeholder="Designation" class="form-control" /></h4>
+                                        <p>
+                                            <input [(ngModel)]="editor.department" placeholder="Department" class="form-control" /><br />
+                                            <textarea [(ngModel)]="editor.editorAddress" placeholder="Address" class="form-control"></textarea><br />
+                                        <p><strong>Email:</strong> <input [(ngModel)]="editor.email" placeholder="Email" class="form-control" /></p>
+                                    </div>
+                                    <ng-template #viewMode>
+                                        <h3>{{ editor.editorName }}</h3>
+                                        <h4>{{ editor.designation }}</h4>
+                                        <p>
+                                            {{ editor.department }} <br />
+                                            {{ editor.editorAddress }} <br />
+                                        <p><strong>Email:</strong> <a>{{ editor.email }}</a></p>
+                                    </ng-template>
+                                </div>
+                            </div>
+                        </div>
+                        <ng-template #noAssociateEditor>
+                            <p class="fs-4 text-danger text-center "> No Record Found! </p>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
+                        Editorial board members <span class="small-heading">National</span>
+                    </button>
+                </h2>
+                <div id="flush-collapseFour" class="accordion-collapse collapse" aria-labelledby="flush-headingFour"
+                    data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">                       
+                        <div class="row" *ngIf="EditorialboardmembersNational != null ;else noEditorialboardmembersNational">
+                            <div class="col-md-6" *ngFor="let editor of EditorialboardmembersNational">
+                                <div class="sect-president">
+                                    <div *ngIf="isEditMode; else viewMode">
+                                        <h3><input [(ngModel)]="editor.editorName" placeholder="Editor Name" class="form-control" /></h3>
+                                        <h4><input [(ngModel)]="editor.designation" placeholder="Designation" class="form-control" /></h4>
+                                        <p>
+                                            <input [(ngModel)]="editor.department" placeholder="Department" class="form-control" /><br />
+                                            <textarea [(ngModel)]="editor.editorAddress" placeholder="Address" class="form-control"></textarea><br />
+                                        <p><strong>Email:</strong> <input [(ngModel)]="editor.email" placeholder="Email" class="form-control" /></p>
+                                    </div>
+                                    <ng-template #viewMode>
+                                        <h3>{{ editor.editorName }}</h3>
+                                        <h4>{{ editor.designation }}</h4>
+                                        <p>
+                                            {{ editor.department }} <br />
+                                            {{ editor.editorAddress }} <br />
+                                        <p><strong>Email:</strong> <a>{{ editor.email }}</a></p>
+                                    </ng-template>
+                                </div>
+                            </div>
+                        </div>
+                        <ng-template #noEditorialboardmembersNational>
+                            <p class="fs-4 text-danger text-center "> No Record Found! </p>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingFive">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#flush-collapseFive" aria-expanded="false" aria-controls="flush-collapseFive">
+                        Editorial board members <span class="small-heading">International</span>
+                    </button>
+                </h2>
+                <div id="flush-collapseFive" class="accordion-collapse collapse" aria-labelledby="flush-headingFive"
+                    data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">                        
+                        <div class="row" *ngIf="EditorialboardmembersInterNational!=null ;else noEditorialboardmembersInterNational"> 
+                            <div class="col-md-6" *ngFor="let editor of EditorialboardmembersInterNational">
+                                <div class="sect-president">
+                                    <div *ngIf="isEditMode; else viewMode">
+                                        <h3><input [(ngModel)]="editor.editorName" placeholder="Editor Name" class="form-control" /></h3>
+                                        <h4><input [(ngModel)]="editor.designation" placeholder="Designation" class="form-control" /></h4>
+                                        <p>
+                                            <input [(ngModel)]="editor.department" placeholder="Department" class="form-control" /><br />
+                                            <textarea [(ngModel)]="editor.editorAddress" placeholder="Address" class="form-control"></textarea><br />
+                                        <p><strong>Email:</strong> <input [(ngModel)]="editor.email" placeholder="Email" class="form-control" /></p>
+                                    </div>
+                                    <ng-template #viewMode>
+                                        <h3>{{ editor.editorName }}</h3>
+                                        <h4>{{ editor.designation }}</h4>
+                                        <p>
+                                            {{ editor.department }} <br />
+                                            {{ editor.editorAddress }} <br />
+                                        <p><strong>Email:</strong> <a>{{ editor.email }}</a></p>
+                                    </ng-template>
+                                </div>
+                            </div>
+                        </div>
+                        <ng-template #noEditorialboardmembersInterNational>
+                            <p class="fs-4 text-danger text-center "> No Record Found! </p>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingSix">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#flush-collapseSix" aria-expanded="false" aria-controls="flush-collapseSix">
+                        Reviewers
+                    </button>
+                </h2>
+                <div id="flush-collapseSix" class="accordion-collapse collapse" aria-labelledby="flush-headingSix"
+                    data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">
+                        <ul class="review-list" *ngIf="EditorialboardmembersReviews?.length>0; else noReviewers">
+                            <li *ngFor="let reviewer of EditorialboardmembersReviews">
+                                <h4>{{ reviewer.editorName }} </h4>
+                                <span>{{ reviewer.department}}</span> 
+                                <p [innerHTML]="reviewer.editorAddress"></p>
+                                <p><strong>Email: &nbsp;&nbsp;&nbsp;&nbsp;</strong> <a>{{reviewer.email }}</a></p>
+                            </li>
+                        </ul>
+                    </div>
+                    <ng-template #noReviewers>
+                        <p class="fs-4 text-danger text-center "> No Record Found! </p>
+                    </ng-template>
+                </div>
+            </div> -->
+        </div>
+    </div>
+    <ng-template #NoDataFound>
+        <div id="ServerError">
+            <div class="col-sm-12 mt-5 mb-5" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                <div class="d-flex justify-content-center align-item-center mt-5 ">
+                    <span class="text-danger fs-3">Loading Data .. </span><br />
+                    <div class="spinner-grow text-danger tex-center mb-5" style=" width: 14rem; height: 14rem;" role="status">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</section> 

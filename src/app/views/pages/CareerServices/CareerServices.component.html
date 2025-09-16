@@ -1,0 +1,164 @@
+<nav class="page-breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink=".">Career Service Registration</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Career Service Registration Form</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-12 grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title">Career Service Registration Form</h6>
+
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="exampleInputEmail1" class="form-label">Verification Number: </label>
+                            <input type="email" class="form-control" [(ngModel)]="StudentVerification"
+                                (change)="onchange($event)" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="exampleInputEmail1" class="form-label">Name: </label>
+                            <input [(ngModel)]="this.Name" type="email" class="form-control" id="exampleInputEmail1"
+                                aria-describedby="emailHelp">
+
+                        </div>
+                        <div class="col-md-4">
+                            <label for="exampleInputEmail1" class="form-label">Program Name: </label>
+                            <input [(ngModel)]="this.ProgramName" type="email" class="form-control"
+                                id="exampleInputEmail1" aria-describedby="emailHelp">
+
+                        </div>
+                    </div><br />
+                    <div class="row">
+                        <div class="col-md-4">
+
+                            <label for="exampleInputEmail1" class="form-label">Expected Course Completion
+                                Year:</label>
+                                <input [(ngModel)]="this.BatchYear" type="email" class="form-control"
+                                id="exampleInputEmail1" aria-describedby="emailHelp">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="exampleInputEmail1" class="form-label"></label>
+                            <p><a href="https://ums.lpu.in/placements/PlacementPolicy/CareerServicesPolicy2025.pdf"
+                                    target="_blank">
+                                    Click here to read Policy for Enrollment into Career Services.</a>
+                                <!-- <a class="link-opacity-10" href="#">Link opacity 10</a> -->
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="exampleInputEmail1" class="form-label">I want to enroll for University
+                                Career Services
+                                and accept to abide by this Policy guidelines:</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1"
+                                    value="option1" checked>
+                                <label class="form-check-label" for="inlineRadio1">Yes</label>
+                            </div>                            
+                        </div>
+
+                    </div><br />
+                    <div class="row">
+                        <!-- <div class="col-md-4">
+                            <label for="exampleInputEmail1" class="form-label">Type :</label>
+                            <ng-select [items]="[
+                        { text: 'Higher education preparedness', value: 'higherEducation' },
+                        { text: 'Government Job preparedness', value: 'governmentJob' }
+                      ]" bindLabel="text" bindValue="value" placeholder="Select preparedness" [(ngModel)]="preparednessValue"></ng-select>
+                    
+                        </div> -->
+
+                        <!-- <div class="col-md-4">
+                            <label for="exampleInputEmail1" class="form-label">Career Registration Option:</label>
+                            <ng-select style="height:78px!important;" [items]="ProgCategory" bindLabel="category"
+                                bindValue="category" [multiple]="false" placeholder="Select a category"
+                                [virtualScroll]="true" [(ngModel)]="selectedMentors">
+                                <ng-option *ngFor="let item of ProgCategory" [value]="item.category">
+                                    {{item.category}}
+                                </ng-option>
+                            </ng-select>
+                        </div> -->
+
+
+
+
+                        <div class="col-md-4">
+                            <label for="exampleInputEmail1" class="form-label">Career Registration Option:</label>
+                            <ng-select style="height:78px!important;" [items]="ProgCategory" bindLabel="category"
+                                bindValue="category" [multiple]="false" placeholder="Select a category"
+                                [virtualScroll]="true" [(ngModel)]="selectedMentors"
+                                (change)="onCategoryChange($event)">
+                                <ng-option *ngFor="let item of ProgCategory" [value]="item.category">
+                                    {{item.category}}
+                                </ng-option>
+                            </ng-select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="exampleInputEmail1" class="form-label">higher Education Type:</label>
+                            <ng-select style="height:78px!important;" [items]="Stype" bindLabel="Name"
+                                bindValue="Id" [multiple]="false" placeholder="Select a Education Type"
+                                [virtualScroll]="true" [(ngModel)]="selectedMentors"
+                                (change)="onCategoryChange($event)">
+                                <ng-option *ngFor="let item of Stype" [value]="item.Name">
+                                    {{item.Name}}
+                                </ng-option>
+                            </ng-select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="exampleInputEmail1" class="form-label">Country:</label>
+                            <ng-select style="height:78px!important;" [items]="ProgCategory" bindLabel="category"
+                                bindValue="category" [multiple]="false" placeholder="Select a category"
+                                [virtualScroll]="true" [(ngModel)]="selectedMentors"
+                                (change)="onCategoryChange($event)">
+                                <ng-option *ngFor="let item of ProgCategory" [value]="item.category">
+                                    {{item.category}}
+                                </ng-option>
+                            </ng-select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="exampleInputEmail1" class="form-label">Select Program:</label>
+                            <ng-select style="height:78px!important;" [items]="ProgramList" bindLabel="PlacementProgram"
+                                bindValue="Id" [multiple]="false" placeholder="Select a Program" [virtualScroll]="true"
+                                [(ngModel)]="selectedMentors" (change)="onCategoryChange($event)">
+                                <ng-option *ngFor="let item of ProgramList" [value]="item.PlacementProgram">
+                                    {{item.PlacementProgram}}
+                                </ng-option>
+                            </ng-select>
+                        </div>
+
+                    </div>
+
+                    <br />
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="exampleInputEmail1" class="form-label">I understand and agree that the
+                                exiting applicable
+                                PEP FEE paid by me will neither be refunded nor be adjusted against any other fee
+                                head even if I
+                                change my career services registration option as above.
+                                Also, if I have made Part payment of total applicable PEP FEE, then the balance PEP
+                                FEE will be made
+                                due in my FEE Account statement upon approval of my Career Services Option Change
+                                request,
+                                irrespective of my new Career Services option.</label>
+
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="d-flex justify-content-center mt-2">
+                                <button class="btn btn-primary" type="submit">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

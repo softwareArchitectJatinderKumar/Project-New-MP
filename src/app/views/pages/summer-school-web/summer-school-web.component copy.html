@@ -1,0 +1,591 @@
+<nav class="page-breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink=".">Visit </a></li>
+        <li class="breadcrumb-item active" aria-current="page">Summer School *</li>
+    </ol>
+</nav>
+
+<ng-container  class="row" id="myTabs" *ngIf="isLoginFailed==false; else loginFailed">
+    <nav>
+        <div class="nav nav-tabs nav nav-tabs d-flex justify-content-center " id="nav-tab" role="tablist">
+            <button class=" btn btn-lg btn-primary me-5" id="summerschool-incomming-tab" data-bs-toggle="tab"
+                style="padding: .95rem 8rem;" data-bs-target="#summerschool-incomming" type="button" role="tab"
+                aria-controls="summerschool-incomming" aria-selected="false">Summer school Incomming</button>
+
+            <button class=" btn btn-primary btn-lg ms-5" id="summerschool-outgoing-tab" data-bs-toggle="tab"
+                style="padding: .95rem 8rem;" data-bs-target="#summerschool-outgoing" type="button" role="tab"
+                aria-controls="summerschool-outgoing" aria-selected="false">Summer School Outgoing</button>
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <!-- Tab one contents -->
+        <div class="tab-pane fade " id="summerschool-incomming" role="tabpanel" aria-labelledby="summerschool-incomming-tab">
+        
+            <div class="row">
+                <div class="col-md-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="text-center fs-3 text-danger">New Incoming Form</h5>
+                            <form #universityForm="ngForm" (ngSubmit)="RegisterSummerSchool()">
+                                <div class="row mt-4 mb-4">
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <label for="UniversityName" class="fw-bold fs-6 text-success">University
+                                                    Name:</label>
+                                                <input type="text" [(ngModel)]="UniversityName" id="UniversityName"
+                                                    name="UniversityName" ngModel required class="form-control " required
+                                                    placeholder=" " autocomplete="off" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <label for="Country" class="fw-bold fs-6 text-success">Country :</label>
+                                                <select name="Country" class="form-control" [(ngModel)]="Country" id="Country"
+                                                    (ngModelChange)="onCountryChange()">
+                                                    <option value="" selected>Please Select Country</option>
+                                                    <option [value]="currency.text" *ngFor="let currency of CurrencyList">{{
+                                                        currency.text }}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <label for="UniversityRank" class="fw-bold fs-6 text-success">No of
+                                                    Participants</label>
+                                                <input type="number" [(ngModel)]="Participants" id="Participants"
+                                                    name="Participants" ngModel required class="form-control"
+                                                    (ngModelChange)="addRegistrationRows()" placeholder=" "
+                                                    autocomplete="off" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- ROW TWO DATE and DURATION  -->
+                                <div class="row mt-4 mb-4">
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <label for="startDate" class="fw-bold fs-6 text-success"> Start
+                                                    Date:</label>
+                                                <input type="date" [(ngModel)]="startDate" id="startDate" name="startDate"
+                                                    ngModel class="form-control" (ngModelChange)="calculateDays()" required
+                                                    placeholder=" " autocomplete="off" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <label for="endDate" class="fw-bold fs-6 text-success"> End
+                                                    Date:</label>
+                                                <input type="date" [(ngModel)]="endDate" id="endDate" name="endDate" ngModel
+                                                    class="form-control" (ngModelChange)="calculateDays()" required
+                                                    placeholder="Visit End Date " autocomplete="off" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <label for="Proof1" class="fw-bold fs-6 text-success">Duration </label>
+                                                <br />
+                                                <input type="text" [(ngModel)]="Days" id="Days" name="Days" ngModel
+                                                    class="form-control" autocomplete="off" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- ROW THREE AMOUN AND AMOUNT REMARKS  -->
+                                <div class="row mt-4 mb-4">
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <label for="currencySymbol" class="fw-bold fs-6 text-success">Amount </label><br />
+                                            <div class="form-group d-flex justify-content-">
+                                                <input type="text" [(ngModel)]="Amount" id="Amount" name="Amount" ngModel
+                                                    required class="form-control " required placeholder="Amount"
+                                                    autocomplete="off" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <label for="UniversityName" class="fw-bold fs-6 text-success">Remarks
+                                                    for Amount </label>
+                                                <input type="text" [(ngModel)]="RemarksAmount" id="RemarksAmount"
+                                                    name="RemarksAmount" ngModel class="form-control "
+                                                    placeholder=" Remarks for Amount" autocomplete="off" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4" id="ExcelProofList">
+                                        <div class="col-sm-4">
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label class="fw-bold fs-6 text-danger"> Participants List Sheet</label>
+                                                    <input required type="file" id="exclSheet" name="excelSheet"
+                                                        [(ngModel)]="excelSheet" (change)="onFileSelectedXls($event)"
+                                                        accept=".xls,.xlsx" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Button to Store data in Database -->
+                                <div class="row mt-4 mb-4">
+                                    <div class="mb-3" id="ProofsData">
+                                        <div class="form-group">
+                                            <label for="Proof1" class="fw-bold fs-6 text-success">Upload
+                                                All Proofs</label> <br />
+                                            <input required type="file" id="File" name="File" [(ngModel)]="ProofFile1"
+                                                (change)="onFileSelected($event)" accept=".zip,.7z" />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <button type="submit" class="btn btn-primary me-2"
+                                                    [disabled]="!universityForm.valid">Save Record</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="row" *ngIf="SchoolData?.length > 0 ">
+                <div class="col-md-12 stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row mt-4 mb-4">
+                                <div class="col-">
+                                    <div class="mb-3 text-center">
+                                        <Label class="text-center fs-2 text-danger">Incomming Summer school Report</Label>
+                                    </div>
+                                </div>
+                            </div>
+                            <ng-container *ngIf="SchoolDataIn?.length > 0; else noRecords">
+                                <div class="row mt-4 mb-4">
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <button (click)="exportToExcel()" class="btn btn-success ">Export to
+                                                ExcelSheet</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <table id="SummerSchoolDataTable" #table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th class="form-label text-danger">University </th>
+                                            <th class="form-label text-danger">Country</th>
+                                            <th class="form-label text-danger">Participants Excel Sheet</th>
+                                            <th class="form-label text-danger">Visit Start Date</th>
+                                            <th class="form-label text-danger">Visit End Date</th>
+                                            <th class="form-label text-danger">Visit Duration (Days)</th>
+                                            <th class="form-label text-danger">Proof</th>
+                                            <th class="form-label text-danger">Amount Received </th>
+                                            <th class="form-label text-danger">Amount Particulars </th>
+                                            <th class="form-label text-danger">Approval Status </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <ng-container *ngFor="let SchoolDataRow of SchoolDataIn">
+                                            <tr>
+                                                <td class="fw-bold fs-6 text-success"> {{SchoolDataRow.universityName}}</td>
+                                                <td class="fw-bold fs-6 text-success">{{SchoolDataRow.country}}</td>
+                                                <td>
+                                                    <ng-container *ngIf="SchoolDataRow.xlsFileName!=null; else NoSheetDoc">
+                                                        <div class="text-danger text-center fs-5"> {{ SchoolDataRow.participants
+                                                            }}
+                                                            <br />
+                                                            <a class=" me-2" [href]="this.serverUrl+SchoolDataRow.xlsFileName"
+                                                                target="_blank"> <i class="mdi ms-2 fs-3 mdi-file"> </i> </a>
+                                                        </div>
+                                                    </ng-container>
+                                                    <ng-template #NoSheetDoc>
+                                                        <div class="text-danger text-center fs-5"> {{ SchoolDataRow.participants
+                                                            }}
+                                                            <br />
+                                                            <a class="text-danger me-2">No Uploaded Yet</a>
+                                                        </div>
+                                                    </ng-template>
+                                                </td>
+                                                <td class="fw-bold fs-6 text-success">{{ SchoolDataRow.startDate |
+                                                    date:'dd/MM/yyyy'
+                                                    }}</td>
+                                                <td class="fw-bold fs-6 text-success">{{ SchoolDataRow.endDate |
+                                                    date:'dd/MM/yyyy'
+                                                    }}</td>
+                                                <td class="fw-bold fs-6 text-success"> {{SchoolDataRow.visitDuration}}</td>
+                                                <ng-container *ngIf="SchoolDataRow.uploadProof; else NoFile">
+                                                    <td> <a class="fs-5 me-2" [href]="this.serverUrl+SchoolDataRow.uploadProof"
+                                                            target="_blank"><i class="mdi ms-2 fs-3 mdi-file"> </i></a> </td>
+                                                </ng-container>
+                                                <ng-template #NoFile>
+                                                    <td> No Proof Uploaded </td>
+                                                </ng-template>
+        
+                                                <ng-container *ngIf="SchoolDataRow.amount> 0; else NoAmount">
+                                                    <td> {{SchoolDataRow.amount}} </td>
+                                                </ng-container>
+                                                <ng-template #NoAmount>
+                                                    <td> N A </td>
+                                                </ng-template>
+                                                <ng-container *ngIf="SchoolDataRow.remarksAmounts ; else NoRemarks">//typeof
+                                                    SchoolDataRow.remarksAmounts === 'string' &&
+                                                    SchoolDataRow.remarksAmounts.length
+                                                    > 2; else NoRemarks
+                                                    <td> {{SchoolDataRow.remarksAmounts}} </td>
+                                                </ng-container>
+                                                <ng-template #NoRemarks>
+                                                    <td> N A </td>
+                                                </ng-template>
+                                                <td [ngSwitch]="SchoolDataRow.isApproved">
+                                                    <ng-container *ngSwitchCase="1">
+                                                        <div class="fw-bold fs-6 text-success">Approved By {{
+                                                            SchoolDataRow.approvedBy }}</div>
+                                                    </ng-container>
+                                                    <ng-container *ngSwitchCase="0">
+                                                        <div class="fw-bold fs-6 text-danger">Disapproved by {{
+                                                            SchoolDataRow.approvedBy }} <br />** {{
+                                                            SchoolDataRow.disapprovalReason }}</div>
+                                                    </ng-container>
+                                                    <ng-container *ngSwitchDefault>
+                                                        <div class="fw-bold fs-6 text-info">Pending Approval</div>
+                                                    </ng-container>
+                                                </td>
+                                            </tr>
+                                        </ng-container>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </ng-container>
+                            <ng-template #noRecords>
+                                <p class="fs-2 text-danger text-center ">No Grid Data Available.</p>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Tab Two contents -->
+        <div class="tab-pane fade" id="summerschool-outgoing" role="tabpanel" aria-labelledby="summerschool-outgoing-tab">
+            <div class="row">
+                <div class="col-md-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="text-center fs-3 text-danger">New Outgoing Form</h5>
+                            <form #universityOutgoingForm="ngForm" (ngSubmit)="OutgoingSummerSchool()">
+                                <div class="row mt-4 mb-4">
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <label for="UniversityOutgoingName" class="fw-bold fs-6 text-success">University
+                                                    Name:</label>
+                                                <input type="text" [(ngModel)]="UniversityOutgoingName"
+                                                    id="UniversityOutgoingName" name="UniversityOutgoingName" ngModel
+                                                    class="form-control" required placeholder=" University "
+                                                    autocomplete="off" />
+                                            </div>
+                                        </div>
+                                    </div>
+        
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <label for="SelfCountry" class="fw-bold fs-6 text-success">Country
+                                                    :</label>
+                                                <input type="text" [(ngModel)]="SelfCountry" id="SelfCountry" name="SelfCountry"
+                                                    ngModel class="form-control" autocomplete="off" placeholder=" Country" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <label for="ParticipantsOut" class="fw-bold fs-6 text-success">No of
+                                                    Participants</label>
+                                                <input type="number" [(ngModel)]="ParticipantsOut" id="ParticipantsOut"
+                                                    name="ParticipantsOut" ngModel required class="form-control"
+                                                    (ngModelChange)="addRegistrationRowsOut()" placeholder=" "
+                                                    autocomplete="off" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- ROW TWO DATE and DURATION  -->
+                                <div class="row mt-4 mb-4">
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <label for="startDateOut" class="fw-bold fs-6 text-success"> Start
+                                                    Date:</label>
+                                                <input type="date" [(ngModel)]="startDateOut" id="startDateOut"
+                                                    name="startDateOut" ngModel class="form-control"
+                                                    (ngModelChange)="calculateDaysOut()" required placeholder=" "
+                                                    autocomplete="off" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <label for="endDateOut" class="fw-bold fs-6 text-success"> End
+                                                    Date:</label>
+                                                <input type="date" [(ngModel)]="endDateOut" id="endDateOut" name="endDateOut"
+                                                    ngModel class="form-control" (ngModelChange)="calculateDaysOut()" required
+                                                    placeholder="Visit End Date " autocomplete="off" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <label for="DaysOut" class="fw-bold fs-6 text-success">Duration </label>
+                                                <br />
+                                                <input type="text" [(ngModel)]="DaysOut" id="DaysOut" name="DaysOut" ngModel
+                                                    class="form-control" autocomplete="off" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- ROW THREE AMOUN AND AMOUNT REMARKS  -->
+                                <div class="row mt-4 mb-4">
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <label for="AmountOut" class="fw-bold fs-6 text-success">Amount
+                                                    :</label>
+                                                <input type="text" [(ngModel)]="AmountOut" id="AmountOut" name="AmountOut"
+                                                    ngModel class="form-control " required placeholder="Amount"
+                                                    autocomplete="off" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <label for="RemarksAmountOut" class="fw-bold fs-6 text-success">Remarks
+                                                    for Amount </label>
+                                                <input type="text" [(ngModel)]="RemarksAmountOut" id="RemarksAmountOut"
+                                                    name="RemarksAmountOut" ngModel class="form-control " placeholder=" "
+                                                    autocomplete="off" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <label class="fw-bold fs-4 text-danger">Participants List Excel</label> <br />
+                                                <input required type="file" id="exclSheet" name="excelSheet"
+                                                    [(ngModel)]="excelSheet" (change)="onFileSelectedXls($event)"
+                                                    accept=".xls,.xlsx" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Row to provide save button  -->
+                                <div class="row mt-4 mb-4">
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group">
+                                                <label for="File" class="fw-bold fs-6 text-success">Upload
+                                                    All Proofs</label> <br />
+                                                <input required type="file" id="File" name="File" [(ngModel)]="ProofFile1"
+                                                    (change)="onFileSelected($event)" accept=".zip,.7z" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <div class="form-group text-center">
+                                                <label for="submit" class="fw-bold fs-6 text-success"> </label>
+                                                <button type="submit" class="btn btn-primary me-2" id="submit"
+                                                    [disabled]="!universityOutgoingForm.valid">Save Record </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row mt-4 mb-4">
+                                <div class="col-">
+                                    <div class="mb-3 text-center">
+                                        <Label class="text-center fs-2 text-success">Outgoing Summer school Report</Label>
+                                    </div>
+                                </div>
+                            </div>
+                            <ng-container *ngIf="SchoolDataOut?.length >0; else noRecords">
+                                <div class="row mt-4 mb-4">
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <button (click)="exportToExcelforOut()" class="btn btn-success ">Export to2
+                                                ExcelSheet</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+        
+                                    <table id="SummerSchoolDataTableY" #table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="form-label text-danger">University </th>
+                                                <th class="form-label text-danger">Country</th>
+                                                <th class="form-label text-danger text-center">Participants </th>
+                                                <th class="form-label text-danger">Visit Start Date</th>
+                                                <th class="form-label text-danger">Visit End Date</th>
+                                                <th class="form-label text-danger">Visit Duration (Days)</th>
+                                                <th class="form-label text-danger">Proof </th>
+                                                <th class="form-label text-danger">Amount Received </th>
+                                                <th class="form-label text-danger">Amount Particulars </th>
+                                                <th class="form-label text-danger">Approval Status </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+        
+                                            <ng-container *ngFor="let SchoolDataRow of SchoolDataOut">
+                                                <tr>
+                                                    <td class="fw-bold fs-6 text-success">
+                                                        {{SchoolDataRow.universityName}}</td>
+                                                    <td class="fw-bold fs-6 text-success">{{SchoolDataRow.country}}
+                                                    </td>
+                                                    <td>
+                                                        <ng-container *ngIf="SchoolDataRow.xlsFileName!=null; else NoSheetDoc">
+                                                            <div class="text-danger text-center fs-5"> {{
+                                                                SchoolDataRow.participants }} <br />
+                                                                <a class=" me-2"
+                                                                    [href]="this.serverUrl+SchoolDataRow.xlsFileName"
+                                                                    target="_blank">
+                                                                    <i class="mdi ms-2 fs-3 mdi-file"> </i>
+                                                                </a>
+                                                            </div>
+                                                        </ng-container>
+                                                        <ng-template #NoSheetDoc>
+                                                            <div class="text-danger text-center fs-5"> {{
+                                                                SchoolDataRow.participants }} <br />
+                                                                <span class="text-danger me-2">No Uploaded Yet</span>
+                                                            </div>
+                                                        </ng-template>
+                                                    </td>
+                                                    <td class="fw-bold fs-6 text-success">{{ SchoolDataRow.startDate
+                                                        |date:'dd/MM/yyyy' }}</td>
+                                                    <td class="fw-bold fs-6 text-success">{{ SchoolDataRow.endDate
+                                                        |date:'dd/MM/yyyy' }}</td>
+                                                    <td class="fw-bold text-success"> {{SchoolDataRow.visitDuration}}</td>
+                                                    <ng-container *ngIf="SchoolDataRow.uploadProof; else NoFile">
+                                                        <td> <a class="fs-5 me-2"
+                                                                [href]="this.serverUrl+SchoolDataRow.uploadProof"
+                                                                target="_blank"><i class="mdi ms-2 fs-3 mdi-file"> </i> </a>
+                                                        </td>
+                                                    </ng-container>
+                                                    <ng-template #NoFile>
+                                                        <td> No Proof Uploaded </td>
+                                                    </ng-template>
+                                                    <ng-container *ngIf="SchoolDataRow.amount> 0; else NoAmount">
+                                                        <td> {{SchoolDataRow.amount}} </td>
+                                                    </ng-container>
+                                                    <ng-template #NoAmount>
+                                                        <td> N A </td>
+                                                    </ng-template>
+                                                    <ng-container
+                                                        *ngIf="SchoolDataRow.remarksAmounts.length >0 ; else NoRemarks">
+                                                        <td> {{SchoolDataRow.remarksAmounts}} </td>
+                                                    </ng-container>
+                                                    <ng-template #NoRemarks>
+                                                        <td> N A </td>
+                                                    </ng-template>
+                                                    <td [ngSwitch]="SchoolDataRow.isApproved">
+                                                        <ng-container *ngSwitchCase="1">
+                                                            <div class="fw-bold fs-6 text-success">Approved By {{
+                                                                SchoolDataRow.approvedBy }}</div>
+                                                        </ng-container>
+                                                        <ng-container *ngSwitchCase="0">
+                                                            <div class="fw-bold fs-6 text-danger">Disapproved by {{
+                                                                SchoolDataRow.approvedBy }} <br />** {{
+                                                                SchoolDataRow.disapprovalReason }}</div>
+                                                        </ng-container>
+                                                        <ng-container *ngSwitchDefault>
+                                                            <div class="fw-bold fs-6 text-info">Pending Approval</div>
+                                                        </ng-container>
+                                                    </td>
+                                                </tr>
+                                            </ng-container>
+        
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+        
+                                </div>
+                            </ng-container>
+                            <ng-template #noRecords>
+                                <p class="fs-2 text-danger text-center ">No Grid Data Available.</p>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</ng-container>
+<ng-template #loginFailed>
+    <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body ">
+                    <h4 class="card-title  text-center fs-3 text-danger"> Summer School  </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<div class="text-center bg-warning" *ngIf="isLoginFailed">
+    <h3 class="text-center fs-2 m-5 text-danger pt-5 "> Error in User Login .    </h3>
+    <div class="row mt-4 mb-4">
+        <div class="col-sm-12 text-center">
+            <div class="mb-3 p-4">
+                <Label class="form-label fs-4 text-danger ">Something Wen Wrong. Please Try login again!.</Label>
+            </div>
+        </div>
+    </div>
+</div>

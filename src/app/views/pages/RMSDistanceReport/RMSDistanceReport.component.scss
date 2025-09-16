@@ -1,0 +1,64 @@
+.table-container {
+    max-height: 400px; 
+    overflow-y: auto;
+  }
+  
+  .mat-elevation-z8 {
+    margin-bottom: 16px; /* Add some spacing at the bottom */
+  }
+  #wrapper1, #wrapper11, #wrapper21, #wrapper2{width: 100%; border: none 0px rgb(223, 219, 219);
+    overflow-x: scroll; overflow-y:hidden;}
+    #wrapper1{height: 20px; }
+    #wrapper2{height: 90rem }
+    #div1 {width:100%; height: 20px; }
+    #div2 {width:100%; height: 90rem;
+    overflow: auto;}
+nav.db-nav .navbar-brand img {
+    width: 200px;
+    height: 80px;
+    object-fit: contain;
+}
+.themeClr {
+    color: #fd6c04 !important;
+}
+.metric-search-nav {
+    box-shadow: 0 0 40px rgba(14, 16, 48, .07);
+    background: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+}
+.metric-search-home {
+    font-size: 24px !important;
+    color: #ffab13 !important;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.pd{
+    padding: 0px 15px;
+}
+.ml15{
+    margin-right: 15px;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #ddd;
+}

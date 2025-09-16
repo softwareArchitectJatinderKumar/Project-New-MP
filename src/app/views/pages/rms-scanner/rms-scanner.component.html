@@ -1,0 +1,406 @@
+<nav class="page-breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a routerLink=".">RMS</a></li>
+    <li class="breadcrumb-item active" aria-current="page">RMS QR Scanner</li>
+  </ol>
+</nav>
+
+<div class="row">
+  <div class="col-md-12 grid-margin">
+    <div class="card">
+      <div class="card-body">
+        <h6 class="card-title">RMS QR Scanner Forms</h6>
+
+        <aw-wizard #wizardForm>
+          
+          <aw-wizard-step stepTitle="RMS QR Scanner">
+
+
+
+            <form (ngSubmit)="form1Submit()" [formGroup]="validationForm1" style="margin-top: 20px;" >
+              <div class="row">
+
+
+                <div class="col-md-6">
+                  <div class="row mb-3">
+                    <label for="lastName" class="col-sm-3 col-form-label">Select Master Category :</label>
+                    <div class="col-sm-9">
+
+
+                      <ng-select [items]="rmsMasterCategories"
+                      bindLabel="masterCategory"
+                      placeholder="Search Master Categories"
+                      (change)="onMasterCategory($event)"
+                      bindValue="masterCategory"
+                      formControlName="mCategory"
+                      [clearable]="false"
+                      [hideSelected]="false"
+                      [virtualScroll]="true"
+                      [(ngModel)]="mCategory"
+                     >
+                    </ng-select>
+
+
+                      <!-- <select id="ddlMasterCategory" formControlName="mCategory" class="form-select">
+                        <option value="" selected="selected">Select</option>
+                        <option *ngFor="let row of rmsMasterCategories"  [value]="row.masterCategory">{{row.masterCategory}}</option>
+                     
+                      </select> -->
+                   
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col-md-6">
+                  <div class="row mb-3">
+                    <label for="lastName" class="col-sm-3 col-form-label">Select Category :</label>
+                    <div class="col-sm-9">
+                      <ng-select [items]="rmsCategories" #ngSelectComponentCategory
+                      placeholder="Search Category"
+                      bindLabel="category"
+                      bindValue="categoryId"
+                      formControlName="Category"
+                      (change)="onCategory($event)"
+                      [clearable]="false"
+                      [hideSelected]="false"
+                      [virtualScroll]="true"
+                      [(ngModel)]="Category"
+                    
+                     >
+                    </ng-select>
+
+
+                      <!-- <select id="ddlMasterCategory" formControlName="mCategory" class="form-select">
+                        <option value="" selected="selected">Select</option>
+                        <option *ngFor="let row of rmsMasterCategories"  [value]="row.masterCategory">{{row.masterCategory}}</option>
+                     
+                      </select> -->
+                   
+                    </div>
+                  </div>
+                </div>
+
+
+
+                <div class="col-md-6">
+                  <div class="row mb-3">
+                    <label for="lastName" class="col-sm-3 col-form-label">Select Sub Category :</label>
+                    <div class="col-sm-9">
+                      <ng-select [items]="rmsSubCategories" #ngSelectComponentSubCategory
+                      bindLabel="subCategory"
+                      bindValue="catSubCatId"
+                      placeholder="Search Sub Category"
+                      formControlName="SubCategory"
+                      [clearable]="false"
+                      [hideSelected]="false"
+                      [virtualScroll]="true"
+                     
+                     >
+                    </ng-select>
+
+
+                      <!-- <select id="ddlMasterCategory" formControlName="mCategory" class="form-select">
+                        <option value="" selected="selected">Select</option>
+                        <option *ngFor="let row of rmsMasterCategories"  [value]="row.masterCategory">{{row.masterCategory}}</option>
+                     
+                      </select> -->
+                   
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col-md-6">
+              <div class="row mb-3">
+                <label for="firstName" class="col-sm-3 col-form-label">Scanner Title :</label>
+                <div class="col-sm-9">
+                  <!-- <input type="text" class="form-control" id="firstName" formControlName="firstName" 
+                  [ngClass]="{'is-invalid': isForm1Submitted && form1.firstName.errors}" placeholder="First name"> -->
+                  <input id="journalTitle" formControlName="scannerTitle" class="form-control"  placeholder="Scanner Title" [(ngModel)]="scannerTitle"
+                  [ngClass]="{'is-invalid': isForm1Submitted && form1.scannerTitle.errors}"
+                  >
+
+
+
+                  <div *ngIf="isForm1Submitted && form1.journalTitle.errors?.required" class="invalid-feedback">
+                    Required
+                  </div>
+                </div>
+              </div>
+                </div>
+                <div class="col-md-6">
+              <div class="row mb-3">
+                <label for="lastName" class="col-sm-3 col-form-label">Start Date :</label>
+                <div class="col-sm-9">
+                  <!-- <input type="text" class="form-control" id="lastName" formControlName="lastName" 
+                    [ngClass]="{'is-invalid': isForm1Submitted && form1.lastName.errors}" placeholder="Last name"> -->
+
+
+                    
+                  <input id="publishDate"  type="date" formControlName="startdate" class="form-control" 
+        [ngClass]="{'is-invalid': isForm1Submitted && form1.startdate.errors}" placeholder="Start Date"
+        >
+
+      
+      <div *ngIf="isForm1Submitted && form1.publishDate.errors?.required" class="invalid-feedback">
+        Required
+      </div>
+                </div>
+              </div>
+</div>
+
+
+<div class="col-md-6">
+  <div class="row mb-3">
+    <label for="lastName" class="col-sm-3 col-form-label">End Date :</label>
+    <div class="col-sm-9">
+      <!-- <input type="text" class="form-control" id="lastName" formControlName="lastName" 
+        [ngClass]="{'is-invalid': isForm1Submitted && form1.lastName.errors}" placeholder="Last name"> -->
+        <input id="Volume"  type="date" formControlName="enddate" class="form-control" 
+        [ngClass]="{'is-invalid': isForm1Submitted && form1.enddate.errors}" placeholder="End Date"
+        >
+      <div *ngIf="isForm1Submitted && form1.Volume.errors?.required" class="invalid-feedback">
+        Required
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-6">
+  <div class="row mb-3">
+    <label for="lastName" class="col-sm-3 col-form-label">Start Time :</label>
+    <div class="col-sm-9">
+      <!-- <input type="text" class="form-control" id="lastName" formControlName="lastName" 
+        [ngClass]="{'is-invalid': isForm1Submitted && form1.lastName.errors}" placeholder="Last name"> -->
+         <ngb-timepicker formControlName="fromtime" [(ngModel)]="fromtime"   ></ngb-timepicker> 
+      <div *ngIf="isForm1Submitted && form1.fromtime.errors?.required" class="invalid-feedback">
+        Required
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-6">
+  <div class="row mb-3">
+    <label for="lastName" class="col-sm-3 col-form-label">End Time :</label>
+    <div class="col-sm-9">
+      <!-- <input type="text" class="form-control" id="lastName" formControlName="lastName" 
+        [ngClass]="{'is-invalid': isForm1Submitted && form1.lastName.errors}" placeholder="Last name"> -->
+         <ngb-timepicker formControlName="endtime" [(ngModel)]="endtime" ></ngb-timepicker> 
+      <div *ngIf="isForm1Submitted && form1.endtime.errors?.required" class="invalid-feedback">
+        Required
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="col-md-6">
+  <div class="row mb-3">
+    <label for="lastName" class="col-sm-3 col-form-label">Scanner Type :</label>
+    <div class="col-sm-9">
+      <!-- <input type="text" class="form-control" id="lastName" formControlName="lastName" 
+        [ngClass]="{'is-invalid': isForm1Submitted && form1.lastName.errors}" placeholder="Last name"> -->
+        <select class="form-select" formControlName="scannerType" [(ngModel)]="scannerType" >
+          <option value="0" selected>Select Scanner Type</option>
+          <option value="Open">Open</option>
+          <option value="Specified">Specified</option>
+        </select>
+      <div *ngIf="isForm1Submitted && form1.scannerType.errors?.required" class="invalid-feedback">
+        Required
+      </div>
+    </div>
+  </div>
+</div>
+
+                
+      
+          </div>
+              <div class="d-flex justify-content-center mt-2">
+                <!-- <button class="btn btn-primary" type="submit">View QR Code</button> -->
+                <button class="btn btn-primary" type="submit" style="    margin-left: 15px;" >Submit</button>
+                <button class="btn btn-primary" type="button" (click)="resetData();" style=" background-color: black;   margin-left: 15px;" >Reset</button>
+              </div>
+             
+            </form>
+          </aw-wizard-step>
+
+       
+        </aw-wizard>
+
+      </div>
+    </div>
+  </div> 
+  </div>
+  <div class="row">
+    <div class="col-md-12 stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title">QR Scanner Data</h6>
+                <div class="table-responsive">
+                    <table id="dataTableExample" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Master Category</th>
+                                <th>Category</th>
+                                <th>Sub Category</th>
+                                <th>Scanner Title</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>From Time</th>
+                                <th>To Time</th>
+                                <th>Created By</th>
+                                <th>Created On</th>
+                                <th>Scanner Type</th>
+                                <th>Action</th>
+                                <th>QR Scanner</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let row of rmsScannerData">
+                            <td>
+                              {{row.masterCategory}}
+                            </td>
+                            <td>
+                              {{row.category}}
+                            </td>
+                            <td>
+                              {{row.subCategory}}
+                            </td>
+                            <td>
+                              {{row.scannerTitle}}
+                            </td>
+                            <td>
+                              {{row.startDate}}
+                            </td>
+                            <td>
+                              {{row.endDate}}
+                            </td>
+                            <td>
+                              {{row.fromTime}}
+                            </td>
+                            <td>
+                              {{row.toTime}}
+                            </td>
+                            <td>
+                              {{row.createdBy}}
+                            </td>
+                            <td>
+                              {{row.createdOn}}
+                            </td>
+                            <td *ngIf="row.scannerType=='Specified'">
+                              <button class="btn btn-primary" type="button" (click)="AddScannerStudents(row.id);" style="    margin-left: 15px;" >Add</button>
+                            </td>
+                            <td *ngIf="row.scannerType!='Specified'">
+                              NA
+                            </td>
+                            <td>
+                              <img (click)="changeStatus(row.id)" [src]="row.isActive==='1'?'assets/images/green.png':'assets/images/red.png'">
+                              <!-- <button class="btn btn-primary" type="button" style="    margin-left: 15px;" >Change Status</button> -->
+                            </td>
+                            <td>
+                              <button class="btn btn-primary" type="button" (click)="viewScanner(row.id);" style="    margin-left: 15px;" >View QR Scanner</button>
+                            </td>
+                          </tr>
+                          </tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+            </div>
+            </div>
+<ng-template #loginFailed>
+  <div class="text-center bg-danger" *ngIf="isLoginFailed">
+    <h3 class="text-center fs-2 m-5 text-warn pt-5 "> Error in User Login . </h3>
+    <div class="row mt-4 mb-4">
+      <div class="col-sm-12 text-center">
+        <div class="mb-3 p-4">
+          <Label class="form-label fs-4 text-warn ">Something Wen Wrong. Please Try login again!.</Label>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)"  [fullScreen]="true" size="default" type="ball-spin-clockwise">
+  <p style="color: white">Please Wait... </p>
+</ngx-spinner>
+
+
+
+<ng-template #basicModal let-modal style="max-width: 100% !important;">
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">QR Scanner</h5>
+    <button type="button" class="btn-close" (click)="modal.close('by: close button')"  aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    
+      <qrcode [qrdata]="myAngularxQrCode" style="    text-align: center;" [width]="500" [errorCorrectionLevel]="'M'"></qrcode>
+     
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.close('by: close button')">Close</button>
+  </div>
+</ng-template>
+
+
+<ng-template #StudentModal let-modal style="max-width: 100% !important;">
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">QR Scanner Students</h5>
+    <button type="button" class="btn-close" (click)="modal.close('by: close button')"  aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    
+    <input type="text" class="form-control" id="vid"   [(ngModel)]="vidNumber"
+     placeholder="VID No.">
+     <p style="font-size: 11px;
+     font-weight: 600;
+     font-style: italic;">Add VID No. in Comma Seprated Like: 123,123</p>
+     
+
+     <br>
+     <div class="card">
+      <div class="card-body">
+          <h6 class="card-title">QR Scanner Student Data</h6>
+          <div class="table-responsive">
+              <table id="dataTableExample" class="table table-striped">
+                  <thead>
+                      <tr>
+                          <th>VID No.</th>
+                          <th>Student Name</th>
+                          <th>Program Name</th>
+                          <th>Section Name</th>
+                          <th>School Name</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let row of rmsScannerStudents">
+                      <td>
+                        {{row.vid}}
+                      </td>
+                      <td>
+                        {{row.studentName}}
+                      </td>
+                      <td>
+                        {{row.programName}}
+                      </td>
+                      <td>
+                        {{row.section}}
+                      </td>
+                      <td>
+                        {{row.school}}
+                      </td>
+                     
+                    </tr>
+                    </tbody>
+              </table>
+          </div>
+      </div>
+      </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="addStudents();">Submit</button>
+    <button type="button" class="btn btn-secondary" (click)="modal.close('by: close button')">Close</button>
+  </div>
+</ng-template>

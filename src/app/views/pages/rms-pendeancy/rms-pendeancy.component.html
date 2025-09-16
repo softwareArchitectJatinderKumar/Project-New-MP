@@ -1,0 +1,74 @@
+<ul ngbNav #horizontalCenterNav="ngbNav" class="nav-tabs justify-content-center">
+  <li [ngbNavItem]="1">
+    <a ngbNavLink>RMS Pendancy</a>
+    <ng-template ngbNavContent>
+
+      <div class="h-100 d-flex p-2 align-items-center justify-content-center">
+        <div class="container ">
+
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                 <!-- Jatin -->
+                 <h6 class="card-title">Pending</h6>
+                 <div class="table-responsive">
+                   
+                   <table id="dataTableExample" class="table">
+                     <thead>
+                       <tr>
+                         <th>id</th>
+                         <th>name</th>
+                         <th>session Year</th>
+                         <th>type</th>
+                         <th>sub Type</th>
+                         <th>Vetting Status</th>
+                         <th>vetting Date</th>
+                         <th>vetting By</th>
+                         <th>document Responsible Person</th>
+                         <!-- <th>Forward To UID</th>
+                         <th>Forward User Vetting Date</th>
+                         <th>Forward User Vetting Status</th> -->
+                         <th>File</th>
+                         <th>View Remarks</th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       <tr *ngFor="let dt of TableDataCreatedBy">
+                         <td>{{dt.id}}</td>
+                         <td>{{dt.name}}</td>
+                         <td>{{dt.sessionYear}}</td>
+                         <td>{{dt.type}}</td>
+                         <td>{{dt.subType}}</td>
+                         <td>{{dt.isVetting}}</td>
+                         <td>{{dt.vettingDate}}</td>
+                         <td>{{dt.vettingBy}}</td>
+                         <td>{{dt.documentResponsiblePerson}}</td>
+                         <!-- <td>{{dt.forwardToUID}}</td>
+                         <td>{{dt.forwardUserVetting}}</td>
+                         <td>{{dt.forwardUserVettingDate}}</td> -->
+                         <td>
+                           <a href={{dt.filePath}} class="btn btn-secondary btn-lg active" target="_blank" role="button" aria-pressed="true">View</a>
+                         </td>
+                         <!-- <td>
+                           <button class="btn btn-primary"  name="{{dt.id}}"  >Chat</button>
+       
+                         </td> -->
+                       </tr>
+                    </tbody>
+                   </table>
+                 </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+    </ng-template>
+  </li>
+ 
+</ul>
+

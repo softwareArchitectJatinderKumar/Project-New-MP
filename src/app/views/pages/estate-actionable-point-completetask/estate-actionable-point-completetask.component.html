@@ -1,0 +1,170 @@
+<div class="wrapper login-page">
+    <header>
+        <div class="logo">
+            <img src="assets/obp_planner_score/images/lpu-seal.svg" class="lpu-seal" />
+            <img src="assets/obp_planner_score/images/ums-logo.svg" class="ums-logo" />
+            <img src="assets/obp_planner_score/images/ums-logo-s.svg" class="ums-logo-s" />
+        </div>
+        <div class="name">
+            <h1><span class="obp-text">OUTCOME BASED PLANNER</span> <span class="dash">-</span>Inspection Engineer Task
+                &nbsp;&nbsp;&nbsp;
+              
+            </h1>
+        </div>
+        <div>
+            <ul class="header-menu">
+
+                <div class="home-link">
+
+                    <a href="https://ums.lpu.in/lpuums/Default.aspx">
+                        <i class="fas fa-home metric-search-home" style="font-size: 25px;color: #fd6c04 !important;">
+                        </i>
+                    </a>
+                </div>
+            </ul>
+        </div>
+       
+
+    </header>
+    
+
+
+
+    <!-- <section class="section">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12" id="plannersessionDiv">
+                    <div class="col-lg-3" style="float: right;">
+                        <div class="text-right pb-10px" style="margin-bottom: 0px;">
+                           
+                        </div>
+                        <div class="text-right pb-10px" style="margin-bottom: 0px;margin-left: 56px;
+                           margin-top: 12px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+</div>
+<div class="container-fluid px-2">
+  <div class="row">
+    <div class="col-12">
+      <div class="table-responsive">
+     <table class="table table-bordered table-sm">
+  <thead class="table-light">
+    <tr>
+      <th>Id</th>
+      <th>Task Description</th>
+      <th>Inspection Type</th>
+      <th>Remarks</th>
+      <th>Start Date</th>
+      <th>End Date</th>
+      <th>Status</th>
+      <th>Upload Proof</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let task of ConstructionDetails; let i = index" [ngClass]="{ 'table-success': task.status === 'Completed' }"
+    >
+      <td>{{ i + 1 }}</td>
+      <td>{{ task.taskDescription }}</td>
+      <td>{{ task.inspectionType }}</td>
+
+      <!-- Remarks -->
+      <td>
+        <textarea
+          class="form-control form-control-sm w-100"
+          rows="2"
+          placeholder="Remarks"
+          style="min-width: 200px;"
+          [(ngModel)]="task.remarks"
+          [disabled]="task.status === 'Completed'">
+        </textarea>
+      </td>
+
+      <!-- Start Date -->
+      <td>
+        <input
+          type="date"
+          class="form-control form-control-sm"
+          style="max-width: 120px;"
+          [(ngModel)]="task.startDate"
+          [disabled]="task.startDate !== '' && task.status === 'Completed'">
+          
+      </td>
+
+      <!-- End Date -->
+      <td>
+        <input
+          type="date"
+          class="form-control form-control-sm"
+          style="max-width: 120px;"
+          [(ngModel)]="task.endDate"
+          [disabled]="task.endDate !== '' && task.status === 'Completed'">
+      </td>
+
+      <!-- Status -->
+      <td>
+        <select
+          class="form-select form-select-sm"
+          [(ngModel)]="task.status"
+          name="status"
+          [disabled]="task.status === 'Completed'">
+          <option value="Pending">Pending</option>
+          <option value="Completed">Completed</option>
+        </select>
+      </td>
+
+      <!-- File Upload -->
+      <td>
+  <div class="d-flex align-items-center gap-2">
+    <input
+      type="file"
+      class="form-control form-control-sm"
+      (change)="onFileSelected($event, i)"
+      style="max-width: 150px;"
+     
+    >
+
+    <!-- Download icon button -->
+    <button
+      *ngIf="task.proofImageURL"
+      class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center"
+      (click)="downloadImage(task.proofImageURL)" 
+      matTooltip="Download Image"
+      [disabled]="task.status !== 'Completed'"
+      style="height: 30px; width: 30px; padding: 0;"
+    >
+      <mat-icon fontIcon="file_download" style="font-size: 18px;"></mat-icon>
+    </button>
+  </div>
+</td>
+
+      <td>
+        <button
+          class="btn btn-sm btn-primary"
+          (click)="onSubmitTable(i)"
+          
+          >
+          Submit
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+   

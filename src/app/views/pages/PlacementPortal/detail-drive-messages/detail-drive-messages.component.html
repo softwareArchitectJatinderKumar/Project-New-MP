@@ -1,0 +1,25 @@
+
+<div class="container ">
+    <div class="text-dark text-center mb-3 labelb" >
+        <h4>My Messages</h4>
+      </div>
+    <ng-container *ngIf="DriveMessageData?.length >0; else noRecords">
+        <div class="col-sm-12">
+            <div class="mb-3  d-flex justify-content-center align-item-center">
+              <button (click)="exportToExcel()" class="btn me-4">Export to ExcelSheet</button>              
+            </div>
+          </div>
+        <table class="table table-striped border">
+            <tbody>            
+                <tr class="row" *ngFor="let driveData of DriveMessageData">
+                    <td >
+                        {{ driveData.subject + driveData.entryDate }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </ng-container>
+    <ng-template #noRecords>
+        <p class="fs-2 text-danger text-center "> </p>
+    </ng-template>
+</div>

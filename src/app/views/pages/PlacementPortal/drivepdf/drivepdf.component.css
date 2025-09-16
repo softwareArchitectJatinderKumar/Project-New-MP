@@ -1,0 +1,160 @@
+.pdf
+{
+    height:101.5 rem;
+    width:87.5rem;
+}
+.heading
+{
+    display: inline-flex;
+}
+button
+{
+    background-color: #fd6c04;
+    color:white;
+    border-style: outset;
+    height:3rem;
+}
+button:hover
+{
+    background-color: brown;
+    color:white;
+    border-style: outset;
+}
+.labela
+{
+    height:3.125rem;
+    width:62rem;
+    background-color: #fd6c04;
+    color:white;
+    margin-left:1rem;
+    text-align: center;
+ 
+}
+#head{
+    margin-right:10rem;
+    padding:0.625rem;
+    font-weight: bold;
+}
+.labelb
+{
+    height:3.125rem;
+    width:69rem;
+    background-color: brown;
+    color:white;
+    text-align: center;
+    margin-top:0.5rem;
+    padding:1rem;
+ 
+}
+.labelc
+{
+    height:3.125rem;
+    width:69rem;
+    background-color: whitesmoke;
+    color:black;
+    text-align: center;
+    margin-top:0rem;
+    padding:0.rem;
+ 
+}
+h4{
+    margin-right:5rem;
+    padding:0.4rem
+}
+.tablea th,.tablea td
+{
+    padding-left:5rem;
+    color:brown;
+    font-weight: bold;
+}
+.tableb{
+    width:69rem;
+    margin-top: 0.2rem;
+}
+.tableb th,.tableb td
+{
+    padding-left:5rem;
+    color:brown;
+    border: 2px solid brown;
+    font-weight: bold;
+}
+.tableb th
+{
+    background-color: brown;
+    color:white!important;
+
+}
+.tablec{
+    width:69rem;
+    
+}
+.tablec th,.tablec td
+{
+    padding-left:5rem;
+    color:brown;
+    border: 2px solid brown;
+    font-weight: bold;
+
+    
+}
+.labeld
+{
+    height:3.125rem;
+    width:69rem;
+    background-color: brown;
+    color:white;
+    text-align: center;
+    margin-top:0rem;
+    padding:0.rem;
+ 
+}
+.tabled
+{
+    width:69rem;
+    margin-top: 0.2rem;
+}
+.tabled th,.tabled td
+{
+    padding-left:5rem;
+    border: 2px solid brown;
+    font-weight: bold;
+    color:brown; 
+}
+.tabled th
+{
+    background-color: brown;
+    color:white!important;
+
+}
+.tablee{
+    width:69rem;
+    
+}
+.tablee th,.tablee td
+{
+    padding-left:5rem;
+    color:brown;
+    border: 2px solid brown;
+    font-weight: bold;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+
+    
+}
+a{
+    color:blue;
+}
+#man
+{
+    font-size: large;
+}
+#short
+{
+    color:red;
+}
+.data
+{
+    width:69rem;
+    height:auto;
+}
+

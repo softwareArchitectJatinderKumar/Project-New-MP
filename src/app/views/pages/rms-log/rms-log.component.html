@@ -1,0 +1,902 @@
+<div class="wrapper">
+    <section class="space-section">
+        <div class="container">
+            <div class="grid">
+                <div class="g-col-lg-2 g-col-12" *ngIf="!displayInstructionBlockSelection">
+                    <div class="left text-center">
+                       
+                        <div>
+                            <h1>Relationship<br>
+                                Management System (RMS) </h1>
+                        </div>
+                        <div class="btn-wrapper">
+                            <!-- <div class="pt-2 pb-2">
+                                <a href="" class="rms-btn color"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                        height="24" viewBox="0 0 24 24" fill="none">
+                                        <g clip-path="url(#clip0_12_1689)">
+                                            <path
+                                                d="M12.1711 0C6.9121 0 2.44458 3.49988 0.9104 8.32362H3.83097C5.2338 5.06088 8.44373 2.77445 12.1708 2.77445C17.1853 2.77445 21.2647 6.91309 21.2647 12C21.2647 17.0869 17.1853 21.2256 12.1708 21.2256C8.63154 21.2256 5.55834 19.1637 4.05622 16.1621H1.07607C2.74785 20.7335 7.09026 24.0003 12.1711 24.0003C18.6937 24.0003 24 18.617 24 12.0003C24 5.38355 18.6937 0 12.1711 0Z"
+                                                fill="white" />
+                                            <path
+                                                d="M9.04965 17.7573L16.1367 12.2573L9.04965 6.86719V9.94714H0V14.3472H9.04965V17.7573Z"
+                                                fill="white" />
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_12_1689">
+                                                <rect width="24" height="24" fill="white" />
+                                            </clipPath>
+                                        </defs>
+                                    </svg> Log Request</a>
+                            </div> -->
+                            <div class="pt-2 pb-2">
+                                <a href="" class="rms-btn btn-border"><svg xmlns="http://www.w3.org/2000/svg"
+                                        width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <g clip-path="url(#clip0_12_1695)">
+                                            <path
+                                                d="M11.9955 23.9999C11.4451 23.9228 10.8916 23.8792 10.3451 23.7634C8.36505 23.3441 6.61249 22.4352 5.08907 21.0508C3.43864 19.5509 2.28549 17.6989 1.63267 15.5066C1.52032 15.1289 1.53305 15.1094 1.90249 15.1088C2.54146 15.1077 3.18072 15.1141 3.81942 15.1053C4.00954 15.1027 4.11276 15.1688 4.18775 15.3602C5.04009 17.5319 6.42625 19.2116 8.40075 20.3289C9.98947 21.228 11.6922 21.5538 13.4838 21.3644C15.5958 21.1413 17.3998 20.2128 18.8945 18.6475C20.3509 17.1222 21.2456 15.2793 21.4714 13.119C21.8021 9.95856 20.833 7.27389 18.644 5.10304C17.1024 3.57435 15.2488 2.70671 13.1177 2.61128C9.32365 2.44165 6.52588 4.19555 4.59455 7.5791C4.4869 7.76793 4.50987 7.88839 4.65903 8.04318C5.65029 9.07172 6.63242 10.1099 7.61565 11.1468C7.66934 11.2033 7.76758 11.2533 7.72413 11.3534C7.69397 11.4232 7.60707 11.3985 7.54425 11.3985C5.05365 11.3988 2.56305 11.3979 0.0727241 11.3968C0.0483715 11.3968 0.0237422 11.3915 -0.000610352 11.3889C-0.000610352 8.64954 -0.000610352 5.91045 -0.000610352 3.17108C0.0735543 3.238 0.152147 3.29998 0.221053 3.37242C1.00393 4.19322 1.7882 5.01256 2.56471 5.84004C2.7064 5.99105 2.77226 5.99629 2.88102 5.80047C3.50533 4.67563 4.28323 3.68026 5.23574 2.8455C7.86084 0.54489 10.8808 -0.382977 14.2531 0.143367C17.4856 0.647889 20.0554 2.37269 21.9305 5.17869C23.6571 7.76182 24.3052 10.6446 23.8671 13.7774C23.5458 16.0763 22.6525 18.1095 21.1997 19.8593C19.4352 21.9845 17.2285 23.3048 14.5846 23.8131C14.1175 23.903 13.6443 23.9304 13.1752 23.9999H11.9952H11.9955Z"
+                                                fill="white" />
+                                            <path
+                                                d="M10.7569 9.55394C10.7569 8.58941 10.7563 7.62517 10.7569 6.66065C10.7572 6.3115 10.7602 6.30917 11.0798 6.30801C11.4811 6.30684 11.8832 6.3211 12.2836 6.30277C12.528 6.29171 12.6088 6.3694 12.6068 6.63533C12.5958 8.17654 12.6063 9.71804 12.5963 11.2592C12.5947 11.5031 12.6611 11.6465 12.8661 11.7742C14.304 12.6684 15.7323 13.5802 17.1691 14.4761C17.3608 14.5957 17.4007 14.6894 17.2717 14.8924C17.0171 15.2931 16.7803 15.7065 16.5481 16.1223C16.4606 16.2789 16.3818 16.2937 16.2362 16.202C14.4798 15.0961 12.7211 13.994 10.96 12.8965C10.8053 12.7999 10.7525 12.682 10.7536 12.4984C10.7596 11.5167 10.7566 10.535 10.7563 9.55336L10.7569 9.55394Z"
+                                                fill="white" />
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_12_1695">
+                                                <rect width="24" height="24" fill="white" />
+                                            </clipPath>
+                                        </defs>
+                                    </svg> RMS History</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="g-col-lg-10 g-col-12 content">
+
+                    <!-- <div class="ums-link">
+                        <a href=""><svg xmlns="http://www.w3.org/2000/svg" width="26" height="23"
+                                viewBox="0 0 26 23" fill="none">
+                                <g clip-path="url(#clip0_11_1680)">
+                                    <path
+                                        d="M10.5117 23H3.85932C3.85323 22.9022 3.84155 22.8044 3.84104 22.7066C3.84002 19.9958 3.84256 17.2844 3.83545 14.5736C3.83494 14.3495 3.90908 14.1927 4.07057 14.0369C6.97627 11.2317 9.8774 8.42158 12.7801 5.61243C13.0157 5.3844 13.0177 5.38391 13.2538 5.61391C16.1504 8.42797 19.046 11.2435 21.9466 14.0541C22.1035 14.206 22.1634 14.3618 22.1629 14.5736C22.1573 17.2844 22.1594 19.9958 22.1583 22.7066C22.1583 22.8044 22.1467 22.9022 22.1401 23H15.4369C15.4334 22.8693 15.4268 22.7381 15.4268 22.6074C15.4263 20.8141 15.4268 19.0203 15.4258 17.2269C15.4258 16.876 15.4217 16.8731 15.054 16.8731C13.683 16.8731 12.3124 16.8731 10.9413 16.8731C10.6579 16.8731 10.5159 17.0074 10.5152 17.2761C10.5137 19.1844 10.5122 21.0922 10.5106 23.0005L10.5117 23Z"
+                                        fill="#880001" />
+                                    <path
+                                        d="M26 12.2863V12.3846C25.154 12.8151 24.3085 13.2466 23.4614 13.6762C22.8267 13.9981 22.8236 13.999 22.328 13.5041C19.2766 10.4591 16.2261 7.41357 13.1752 4.36803C12.8898 4.08299 12.9579 4.06137 12.6496 4.37442C9.56211 7.51088 6.47461 10.6468 3.39219 13.7877C3.23883 13.944 3.12203 13.9823 2.91738 13.8757C1.94898 13.3705 0.972969 12.88 0 12.3846C0 12.3517 0 12.3193 0 12.2863C1.2477 11.1103 2.49742 9.93669 3.74258 8.75818C6.12422 6.50389 8.50434 4.24812 10.8824 1.99038C11.5761 1.33184 12.2606 0.663953 12.9492 0C12.9832 0 13.0168 0 13.0508 0C13.1305 0.0845299 13.2062 0.1725 13.2905 0.252607C16.5577 3.35073 19.825 6.44934 23.0933 9.54598C24.0596 10.4616 25.0311 11.3732 26 12.2863Z"
+                                        fill="#880001" />
+                                </g>
+                                <defs>
+                                    <clipPath id="clip0_11_1680">
+                                        <rect width="26" height="23" fill="white" />
+                                    </clipPath>
+                                </defs>
+                            </svg><span>UMS Home</span></a>
+                    </div> -->
+                    <div class="main-content">
+                        <!-- <div class="start-content" *ngIf="displayInstructionBlockSelection && displayInstructionBlock" >
+                            <ul class="rms-list">
+                                <li>I have not shared my UMS password with anyone.</li>
+                                <li>I am responsible for the content typed in query.</li>
+                                <li>I understand that necessary disciplinary action can be initiated against me in
+                                    case
+                                    of use of derogatory words or false statements against any
+                                    Student/Faculty/Staff/Higher Authority.</li>
+                                <li>The information given by me regarding the complaint/request is true to the best
+                                    of
+                                    my knowledge and if found false/ wrong, necessary disciplinary action can be
+                                    initiated against me.</li>
+                                <li>I have read the policy / UMS Notification related to the concerned matter
+                                    already
+                                    before submitting the RMS and I am unable to find the answer related to my
+                                    query.
+                                </li>
+                            </ul>
+                            <div class="d-flex justify-content-center p-4">
+                                
+                                <a  (click)="openRMSStudentOptionModal()" class="btn-agree">Agree & Proceed</a>
+                            </div>
+                        </div> -->
+                   <div *ngIf="!displayInstructionBlockSelection">
+                            <div class="radio-main">
+                            <div class="radio-div">
+                              <div class="radio-input-div" (click)="checkType('A')">
+                                <input id="walk" [(ngModel)]="optionRMS" value="A" checked="checked" type="radio" name="radio" />
+                                <div class="radio-input-style">
+                                <div class="icon walk-icon">
+                                  <img src="assets/images/academic.png">
+                          
+                                </div>
+                                <label for="walk" class="radio-tile-label">{{rmsType === 'OO' ? 'Administrative Issues' : 'Academic and Administrative Issues' }} </label>
+                              </div>
+                              </div>
+                          
+                          
+                              <div class="radio-input-div" (click)="checkType('M')">
+                                <input id="bike" [(ngModel)]="optionRMS" value="M" type="radio" name="radio" />
+                                <div class="radio-input-style">
+                                <div class="icon bike-icon">
+                                  <img src="assets/images/maintenance.png" style="    width: 55px;" />
+                          
+                                </div>
+                                <label for="bike" class="radio-tile-label">Maintenance / Electrical Complaints</label>
+                              </div>
+                              </div>
+                            </div>
+                              <div class="d-flex justify-content-center p-4">
+                                <button type="button" class="btn btn-primary" (click)="goToCaptureRms();" style="color: white;">Next</button>
+                              </div>
+                          
+                            </div>
+                          </div>
+                          
+
+                        <div class="rms-form" *ngIf="!displayInstructionBlock">
+                        
+                            <div class="heading">
+                                <a (click)="back();">
+                                <svg fill="#880001" style="    float: left;"  width="30px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                                viewBox="0 0 26.676 26.676" xml:space="preserve">
+                           <g>
+                               <path d="M26.105,21.891c-0.229,0-0.439-0.131-0.529-0.346l0,0c-0.066-0.156-1.716-3.857-7.885-4.59
+                                   c-1.285-0.156-2.824-0.236-4.693-0.25v4.613c0,0.213-0.115,0.406-0.304,0.508c-0.188,0.098-0.413,0.084-0.588-0.033L0.254,13.815
+                                   C0.094,13.708,0,13.528,0,13.339c0-0.191,0.094-0.365,0.254-0.477l11.857-7.979c0.175-0.121,0.398-0.129,0.588-0.029
+                                   c0.19,0.102,0.303,0.295,0.303,0.502v4.293c2.578,0.336,13.674,2.33,13.674,11.674c0,0.271-0.191,0.508-0.459,0.562
+                                   C26.18,21.891,26.141,21.891,26.105,21.891z"/>
+                               <g>
+                               </g>
+                               <g>
+                               </g>
+                               <g>
+                               </g>
+                               <g>
+                               </g>
+                               <g>
+                               </g>
+                               <g>
+                               </g>
+                               <g>
+                               </g>
+                               <g>
+                               </g>
+                               <g>
+                               </g>
+                               <g>
+                               </g>
+                               <g>
+                               </g>
+                               <g>
+                               </g>
+                               <g>
+                               </g>
+                               <g>
+                               </g>
+                               <g>
+                               </g>
+                           </g>
+                           </svg>
+                           </a>
+                                <h2>Log Request</h2>
+                                <p>Please fill the form below to submit request Please add all the details required.
+                                </p>
+                            </div>
+                            <h6>Message Type:*</h6>
+                            <div class="radio-wrapper grid gap-0" id="dvWrapper">
+                                <div class="radio g-col-xl-3 g-col-lg-3 g-col-6" *ngFor="let item of rmsMessageType;let index=index;">
+                                    <input id="radio-{{index}}" (change)="setMessageType($event)" value="{{item.value}}" name="radio" type="radio" >
+                                    <label for="radio-{{index}}" class="radio-label">{{item.type}}</label>
+                                </div>
+                               
+                                <!-- <div class="radio g-col-xl-3 g-col-lg-3 g-col-6">
+                                    <input id="radio-2" name="radio" type="radio">
+                                    <label for="radio-2" class="radio-label">Assistance</label>
+                                </div>
+                                <div class="radio g-col-xl-3 g-col-lg-3 g-col-6">
+                                    <input id="radio-3" name="radio" type="radio">
+                                    <label for="radio-3" class="radio-label">Enquiry</label>
+                                </div>
+                                <div class="radio g-col-xl-3 g-col-lg-3 g-col-6">
+                                    <input id="radio-4" name="radio" type="radio">
+                                    <label for="radio-4" class="radio-label">Feedback</label>
+                                </div>
+                                <div class="radio g-col-xl-12 g-col-lg-12 g-col-12">
+                                    <input id="radio-5" name="radio" type="radio">
+                                    <label for="radio-5" class="radio-label">HR Policy Related Feedback /
+                                        Suggestions</label>
+                                </div> -->
+                            </div>
+                            <div class="row">
+
+                                <div id="trcat" class="col-md-6 mb-4" *ngIf="optionRMS == 'A' && rmsType != 'OO'">
+                                    <h6 id="lblMCategory">Search Category:*</h6>
+                                <ng-select 
+                                [items]="searchCategories"  #ngSelectComponentStream
+                                [multiple]=false
+                                bindLabel="prefiixText"
+                                [clearable]="false"
+                                placeholder="Search Categories"
+                                (change)="onchangeSearchCategories($event)" 
+                                bindValue="catSubCatId"
+                                [hideSelected]="true"
+                                [virtualScroll]="true"
+                                
+                               
+                                >
+                                </ng-select>   
+                                <!-- [(ngModel)]="selectCollabType" -->
+                               
+                                </div>
+
+                                <div id="trcat" class="col-md-6 mb-4" *ngIf="optionRMS == 'A' && rmsType != 'OO'">
+                                    <h6 id="lblMCategory">Master Category:*</h6>
+                                    <select name="ddlMCategory"
+                                    [(ngModel)]="selectedMasterCategory"
+                                    (change)="onChangeMasterCategory()"
+                                        id="ddlCategory" class="form-select rounded-0">
+                                        <option selected="selected" value="0">Select</option>
+                                        <option  value="{{item}}" *ngFor="let item of masterCategories;">{{item}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 mb-4"  *ngIf="optionRMS != 'A'  && rmsType === 'OO' " >
+                                    <h6 id="lblSubBlock">Issue Concerned with:*</h6>
+                                    <div class="radio-wrapper grid gap-0" id="dvWrapper">
+                                        <div class="radio g-col-xl-3 g-col-lg-3 g-col-6">
+                                            <input id="radioType-11" value="SO" (change)="handleChangeConcerned($event)" name="radioTypeC" type="radio" >
+                                            <label for="radioType-11" class="radio-label">Staff</label>
+                                        </div>
+                                        <div class="radio g-col-xl-3 g-col-lg-3 g-col-6">
+                                            <input id="radioType-21" value="S" (change)="handleChangeConcerned($event)" name="radioTypeC" type="radio" >
+                                            <label for="radioType-21" class="radio-label">Student</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-4" *ngIf="optionRMS != 'A'  && rmsType === 'OO' " >
+                                    <h6 id="lblStaffEmployee">Prov. Regd. No/ Employee Id:*</h6>
+                                    <!-- <input name="txtStaffEmployee" type="text" id="txtStaffEmployee"  [(ngModel)]="concernedStaffRegId"
+                                        class="form-control rounded-0" data-twofas-input-listener="true"> -->
+
+                                        <ng-select 
+                                        [items]="allListData"  #ngSelectComponentStream
+                                        [multiple]=false
+                                        bindLabel="loginName"
+                                        [clearable]="false"
+                                        placeholder="Search "
+                                        (change)="onchangeSearchList($event)" 
+                                        bindValue="loginName"
+                                        [hideSelected]="true"
+                                        [virtualScroll]="true"
+                                        
+                                       
+                                        >
+                                        </ng-select>   
+
+                                </div>
+
+                                <div class="col-md-6 mb-4" *ngIf="optionRMS == 'A'">
+                                    <h6 id="lblCategory">Category:*</h6>
+
+                                    <ng-select 
+                                        [items]="categories"  #ngSelectComponentStreamC
+                                        [multiple]=false
+                                        bindLabel="category"
+                                        [clearable]="false"
+                                        placeholder="Select Category "
+                                        (change)="onChangeCategory($event)" 
+                                        bindValue="id"
+                                        [hideSelected]="true"
+                                        [virtualScroll]="true"
+                                       
+                                       
+                                        >
+                                        </ng-select>   
+                                    <!-- <select name="ddlCategory"
+                                    [(ngModel)]="selectedCategory"
+                                    (change)="onChangeCategory()"
+                                        id="ddlCategory" class="form-select rounded-0">
+                                        <option selected="selected" value="0">Select</option>
+                                        <option  value="{{item.id}}" *ngFor="let item of categories;">{{item.category}}</option>
+                                    </select> -->
+                                    <h6 id="lblCategory" style="margin-top: 10px;;" *ngIf="selectedDealingPerson != ''"><b style="color: #880001;">Dealing Person:</b> {{selectedDealingPerson}}</h6>
+                                </div>
+                                <div class="col-md-6 mb-4" >
+                                    <h6 id="lblCategory">{{textName}}:*</h6>
+
+                                    <ng-select 
+                                    [items]="subcategories"  #ngSelectComponentSubCategory
+                                    [multiple]=false
+                                    bindLabel="subCategory"
+                                    [clearable]="false"
+                                    placeholder="Select {{textName}}"
+                                    (change)="onChangeSubCategory($event)" 
+                                    bindValue="subCategoryID"
+                                    [hideSelected]="true"
+                                    [virtualScroll]="true"
+                                   
+                                   
+                                    >
+                                    </ng-select>   
+
+                                    <!-- <select name="ddlSubCategory"
+                                    [(ngModel)]="selectedSubCategory"
+                                    (change)="onChangeSubCategory()"
+                                        id="ddlSubCategory" class="form-select rounded-0">
+                                        <option selected="selected" value="0">Select</option>
+                                        <option  value="{{item.subCategoryID}}" *ngFor="let item of subcategories;">{{item.subCategory}}</option>
+                                    </select> -->
+                                </div>
+                                <div class="col-md-6 mb-4"  *ngIf="optionRMS != 'A' || optionRMS == 'A' && (selectedCategory == 133 || selectedCategory == 219 || selectedCategory == 220 || selectedCategory == 221 || selectedCategory == 222)" >
+                                    <h6 id="lblCategory">{{selectedCategory == 133 ? 'Specific Category': 'Sub Category'}}:*</h6>
+                                    <select name="ddlSpecificCategory"
+                                    [(ngModel)]="selectedSpecificCategory"
+                                    (change)="onChangeSpecificCategory()"
+                                        id="ddlSpecificCategory" class="form-select rounded-0">
+                                        <option selected="selected" value="0">Select</option>
+                                        <option  value="{{item.specificId}}" *ngFor="let item of specificCategories;">{{item.specificCategory}}</option>
+                                    </select>
+                                </div>
+
+                                   
+                                <!-- (change)="onchangeSearchCategories($event)" 1 -->
+
+                                <div class="col-md-6 mb-4"  *ngIf="optionRMS != 'A'" >
+                                    <h6 id="lblCategory">Specific Category:*</h6>
+                                    <ng-select 
+                                    [items]="subSpecificCategories"  #ngSelectComponentStream
+                                    [multiple]=true
+                                    bindLabel="subSpecificDescription"
+                                    [clearable]="true"
+                                    placeholder="Search Specific Categories"
+                                   
+                                    bindValue="subSpecificId"
+                                    [hideSelected]="true"
+                                    
+                                   
+                                    >
+                                    </ng-select>   
+                                </div>
+                                <div class="col-md-6 mb-4"  *ngIf="optionRMS != 'A' || showBlockSpecialCase"  >
+                                    <h6 id="lblBlock">Block:*</h6>
+                                    <select name="ddlBlock"
+                                    [(ngModel)]="selectedBlockNo"
+                                        id="ddlBlock" class="form-select rounded-0">
+                                        <option selected="selected" value="0">Select</option>
+                                        <option  value="{{item.blockNo}}" *ngFor="let item of rmsBlockData;">{{item.blockName}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 mb-4"  *ngIf="optionRMS != 'A' || showBlockSpecialCase" >
+                                    <h6 id="lblSubBlock">Sub Block:*</h6>
+                                    <select name="lblSubBlock"
+                                    [(ngModel)]="selectedSubBlock"
+                                        id="ddlBlock" class="form-select rounded-0">
+                                        <option selected="selected" value="0">Select</option>
+                                        <option  value="A" >A</option>
+                                        <option  value="B" >B</option>
+                                        <option  value="C" >C</option>
+                                        <option  value="D" >D</option>
+                                        <option  value="E" >E</option>
+                                        <option  value="F" >F</option>
+                                        <option  value="NA" >NA</option>
+                                    </select>
+                                   <span style="color:#880001;font-size: 13px;"><b> Note: Please mention the Sub Block in case of Hostel.</b></span>
+
+                                </div>
+
+                                <div class="col-md-6 mb-4"  *ngIf="optionRMS != 'A'   || showBlockSpecialCase" >
+                                    <h6 id="lblSubBlock">Room Type:*</h6>
+                                    <div class="radio-wrapper grid gap-0" id="dvWrapper">
+                                        <div class="radio g-col-xl-3 g-col-lg-3 g-col-6">
+                                            <input id="radioType-1" value="RN" (change)="handleChange($event)" name="radioType" type="radio" >
+                                            <label for="radioType-1" class="radio-label">Room Number</label>
+                                        </div>
+                                        <div class="radio g-col-xl-3 g-col-lg-3 g-col-6">
+                                            <input id="radioType-2" value="AO" (change)="handleChange($event)" name="radioType" type="radio" >
+                                            <label for="radioType-2" class="radio-label">Any Other</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-4" *ngIf="optionRMS != 'A' && !anyOtherRoomIsShowing || showBlockSpecialCase && !anyOtherRoomIsShowing">
+                                    <h6 id="lblContactNo">Room No:*</h6>
+                                    <input name="txtRoomNo" type="text" id="txtRoomNo"  [(ngModel)]="enteredRoomno"
+                                        class="form-control rounded-0" data-twofas-input-listener="true">
+                                </div>
+
+
+                                <div class="col-md-6 mb-4"  *ngIf="optionRMS != 'A' && anyOtherRoomIsShowing || showBlockSpecialCase && anyOtherRoomIsShowing" >
+                                    <h6 id="lblSubBlock">Select Other Rooms:*</h6>
+                                    <select name="lblOtherRooms"
+                                    [(ngModel)]="selectedOtherRooms"
+                                        id="ddlOtherRooms" class="form-select rounded-0">
+                                        <option selected="selected" value="0">Select</option>
+                                       <ng-container *ngFor="let item of rmsOtherRooms;let index=index;">
+                                        <option  value="item.description">{{item.descrption}}</option>
+                                       </ng-container>
+                                    </select>
+
+                                </div>
+
+
+                                <div class="col-md-6 mb-4">
+                                    <h6 id="lblContactNo">Contact No:*</h6>
+                                    <input name="txtContactNo" type="text" id="txtContactNo" autocomplete="off"  [(ngModel)]="contactNumber"
+                                        class="form-control rounded-0" data-twofas-input-listener="true">
+                                </div>
+                                <div class="col-md-6 mb-4"  *ngIf="optionRMS != 'A'" >
+                                    <h6 id="lblAvailabilityDate">Availability Date:*</h6>
+                                    <input class="form-control" style="    width: 90%;
+                                    float: left;"  placeholder="yyyy-mm-dd" [minDate]="minDate" name="dp" [(ngModel)]="selectAvailableDate"
+                                    ngbDatepicker #d="ngbDatepicker">
+                                  <button class="input-group-text" style="float: left;" type="button" (click)="d.toggle()">
+                                    <i class="feather icon-calendar icon-md"></i>
+                                  </button>
+                                </div>
+                                <div class="col-md-12 mb-4"  *ngIf="optionRMS != 'A'" >
+                                    <h6 id="lblAvailabilityDate">Time Slot:*</h6>
+                              
+                                    <div class="form-check mb-3" style="float: left;">
+                                        <input id="radio-1"  name="radio" class="form-check-input" type="checkbox" value="08:00-10:00" >
+                                        <label class="form-check-label" for="authCheck">08:00-10:00</label>
+                                    </div>
+                                    <div class="form-check mb-3" style="float: left;margin-left: 8px;">
+                                        <input id="radio-1"  name="radio" class="form-check-input" type="checkbox" value="10:00-12:00" >
+                                        <label class="form-check-label" for="authCheck">10:00-12:00</label>
+                                    </div>
+                                    <div class="form-check mb-3" style="float: left;margin-left: 8px;">
+                                        <input id="radio-1"  name="radio" class="form-check-input"  type="checkbox" value="12:00-14:00" >
+                                        <label class="form-check-label" for="authCheck">12:00-14:00</label>
+                                    </div>
+                                    <div class="form-check mb-3" style="float: left;margin-left: 8px;">
+                                        <input id="radio-1"  name="radio" class="form-check-input" type="checkbox" value="14:00-16:00" >
+                                        <label class="form-check-label" for="authCheck">14:00-16:00</label>
+                                    </div>
+                                    <div class="form-check mb-3" style="float: left;margin-left: 8px;">
+                                        <input id="radio-1"  name="radio" class="form-check-input" type="checkbox" value="16:00-18:00" >
+                                        <label class="form-check-label" for="authCheck">16:00-18:00</label>
+                                    </div>
+                                    <!-- <asp:ListItem Text="08:00-10:00" Value="08:00-10:00"></asp:ListItem>
+                                    <asp:ListItem Text="10:00-12:00" Value="10:00-12:00"></asp:ListItem>
+                                    <asp:ListItem Text="12:00-14:00" Value="12:00-14:00"></asp:ListItem>
+                                    <asp:ListItem Text="14:00-16:00" Value="14:00-16:00"></asp:ListItem>
+                                    <asp:ListItem Text="16:00-18:00" Value="16:00-18:00"></asp:ListItem> -->
+                                    <!-- <div class="radio g-col-xl-3 g-col-lg-3 g-col-6">
+                                        <input id="radio-2" name="radio" type="radio">
+                                        <label for="radio-2" class="radio-label">Assistance</label>
+                                    </div>
+                                    <div class="radio g-col-xl-3 g-col-lg-3 g-col-6">
+                                        <input id="radio-3" name="radio" type="radio">
+                                        <label for="radio-3" class="radio-label">Enquiry</label>
+                                    </div>
+                                    <div class="radio g-col-xl-3 g-col-lg-3 g-col-6">
+                                        <input id="radio-4" name="radio" type="radio">
+                                        <label for="radio-4" class="radio-label">Feedback</label>
+                                    </div>
+                                    <div class="radio g-col-xl-12 g-col-lg-12 g-col-12">
+                                        <input id="radio-5" name="radio" type="radio">
+                                        <label for="radio-5" class="radio-label">HR Policy Related Feedback /
+                                            Suggestions</label>
+                                    </div> -->
+                              
+                                </div>
+                                <div class="col-md-12 mb-4" *ngIf="optionRMS == 'A'" >
+                                    <h6 id="Label3">Subject:</h6>
+                                  
+                                    <input type="text" id="ddlSubject" [(ngModel)]="rmsSubject" class="form-control" />
+                                </div>
+                                <div class="col-md-12 mb-4">
+                                    <h6 id="Label3">Description:</h6>
+                                    <textarea name="txtRemarks" rows="6" cols="20" maxlength="500" id="txtRemarks" [(ngModel)]="rmsSdesc"
+                                        class="form-control rounded-0" 
+                                        data-twofas-input-listener="true"></textarea>
+                                    <span id="counter" style="font-weight: bold;">{{2000 - rmsSdesc.replace('\n', '--').length}} left</span> character(s) left
+                                </div>
+                                <div class="col-md-12 mb-4">
+                                    <h6>Supporting Document (If any):</h6>
+                                    <input class="form-control rounded-0" type="file" id="formFile">
+                                </div>
+                                <div class="col-md-12 mb-4">
+                                    For effective communication, a provision to submit the request along with
+                                    supporting documents has been laid down. *Not mandatory. (Max File size : 1 MB)
+                                    Upload only doc,zip,pdf or jpg file
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-center p-4">
+                                <a href="javascript:void(0);" class="btn-agree" (click)="capturedRMS()">Save</a>
+                                <a href="javascript:void(0);" class="btn-agree">Reset</a>
+                            </div>
+
+                            <div class="col-md-12 mb-4" *ngIf="optionRMS === 'A' && rmsType === 'OO' && selectedCategory == 133">
+                                You are requested to go through the policies related to Appraisals,Daily Progress Report,Staff Indiscipline before loging any request.
+                            </div>
+                            <div class="col-md-12 row justify-content-center" *ngIf="optionRMS === 'A' && rmsType === 'OO' && selectedCategory == 133">
+                                <div class="col-md-4">
+                                <ul class="rms-list">
+                                    <li>
+                                    <a target="_blank" href="https://ums.lpu.in/lpuUms/Static%20Information/Laptop%20Allowance%20Policy.pdf">Laptop Allowance Policy</a>
+                                    </li>
+                                    <li>
+                                        <a target="_blank" href="https://ums.lpu.in/lpuUms/Static%20Information/Policy%20of%20withdrawal%20of%20Resignation.pdf">Policy of withdrawal of Resignation</a>
+                                    </li>
+                                    <li>
+                                            <a target="_blank" href="https://ums.lpu.in/lpuUms/Static%20Information/Staff%20Accommodation%20Policy.pdf">Staff Accommodation Policy</a>
+                                    </li>
+                                    <li>
+                                                <a target="_blank" href="https://ums.lpu.in/lpuUms/Static%20Information/Uniform%20and%20Dress%20Code%20Policy.pdf">Uniform and Dress Code Policy</a>
+                                    </li>
+                                </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <ul class="rms-list">
+                                        <li>
+                                        <a target="_blank" href="https://ums.lpu.in/lpuUms/Static%20Information/Leave%20Policy.pdf">	Leave Policy</a>
+                                        </li>
+                                        <li>
+                                            <a target="_blank" href="https://ums.lpu.in/lpuUms/Static%20Information/Resignation%20Policy.pdf">Resignation Policy</a>
+                                        </li>
+                                        <li>
+                                                <a target="_blank" href="https://ums.lpu.in/lpuUms/Static%20Information/TA%20DA%20Policy.pdf">TA DA Policy</a>
+                                        </li>
+                                       
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <ul class="rms-list">
+                                        <li>
+                                        <a target="_blank" href="https://ums.lpu.in/lpuUms/Static%20Information/LPU%20Mediclaim%20Policy%202020-2021.pdf">	LPU Mediclaim Policy 2020-2021</a>
+                                        </li>
+                                        <li>
+                                            <a target="_blank" href="https://ums.lpu.in/lpuUms/Static%20Information/Retirement%20and%20Re-employment%20Policy.pdf">	Retirement and Re-employment Policy</a>
+                                        </li>
+                                        <li>
+                                                <a target="_blank" href="https://ums.lpu.in/lpuUms/Static%20Information/Teacher%20Evaluation%20Policy.pdf">	Teacher Evaluation Policy</a>
+                                        </li>
+                                       
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="rms-history" style="display: none;">
+                            <div class="heading">
+                                <h2>RMS History</h2>
+                                <p>Please fill the form below to submit request Please add all the details required.
+                                </p>
+                            </div>
+                            <div class="rms-history-tabs">
+                                <div class="nav" id="pills-tab" role="tablist">
+                                    <div role="presentation" class="total">
+                                        <a class="active" id="pills-home-tab" data-bs-toggle="pill"
+                                            data-bs-target="#pills-home" role="tab" aria-controls="pills-home"
+                                            aria-selected="true">
+                                            <span class="tab-head">Total</span>
+                                            <span class="tab-no">90</span>
+                                            <span class="tab-icon"><img src="images/up-arrow.svg" />
+                                                <span>9%</span></span>
+                                        </a>
+                                    </div>
+                                    <div class="nav-item open-tab" role="presentation">
+                                        <a id="pills-profile-tab" data-bs-toggle="pill"
+                                            data-bs-target="#pills-profile" role="tab" aria-controls="pills-profile"
+                                            aria-selected="false">
+                                            <span class="tab-head">Open</span>
+                                            <span class="tab-no">90</span>
+                                            <span class="tab-icon"><img src="images/up-arrow.svg" />
+                                                <span>9%</span></span>
+                                        </a>
+                                    </div>
+                                    <div class="nav-item close-tab" role="presentation">
+                                        <a id="pills-contact-tab" data-bs-toggle="pill"
+                                            data-bs-target="#pills-contact" role="tab" aria-controls="pills-contact"
+                                            aria-selected="false">
+                                            <span class="tab-head">Closed</span>
+                                            <span class="tab-no">90</span>
+                                            <span class="tab-icon"><img src="images/up-arrow.svg" />
+                                                <span>9%</span></span>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="tab-content" id="pills-tabContent">
+                                    <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
+                                        aria-labelledby="pills-home-tab">
+                                        <div class="accordion accordion-flush" id="accordionFlushExample">
+                                            <div class="open-log log-box">
+                                                <div class="accordion-header" id="flush-headingOne">
+                                                    <div class="accordion-top-header">
+                                                        <a class="collapsed" data-bs-toggle="collapse"
+                                                            data-bs-target="#flush-collapseOne"
+                                                            aria-expanded="false" aria-controls="flush-collapseOne">
+                                                            Staff Services<small
+                                                                style="font-size:14px;color:#6f6c90;margin-left:10px">(09,
+                                                                Jan, 2024) </small>
+                                                        </a>
+                                                        <div class="info-feed">
+                                                            <a class="info" data-bs-toggle="modal" data-bs-target="#InfoModal">
+                                                                <img src="images/info.svg" />
+                                                            </a>
+                                                            <a class="feedback"  data-bs-toggle="modal" data-bs-target="#FeedbackModal">
+                                                                <img src="images/feedback.svg" />
+                                                            </a>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div id="flush-collapseOne" class="accordion-collapse collapse"
+                                                    aria-labelledby="flush-headingOne"
+                                                    data-bs-parent="#accordionFlushExample">
+                                                    <div class="accordion-body p-0">
+                                                        <div class="accordion-bottom-header">
+                                                            <h2>Request:</h2>
+                                                            <p>Behaviour of Staff</p>
+                                                        </div>
+                                                        <div class="accordion-body-content">
+                                                            <div class="accordion-body-desc">
+                                                                <h2>Discription:</h2>
+                                                                <p>For effective communication, a provision to
+                                                                    submit the request along with supporting
+                                                                    documents has been laid down. “Not mandatory).
+                                                                </p>
+                                                                <p>(Max file size 1 MB) Upload only doc, zip, pdf or
+                                                                    jpg file.</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="accordion-body-footer">
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <p>Close : <span>12 Days</span></p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <p>Logged by : <span>Jatin Sarpal, 22309</span>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="close-log log-box">
+                                                <div class="accordion-header" id="flush-headingTwo">
+                                                    <div class="accordion-top-header">
+                                                        <a class="collapsed" type="button" data-bs-toggle="collapse"
+                                                            data-bs-target="#flush-collapseTwo"
+                                                            aria-expanded="false" aria-controls="flush-collapseTwo">
+                                                            Staff Services<small
+                                                                style="font-size:14px;color:#6f6c90;margin-left:10px">(09,
+                                                                Jan, 2024) </small>
+                                                        </a>
+                                                        <div class="info-feed">
+                                                            <a class="info">
+                                                                <img src="images/info.svg" />
+                                                            </a>
+                                                            <a class="feedback">
+                                                                <img src="images/feedback.svg" />
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="flush-collapseTwo" class="accordion-collapse collapse"
+                                                    aria-labelledby="flush-headingTwo"
+                                                    data-bs-parent="#accordionFlushExample">
+                                                    <div class="accordion-body p-0">
+                                                        <div class="accordion-bottom-header">
+                                                            <h2>Request:</h2>
+                                                            <p>Behaviour of Staff</p>
+                                                        </div>
+                                                        <div class="accordion-body-content">
+                                                            <div class="accordion-body-desc">
+                                                                <h2>Discription:</h2>
+                                                                <p>For effective communication, a provision to
+                                                                    submit
+                                                                    the request along with supporting documents has
+                                                                    been
+                                                                    laid down. “Not mandatory).</p>
+                                                                <p>(Max file size 1 MB) Upload only doc, zip, pdf or
+                                                                    jpg
+                                                                    file.</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="accordion-body-footer">
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <p>Close : <span>12 Days</span></p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <p>Logged by : <span>Jatin Sarpal, 22309</span>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="open-log log-box">
+                                                <div class="accordion-header" id="flush-headingThree">
+                                                    <div class="accordion-top-header">
+                                                        <a class="collapsed" data-bs-toggle="collapse"
+                                                            data-bs-target="#flush-collapseThree"
+                                                            aria-expanded="false" aria-controls="flush-collapseThree">
+                                                            Staff Services<small
+                                                                style="font-size:14px;color:#6f6c90;margin-left:10px">(09,
+                                                                Jan, 2024) </small>
+                                                        </a>
+                                                        <div class="info-feed">
+                                                            <a class="info">
+                                                                <img src="images/info.svg" />
+                                                            </a>
+                                                            <a class="feedback">
+                                                                <img src="images/feedback.svg" />
+                                                            </a>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div id="flush-collapseThree" class="accordion-collapse collapse"
+                                                    aria-labelledby="flush-headingThree"
+                                                    data-bs-parent="#accordionFlushExample">
+                                                    <div class="accordion-body p-0">
+                                                        <div class="accordion-bottom-header">
+                                                            <h2>Request:</h2>
+                                                            <p>Behaviour of Staff</p>
+                                                        </div>
+                                                        <div class="accordion-body-content">
+                                                            <div class="accordion-body-desc">
+                                                                <h2>Discription:</h2>
+                                                                <p>For effective communication, a provision to
+                                                                    submit the request along with supporting
+                                                                    documents has been laid down. “Not mandatory).
+                                                                </p>
+                                                                <p>(Max file size 1 MB) Upload only doc, zip, pdf or
+                                                                    jpg file.</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="accordion-body-footer">
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <p>Close : <span>12 Days</span></p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <p>Logged by : <span>Jatin Sarpal, 22309</span>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="pills-profile" role="tabpanel"
+                                        aria-labelledby="pills-profile-tab">...</div>
+                                    <div class="tab-pane fade" id="pills-contact" role="tabpanel"
+                                        aria-labelledby="pills-contact-tab">...</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Info Modal popup -->
+<div class="modal fade" id="InfoModal" tabindex="-1" aria-labelledby="InfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content" >
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="InfoModalLabel">RMS Details</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="alert alert-info">Today on 09 August 22, I got late due to traffic blockage on NH and reached University around 9.45 am, Due to which my one of attendance Exemption counter got used. Kindly give the relaxation for 60 min for today, to avoid usage of attendance Exemption counter.</div>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Remarks</th>
+                            <th scope="col">Updation Date</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Supporting Document if any</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tBodyData"><tr><td style="width: 50% !important;">Dear Sir/Madam, Your request has been considered.</td><td>8/16/2022 1:55:39 PM</td><td>12073-Rakesh Kumar</td><td></td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+<!-- Info Modal popup -->
+
+<!-- Feedback Modal popup -->
+<div class="modal fade" id="FeedbackModal" tabindex="-1" aria-labelledby="FeedbackModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content" style="width: 35% !important;">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="FeedbackModalLabel">Feedback</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+                <div class="mb-3">
+                  <label for="exampleInputEmail1" class="form-label">Email address</label>
+                  <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                  <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="exampleInputPassword1" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="exampleInputPassword1">
+                </div>
+                <div class="mb-3 form-check">
+                  <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                  <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+
+        </div>
+      </div>
+  </div>
+<!-- Feedback Modal popup -->
+
+<!-- Student Option Regarding Academic or Maintenance RMS -->
+<ng-template #rmsStudentOption let-modal >
+   
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Select Category Type</h5>
+        <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <div class="col-md-12 grid-margin stretch-card">
+          <div class="card">
+              
+              <div class="card-body" style="background: linear-gradient(to right, #880001, #f06f19);">
+                <div class="container">
+                    <div class="radio-tile-group">
+                      <div class="input-container">
+                        <input id="walk" class="radio-button" [(ngModel)]="optionRMS" value="A" checked="checked" type="radio" name="radio" />
+                        <div class="radio-tile">
+                          <div class="icon walk-icon">
+                            <img  src="assets/images/academic.png">
+                            <!-- <svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M0 0h24v24H0z" fill="none"/>
+                              <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/>
+                            </svg> -->
+                          </div>
+                          <label for="walk" class="radio-tile-label">Academic and Administrative Issues</label>
+                        </div>
+                      </div>
+                  
+                      <div class="input-container">
+                        <input id="bike" class="radio-button" [(ngModel)]="optionRMS" value="M"  type="radio" name="radio" />
+                        <div class="radio-tile">
+                          <div class="icon bike-icon">
+                            <img  src="assets/images/maintenance.png" style="    width: 55px;" />
+                            <!-- <svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M0 0h24v24H0z" fill="none"/>
+                              <path d="M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm5.8-10l2.4-2.4.8.8c1.3 1.3 3 2.1 5.1 2.1V9c-1.5 0-2.7-.6-3.6-1.5l-1.9-1.9c-.5-.4-1-.6-1.6-.6s-1.1.2-1.4.6L7.8 8.4c-.4.4-.6.9-.6 1.4 0 .6.2 1.1.6 1.4L11 14v5h2v-6.2l-2.2-2.3zM19 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z"/>
+                            </svg> -->
+                          </div>
+                          <label for="bike" class="radio-tile-label">Maintenance / Electrical Complaints</label>
+                        </div>
+                      </div>
+                  
+                    
+                    </div>
+                  
+                  </div>
+                  
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" (click)="goToCaptureRms();" style="color: white;" >Next</button>
+            </div>
+          
+              </div>
+              </div>
+              </div>
+             
+  </ng-template>
+  <!-- Feedback Modal popup -->

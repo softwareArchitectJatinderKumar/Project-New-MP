@@ -1,0 +1,707 @@
+
+
+<style>
+.obp-points {
+    
+    gap: 20px;
+    justify-content: center;
+}
+</style>
+
+  <script src="assets/planning_score/bootstrap/js/bootstrap.bundle.js"></script>
+
+  <!-- google fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&display=swap"
+      rel="stylesheet">
+
+
+  <script src="assets/planning_score/js/jquery.js"></script>
+  <script src="assets/planning_score/js/custom.js"></script>
+
+    <div class="wrapper login-page">
+        <header>
+            <div class="logo">
+                <img src="assets/planning_score/images/lpu-seal.svg" class="lpu-seal" />
+                <img src="assets/planning_score/images/ums-logo.svg" class="ums-logo" />
+                <img src="assets/planning_score/images/ums-logo-s.svg" class="ums-logo-s" />
+            </div>
+            <div class="name">
+                <h1><span class="obp-text">OUTCOME BASE PLANNER</span> <span class="dash">-</span> SCORE CALCULATIONS
+                </h1>
+            </div>
+            <div class="lpu-social">
+                <img src="assets/planning_score/images/lpu-social.svg" />
+            </div>
+
+        </header>
+
+
+        <section class="section">
+         
+            <div class="container-fluid">
+                <div class="main-content">
+                    <div class="text-end">  <img id="downimage" src="assets/planning_score/images/down.png" style="width: auto;" (click)="toggledivisions()">
+                        <img id="upimage" src="assets/planning_score/images/up.png"  style="display:none; width: auto;" (click)="toggledivisions()"></div>                  
+                     
+                 <div class="obp-points row" >
+                      
+                    <ng-container *ngFor="let row of wingListData;">
+                        <div class="cat col-md-2  list " [ngClass]="row.show == 1 ? 'permShow' : 'hideBlock'" >
+                            <div class="cat-bar color1 {{row.color}}"></div>
+                            <div class="cat-circle1">
+                                <div class="cat-circle2 ">
+                                    <div class="cat-circle3">
+                                        <a class="nav-link col-lg-2" style="cursor:pointer;" (click)="getPlanningScoreRanking('0',row.id,row.wingName);setwing(row);" >
+                                  
+                                        <img src="assets/planning_score/images/icons/{{ row.imageName }}" />
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="obp-text">
+                                <span>{{ row.wingName }}</span>
+                            </div>
+                        </div>
+                    </ng-container>
+                    </div>
+                      <!-- <div class="cat col-md-2">
+                            <div class="cat-bar color2"></div>
+                            <div class="cat-circle1">
+                                <div class="cat-circle2 color2">
+                                    <div class="cat-circle3">
+                                        <img src="assets/planning_score/images/icons/icon-research.svg" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="obp-text">
+                                research (wing)
+                            </div>
+                        </div>
+
+                        <div class="cat col-md-2">
+                            <div class="cat-bar color3"></div>
+                            <div class="cat-circle1">
+                                <div class="cat-circle2 color3">
+                                    <div class="cat-circle3">
+                                        <img src="assets/planning_score/images/icons/icon-career.svg" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="obp-text">
+                                career services & industry relations
+                            </div>
+                        </div>
+
+                        <div class="cat col-md-2">
+                            <div class="cat-bar color4"></div>
+                            <div class="cat-circle1">
+                                <div class="cat-circle2 color4">
+                                    <div class="cat-circle3">
+                                        <img src="assets/planning_score/images/icons/icon-acadmics.svg" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="obp-text">
+                                academic services
+                            </div>
+                        </div>
+
+                        <div class="cat col-md-2">
+                            <div class="cat-bar color5"></div>
+                            <div class="cat-circle1">
+                                <div class="cat-circle2 color5">
+                                    <div class="cat-circle3">
+                                        <img src="assets/planning_score/images/icons/icon-admission.svg" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="obp-text">
+                                admissions
+                            </div>
+                        </div> -->
+
+                    <!-- <div class="obp-points">
+                        <div class="cat">
+                            <div class="cat-bar color1"></div>
+                            <div class="cat-circle1">
+                                <div class="cat-circle2 color1">
+                                    <div class="cat-circle3">
+                                        <img src="assets/planning_score/images/icons/icon-overall.svg" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="obp-text">
+                                overall
+                            </div>
+                        </div>
+
+                        <div class="cat">
+                            <div class="cat-bar color2"></div>
+                            <div class="cat-circle1">
+                                <div class="cat-circle2 color2">
+                                    <div class="cat-circle3">
+                                        <img src="assets/planning_score/images/icons/icon-research.svg" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="obp-text">
+                                research (wing)
+                            </div>
+                        </div>
+
+                        <div class="cat">
+                            <div class="cat-bar color3"></div>
+                            <div class="cat-circle1">
+                                <div class="cat-circle2 color3">
+                                    <div class="cat-circle3">
+                                        <img src="assets/planning_score/images/icons/icon-career.svg" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="obp-text">
+                                career services & industry relations
+                            </div>
+                        </div>
+
+                        <div class="cat">
+                            <div class="cat-bar color4"></div>
+                            <div class="cat-circle1">
+                                <div class="cat-circle2 color4">
+                                    <div class="cat-circle3">
+                                        <img src="assets/planning_score/images/icons/icon-acadmics.svg" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="obp-text">
+                                academic services
+                            </div>
+                        </div>
+
+                        <div class="cat">
+                            <div class="cat-bar color5"></div>
+                            <div class="cat-circle1">
+                                <div class="cat-circle2 color5">
+                                    <div class="cat-circle3">
+                                        <img src="assets/planning_score/images/icons/icon-admission.svg" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="obp-text">
+                                admissions
+                            </div>
+                        </div>
+
+
+
+                    </div> -->
+                </div>
+
+            </div>
+        </section>
+
+
+        <section class="section">
+            <div style="     text-align: right;
+            float: right;
+            margin-top: -46px;
+            font-size: 12px !important;">
+                <span style="    font-size: 13px;
+                "><b>Note:-</b> The above score is calculated where all divisions carry equal weightage which is subject to change in future.</span>
+            </div>
+            <div class="container-fluid">
+                <div class="top-schools">
+                    <div class="schools box-div">
+                        <div class="heading-wrapper mb-4">
+                            <h2>Overall Universities Top<br> Three Schools</h2>
+                            <a href="#" class="text-link">{{selectedWingName}}</a>
+                        </div>
+                        <div class="person-wrapper">
+                            <div class="person-box-s color6">
+                                <div class="person-img">
+                                    <!-- <img src="assets/planning_score/images/user-pic.jpg" /> -->
+                                    <img style="height: 100%;" alt="No Image found" src="https://ums.lpu.in/LpuUms/GetImage.ashx?UserID={{second?.hosuid}}" />
+                                
+                                </div>
+                                <div class="number">2<span>nd</span></div>
+                                <div class="rank">
+                                    <div class="rank-box color10">
+                                        Rank<br>2
+                                    </div>
+                                    <div class="rank-box color11">
+                                        Score<br>{{second?.averageScore}}%
+                                    </div>
+                                </div>
+                                <div class="name">{{second?.name}}</div>
+                                <!-- <div class="school-name">{{second?.hosName}}</div> -->
+                            </div>
+                            <div class="person-box-b color7">
+                                <div class="person-img" >
+                                    <img style="height: 100%;"  alt="No Image found" src="https://ums.lpu.in/LpuUms/GetImage.ashx?UserID={{first?.hosuid}}" />
+                                </div>
+                                <div class="number">1<span>st</span></div>
+                                <div class="rank">
+                                    <div class="rank-box color10">
+                                        Rank<br>1
+                                    </div>
+                                    <div class="rank-box color11">
+                                        Score<br>{{first?.averageScore}}%
+                                    </div>
+                                </div>
+                                <div class="name">{{first?.name}}</div>
+                                <!-- <div class="school-name">{{first?..hosName}}</div> -->
+
+                            </div>
+                            <div class="person-box-s color6">
+                                <div class="person-img">
+                                    <!-- <img src="assets/planning_score/images/user-pic.jpg" /> -->
+                                    <img style="height: 100%;"  alt="No Image found" src="https://ums.lpu.in/LpuUms/GetImage.ashx?UserID={{third?.hosuid}}" />
+                                
+                                </div>
+                                <div class="number">3<span>rd</span></div>
+                                <div class="rank">
+                                    <div class="rank-box color10">
+                                        Rank<br>3
+                                    </div>
+                                    <div class="rank-box color11">
+                                        Score<br>{{third?.averageScore}}%
+                                    </div>
+                                </div>
+                                <div class="name">{{third?.name}}</div>
+                                <!-- <div class="school-name">{{third?.hosName}}</div> -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="faculty-ranking box-div">
+                        <div class="heading-wrapper mb-4">
+                            <h2>Overall Best<br> Faculty Ranking</h2>
+                            <div class="school-links">
+                                <!-- <a href="#" class="link-btn active" id="LFTS_1" (click)="getPlanningScoreRanking('1','','')" >LFTS</a>
+                                <a href="#" class="link-btn" id="LFBA_2"  (click)="getPlanningScoreRanking('2','','')">LFBA</a>
+                                <a href="#" class="link-btn" id="LFAMS_3"  (click)="getPlanningScoreRanking('3','','')">LFAMS</a> -->
+                                <a  class="link-btn" [ngClass]="{'active': activeLink === 'LFTS'}" id="LFTS_1" (click)="setActiveLink('LFTS');getPlanningScoreRanking('1','','');">LFTS</a>
+                                <a  class="link-btn" [ngClass]="{'active': activeLink === 'LFBA'}" id="LFBA_2" (click)="getPlanningScoreRanking('2','','');setActiveLink('LFBA');">LFBA</a>
+                                <a  class="link-btn" [ngClass]="{'active': activeLink === 'LFAMS'}" id="LFAMS_3" (click)="setActiveLink('LFAMS');getPlanningScoreRanking('3','','');">LFAMS</a>
+                              
+                            </div>
+                            <a href="#" class="text-link">{{selectedWingName}}</a>
+                        </div>
+                        <div class="person-wrapper">
+                            <div class="person-box-s color6">
+                                <div class="person-img">
+                                    <!-- <img src="assets/planning_score/images/user-pic.jpg" /> -->
+                                    <img style="height: 100%;"  alt="No Image found" src="https://ums.lpu.in/LpuUms/GetImage.ashx?UserID={{facultywiseData.length > 3 ? facultywiseData[1]?.hosuid: 'NA'}}" />
+                                
+                                </div>
+                                <div class="number">2<span>nd</span></div>
+                                <div class="rank">
+                                    <div class="rank-box color10">
+                                        Rank<br>2
+                                    </div>
+                                    <div class="rank-box color11">
+                                        Score<br>{{facultywiseData[1]?.averageScore}}%
+                                    </div>
+                                </div>
+                                <div class="name">{{facultywiseData[1]?.name}}</div>
+                                <!-- <div class="school-name">{{facultywiseData[1]?.hosName}}</div> -->
+                            </div>
+                            <div class="person-box-b color7">
+                                <div class="person-img">
+                                    <!-- <img src="assets/planning_score/images/user-pic.jpg" /> -->
+                                    <img style="height: 100%;"  alt="No Image found" src="https://ums.lpu.in/LpuUms/GetImage.ashx?UserID={{facultywiseData.length > 3 ? facultywiseData[0].hosuid : 'NA'}}" />
+                                
+                                </div>
+                                <div class="number">1<span>st</span></div>
+                                <div class="rank">
+                                    <div class="rank-box color10">
+                                        Rank<br>1
+                                    </div>
+                                    <div class="rank-box color11">
+                                        Score<br>{{facultywiseData.length > 3 ? facultywiseData[0].averageScore : 0}}%
+                                    </div>
+                                </div>
+                                <div class="name">{{facultywiseData.length > 3 ? facultywiseData[0].name : 'NA'}}</div>
+                                <!-- <div class="school-name">{{facultywiseData[0].hosName}}</div> -->
+
+                            </div>
+                            <div class="person-box-s color6">
+                                <div class="person-img">
+                                    <!-- <img src="assets/planning_score/images/user-pic.jpg" /> -->
+                                    <img style="height: 100%;"  alt="No Image found" src="https://ums.lpu.in/LpuUms/GetImage.ashx?UserID={{facultywiseData.length > 3 ?facultywiseData[2].hosuid : 'NA'}}" />
+                                
+                                </div>
+                                <div class="number">3<span>rd</span></div>
+                                <div class="rank">
+                                    <div class="rank-box color10">
+                                        Rank<br>3
+                                    </div>
+                                    <div class="rank-box color11">
+                                        Score<br>
+                               {{ facultywiseData.length > 3 ? facultywiseData[2].averageScore : 0 }}%
+                                    </div>
+                                </div>
+                                <div class="name">{{facultywiseData.length > 3 ?facultywiseData[2].name : 'NA'}}</div>
+                                <!-- <div class="school-name">{{facultywiseData[2].hosName}}</div> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row box-div m-0 mt-4" style="display: none;">
+                    <div class="col-12">
+                        <div class="heading-wrapper mb-4">
+                            <h2>Score Criteria Selection</h2>
+                        </div>
+                        <div class="criteria-selection">
+                            <div>
+                                <label>Planner Session *</label>
+                                <select class="form-select">
+                                    <option>Select option</option>
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Source Division *</label>
+                                <select class="form-select">
+                                    <option>Select option</option>
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Matric *</label>
+                                <select class="form-select">
+                                    <option>Select option</option>
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Type</label>
+                                <select class="form-select">
+                                    <option>Select option</option>
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Is verified :</label>
+                                <div class="radio-box">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                            id="flexRadioDefault1">
+                                        <label class="form-check-label" for="flexRadioDefault1">
+                                            Yes
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                            id="flexRadioDefault2" checked>
+                                        <label class="form-check-label" for="flexRadioDefault2">
+                                            No
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label>Metric Type:</label>
+                                <div class="radio-box">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault1"
+                                            id="flexRadioDefault3">
+                                        <label class="form-check-label" for="flexRadioDefault3">
+                                            Auto
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault1"
+                                            id="flexRadioDefault4" checked>
+                                        <label class="form-check-label" for="flexRadioDefault4">
+                                            Manual
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault1"
+                                            id="flexRadioDefault5" checked>
+                                        <label class="form-check-label" for="flexRadioDefault5">
+                                            Both
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a href="" class="link-btn">Submit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container-fluid">
+                <div class="box-div team-wrapper" *ngIf="overallData.length > 0">
+                    <ng-container *ngFor="let row of overallData.slice(3); index as i;">
+                    <div class="team-box">
+                        <div class="team-pic">
+                            <!-- <img src="assets/planning_score/images/user-pic.jpg" /> -->
+                            <img style="height: 100%;"  alt="No Image found" src="https://ums.lpu.in/LpuUms/GetImage.ashx?UserID={{row.hosuid}}" />
+                                
+                        </div>
+                        <!-- <div class="team-name">
+                            {{row.hosName}}
+                        </div> -->
+                        <div class="team-designation">
+                            HOS
+                        </div>
+                        <div class="team-department">
+                          {{row.name}}
+                        </div>
+                        <div class="team-score">
+                            <div>Score : <span>{{row.averageScore}}%</span></div>
+                            <!-- <div>Grade : <span>A++</span></div> -->
+                            <div>Rank : <span>{{i+4}}</span></div>
+                            <!-- <div><span>99.71</span></div> -->
+                        </div>
+                    </div>
+                    </ng-container>
+
+                    <!-- <div class="team-box">
+                        <div class="team-pic">
+                            <img src="assets/planning_score/images/user-pic.jpg" />
+                        </div>
+                        <div class="team-name">
+                            Bhupinder Singh
+                        </div>
+                        <div class="team-designation">
+                            HOD
+                        </div>
+                        <div class="team-department">
+                            Department of Software<br> Development - I
+                        </div>
+                        <div class="team-score">
+                            <div>Score : <span>3.99</span></div>
+                            <div>Grade : <span>A++</span></div>
+                            <div>Rank : <span>1</span></div>
+                            <div><span>99.71</span></div>
+                        </div>
+                    </div>
+                    <div class="team-box">
+                        <div class="team-pic">
+                            <img src="assets/planning_score/images/user-pic.jpg" />
+                        </div>
+                        <div class="team-name">
+                            Bhupinder Singh
+                        </div>
+                        <div class="team-designation">
+                            HOD
+                        </div>
+                        <div class="team-department">
+                            Department of Software<br> Development - I
+                        </div>
+                        <div class="team-score">
+                            <div>Score : <span>3.99</span></div>
+                            <div>Grade : <span>A++</span></div>
+                            <div>Rank : <span>1</span></div>
+                            <div><span>99.71</span></div>
+                        </div>
+                    </div>
+                    <div class="team-box">
+                        <div class="team-pic">
+                            <img src="assets/planning_score/images/user-pic.jpg" />
+                        </div>
+                        <div class="team-name">
+                            Bhupinder Singh
+                        </div>
+                        <div class="team-designation">
+                            HOD
+                        </div>
+                        <div class="team-department">
+                            Department of Software<br> Development - I
+                        </div>
+                        <div class="team-score">
+                            <div>Score : <span>3.99</span></div>
+                            <div>Grade : <span>A++</span></div>
+                            <div>Rank : <span>1</span></div>
+                            <div><span>99.71</span></div>
+                        </div>
+                    </div>
+                    <div class="team-box">
+                        <div class="team-pic">
+                            <img src="assets/planning_score/images/user-pic.jpg" />
+                        </div>
+                        <div class="team-name">
+                            Bhupinder Singh
+                        </div>
+                        <div class="team-designation">
+                            HOD
+                        </div>
+                        <div class="team-department">
+                            Department of Software<br> Development - I
+                        </div>
+                        <div class="team-score">
+                            <div>Score : <span>3.99</span></div>
+                            <div>Grade : <span>A++</span></div>
+                            <div>Rank : <span>1</span></div>
+                            <div><span>99.71</span></div>
+                        </div>
+                    </div>
+                    <div class="team-box">
+                        <div class="team-pic">
+                            <img src="assets/planning_score/images/user-pic.jpg" />
+                        </div>
+                        <div class="team-name">
+                            Bhupinder Singh
+                        </div>
+                        <div class="team-designation">
+                            HOD
+                        </div>
+                        <div class="team-department">
+                            Department of Software<br> Development - I
+                        </div>
+                        <div class="team-score">
+                            <div>Score : <span>3.99</span></div>
+                            <div>Grade : <span>A++</span></div>
+                            <div>Rank : <span>1</span></div>
+                            <div><span>99.71</span></div>
+                        </div>
+                    </div>
+                    <div class="team-box">
+                        <div class="team-pic">
+                            <img src="assets/planning_score/images/user-pic.jpg" />
+                        </div>
+                        <div class="team-name">
+                            Bhupinder Singh
+                        </div>
+                        <div class="team-designation">
+                            HOD
+                        </div>
+                        <div class="team-department">
+                            Department of Software<br> Development - I
+                        </div>
+                        <div class="team-score">
+                            <div>Score : <span>3.99</span></div>
+                            <div>Grade : <span>A++</span></div>
+                            <div>Rank : <span>1</span></div>
+                            <div><span>99.71</span></div>
+                        </div>
+                    </div>
+                    <div class="team-box">
+                        <div class="team-pic">
+                            <img src="assets/planning_score/images/user-pic.jpg" />
+                        </div>
+                        <div class="team-name">
+                            Bhupinder Singh
+                        </div>
+                        <div class="team-designation">
+                            HOD
+                        </div>
+                        <div class="team-department">
+                            Department of Software<br> Development - I
+                        </div>
+                        <div class="team-score">
+                            <div>Score : <span>3.99</span></div>
+                            <div>Grade : <span>A++</span></div>
+                            <div>Rank : <span>1</span></div>
+                            <div><span>99.71</span></div>
+                        </div>
+                    </div>
+                    <div class="team-box">
+                        <div class="team-pic">
+                            <img src="assets/planning_score/images/user-pic.jpg" />
+                        </div>
+                        <div class="team-name">
+                            Bhupinder Singh
+                        </div>
+                        <div class="team-designation">
+                            HOD
+                        </div>
+                        <div class="team-department">
+                            Department of Software<br> Development - I
+                        </div>
+                        <div class="team-score">
+                            <div>Score : <span>3.99</span></div>
+                            <div>Grade : <span>A++</span></div>
+                            <div>Rank : <span>1</span></div>
+                            <div><span>99.71</span></div>
+                        </div>
+                    </div>
+                    <div class="team-box">
+                        <div class="team-pic">
+                            <img src="assets/planning_score/images/user-pic.jpg" />
+                        </div>
+                        <div class="team-name">
+                            Bhupinder Singh
+                        </div>
+                        <div class="team-designation">
+                            HOD
+                        </div>
+                        <div class="team-department">
+                            Department of Software<br> Development - I
+                        </div>
+                        <div class="team-score">
+                            <div>Score : <span>3.99</span></div>
+                            <div>Grade : <span>A++</span></div>
+                            <div>Rank : <span>1</span></div>
+                            <div><span>99.71</span></div>
+                        </div>
+                    </div>
+                    <div class="team-box">
+                        <div class="team-pic">
+                            <img src="assets/planning_score/images/user-pic.jpg" />
+                        </div>
+                        <div class="team-name">
+                            Bhupinder Singh
+                        </div>
+                        <div class="team-designation">
+                            HOD
+                        </div>
+                        <div class="team-department">
+                            Department of Software<br> Development - I
+                        </div>
+                        <div class="team-score">
+                            <div>Score : <span>3.99</span></div>
+                            <div>Grade : <span>A++</span></div>
+                            <div>Rank : <span>1</span></div>
+                            <div><span>99.71</span></div>
+                        </div>
+                    </div>
+                    <div class="team-box">
+                        <div class="team-pic">
+                            <img src="assets/planning_score/images/user-pic.jpg" />
+                        </div>
+                        <div class="team-name">
+                            Bhupinder Singh
+                        </div>
+                        <div class="team-designation">
+                            HOD
+                        </div>
+                        <div class="team-department">
+                            Department of Software<br> Development - I
+                        </div>
+                        <div class="team-score">
+                            <div>Score : <span>3.99</span></div>
+                            <div>Grade : <span>A++</span></div>
+                            <div>Rank : <span>1</span></div>
+                            <div><span>99.71</span></div>
+                        </div>
+                    </div> -->
+
+                </div>
+            </div>
+        </section>
+
+
+
+    </div>
+   
+
+    <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)"  [fullScreen]="true" size="default" type="ball-spin-clockwise">
+        <p style="color: white">Please Wait... </p>
+    </ngx-spinner>

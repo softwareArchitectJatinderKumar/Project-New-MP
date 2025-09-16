@@ -1,0 +1,61 @@
+<div class="container-fluid">
+    <div class="heading-wraper mb-5">
+        <div class="main-head text-center">
+            <h1>Staff - Login </h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 d-none d-lg-block  ">
+            <img src="https://www.lpu.in/lpu-assets/images/cif/login-left.png" />
+        </div>
+        <div class="col-md-6 login-div">
+            <div class="cif-login">
+                <form class="forms-sample" [formGroup]="formdata" (ngSubmit)="OnSubmit()">
+                    <div class="mb-4 cif-input-group">
+                        <label class="form-label" for="loginid">Login ID</label>
+                        <input type="text" class="form-control" placeholder="Enter Login ID"
+                            formControlName="Email" id="exampleInputEmail1">
+                        <span class="text-danger"
+                            *ngIf="formdata.get('Email')?.invalid && formdata.get('Email')?.touched">
+                            Id is required
+                        </span>
+                    </div>
+                    <div class="mb-4 cif-input-group">
+                        <label class="form-label" for="password">Password</label>
+                        <input [type]="showPassword ? 'text' : 'password'" class="form-control"
+                            placeholder="Enter password" formControlName="password" id="password">
+                        <!-- <i toggle="#password" class="input-eye input-eye-slash toggle-password"></i> -->
+                        <i class="input-eye input-eye-slash" (click)="togglePasswordVisibility()"></i>
+                        <span class="text-danger"
+                            *ngIf="formdata.get('password')?.invalid && formdata.get('password')?.touched">
+                            Password is required
+                        </span>
+                    </div>
+                    <div class="mb-4 cif-input-group">
+                        <label class="form-check-label" for="authCheck">Choose Role</label>
+                        <select class="form-select" formControlName="UserRoleS" (change)="CheckUserType($event)">
+                            <option value="">Select Role</option>
+                            <option value="Authority">Dealing Authority</option>
+                            <option value="Faculty">Dealing Faculty</option>
+                            <option value="HOD">Head of Department</option>
+                            <option value="HOW">Head of Wing</option>
+                        </select>
+                        <span class="text-danger" *ngIf="userRole?.invalid && userRole?.touched">
+                            Role is required
+                        </span>
+                    </div>
+                    <!-- <div class="row mt-3 mb-2">
+                        <div class="col-sm-6">
+                            <h5> <span class="mt-4">* All Field Required</span> </h5>
+                        </div>
+                    </div> -->
+                    <div class="mb-3 mt-2">
+
+                        <button type="submit" class="btn btn-primary me-2 mb-2 mb-md-0" [disabled]=formdata.invalid>
+                            Login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

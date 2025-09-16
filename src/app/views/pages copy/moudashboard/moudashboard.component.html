@@ -1,0 +1,465 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light dashboard-nav">
+    <div class="container">
+      <a class="navbar-brand" href="#"
+        ><img
+          class="logoImg"
+          alt=""
+          src="https://ums.lpu.in/LpuUms/Forms/OutcomeDashboard/job-portal-imgs/logo.svg"
+      /></a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav m-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <h2 class="font-weight-bold">
+              <strong
+                >Placement <span class="themeClr">Dashboard</span></strong
+              >
+            </h2>
+            <!-- <a class="nav-link active" aria-current="page" href="#">Home</a> -->
+          </li>
+        </ul>
+        <ul class="navbar-nav mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="https://ums.lpu.in/lpuums/Default.aspx">Home</a>
+          </li>
+       
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                2022 Batch - Till 30-June-2022
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="#"  onclick="getdashboard(7,0,'')" >2022 Batch - Till 30-June-2022</a>
+                <a class="dropdown-item" href="#" onclick="getdashboard(7,1,'')">2022 Batch - Till Current Date</a>
+                <a class="dropdown-item" href="#" onclick="getdashboard(9,2,'')">2023 Batch - Till Current Date</a>
+                  
+              
+              </div>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+<div class="container mt-5">
+
+    <div class="row">
+
+<ng-container *ngFor="let rowAtt of moudata;let index=index;">
+    <div class="col-lg-3 col-md-4 mb-2 pe-1 ps-1">
+        <a href="" class="card {{rowAtt.img}} card-back">
+          <div class="card-body-hover card-body-color-1">
+            <span class="goal-number">{{index+1}}</span>
+            <h3 class="goal-title">{{rowAtt.areaDescription}}</h3>
+            <p class="goal-text"></p>
+            <div class="goal-info">
+              <div class="col-6">
+                <span class="number">{{rowAtt.target}}</span>
+                <p class="feature">Targets</p>
+              </div>
+              <div class="col-6">
+                <span class="number">{{rowAtt.mouAchieved}}</span>
+                <p class="feature">
+                  Mou Uploaded</p>
+              </div>
+              <div class="col-6">
+                <span class="number">{{rowAtt.totalPlannedActivity}}</span>
+                <p class="feature">Planned Activity</p>
+              </div>
+              <div class="col-6">
+                <span class="number">{{rowAtt.completedActivity}}</span>
+                <p class="feature">Activity Completed</p>
+              </div>
+            </div>
+            <button type="button" class="btn btn-goal">More info</button>
+          </div>
+
+
+          <div class="card-body {{rowAtt.color}}">
+            <div class="card-body-info">
+              <h3>{{index+1}}</h3>
+              <span>{{rowAtt.areaDescription}}</span>
+            </div>
+            <div class="card-body-icon text-center">
+              <img [src]="rowAtt.imgIcon" />
+            </div>
+          </div>
+        </a>
+      </div>
+
+</ng-container>
+
+
+      <!-- <div class="col-lg-3 col-md-4 mb-2 pe-1 ps-1">
+        <a href="" class="card card-back-1 card-back">
+          <div class="card-body-hover card-body-color-1">
+            <span class="goal-number">1</span>
+            <h3 class="goal-title">Goal 1</h3>
+            <p class="goal-text">End poverty in all its forms everywhere.</p>
+            <div class="goal-info">
+              <div class="col-6">
+                <span class="number">7</span>
+                <p class="feature">Targets</p>
+              </div>
+              <div class="col-6">
+                <span class="number">77</span>
+                <p class="feature">
+                  Events</p>
+              </div>
+              <div class="col-6">
+                <span class="number">48</span>
+                <p class="feature">Publications</p>
+              </div>
+              <div class="col-6">
+                <span class="number">1356</span>
+                <p class="feature">Actions</p>
+              </div>
+            </div>
+            <button type="button" class="btn btn-goal">More info</button>
+          </div>
+
+
+          <div class="card-body card-body-color-1">
+            <div class="card-body-info">
+              <h3>1</h3>
+              <span>Academics</span>
+            </div>
+            <div class="card-body-icon text-center">
+              <img src="assets/images/icon-1.png" />
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-lg-3 col-md-4 mb-2 pe-1 ps-1">
+        <a href="" class="card card-back-2 card-back">
+          <div class="card-body-hover card-body-color-2">
+            <span class="goal-number">2</span>
+            <h3 class="goal-title">Goal 2</h3>
+            <p class="goal-text">End poverty in all its forms everywhere.</p>
+            <div class="goal-info">
+              <div class="col-6">
+                <span class="number">7</span>
+                <p class="feature">Targets</p>
+              </div>
+              <div class="col-6">
+                <span class="number">77</span>
+                <p class="feature">
+                  Events</p>
+              </div>
+              <div class="col-6">
+                <span class="number">48</span>
+                <p class="feature">Publications</p>
+              </div>
+              <div class="col-6">
+                <span class="number">2356</span>
+                <p class="feature">Actions</p>
+              </div>
+            </div>
+            <button type="button" class="btn btn-goal">More info</button>
+          </div>
+
+
+          <div class="card-body card-body-color-2">
+            <div class="card-body-info">
+              <h3>2</h3>
+              <span>Placement</span>
+            </div>
+            <div class="card-body-icon text-center">
+              <img src="assets/images/icon-2.png" />
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-lg-3 col-md-4 mb-2 pe-1 ps-1">
+        <a href="" class="card card-back-3 card-back">
+          <div class="card-body-hover card-body-color-3">
+            <span class="goal-number">3</span>
+            <h3 class="goal-title">Goal 3</h3>
+            <p class="goal-text">End poverty in all its forms everywhere.</p>
+            <div class="goal-info">
+              <div class="col-6">
+                <span class="number">7</span>
+                <p class="feature">Targets</p>
+              </div>
+              <div class="col-6">
+                <span class="number">77</span>
+                <p class="feature">
+                  Events</p>
+              </div>
+              <div class="col-6">
+                <span class="number">48</span>
+                <p class="feature">Publications</p>
+              </div>
+              <div class="col-6">
+                <span class="number">3356</span>
+                <p class="feature">Actions</p>
+              </div>
+            </div>
+            <button type="button" class="btn btn-goal">More info</button>
+          </div>
+
+
+          <div class="card-body card-body-color-3">
+            <div class="card-body-info">
+              <h3>3</h3>
+              <span>Industry</span>
+            </div>
+            <div class="card-body-icon text-center">
+              <img src="assets/images/icon-3.png" />
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-lg-3 col-md-4 mb-2 pe-1 ps-1">
+        <a href="" class="card card-back-4 card-back">
+          <div class="card-body-hover card-body-color-4">
+            <span class="goal-number">4</span>
+            <h3 class="goal-title">Goal 4</h3>
+            <p class="goal-text">End poverty in all its forms everywhere.</p>
+            <div class="goal-info">
+              <div class="col-6">
+                <span class="number">7</span>
+                <p class="feature">Targets</p>
+              </div>
+              <div class="col-6">
+                <span class="number">77</span>
+                <p class="feature">
+                  Events</p>
+              </div>
+              <div class="col-6">
+                <span class="number">48</span>
+                <p class="feature">Publications</p>
+              </div>
+              <div class="col-6">
+                <span class="number">4356</span>
+                <p class="feature">Actions</p>
+              </div>
+            </div>
+            <button type="button" class="btn btn-goal">More info</button>
+          </div>
+
+
+          <div class="card-body card-body-color-4">
+            <div class="card-body-info">
+              <h3>4</h3>
+              <span>Research and <br>Development</span>
+            </div>
+            <div class="card-body-icon text-center">
+              <img src="assets/images/icon-4.png" />
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-lg-3 col-md-4 mb-2 pe-1 ps-1">
+        <a href="" class="card card-back-5 card-back">
+          <div class="card-body-hover card-body-color-5">
+            <span class="goal-number">5</span>
+            <h3 class="goal-title">Goal 5</h3>
+            <p class="goal-text">End poverty in all its forms everywhere.</p>
+            <div class="goal-info">
+              <div class="col-6">
+                <span class="number">7</span>
+                <p class="feature">Targets</p>
+              </div>
+              <div class="col-6">
+                <span class="number">77</span>
+                <p class="feature">
+                  Events</p>
+              </div>
+              <div class="col-6">
+                <span class="number">48</span>
+                <p class="feature">Publications</p>
+              </div>
+              <div class="col-6">
+                <span class="number">5356</span>
+                <p class="feature">Actions</p>
+              </div>
+            </div>
+            <button type="button" class="btn btn-goal">More info</button>
+          </div>
+
+
+          <div class="card-body card-body-color-5">
+            <div class="card-body-info">
+              <h3>5</h3>
+              <span>Admissions</span>
+            </div>
+            <div class="card-body-icon text-center">
+              <img src="assets/images/icon-5.png" />
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-lg-3 col-md-4 mb-2 pe-1 ps-1">
+        <a href="" class="card card-back-6 card-back">
+          <div class="card-body-hover card-body-color-6">
+            <span class="goal-number">6</span>
+            <h3 class="goal-title">Goal 6</h3>
+            <p class="goal-text">End poverty in all its forms everywhere.</p>
+            <div class="goal-info">
+              <div class="col-6">
+                <span class="number">7</span>
+                <p class="feature">Targets</p>
+              </div>
+              <div class="col-6">
+                <span class="number">77</span>
+                <p class="feature">
+                  Events</p>
+              </div>
+              <div class="col-6">
+                <span class="number">48</span>
+                <p class="feature">Publications</p>
+              </div>
+              <div class="col-6">
+                <span class="number">6356</span>
+                <p class="feature">Actions</p>
+              </div>
+            </div>
+            <button type="button" class="btn btn-goal">More info</button>
+          </div>
+
+
+          <div class="card-body card-body-color-6">
+            <div class="card-body-info">
+              <h3>6</h3>
+              <span>Infrastructure</span>
+            </div>
+            <div class="card-body-icon text-center">
+              <img src="assets/images/icon-6.png" />
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-lg-3 col-md-4 mb-2 pe-1 ps-1">
+        <a href="" class="card card-back-7 card-back">
+          <div class="card-body-hover card-body-color-7">
+            <span class="goal-number">7</span>
+            <h3 class="goal-title">Goal 7</h3>
+            <p class="goal-text">End poverty in all its forms everywhere.</p>
+            <div class="goal-info">
+              <div class="col-6">
+                <span class="number">7</span>
+                <p class="feature">Targets</p>
+              </div>
+              <div class="col-6">
+                <span class="number">77</span>
+                <p class="feature">
+                  Events</p>
+              </div>
+              <div class="col-6">
+                <span class="number">48</span>
+                <p class="feature">Publications</p>
+              </div>
+              <div class="col-6">
+                <span class="number">7357</span>
+                <p class="feature">Actions</p>
+              </div>
+            </div>
+            <button type="button" class="btn btn-goal">More info</button>
+          </div>
+
+
+          <div class="card-body card-body-color-7">
+            <div class="card-body-info">
+              <h3>7</h3>
+              <span>Events</span>
+            </div>
+            <div class="card-body-icon text-center">
+              <img src="assets/images/icon-7.png" />
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-lg-3 col-md-4 mb-2 pe-1 ps-1">
+        <a href="" class="card card-back-8 card-back">
+          <div class="card-body-hover card-body-color-8">
+            <span class="goal-number">8</span>
+            <h3 class="goal-title">Goal 8</h3>
+            <p class="goal-text">End poverty in all its forms everywhere.</p>
+            <div class="goal-info">
+              <div class="col-6">
+                <span class="number">7</span>
+                <p class="feature">Targets</p>
+              </div>
+              <div class="col-6">
+                <span class="number">77</span>
+                <p class="feature">
+                  Events</p>
+              </div>
+              <div class="col-6">
+                <span class="number">48</span>
+                <p class="feature">Publications</p>
+              </div>
+              <div class="col-6">
+                <span class="number">8358</span>
+                <p class="feature">Actions</p>
+              </div>
+            </div>
+            <button type="button" class="btn btn-goal">More info</button>
+          </div>
+
+
+          <div class="card-body card-body-color-8">
+            <div class="card-body-info">
+              <h3>8</h3>
+              <span>Vendor and <br>Contractor</span>
+            </div>
+            <div class="card-body-icon text-center">
+              <img src="assets/images/icon-8.png" />
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-lg-3 col-md-4 mb-2 pe-1 ps-1">
+        <a href="" class="card card-back-9 card-back">
+          <div class="card-body-hover card-body-color-9">
+            <span class="goal-number">9</span>
+            <h3 class="goal-title">Goal 9</h3>
+            <p class="goal-text">End poverty in all its forms everywhere.</p>
+            <div class="goal-info">
+              <div class="col-6">
+                <span class="number">7</span>
+                <p class="feature">Targets</p>
+              </div>
+              <div class="col-6">
+                <span class="number">77</span>
+                <p class="feature">
+                  Events</p>
+              </div>
+              <div class="col-6">
+                <span class="number">48</span>
+                <p class="feature">Publications</p>
+              </div>
+              <div class="col-6">
+                <span class="number">9359</span>
+                <p class="feature">Actions</p>
+              </div>
+            </div>
+            <button type="button" class="btn btn-goal">More info</button>
+          </div>
+
+
+          <div class="card-body card-body-color-9">
+            <div class="card-body-info">
+              <h3>9</h3>
+              <span>Health</span>
+            </div>
+            <div class="card-body-icon text-center">
+              <img src="assets/images/icon-9.png" />
+            </div>
+          </div>
+        </a>
+      </div> -->
+     
+    
+
+    </div>
+  </div>

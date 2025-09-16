@@ -1,0 +1,105 @@
+<div class="container-fluid mt-4" id="DealingUserDashboardId" *ngIf="IsLoginFailed==false; else ErrorApplication">
+  <ngx-datatable class="bootstrap table table-striped material" [rows]="AllApplications" style="height: 30rem;"
+    [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="15"
+    [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true">
+    <ngx-datatable-column name="Registration No" prop="RegistrationNo" [width]="30" [canAutoResize]="true"
+      [sortable]="false" [draggable]="false">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        {{row.registrationNo}}
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column name="Application Id" prop="applicationId" [width]="50" [canAutoResize]="true"
+      [sortable]="false" [draggable]="false">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        {{row.applicationId}}
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column name="Parent Phone" prop="ParentContact" [width]="30">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        {{row.phoneNumber}}
+      </ng-template>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column name="WhatsApp No" prop="WhatsAppNo" [width]="30">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        {{row.whatsAppNo}}
+      </ng-template>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column name="Faculty Remarks" prop="DealingUserInterviewRemarks" [width]="30">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        {{row.dealingUserInterviewRemarks?.length>0 ? row.dealingUserInterviewRemarks : 'No Faculty Remarks '}}
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column name="HOD Remarks" prop="DealingHODInterviewRemarks" [width]="30">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        {{row.dealingHODInterviewRemarks?.length>0 ? row.dealingHODInterviewRemarks : 'No HOD Remarks '}}
+      </ng-template>
+    </ngx-datatable-column>
+
+
+    <ngx-datatable-column name="Application" prop="WhatsAppNo" [width]="30">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        <button class="btn icon-btn me-2" (click)="GetStudentApplication(row)">
+          View Application
+        </button>
+      </ng-template>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column name="Counselling Status" prop="counsellingStatus" [width]="30">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+
+        <span class="badge" [ngClass]="{
+              'bg-success': row.counsellingStatus === '1',
+              'bg-danger': row.counsellingStatus === '0',
+              'bg-warning text-dark': !row.counsellingStatus || row.counsellingStatus === 'null'
+            }">
+          {{
+          row.counsellingStatus === '1' ? 'Verified' :
+          row.counsellingStatus === '0' ? 'Rejected' :
+          'Pending'
+          }}
+        </span>
+      </ng-template>
+    </ngx-datatable-column>
+    <!-- Actions -->
+
+    <ngx-datatable-column name="Actions" [sortable]="false" prop="Id">
+      <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+        <ng-container>
+          <button class="btn icon-btn me-2" (click)="approveApplication(row)">
+            <!-- <i class="mdi mdi-check"></i>  -->
+            Approve
+          </button>
+          <button class="btn icon-btn me-2" (click)="disapproveApplication(row)">
+            Reject
+          </button>
+        </ng-container>
+        <!-- <ng-template #Applied>
+          <span class="themeClr"> Current Dealing UID : {{row.dealingHODId?.length>0? row.dealingHODId: row.dealingUId }}</span>
+       </ng-template> -->
+      </ng-template>
+    </ngx-datatable-column>
+  </ngx-datatable>
+</div>
+
+<div class="full-page-loader" *ngIf="loadingIndicator" aria-label="Loading">
+  <div class="loader-spinner">
+    <span class="material-icons md-48 spin-icon">autorenew</span>
+  </div>
+</div>
+
+
+
+<ng-template #ErrorApplication>
+  <div class="text-center bg-info" *ngIf="IsLoginFailed">
+    <h3 class="text-center fs-2 m-5 text-danger pt-5 "> Error in User Login . </h3>
+    <div class="row mt-4 mb-4">
+      <div class="col-sm-12 text-center">
+        <div class="mb-3 p-4">
+          <Label class="form-label fs-4 text-danger ">Unauthorise Access.</Label>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

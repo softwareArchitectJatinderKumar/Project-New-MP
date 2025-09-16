@@ -1,0 +1,38 @@
+<app-menu-bar></app-menu-bar>
+
+<table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Drive ID</th>
+        <th>Drive Code</th>
+        <th>Drive Type</th>
+        <th>Drive Date</th>
+        <th>Company Name</th>
+        <th>Registered</th>
+        <th>Participated</th>
+        <th>Selected</th>
+        <th>Internship Status</th>
+        <th>Offer Accepted</th>
+        <th>Drive Status</th>   
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of driveDetails">
+        
+      
+        <td>{{ data.DriveID }}</td>
+        <td>{{data.DriveCode}}</td>
+        <td>{{data.DriveType}}</td>
+        <td>{{data.DriveDate}}</td>
+        <td>{{data.CompanyName}}</td>
+        <td>{{data.Registered}}</td>
+        <td>{{data.Participated}}</td>
+        <td>{{data.Selected}}</td>
+        <td>{{data.InternshipStatus}}</td>
+        <td>{{data.OfferAccepted}}</td>
+        <td>{{data.DriveStatus}}</td>
+        
+        
+      </tr>
+    </tbody>
+  </table>

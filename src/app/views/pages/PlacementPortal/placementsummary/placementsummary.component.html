@@ -1,0 +1,41 @@
+<app-menu-bar></app-menu-bar>
+<div class="container-fluid">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>{{ driveData[0].DriveType }}</th>
+        <th>Eligible</th>
+        <th>Registred</th>
+        <th>Participated</th>
+        <th>Not Participated</th>
+        <th>Attendance Not Uploaded</th>
+        <th>Selected</th>
+        <th>Offer Accepted</th>
+        <th>Offer Rejected</th>
+        <th>Upcoming Drives</th>
+        <th>Result Declared</th>
+        <th>Result Not Declared</th>
+        <th>Fine Imposed</th>
+
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of driveData.slice(1)">
+        <td [ngStyle]="{'color': 'brown','font-weight':'bold'}">{{ data.DriveType }}</td>
+        <td>{{ data.Eligible }}</td>
+        <td>{{ data.Registred }}</td>
+        <td>{{data.Participated}}</td>
+        <td>{{data.NotParticipated}}</td>
+        <td>{{data.AttendanceNotUploaded}}</td>
+        <td>{{data.Selected}}</td>
+        <td>{{data.OfferAccepted}}</td>
+        <td>{{data.OfferRejected}}</td>
+        <td>{{data.UpcomingDrives}}</td>
+        <td>{{data.ResultDeclared}}</td>
+        <td>{{data.ResultNotDeclared}}</td>
+        <td>{{data.FineImposed}}</td>
+
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,497 @@
+<div class="container-fluid" id="EventCalender" *ngIf="isLoginFailed==false; else loginFailed">
+<ng-container *ngIf="this.EventRegisterationData.length > 0 ; else noRecords">
+  <div class="container-fluid">
+    <div class="card">
+        <div class="card-body">
+            <h6 class="card-title text-center fs-4 text-success">Event Registration Data </h6>
+            <div class="row mb-3">
+                <div class="col-12 col-md-6 mb-3 mb-md-0">
+                    <button (click)="exportToExcel()" class="btn btn-success w-40">Export to Excel</button>
+                </div>
+                <div class="col-12 col-md-3">
+                    <input type="text" [(ngModel)]="filterText" (ngModelChange)="filterData()"
+                        placeholder="Search by any Field Text" class="form-control" />
+                </div>
+                <div class="col-12 col-md-3">
+                    <button (click)="toggleAdvancedSearch()" class="btn btn-primary w-100">
+                        {{ showAdvancedSearch ? 'Hide Advanced' : 'Advanced Search' }}
+                    </button>
+                </div>
+                <div *ngIf="showAdvancedSearch" class="row mb-3 p-3 bg-light rounded">
+                    
+                    <div class="col-12 col-md-3 mb-3 mb-md-0">
+                      <select class="form-select" [(ngModel)]="advancedSearch.sessionId" (ngModelChange)="checkSearchCriteria()">
+                        <option value="">Select Session</option>
+                        <option value="0">All Sessions</option>
+                        <option *ngFor="let session of allPlannerSessionDatas" [value]="session.id">
+                          {{ session.session }}
+                        </option>
+                      </select>
+                    </div>
+                  
+                    <div class="col-12 col-md-3 mb-3 mb-md-0">
+                      <input type="text" [(ngModel)]="advancedSearch.schoolName" placeholder="School Name" class="form-control" (ngModelChange)="checkSearchCriteria()" />
+                    </div>
+                  
+                    <div class="col-12 col-md-3 mb-3 mb-md-0">
+                      <select class="form-select" [(ngModel)]="advancedSearch.semester" (ngModelChange)="checkSearchCriteria()">
+                        <option value="">Select Semester</option>
+                        <option value="Semester-I">Semester-I</option>
+                        <option value="Semester-II">Semester-II</option>
+                      </select>
+                    </div>
+                  
+                    <div class="col-12 col-md-3 mb-3 mb-md-0">
+                      <input type="text" [(ngModel)]="advancedSearch.eventName" placeholder="Event Name" class="form-control" (ngModelChange)="checkSearchCriteria()"/>
+                    </div>
+                  
+                    <!-- Second Row -->
+                    <div class="col-12 col-md-3 mb-3 mb-md-0 mt-2">
+                      <input type="text" [(ngModel)]="advancedSearch.objective" placeholder="Objective" class="form-control" (ngModelChange)="checkSearchCriteria()" />
+                    </div>
+                  
+                    <div class="col-12 col-md-3 mb-3 mb-md-0 mt-2">
+                      <select class="form-select" [(ngModel)]="advancedSearch.eventCategory" (ngModelChange)="checkSearchCriteria()">
+                        <option value="">Event Category</option>
+                        <option value="Major">Major</option>
+                        <option value="Minor">Minor</option>
+                      </select>
+                    </div>
+                  
+                    <div class="col-12 col-md-3 mb-3 mb-md-0 mt-2">
+                      <select class="form-select" [(ngModel)]="advancedSearch.obpCriteria" (ngModelChange)="checkSearchCriteria()">
+                        <option value="">OBP Criteria</option>
+                        <option *ngFor="let criteria of properties" [value]="criteria">
+                          {{criteria}}
+                        </option>
+                      </select>
+                    </div>
+                  
+                  
+                    <div class="col-12 col-md-3 mb-3 mb-md-0 mt-2">
+                      <select class="form-select" [(ngModel)]="advancedSearch.internal" (ngModelChange)="checkSearchCriteria()">
+                         
+                    <option value="">Select Inetnal</option>
+                    <option value="Inter School">Inter School</option>
+                    <option value="Intra School">Intra School</option>
+                  </select>
+                    </div>
+                  
+                    <!-- Third Row -->
+                    <div class="col-12 col-md-3 mb-3 mb-md-0 mt-2">
+                      <input type="date" [(ngModel)]="advancedSearch.startDate" class="form-control" placeholder="Start Date" (ngModelChange)="checkSearchCriteria()">
+                    </div>
+                  
+                    <div class="col-12 col-md-3 mb-3 mb-md-0 mt-2">
+                      <input type="date" [(ngModel)]="advancedSearch.endDate" class="form-control" placeholder="End Date" (ngModelChange)="checkSearchCriteria()">
+                    </div>
+                  
+                    <!-- Action Buttons -->
+                    <div class="col-12 col-md-3 mt-2">
+                      <button (click)="applyAdvancedSearch()" class="btn btn-success w-100"
+                      [disabled]="!hasAnySearchCriteria" [class.btn-disabled]="!hasAnySearchCriteria"
+                      >
+                        Apply Filters
+                      </button>
+                    </div>
+                  
+                    <div class="col-12 col-md-3 mt-2">
+                      <button (click)="resetAdvancedSearch()" class="btn btn-secondary w-100">
+                        Reset Filters
+                      </button>
+                    </div>
+                  </div>
+                <span class="card-body">
+                  <label class="fs-3 text-danger m-4 ">Before porceeding, Please Ensure the Record which is to be deleted is the same one you are looking for. You can use Search box to filter.
+                    </label>
+                </span>
+            </div>
+            <div *ngIf="this.filteredEventRegisterationData.length > 0; else SeachNoRecords">
+                <div class="table-responsive">
+                    <table id="dataTableExample" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <!-- <th class="form-label fs-6 text-danger">Record Status </th> -->
+                                <th class="form-label fs-6 text-danger">School Name</th>
+                                <th class="form-label fs-6 text-danger">Event Name</th>
+                                <th class="form-label fs-6 text-danger">Objective</th>
+                                <th class="form-label fs-6 text-danger">Student Count</th>
+                                <th class="form-label fs-6 text-danger">Start Date</th>
+                                <th class="form-label fs-6 text-danger">End Date</th>
+                                <th class="form-label fs-6 text-danger">Semester</th>
+                                <th class="form-label fs-6 text-danger">ObpCategory</th>
+                                <th class="form-label fs-6 text-danger">Remarks</th>
+                                <th class="form-label fs-6 text-danger">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ng-container *ngFor="let DocumentRow of getRecordsForCurrentPage()">
+                                <tr>
+                                    <!-- <td class="fw-bold fs-6 text-success">
+                                        <label class="form-label text-danger fs-5">{{DocumentRow.isActive==true? 'Enabled' : 'Disabled' }}</label>
+                                    </td> -->
+                                    <td class="fw-bold fs-6 text-success">
+                                        <label class="form-label text-success">{{DocumentRow.schoolId + "::" + getDivisionNameById(DocumentRow.schoolId)}}</label>
+                                    </td>
+                                    <td class="fw-bold fs-6 text-success">
+                                        <label class="form-label text-success">{{DocumentRow.eventName}}</label>
+                                    </td>
+                                    <td class="fw-bold fs-6 text-success">{{DocumentRow.eventObjective}}</td>
+                                    <td class="fw-bold fs-6 text-success">{{DocumentRow.alternativelyStudentCounts}}</td>
+                                    <td class="fw-bold fs-6 text-success">{{formatDate(DocumentRow.startDate)}}</td>
+                                    <td class="fw-bold fs-6 text-success">{{formatDate(DocumentRow.endDate)}}</td>
+                                    <td class="fw-bold fs-6 text-success">{{DocumentRow.semester}}</td>
+                                    <td class="fw-bold fs-6 text-success">{{DocumentRow.categoryId}}</td>
+                                    <td class="fw-bold fs-6 text-success">{{DocumentRow.remarks}}</td>
+
+                                    <td>
+                                      <div class="d-flex justify-content-">
+                                          <button class="btn me-2 btn-info" (click)="EditEventDetails(DocumentRow)">
+                                              <i class="mdi mdi-window-open"></i>
+                                          </button>
+                                          <button class="btn btn-danger me-2" (click)="ChangeApproveStatus(DocumentRow.id)">
+                                              <i class="mdi mdi-window-close"></i>
+                                          </button>
+                                      </div>
+                                  </td>
+                                </tr>
+                            </ng-container>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row d-flex justify-content-between mt-5 mb-3 align-items-center">
+                    <div class="col-12 col-md-6 text-end">
+                        <mat-paginator [length]="filteredEventRegisterationData.length"
+                            [pageSize]="recordsPerPage" [pageSizeOptions]="[5, 10, 25, 50]"
+                            (page)="onPageChange($event)">
+                        </mat-paginator>
+                    </div>
+                    <div class="col-12 col-md-6 text-danger fs-5 text-end">
+                        Total Records: {{ filteredEventRegisterationData.length }}
+                    </div>
+                </div>
+            </div>
+            <ng-template #SeachNoRecords>
+                <div class="table-responsive">
+                    <table id="dataTableExample" class="table table-striped">
+                        <thead>
+                            <tr>
+                              <th class="form-label fs-6 text-danger">School Name</th>
+                              <th class="form-label fs-6 text-danger">Event Name</th>
+                              <th class="form-label fs-6 text-danger">Objective</th>
+                              <th class="form-label fs-6 text-danger">Student Count</th>
+                              <th class="form-label fs-6 text-danger">Start Date</th>
+                              <th class="form-label fs-6 text-danger">End Date</th>
+                              <th class="form-label fs-6 text-danger">Semester</th>
+                              <th class="form-label fs-6 text-danger">ObpCategory</th>
+                              <th class="form-label fs-6 text-danger">Remarks</th>
+                              <th class="form-label fs-6 text-danger">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" class="text-center">
+                                    <label class="fs-2 text-danger">No Record(s) found.</label>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</div>
+
+</ng-container>
+<ng-template #noRecords>
+  <div class="container-fluid">
+      <div class="card">
+          <div class="card-body">
+              <label class="text-center fs-2 text-danger d-flex justify-content-center"> No Record(s) are
+                  Available .</label>
+          </div>
+      </div>
+  </div>
+</ng-template>
+</div> 
+<ng-template #loginFailed>
+  <div class="text-center" *ngIf="isLoginFailed">
+      <h3 class="text-center fs-2 m-5 text-warn pt-5 "> Error in User Login . </h3>
+      <div class="row mt-4 mb-4">
+          <div class="col-sm-12 text-center">
+              <div class="mb-3 p-4">
+                  <Label class="form-label fs-4 text-warn ">Something Went Wrong. Please Try login again!.</Label>
+              </div>
+          </div>
+      </div>
+  </div>
+</ng-template>
+
+ 
+<ng-template #EditEventModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title" id="EventRegisterationEdit">Event Registeration Edit </h5>
+        <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+
+        <div class="card-body ">
+            <h2 class="modal-title text-center fs-2 " id="exampleModalLabel">Event Registeration Edit/ Update</h2>
+            <form [formGroup]="formdata" (ngSubmit)="Onsubmit()" class="forms-sample mt-4">
+
+
+                <div class="row mb-3 mt-4">
+                    <div class="col-md-4">
+                        <label class="form-label">School Name:</label>
+                        <select class="form-select" formControlName="schoolname">
+                            <option value="">Select School</option>
+                            <option *ngFor="let school of allSchoolDivisions" [value]="school.id">
+                              {{ school.schoolDivision }}
+                            </option>
+                          </select>
+                          <div class="invalid-feedback d-block" 
+                               *ngIf="formdata.get('schoolname')?.invalid && formdata.get('schoolname')?.touched">
+                            Please select a school
+                          </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Event Objective:</label>
+                        <input type="text" class="form-control" formControlName="EventObjectives"
+                            placeholder="Objective for Event" 
+                            [ngClass]="{'is-invalid': isTouchedInvalid('EventObjectives')}">
+                        <!-- <div class="text-danger" *ngIf="formdata.get('EventObjectives')">Event Objective is
+                            required.</div> -->
+                        <div class="invalid-feedback d-block"
+                            *ngIf="formdata.get('EventObjectives')?.invalid && formdata.get('EventObjectives')?.touched">
+                            Please select Event Objectives
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Event Name:</label>
+                        <input type="text" class="form-control" formControlName="eventName" [(ngModel)]="eventName"
+                            placeholder=" Event Name.." [ngClass]="{'is-invalid': isTouchedInvalid('eventName')}">
+                        <div class="text-danger" *ngIf="isTouchedInvalid('eventName')">Event Name is required.</div>
+                    </div>
+                </div>
+
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Event Category:</label>
+                        <select class="form-select" formControlName="eventCalender" [(ngModel)]="eventCalender"
+                            [ngClass]="{'is-invalid': isTouchedInvalid('eventCalender')}">
+                            <option value="">Select</option>
+                            <option value="Major">Major</option>
+                            <option value="Minor">Minor</option>
+                        </select>
+                        <!-- <div class="text-danger" *ngIf="isTouchedInvalid('eventCalender')">Event Category is required.
+                        </div> -->
+                        <div class="invalid-feedback d-block"
+                            *ngIf="formdata.get('eventCalender')?.invalid && formdata.get('eventCalender')?.touched">
+                            Event Category is required
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Total No of Students Impacted:</label>
+                        <input type="text" class="form-control" formControlName="totalStudent"
+                            placeholder="Expected Students Count"
+                            [ngClass]="{'is-invalid': isTouchedInvalid('totalStudent')}" [(ngModel)]="totalStudent">
+                        <!-- <div class="text-danger" *ngIf="isTouchedInvalid('totalStudent')">This field is required.</div> -->
+                        <div class="invalid-feedback d-block"
+                            *ngIf="formdata.get('totalStudent')?.invalid && formdata.get('totalStudent')?.touched">
+                            Field is required
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">OBP Criteria:</label>
+                        <select class="form-select" formControlName="obpCriteria" [(ngModel)]="obpCriteria"
+                            [ngClass]="{'is-invalid': isTouchedInvalid('obpCriteria')}">
+                            <option value="">Select</option>
+                            <option *ngFor="let option of properties" [value]="option">{{ option }}</option>
+                        </select>
+                        <!-- <div class="text-danger" *ngIf="isTouchedInvalid('obpCriteria')">OBP Criteria is required.</div> -->
+                        <div class="invalid-feedback d-block"
+                            *ngIf="formdata.get('obpCriteria')?.invalid && formdata.get('obpCriteria')?.touched">
+                            OBP Criteria is required.
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Mode Of Conduct:</label>
+                        <select class="form-select" formControlName="Mode" [(ngModel)]="Mode"
+                            [ngClass]="{'is-invalid': isTouchedInvalid('Mode')}">
+                            <option value="">Select</option>
+                            <option value="OFFCampus">OFF Campus</option>
+                            <option value="OnCampus">On Campus</option>
+                            <option value="Hybrid">Hybrid</option>
+                            <option value="Online">Online</option>
+                            <option value="Offline">Offline</option>
+                        </select>
+                        <!-- <div class="text-danger" *ngIf="isTouchedInvalid('Mode')">Mode is required.</div> -->
+                        <div class="invalid-feedback d-block"
+                        *ngIf="formdata.get('Mode')?.invalid && formdata.get('Mode')?.touched">
+                        Modeis required.
+                    </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">External:</label>
+                        <select class="form-select" formControlName="External" [(ngModel)]="ExternalLevels"
+                            [ngClass]="{'is-invalid': isTouchedInvalid('External')}">
+                            <option value="">Select</option>
+                            <option value="International">International</option>
+                            <option value="National">National</option>
+                            <option value="Regional">Regional</option>
+                            <option value="InterUniversity">InterUniversity</option>
+                        </select>
+                        <!-- <div class="text-danger" *ngIf="isTouchedInvalid('external')">External level is required.</div> -->
+                        <div class="invalid-feedback d-block"
+                        *ngIf="formdata.get('external')?.invalid && formdata.get('external')?.touched">
+                        External Field required.
+                    </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Internal:</label>
+                        <select class="form-select" formControlName="internal" [(ngModel)]="InternalLevel"
+                            [ngClass]="{'is-invalid': isTouchedInvalid('internal')}">
+                            <option value="">Select</option>
+                            <option value="Inter School">Inter School</option>
+                            <option value="Intra School">Intra School</option>
+                        </select>
+                        <!-- <div class="text-danger" *ngIf="isTouchedInvalid('internal')">Internal level is required.</div> -->
+                        <div class="invalid-feedback d-block" *ngIf="formdata.get('internal')?.invalid && formdata.get('internal')?.touched">
+                            Internal Field required.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Category:</label>
+                        <select class="form-select" formControlName="category" [(ngModel)]="categoryId"
+                            [ngClass]="{'is-invalid': isTouchedInvalid('category')}">
+                            <option value="">Select</option>
+                            <option value="Conference">Conference</option>
+                            <option value="Symposium">Symposium</option>
+                            <option value="Seminar">Seminar</option>
+                            <option value="Competition">Competition</option>
+                            <option value="Day Celebration">Day Celebration</option>
+                            <option value="Workshop">Workshop</option>
+                            <option value="Guest Lecture">Guest Lecture</option>
+                            <option value="Guest Lecture Other than DAA">Guest Lecture Other than DAA</option>
+                            <option value="Offcampus Participation">Offcampus Participation</option>
+                        </select>
+                        <!-- <div class="text-danger" *ngIf="isTouchedInvalid('category')">Category is required.</div> -->
+                        <div class="invalid-feedback d-block" *ngIf="formdata.get('category')?.invalid && formdata.get('category')?.touched">
+                            category Field required.
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Semester:</label>
+                        <select class="form-select" formControlName="semester" [(ngModel)]="Semester"
+                            [ngClass]="{'is-invalid': isTouchedInvalid('semester')}">
+                            <option value="">Select</option>
+                            <option value="Semester-I">Semester I</option>
+                            <option value="Semester-II">Semester II</option>
+                        </select>
+                        <!-- <div class="text-danger" *ngIf="isTouchedInvalid('semester')">Semester is required.</div> -->
+                        <div class="invalid-feedback d-block" *ngIf="formdata.get('semester')?.invalid && formdata.get('semester')?.touched">
+                            category Field required.
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Start Date:</label>
+                        <input type="date" class="form-control" formControlName="startDate" [(ngModel)]="startDate"
+                            [ngClass]="{'is-invalid': isTouchedInvalid('startDate')}">
+                        <!-- <div class="text-danger" *ngIf="isTouchedInvalid('startDate')">Start Date is required.</div> -->
+                        <div class="invalid-feedback d-block" *ngIf="formdata.get('startDate')?.invalid && formdata.get('startDate')?.touched">
+                            startDate Field required.
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">End Date:</label>
+                        <input type="date" class="form-control" formControlName="endDate" [(ngModel)]="endDate"
+                            [ngClass]="{'is-invalid': isTouchedInvalid('endDate')}">
+                        <!-- <div class="text-danger" *ngIf="isTouchedInvalid('endDate')">End Date is required.</div> -->
+                        <div class="invalid-feedback d-block" *ngIf="formdata.get('endDate')?.invalid && formdata.get('endDate')?.touched">
+                            endDate Field required.
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Budget Type:</label>
+                        <select class="form-select" formControlName="BudgetType" [(ngModel)]="BudgetType"
+                            [ngClass]="{'is-invalid': isTouchedInvalid('BudgetType')}">
+                            <option value="Select">Select</option>
+                            <option value="Flexes">Flexes</option>
+                            <option value="Certificates">Certificates</option>
+                            <option value="Gifts">Gifts</option>
+                        </select>
+                        <!-- <div class="text-danger" *ngIf="isTouchedInvalid('BudgetType')">Budget Type is required.</div> -->
+                        <div class="invalid-feedback d-block" *ngIf="formdata.get('BudgetType')?.invalid && formdata.get('BudgetType')?.touched">
+                            Budget Type Field required.
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Total Budget:</label>
+                        <input type="text" class="form-control" formControlName="Totalbudget" [(ngModel)]="budgetAmount"
+                            [attr.disabled]="formdata.get('BudgetType')?.value === 'Select' ? true : null"
+                            [ngClass]="{'is-invalid': isTouchedInvalid('Totalbudget')}">
+                        <!-- <div class="text-danger" *ngIf="isTouchedInvalid('budget')">Total budget amount is required.</div> -->
+                        <div class="invalid-feedback d-block" *ngIf="formdata.get('budget')?.invalid && formdata.get('budget')?.touched">
+                            Budget  required.
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Remarks:</label>
+                        <textarea class="form-control" formControlName="Remarks" placeholder="Enter Remarks"
+                            [(ngModel)]="Remarks" [ngClass]="{'is-invalid': isTouchedInvalid('Remarks')}"></textarea>
+                        <!-- <div class="text-danger" *ngIf="isTouchedInvalid('Remarks')">Remarks are required.</div> -->
+                        <div class="invalid-feedback d-block" *ngIf="formdata.get('Remarks')?.invalid && formdata.get('Remarks')?.touched">
+                            Remarks required.
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Session :</label>
+                        <input type="text" class="form-control" [value]="allPlannerSessions[0]?.session"
+                            [disabled]="allPlannerSessions[0]?.id > 0">
+
+
+                        <!-- <div class="text-danger" *ngIf="isTouchedInvalid('SessionId')">Session is required.</div> -->
+                        <div class="invalid-feedback d-block" *ngIf="formdata.get('SessionId')?.invalid && formdata.get('SessionId')?.touched">
+                            SessionId required.
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 text-center">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary mt-4 col-md-6"
+                            [disabled]="formdata.invalid">Submit</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+</ng-template>

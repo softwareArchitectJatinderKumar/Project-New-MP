@@ -1,0 +1,22 @@
+table.drive th,
+ table.drive td {
+  padding-left: 21px;
+  padding-right: 21px;
+}
+button{
+    width:140px;
+    height:30px;
+    color:white;
+    padding:5px;
+    background-color: #fd6c04!important;
+    
+}
+button:hover
+{
+  background-color: sienna;
+  color:white;
+}
+table.drive th
+{
+  color:brown;    
+}

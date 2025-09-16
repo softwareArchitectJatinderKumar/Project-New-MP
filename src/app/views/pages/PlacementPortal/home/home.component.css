@@ -1,0 +1,244 @@
+.home
+{
+    height:100rem;
+    width:87.5rem;
+}
+.dp
+{
+    margin-left:3.125rem;
+    margin-top:1.875rem;
+    height:8.75rem;
+    width:8.125rem;
+    border-style: outset;
+    color:black;
+    font-weight: bold;
+    box-shadow: 0px 0px 4px 3px rgba(112, 18, 18);
+}
+h3{
+    margin-left:1.25rem;
+    color:brown;
+    font-weight: bold;
+    text-shadow: 2px 2px 8px rgb(112, 18, 18);
+}
+img{
+    margin-left:0.625rem;
+    margin-top:0.625rem;
+}
+.info
+{
+    display: inline-flex;
+    
+}
+.tab
+{
+    width:65.625rem;
+    margin-left:3.125rem;
+    margin-top:1.875rem;
+    border-style: outset;
+}
+
+
+ table.data tr, th ,td  {
+    padding-top:  0.01rem; /*2px;*/
+    padding-bottom: 0.01rem; /*2px;*/
+    padding-left:0.315rem; /*5px;*/
+    padding-right: 0.315rem; /*5px;*/
+    color:sienna;
+    text-shadow: 2px 2px 8px rgba(153, 51, 51, 0.76);
+  }
+
+.labela
+{
+    height:3.125rem;
+    width:76.875rem;
+    background-color: brown;
+    color:white;
+    margin-left:3.125rem;
+    margin-top:0rem;
+}
+h4{
+    margin-left:28.125rem;
+    padding:0.625rem;
+}
+.det
+{
+    height:3.125rem;
+    width:76.875rem;
+    margin-left:3.125rem;
+    margin-top:0rem;
+   
+}
+.labelb
+{
+    height:3.125rem;
+    width:76.875rem;
+    background-color: brown;
+    color:white;
+    margin-left:3.125rem;
+    margin-top:1.25rem;
+}
+.box
+{
+    height:12.5rem;
+    width:76.875rem;
+    margin-left:3.125rem;
+    border-style: outset;
+    display: inline-flex;
+}
+.boxa
+{
+    height:12.5rem;
+    width:37.5rem;
+    border-style: outset;  
+}
+.boxb
+{
+    height:12.5rem;
+    width:38.75rem;
+    border-style: outset;
+    margin-left:0.625rem;  
+    overflow-y: scroll;
+    overflow-x: scroll;
+}
+.policy
+{
+    text-align: center;
+}
+a{
+    text-decoration: none;
+    color:brown;
+}
+.labelc
+{
+    height:3.125rem;
+    width:76.875rem;
+    background-color: brown;
+    color:white;
+    margin-left:3.125rem;
+    margin-top:0rem;
+}
+.boxc
+{
+    height:12.5rem;
+    width:76.875rem;
+    margin-left:3.125rem;
+    border-style: outset;
+    margin-top:0rem;
+    overflow-y: scroll;
+}
+.labeld
+{
+    height:3.125rem;
+    width:76.875rem;
+    background-color: brown;
+    color:white;
+    margin-left:3.125rem;
+    margin-top:0rem;
+}
+.boxd
+{
+    height:18.75rem;
+    width:76.875rem;
+    margin-left:3.125rem;
+    border-style: outset;
+    margin-top:0rem;
+    overflow-y: scroll;
+}
+#announ
+{
+        text-decoration: none;
+        color:white;
+}
+.labele
+{
+    height:3.125rem;
+    width:76.875rem;
+    background-color: brown;
+    color:white;
+    margin-left:3.125rem;
+    margin-top:0rem;
+}
+.boxe
+{
+    height:15.625rem;
+    width:76.875rem;
+    margin-left:3.125rem;
+    border-style: outset;
+    margin-top:0rem;
+    overflow-y: scroll;
+}
+
+
+ table.drive th,
+ table.drive td {
+  padding-left:1.31rem ;/* 21px; */
+  padding-right: 1.31rem; /* 21px; */
+}
+button{
+    width:8.75rem;
+    height:1.875rem;
+    color:white;
+    padding:0.3125rem;
+    background-color: #fd6c04!important;
+    
+}
+.labelf
+{
+    height:3.125rem;
+    width:76.875rem;
+    background-color: brown;
+    color:white;
+    margin-left:3.125rem;
+    margin-top:0rem;
+}
+.boxf
+{
+    height:8.125rem;
+    width:76.875rem;
+    margin-left:50px;
+    border-style: outset;
+    margin-top:0rem;
+  
+}
+.labelg
+{
+    height:3.125rem;
+    width:76.875rem;
+    background-color: brown;
+    color:white;
+    margin-left:3.125rem;
+    margin-top:0rem;
+}
+.boxg
+{
+    height:15.625rem;
+    width:76.875rem;
+    margin-left:3.125rem;
+    border-style: outset;
+    margin-top:0rem;
+}
+#rm
+{
+    padding-left: 0rem;
+    color:blue;
+}
+.labelh
+{
+    height:3.125rem;
+    width:76.875rem;
+    background-color: brown;
+    color:white;
+    margin-left:3.125rem;
+    margin-top:0rem;
+} 
+.boxh
+{
+    height:auto;
+    width:76.875rem;
+    margin-left:3.125rem;
+    border-style: outset;
+    margin-top:0rem;
+}
+
+
+

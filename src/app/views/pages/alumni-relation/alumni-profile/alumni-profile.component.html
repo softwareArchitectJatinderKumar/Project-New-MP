@@ -1,0 +1,131 @@
+
+<div  style="overflow: hidden; " >
+  <div   class="heading" *ngFor="let item of studentDetails  | keyvalue" >
+        <h2  *ngFor="let data of item.value">{{data.studentName}}
+        </h2>
+        <span *ngFor="let data of item.value">Program:- {{ data.programName}}<br> Batch Year:-  {{ data.batchYear }} </span>
+    </div> 
+    <!--  -->
+ 
+    <div  *ngFor = "let url of getAlumni " > 
+    <div  id =addDialog-module   *ngIf ="(url.isEligible === '1' && url.sLink === null) || (showForm === true )">  
+      <h4  style="margin :10px">Let’s foster lifelong connect with university by registering on LPU Alumni website
+       <br/> Process to create alumni profile –</h4>
+       <!-- contant -->
+       <div class="instructions">
+        <ol>
+          <li>
+            Open the <a href="https://alumni.lpu.in/" target="_blank">LPU Alumni website</a>.
+          </li>
+          <li>
+            Click "Login" and continue with Google using your personal email ID.
+          </li>
+          <li>
+            Fill in your basic information.
+          </li>
+          <li>
+            Go to your profile and copy the profile link.
+          </li>
+        
+      <li>
+          For step-by-step guidelines on creating an alumni profile, please refer to the official 
+          <a href="https://drive.google.com/file/d/1RjkkXdK9LGUcRbptmefuQYmld2CBXGlG/view" target="_blank">Click Here </a>.
+     </li>
+        </ol>
+      </div>
+      
+       <!-- end -->
+       <!-- stary benifit -->
+
+       <div class="benefits-box">
+        <h4>Benefits of Registering on Alumni Website</h4>
+        <ul>
+          <li>
+            <strong>Networking:</strong> Expand your professional network by engaging with accomplished alumni from diverse fields and industries using the alumni directory.
+          </li>
+          <li>
+            <strong>Mentorship:</strong> Engage with seniors to navigate your academic and professional paths by selecting alumni mentor of your choice.
+          </li>
+          <li>
+            <strong>Hiring Opportunities:</strong> Access various jobs and lateral hiring opportunities provided by the alumni.
+          </li>
+          <li>
+            <strong>Stay Informed:</strong> Access the latest news about your alma mater, upcoming events, reunions, and awards.
+          </li>
+          <li>
+            <strong>Showcase Achievements:</strong> Share your accomplishments and milestones with fellow alumni, inspiring others with your journey, and check out stories of others.
+          </li>
+          <li>
+            <strong>Alumni Chapter Leaders:</strong> Avail a chance to become a local chapter core committee member and lead alumni chapters in your respective location.
+          </li>
+          <li>
+            <strong>Request Service:</strong> Apply for certificates, transcripts, letters of recommendation, document verification, gate pass, and more easily in one click.
+          </li>
+        </ul>
+      </div>
+      
+       <!-- end -->
+    <form   fxLayout="column"  name="alumniForm"  [formGroup] ="alumniForm" novalidate>
+        <div  class="form-container flex-column "  style="font-size: 14px"> 
+          <div *ngIf = "url.isEditable === '1'">
+        <mat-form-field appearance="outline" fxFlex="100"  >
+          <mat-label>Your Alumni profile link</mat-label>
+          <input matInput formControlName="url" placeholder="Paste URL">
+          <mat-error *ngIf ="alumniForm.get('url')?.hasError('pattern')">
+            Please enter a valid URL.
+          </mat-error>
+        </mat-form-field>
+        </div>
+        <mat-form-field appearance="outline" fxFlex="100">
+          <mat-label>Your Facebook profile link</mat-label>
+          <input matInput formControlName="fbLink" placeholder="Paste URL">
+          <mat-error *ngIf ="alumniForm.get('fbLink')?.hasError('pattern')">
+            Please enter a valid URL.
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxFlex="100">
+          <mat-label>Your Linkedin profile link</mat-label>
+          <input matInput formControlName="linkedin" placeholder="Paste URL">
+          <mat-error *ngIf ="alumniForm.get('linkedin')?.hasError('pattern')">
+            Please enter a valid URL.
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" fxFlex="100">
+          <mat-label>Your  Instagram profile link</mat-label>
+          <input matInput formControlName="instagram" placeholder="Paste URL">
+          <mat-error *ngIf ="alumniForm.get('instagram')?.hasError('pattern')">
+            Please enter a valid URL.
+          </mat-error>
+        </mat-form-field>
+        </div>
+        <div class="mt-12 div-buttons" fxLayoutAlign="center center">
+            <button mat-raised-button  type="button" [disabled]= "  (alumniForm.invalid &&  url.isEditable === '1') || (alumniForm.invalid &&  url.isEditable === '0')"
+            class="btn1" aria-label="SUBMIT" (click)="submitForm()"> 
+                Submit
+            </button>
+          
+        </div>
+      </form>
+    </div>
+  </div>
+      <div class="submitted-url"  *ngFor = "let url of getAlumni "> 
+        <div class="url-content" *ngIf ="url.isEligible === '1' &&  url.sLink !== null " >
+        <p > Your Alumni profile link : - <a   href="{{url.sLink }}" target="_blank" > {{ url.sLink }}</a>
+        </p>
+        <p > Your Facebook profile link : - <a   href="{{url.fbLink }}" target="_blank" > {{ url.fbLink }}</a>
+        </p>
+        <p > Your Linkedin profile link : - <a   href="{{url.linkedinLink }}" target="_blank" > {{ url.linkedinLink }}</a>
+        </p>
+        <p > Your Instagram profile link : - <a   href="{{url.instaLink }}" target="_blank" > {{ url.instaLink }}</a>
+        </p>
+      </div> 
+      <div class="mt-12 div-butn" fxLayoutAlign="center center"  *ngIf ="url.isEligible === '1' && url.sLink != null ">
+        <button mat-raised-button  type="button"
+        class="edit-btn" aria-label="SUBMIT" (click)="editUrl()">   Edit </button>
+    </div>
+    </div>
+    <div  *ngFor = "let url of getAlumni ">   
+      <p  *ngIf= "url.isEligible === '0'"> This Interface is not Aplicable for You</p>
+    </div>
+    
+</div>  

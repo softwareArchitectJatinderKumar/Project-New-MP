@@ -1,0 +1,193 @@
+<div class="row">
+    <div *ngIf="bookData?.journalTitle?.length > 0; else noRecords">
+      <section>
+        <div class="container about-journal">
+          <div class="row">
+            <!-- Journal Image -->
+            <div class="col-lg-4 col-md-6">
+              <img
+                *ngIf="!imageLoadError; else errorMessage"
+                [src]="bookData?.imageUrl"
+                [alt]="bookData?.journalTitle"
+                [title]="bookData?.journalTitle"
+                width="110rem"
+                height="110rem"
+                (error)="imageLoadError = true"
+              />
+              <ng-template #errorMessage>
+                <div class="fs-3 text-danger mt-5">Error in Loading Image</div>
+              </ng-template>
+
+              <div *ngIf="isEditMode">
+                <input type="file" (change)="onFileSelected($event)" accept="image/*" />
+              </div>
+            </div>
+  
+            <!-- Journal Information and Editable Fields -->
+            <div class="col-lg-4 col-md-6">
+              <h2 *ngIf="!isEditMode; else editTitle">{{ bookData?.journalTitle }}</h2>
+              <ng-template #editTitle>
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="editableData.journalTitle"
+                />
+              </ng-template>
+  
+              <ul>
+                <li>
+                  Volume:
+                  <span *ngIf="!isEditMode">{{ bookData?.volume || 'NA' }}</span>
+                  <input
+                    *ngIf="isEditMode"
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="editableData.volume"
+                  />
+                </li>
+                <li>
+                  Year:
+                  <span *ngIf="!isEditMode">{{ bookData?.publishDate || 'NA' }}</span>
+                  <input
+                    *ngIf="isEditMode"
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="editableData.publishDate"
+                  />
+                </li>
+                <li>
+                  Editor in chief:
+                  <span *ngIf="!isEditMode">{{ bookData?.editorName }}</span>
+                  <input
+                    *ngIf="isEditMode"
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="editableData.editorName"
+                  />
+                </li>
+              </ul>
+  
+              <p *ngIf="!isEditMode">{{ bookData?.subTitle }}</p>
+              <textarea
+                *ngIf="isEditMode"
+                class="form-control"
+                [(ngModel)]="editableData.subTitle"
+              ></textarea>
+            </div>
+  
+            <!-- Journal Details -->
+            <div class="col-lg-4">
+              <div class="journal-details">
+                <ul>
+                  <li *ngFor="let detail of detailsArray">
+                    <strong>{{ detail.key }}:</strong>
+                    <span *ngIf="!isEditMode">{{ detail.value }}</span>
+                    <textarea
+                      *ngIf="isEditMode"
+                      class="form-control"
+                      [(ngModel)]="editableData.details[detail.key]"
+                    ></textarea>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Edit and Save/Update Buttons -->
+          <div class="mt-3">
+            <button
+              *ngIf="!isEditMode"
+              class="btn btn-primary"
+              (click)="toggleEditMode()"
+            >
+              Edit
+            </button>
+            <button
+              *ngIf="isEditMode"
+              class="btn btn-success"
+              (click)="saveChanges()"
+            >
+              Save
+            </button>
+            <button
+              *ngIf="isEditMode"
+              class="btn btn-secondary"
+              (click)="toggleEditMode(false)"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  
+    <ng-template #noRecords>
+      <div class="text-center">
+        <span class="text-danger fs-3">Loading</span><br />
+        <div
+          class="spinner-grow text-danger text-center"
+          style="width: 14rem; height: 14rem"
+          role="status"
+        ></div>
+      </div>
+    </ng-template>
+  </div>
+  
+
+  
+<!-- <div class="row">
+
+<div *ngIf="bookData?.journalTitle.length>0  ; else noRecords;">
+    <section>
+        <div class="container about-journal">
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <img 
+                    *ngIf="!imageLoadError; else errorMessage"
+                    [src]="bookData?.imageUrl" 
+                    [alt]="bookData?.journalTitle" 
+                    [title]="bookData?.journalTitle"
+                    width="auto" 
+                    height="auto" 
+                    (error)="imageLoadError = true" 
+                />
+                <ng-template #errorMessage>
+                    <div class="fs-3 text-danger mt-5">Error in Loading Image</div>
+                </ng-template>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <h2>{{bookData?.journalTitle}} </h2>
+                    <ul>
+                        <li>Volume: <span>{{bookData?.volume == null ? 'NA': bookData.volume }}</span></li>
+                        <li>Year: <span>{{ bookData?.publishDate == null ? 'NA' : bookData.publishDate}}</span></li>
+                        <li>Editor in chief: <span>{{bookData?.editorName}}</span></li>
+                    </ul>
+                    <p>{{bookData?.subTitle}} </p>
+                </div>
+                <div class="col-lg-4">
+                    <div class="journal-details">
+                      <ul>
+                        <li *ngFor="let detail of detailsArray">
+                          <strong>{{ detail.key }}:</strong> {{ detail.value }}
+                        </li>
+                      </ul>
+                    
+                    </div>
+                </div>
+            </div>
+           
+        </div>
+    </section>
+   
+</div>
+<div class="row">
+    <ng-template #noRecords>
+        <div class="row">
+            <div class="text-center">
+            <span class="text-danger fs-3">Loading </span><br />
+            <div class="spinner-grow text-danger text-center" style=" width: 14rem; height: 14rem;" role="status">
+            </div>
+        </div>
+        </div>
+    </ng-template>
+</div> -->

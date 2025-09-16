@@ -1,0 +1,45 @@
+.autocomplete-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .suggestions {
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    position: absolute;
+    background-color: white;
+    width: 100%;
+    z-index: 1;
+  }
+  
+  .suggestions div {
+    padding: 8px;
+    cursor: pointer;
+  }
+  
+  .suggestions div.active {
+    background-color: #ddd;
+  }
+  
+  .suggestions div:hover {
+    background-color: #ddd;
+  }
+  
+
+  .custom-table .datatable-header-cell, 
+.custom-table .datatable-body-cell {
+  width: 150rem !important; /* Fixed width for all columns */
+}
+
+.widthStyle{
+  width: 23rem;
+}
+
+#nav-tab .btn.active {
+  background-color: #FD6C04; 
+}
+#nav-tab .btn {
+  color: black;  
+  background-color: white;
+}

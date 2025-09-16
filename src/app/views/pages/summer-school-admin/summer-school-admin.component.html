@@ -1,0 +1,201 @@
+<div class="container-fluid" id="adminPage" *ngIf="isLoginFailed==false; else loginFailed">
+
+    <div class="container-fluid" >
+        <div class="col-md-12 stretch-card">
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="row mt-4 mb-4">
+                        <div class="col-sm-6">
+                            <div class="mb-3 ms-5">
+                                <button (click)="exportToExcel()" class="btn btn-success ">Export to ExcelSheet</button>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 ">
+                            <mat-form-field appearance="legacy" class=" d-flex justify-content-start align-items-top fs-5">
+                                <mat-label class="text-danger fs-4">Search Here</mat-label>
+                                <input matInput (keyup)="applyFilter($event)" placeholder="Search Data" #input>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="table-responsive" *ngIf="showNoDataFoundMessage==1">
+                        <table mat-table [dataSource]="dataSource" matSort class="table  mat-elevation-z8">
+                            <ng-container matColumnDef="applicationId">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-2 text-danger fs-5">
+                                    Application Id </th>
+                                <td mat-cell *matCellDef="let element" class="fs-5"> {{element.applicationId }} </td>
+                            </ng-container>
+                            <ng-container matColumnDef="visitType">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-2  text-danger fs-5">
+                                    visit
+                                    Type</th>
+                                <td mat-cell *matCellDef="let element" class="fs-5"> {{element.visitType }} </td>
+                            </ng-container>
+                            <ng-container matColumnDef="visitDuration">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-2 text-danger fs-5">visit
+                                    Duration</th>
+                                <td mat-cell *matCellDef="let element" class="p-0 text-center"> {{element.visitDuration
+                                    }} </td>
+                            </ng-container>
+                            <ng-container matColumnDef="universityName">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-2 text-danger fs-5"> Name
+                                </th>
+                                <td mat-cell class="fs-5 p-0" *matCellDef="let element"> {{element.universityName }}
+                                </td>
+                            </ng-container>
+                            <ng-container matColumnDef="country">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-2  text-danger fs-5">
+                                    country </th>
+                                <td mat-cell class=" p-3" *matCellDef="let element"> {{element.country }} </td>
+                            </ng-container>
+                            <td>
+                                <ng-container matColumnDef="xlsFileName">
+                            <th mat-header-cell *matHeaderCellDef class="m-2 text-danger fs-5 text-center"> Participants
+                                List
+                            </th>
+                            <td mat-cell class=" p-3" *matCellDef="let element">
+                                <div class="d-flex justify-content-">
+                                    <ng-container *ngIf="element.xlsFileName!=null; else NoSheetDoc">
+                                        <div class="text-danger text-center fs-5"> {{element.participants}} <br />
+                                            <a class="text-success fw-bold fs-5 me-2"
+                                                [href]="this.serverUrl+element.xlsFileName" target="_blank">Download
+                                                Sheet
+                                                <!-- <i class="mdi ms-5 fs-2 mdi-file"> </i> -->
+                                            </a>
+                                        </div>
+                                    </ng-container>
+                                    <ng-template #NoSheetDoc>
+                                        <div class="text-danger text-center fs-5"> {{element.participants}} <br />No
+                                            Uploaded </div>
+                                    </ng-template>
+                                </div>
+                                </ng-container>
+                            </td>
+                            <ng-container matColumnDef="startDate">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-2  text-danger fs-5">
+                                    start Date</th>
+                                <td mat-cell class=" p-3" *matCellDef="let element"> {{element.startDate |
+                                    date:'dd/MMM/yyyy' }} </td>
+                            </ng-container>
+                            <ng-container matColumnDef="endDate">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-2  text-danger fs-5">End
+                                    Date</th>
+                                <td mat-cell class=" p-3" *matCellDef="let element"> {{element.endDate |
+                                    date:'dd/MMM/yyyy' }} </td>
+                            </ng-container>
+                            <ng-container matColumnDef="uploadProof">
+                                <th mat-header-cell *matHeaderCellDef class="p-2  text-danger fs-5"> Proof </th>
+                                <td mat-cell class=" p-3" *matCellDef="let element">
+                                    <a class="text-success fw-bold fs-5 me-2"
+                                        [href]="this.serverUrl+element.uploadProof" target="_blank">
+                                        <!-- <i class="mdi ms-5 fs-2 mdi-file"> </i><br /> -->
+                                        Download Proof
+                                    </a>
+                                </td>
+                            </ng-container>
+                            <ng-container matColumnDef="remarksAmounts">
+                                <th mat-header-cell *matHeaderCellDef class="p-2  text-danger fs-5"> Remarks </th>
+                                <td mat-cell class=" p-3" *matCellDef="let element"> {{element.remarksAmounts}} </td>
+                            </ng-container>
+                            <ng-container matColumnDef="amount">
+                                <th mat-header-cell *matHeaderCellDef class="p-2 text-danger fs-5"> Amount Paid </th>
+                                <td mat-cell class="p-3" *matCellDef="let element">
+                                    <div class="d-flex justify-content-">
+                                        <ng-container *ngIf="element.amount > 0; else notPaid">
+                                            <span class="text-danger fs-5 me-2">
+                                                {{ element.amount}} </span>
+                                        </ng-container>
+                                        <ng-template #notPaid>
+                                            <span class="text-dark fw-bold p-2">Not Paid</span>
+                                        </ng-template>
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <ng-container matColumnDef="isApproved">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header class="p-2 text-danger fs-5">
+                                    Status</th>
+                                <td mat-cell *matCellDef="let element" [ngSwitch]="element.isApproved">
+                                    <ng-container *ngSwitchCase="1">
+                                        <div class="fw-bold text-success p-2">Approved
+                                            <span class="fw-bold  text-dark">On </span>
+                                           {{element.approvedOn | date:'dd/MMM/yyyy' }}
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngSwitchCase="0">
+                                        <div class="fw-bold  text-danger p-2">RejectedReason <br/>
+                                            <span class="fw-bold  text-dark"> {{element.approvedBy}}
+                                            {{element.disapprovalReason }}</span>
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngSwitchDefault>
+                                        <div class="fw-bold  text-dark p-3">Pending </div>
+                                    </ng-container>
+                                </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="action">
+                                <th mat-header-cell *matHeaderCellDef class="p-2 text-danger fs-5"> Approval Action
+                                </th>
+                                <td mat-cell class="p-3" *matCellDef="let element" >
+                                  <ng-container *ngIf="element.isApproved== true || element.isApproved== false ; else ActionOn ">
+                                      <div class="d-flex justify-content-">
+                                        <span class="badge text-bg-warning fs-5 me-2"> Applied Action </span>
+                                        <!-- <button class="btn btn-success me-2" (click)="ChangeApproveStatus(element.id)" [disabled]="true">
+                                            <i class="mdi mdi-check"></i>
+                                        </button>
+                                        <button class="btn btn-danger" (click)="DisapproveStatus(element.id)" [disabled]="true">
+                                            <i class="mdi mdi-window-close"></i>
+                                        </button> -->
+                                    </div>
+                                  </ng-container>
+                                  <ng-template #ActionOn>
+                                    <div class="d-flex justify-content-">
+                                      <button class="btn btn-success me-2" (click)="ChangeApproveStatus(element.id)" >
+                                          <i class="mdi mdi-check"></i>
+                                      </button>
+                                      <button class="btn btn-danger" (click)="DisapproveStatus(element.id)" >
+                                          <i class="mdi mdi-window-close"></i>
+                                      </button>
+                                  </div>
+                                  </ng-template>
+
+                                </td>
+                            </ng-container>
+                            <tr mat-header-row *matHeaderRowDef="displayedColumns" class=" m-4 p-5"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="m-5 p-5"></tr>
+                        </table>
+                        <mat-paginator class="p-2 fs-5 text-danger" [length]="this.SchoolData.length" [pageSizeOptions]="[5, 10, 15, 20]"
+                            showFirstLastButtons></mat-paginator>
+                    </div>
+                    <div class="text-center" *ngIf="showNoDataFoundMessage==0">
+                        <h3 class="text-center fs-4 text-danger btn btn-warning"> No data found.
+                        </h3>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #loginFailed>
+    <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body ">
+                    <h4 class="card-title  text-center fs-3 text-danger"> Summer School  Admin Panel</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<div class="text-center bg-success" *ngIf="isLoginFailed">
+    <h3 class="text-center fs-2 m-5 text-danger pt-5 "> Error in User Login .    </h3>
+    <div class="row mt-4 mb-4">
+        <div class="col-sm-12 text-center">
+            <div class="mb-3 p-4">
+                <Label class="form-label fs-4 text-danger ">Something Wen Wrong. Please Try login again!.</Label>
+            </div>
+        </div>
+    </div>
+</div>

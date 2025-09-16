@@ -1,0 +1,65 @@
+<!-- <div class="container-fluid"> -->
+  <table class="drive " *ngIf="UpcomingDriveDetails?.length>0; else noRecords">
+    <thead>
+      <tr>
+        <th>Drive Date</th>
+        <th>	Register By</th>
+        <th>Company</th>
+        <th>Job Profile</th>
+        <th>Status</th>
+        <th>Registered</th>
+        <th>Hall Ticket</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let MyRecord of UpcomingDriveDetails ">
+        <td>
+          {{ MyRecord.conductedOn | date:'dd/MMM/yyyy'}}
+        </td>
+        <td class="text-danger">
+          {{ MyRecord.lastDate |date:'dd/MMM/yyyy hh a' }}
+        </td>
+        <td>
+          {{ MyRecord.companyName }}
+        </td>
+        <td ><button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop">See Job Profile</button></td>
+        <!-- <td>
+          {{ MyRecord.mayAttend }}
+        </td>
+        <td>
+          {{ MyRecord.mustAttend }}
+        </td>
+        <td>
+          {{ MyRecord.mustAttendRegistered }}
+        </td>
+        <td>
+          {{ MyRecord.mustAttendRegistered }}
+        </td> -->
+
+        <td> Registeration Closed </td>
+        <td><button class="btn btn-warning">No</button></td>
+        <td><button class="btn btn-warning">Hall Ticket</button></td>
+      </tr>
+
+    </tbody>
+
+  </table>
+  <ng-template #noRecords>
+    <p class="fs-2 text-danger text-center "> No Record Found! </p>
+  </ng-template>
+<!-- </div> -->
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-body">
+            <app-drivepdf [CompanyData]="UpcomingDriveDetails"></app-drivepdf> 
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>

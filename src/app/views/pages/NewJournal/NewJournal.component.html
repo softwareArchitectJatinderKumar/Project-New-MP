@@ -1,0 +1,549 @@
+<nav>
+  <div class="nav nav-tabs nav nav-tabs d-flex justify-content-center active" id="nav-tab" role="tablist">
+    <button class="btn btn-warning me-5 active" id="NewJournal-Entry-tab" data-bs-toggle="tab"
+      style="padding: .95rem 8rem;" data-bs-target="#NewJournal-Entry" type="button" role="tab"
+      aria-controls="NewJournal-Entry" aria-selected="true">Add New Journal </button>
+
+    <button class=" btn btn-warning ms-5" id="AllJournal-Details-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
+      data-bs-target="#AllJournal-Details" type="button" role="tab" aria-controls="AllJournal-Details"
+      aria-selected="false">View All Journals</button>
+
+
+  </div>
+</nav>
+<div class="tab-content" id="nav-tabContent">
+  <div class="tab-pane fade active show" id="NewJournal-Entry" role="tabpanel" aria-labelledby="NewJournal-Entry-tab">
+    <div class="row">
+      <div class="col-md-12 grid-margin">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">Journal Forms</h6>
+
+            <aw-wizard #wizardForm>
+              <aw-wizard-step stepTitle="Journal Basic Information">
+                <form (ngSubmit)="form1Submit()" [formGroup]="validationForm1" style="margin-top: 20px;">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="firstName" class="col-sm-3 col-form-label">Journal Title :</label>
+                        <div class="col-sm-9">
+                          <input id="journalTitle" formControlName="journalTitle" class="form-control"
+                            placeholder="Journal Title" [(ngModel)]="JournalTitle"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form1.journalTitle.errors}">
+                          <div *ngIf="isForm1Submitted && form1.journalTitle.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="lastName" class="col-sm-3 col-form-label">Journal Sub Title</label>
+                        <div class="col-sm-9">
+                          <input id="subTitle" formControlName="subTitle" class="form-control" [(ngModel)]="SubTitle"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form1.subTitle.errors}"
+                            placeholder="Journal Sub Title">
+                          <div *ngIf="isForm1Submitted && form1.subTitle.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="lastName" class="col-sm-3 col-form-label">Journal Volume</label>
+                        <div class="col-sm-9">
+                          <input id="Volume" formControlName="Volume" class="form-control" [(ngModel)]="Volume"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form1.Volume.errors}"
+                            placeholder="Journal Volume">
+                          <div *ngIf="isForm1Submitted && form1.Volume.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="lastName" class="col-sm-3 col-form-label">Journal Publish Date:</label>
+                        <div class="col-sm-9">
+                          <input id="publishDate" type="date" formControlName="publishDate" class="form-control"
+                            [(ngModel)]="PublishDate"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form1.publishDate.errors}"
+                            placeholder="Journal Publish Date">
+                          <div *ngIf="isForm1Submitted && form1.publishDate.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- ScopeOfJournal -->
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="userName" class="col-sm-3 col-form-label">Journal Introduction:</label>
+                        <div class="col-sm-9">
+                          <quill-editor placeholder="Enter Text" formControlName="Introduction" [modules]="quillConfig"
+                            [(ngModel)]="Introduction"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form1.Introduction.errors}"
+                            (onSelectionChanged)="onSelectionChanged($event)"
+                            (onContentChanged)="onContentChanged($event)">
+                          </quill-editor>
+                          <div class="mt-3">
+                            <pre class="mb-0">{{Introduction}}</pre>
+                          </div>
+                          <div *ngIf="isForm1Submitted && form1.Introduction.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="userName" class="col-sm-3 col-form-label">Journal Scope Of Journal:</label>
+                        <div class="col-sm-9">
+                          <quill-editor placeholder="Enter Text" formControlName="scopeofjournals"
+                            [(ngModel)]="ScopeOfJournal" [modules]="quillConfig"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form1.scopeofjournals.errors}"
+                            (onSelectionChanged)="onSelectionChanged($event)"
+                            (onContentChanged)="onContentChanged($event)">
+                          </quill-editor>
+                          <div class="mt-3">
+                            <pre class="mb-0">{{ScopeOfJournal}}</pre>
+                          </div>
+                          <div *ngIf="isForm1Submitted && form1.scopeofjournals.errors?.required"
+                            class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="userName" class="col-sm-3 col-form-label">Journal Thrust Area:</label>
+                        <div class="col-sm-9">
+                          <quill-editor [(ngModel)]="ThrustArea" placeholder="Enter Text" [modules]="quillConfig"
+                            formControlName="thrustArea"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form1.thrustArea.errors}"
+                            (onSelectionChanged)="onSelectionChanged($event)"
+                            (onContentChanged)="onContentChanged($event)">
+                          </quill-editor>
+                          <div class="mt-3">
+                            <pre class="mb-0">{{ThrustArea}}</pre>
+                          </div>
+                          <div *ngIf="isForm1Submitted && form1.thrustArea.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="userName" class="col-sm-3 col-form-label">Journal Article Type::</label>
+                        <div class="col-sm-9">
+                          <quill-editor placeholder="Enter Text" [modules]="quillConfig" [(ngModel)]="ArticleType"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form1.ArticleType.errors}"
+                            formControlName="ArticleType" (onSelectionChanged)="onSelectionChanged($event)"
+                            (onContentChanged)="onContentChanged($event)">
+                          </quill-editor>
+                          <div class="mt-3">
+                            <pre class="mb-0">{{ArticleType}}</pre>
+                          </div>
+                          <div *ngIf="isForm1Submitted && form1.ArticleType.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="userName" class="col-sm-3 col-form-label">Journal Image:</label>
+                        <div class="col-sm-9">
+                          <input class="form-control" [(ngModel)]="fileNames" type="file" id="File" name="file"
+                            (change)="onFileSelected($event)" accept=".png, .jpg, .jpeg" formControlName="file" />
+                          <div *ngIf="isForm1Submitted && form1.file.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-center mt-2">
+                    <button class="btn btn-primary" type="submit">Continue</button>
+                  </div>
+                </form>
+              </aw-wizard-step>
+              <aw-wizard-step stepTitle="Journal Basic Property Details">
+                <form (ngSubmit)="form2Submit()" [formGroup]="validationForm2" style="margin-top: 20px;">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="firstName" class="col-sm-3 col-form-label">ISSN No:</label>
+                        <div class="col-sm-9">
+                          <input id="ISSNNo" name="ISSNNo" formControlName="ISSNNo"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form2.ISSNNo.errors}" class="form-control"
+                            placeholder="ISSN No" [(ngModel)]="ISSNNo">
+                          <div *ngIf="isForm1Submitted && form2.ISSNNo.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="firstName" class="col-sm-3 col-form-label">Reg No:</label>
+                        <div class="col-sm-9">
+                          <input id="RegNo" name="RegNo" formControlName="RegNo"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form2.RegNo.errors}" class="form-control"
+                            placeholder="Reg No" [(ngModel)]="RegNo">
+                          <div *ngIf="isForm1Submitted && form2.RegNo.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="firstName" class="col-sm-3 col-form-label">Periodicity:</label>
+                        <div class="col-sm-9">
+                          <input id="Periodicity" name="Periodicity" formControlName="Periodicity"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form2.Periodicity.errors}"
+                            class="form-control" placeholder="Periodicity" [(ngModel)]="Periodicity">
+                          <div *ngIf="isForm1Submitted && form2.Periodicity.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="firstName" class="col-sm-3 col-form-label">Language:</label>
+                        <div class="col-sm-9">
+                          <input id="Language" name="Language" formControlName="Language"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form2.Language.errors}" class="form-control"
+                            placeholder="Language" [(ngModel)]="Language">
+                          <div *ngIf="isForm1Submitted && form2.Language.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="firstName" class="col-sm-3 col-form-label">Scope:</label>
+                        <div class="col-sm-9">
+                          <input id="Scope" name="Scope" formControlName="Scope"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form2.Scope.errors}" class="form-control"
+                            placeholder="Scope" [(ngModel)]="Scope">
+                          <div *ngIf="isForm1Submitted && form2.Scope.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="firstName" class="col-sm-3 col-form-label">Article Process Charges:</label>
+                        <div class="col-sm-9">
+                          <input id="ArticleProcessCharges" name="ArticleProcessCharges"
+                            formControlName="ArticleProcessCharges"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form2.ArticleProcessCharges.errors}"
+                            class="form-control" placeholder="Article Process Charges"
+                            [(ngModel)]="ArticleProcessCharges">
+                          <div *ngIf="isForm1Submitted && form2.ArticleProcessCharges.errors?.required"
+                            class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="firstName" class="col-sm-3 col-form-label">Open Access:</label>
+                        <div class="col-sm-9">
+                          <input id="OpenAccess" name="OpenAccess" formControlName="OpenAccess"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form2.OpenAccess.errors}" class="form-control"
+                            placeholder="Open Access" [(ngModel)]="OpenAccess">
+                          <div *ngIf="isForm1Submitted && form2.OpenAccess.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="firstName" class="col-sm-3 col-form-label">Print:</label>
+                        <div class="col-sm-9">
+                          <input id="Print" name="Print" formControlName="Print"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form2.Print.errors}" class="form-control"
+                            placeholder="Print" [(ngModel)]="Print">
+                          <div *ngIf="isForm1Submitted && form2.Print.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="firstName" class="col-sm-3 col-form-label">Online:</label>
+                        <div class="col-sm-9">
+                          <input id="Online" name="Online" formControlName="Online"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form2.Online.errors}" class="form-control"
+                            placeholder="Online" [(ngModel)]="Online">
+                          <div *ngIf="isForm1Submitted && form2.Online.errors?.required" class="invalid-feedback">
+                            Required
+                          </div>                          
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="row mb-3">
+                        <label for="firstName" class="col-sm-3 col-form-label">Review Process:</label>
+                        <div class="col-sm-9">                         
+                          <input id="ReviewProcess" name="ReviewProcess" formControlName="ReviewProcess"
+                            [ngClass]="{'is-invalid': isForm1Submitted && form2.ReviewProcess.errors}"
+                            class="form-control" placeholder="Review Process" [(ngModel)]="ReviewProcess">
+                          <div *ngIf="isForm1Submitted && form2.ReviewProcess.errors?.required"
+                            class="invalid-feedback">
+                            Required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-center mt-2">
+                    <button class="btn btn-secondary me-2" type="button" awPreviousStep>Back</button>
+                    <button class="btn btn-primary" type="submit">Continue</button>
+                  </div>
+                </form>
+              </aw-wizard-step>
+              <aw-wizard-step stepTitle="Journal Editor Details">
+                <div class="row" style="margin-top: 20px;">
+                  <div class="col-sm-2">
+                    <h4>Editor's</h4>
+                  </div>
+                </div>
+                <div>
+                  <div class="col-sm-12"><button style="float: right;" type="submit" (click)="addQuantity()"
+                      class="btn btn-primary me-2">Add Editor Cheif</button></div>
+                </div>
+                <form [formGroup]="editorForm" (ngSubmit)="onSubmitFinal()" style="margin-top: 4rem;">
+                  <div formArrayName="EditorinChief">
+
+                    <div class="row" *ngFor="let quantity of quantities().controls; let i=index" [formGroupName]="i">
+                      <hr>
+
+                      <div class="col-md-6">
+                        <div class="row mb-3">
+                          <label for="lastName" class="col-sm-3 col-form-label">Editor Type</label>
+                          <div class="col-sm-9">
+                            <select id="editorType" formControlName="EditorType" class="form-select">
+                              <option value="" selected="selected">Select</option>
+                              <option value="Editor in Chief">Editor in Chief</option>
+                              <option value="Managing Editor">Managing Editor</option>
+                              <option value="Associate Editors">Associate Editors</option>
+                              <option value=" Editorial board members National">Editorial board members National
+                              </option>
+                              <option value="Editorial board members International">Editorial board members
+                                International
+                              </option>
+                              <option value="Reviewers ">Reviewers </option>
+                            </select>
+
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="row mb-3">
+                          <label for="lastName" class="col-sm-3 col-form-label">Editor Name</label>
+                          <div class="col-sm-9">
+                            <input id="EditorName" formControlName="EditorName" class="form-control"
+                              placeholder="EditorName">
+
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-6">
+                        <div class="row mb-3">
+                          <label for="lastName" class="col-sm-3 col-form-label">Designation</label>
+                          <div class="col-sm-9">
+                            <input id="Designation" formControlName="Designation" class="form-control"
+                              placeholder="Designation">
+
+                          </div>
+                        </div>
+                      </div>
+
+
+
+                      <div class="col-md-6">
+                        <div class="row mb-3">
+                          <label for="lastName" class="col-sm-3 col-form-label">Email</label>
+                          <div class="col-sm-9">
+                            <input id="Email" formControlName="Email" class="form-control" placeholder="Email">
+
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-6">
+                        <div class="row mb-3">
+                          <label for="lastName" class="col-sm-3 col-form-label">Editor Address</label>
+                          <div class="col-sm-9">
+                            <textarea id="EditorAddress" formControlName="EditorAddress" class="form-control"
+                              placeholder="EditorAddress"></textarea>
+
+                          </div>
+                        </div>
+                      </div>
+
+
+
+                      <div class="col-md-6">
+                        <div class="row mb-3">
+                          <div class="col-sm-3">
+                            <button (click)="removeQuantity(i)" class="btn btn-danger">Remove</button>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+                  <div class="d-flex justify-content-center mt-2">
+                    <button class="btn btn-secondary me-2" type="button" awPreviousStep>Back</button>
+                    <button class="btn btn-success" type="button" (click)="finishFunction()">Finish</button>
+                  </div>
+                </form>
+              </aw-wizard-step>
+            </aw-wizard>
+          </div>
+        </div>
+      </div>  
+    </div>
+  </div>
+  <!-- Tab Two  Open All Journal for Image Upload  -->
+  <div class="tab-pane fade" id="AllJournal-Details" role="tabpanel" aria-labelledby="AllJournal-Details-tab">
+    <div class="row">
+      <div class="col-md-12 stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title d-flex justify-content-center fs-4 text-success">All Journal </h6>
+            <div class="row">
+              <div class="col-sm-4">
+                <div class="mb-3">
+                  <button (click)="exportToExcel()" class="btn btn-dark "
+                    [disabled]="this.TempAllJournalsDetails.length==0">Export to Excel</button>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="mb-3">
+                  <input [(ngModel)]="searchQueryx" (keyup)="searchx()" id="searchx" type="text" style=" width: 21rem;"
+                    class="form-control" placeholder="Type Search Text " aria-label="Search"
+                    aria-describedby="basic-addon1" />
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <ngx-datatable class="bootstrap table table-striped material" [rows]="this.TempAllJournalsDetails"
+                [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
+                [headerHeight]="80" rowHeight="auto">
+                <ngx-datatable-column *ngFor="let col of columns" [prop]="col"></ngx-datatable-column>
+                <ngx-datatable-column name="Download Image" [sortable]="false" prop="Id">
+                  <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.imageUrl != null">
+                      <button class="btn btn-dark" (click)="onSelectFile(row)">
+                        Download
+                      </button>
+                    </ng-container>
+                    <ng-container *ngIf="row.imageUrl == null">
+                      <span style="margin: auto;float: left;
+                        font-weight: bold;padding: 10px 10px 10px 10px;">No FIle</span>
+                    </ng-container>
+                  </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Actions" [sortable]="false" prop="Id">
+                  <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+
+                    <button class="btn btn-dark" (click)="onSelect(row)">
+                      Take Action
+                    </button><br />
+                    <button class="btn btn-dark" (click)="onEditClick(row)">
+                      Edit Journal Details
+                    </button>
+                  </ng-template>
+                </ngx-datatable-column>
+              </ngx-datatable>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <ng-template #loginFailed>
+    <div class="text-center bg-danger" *ngIf="isLoginFailed">
+      <h3 class="text-center fs-2 m-5 text-warn pt-5 "> Error in User Login . </h3>
+      <div class="row mt-4 mb-4">
+        <div class="col-sm-12 text-center">
+          <div class="mb-3 p-4">
+            <Label class="form-label fs-4 text-warn ">Something Went Wrong. Please Try login again!.</Label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" [fullScreen]="true" size="default" type="ball-spin-clockwise">
+    <p style="color: white">Please Wait... </p>
+  </ngx-spinner>
+</div>
+
+<ng-template #viewDescModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Journal Image Modify</h5>
+    <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+
+    <div class="col-md-12 grid-margin stretch-card">
+      <div class="card">
+        <form id="UpdateImage">
+          <div class="card-body">
+
+            <div class="row mb-4">
+              <div class="col-sm">
+                <label for="userName" class="col-sm-3 col-form-label">Journal Id</label>
+                <label for="JournalId" class="form-label">{{this.JournalId}}</label>
+                <label for="JournalId" class="form-label">{{this.Title}}</label>
+              </div>
+              <div class="col-sm">
+                <label for="userName" class="col-sm-3 col-form-label">Journal Image:</label>
+                <div class="col-sm-9">
+                  <input class="form-control" [(ngModel)]="fileNamesX" type="file" id="File" name="file"
+                    (change)="onFileXSelected($event, this.JournalId)" accept=".png, .jpg, .jpeg" />
+                  <div *ngIf="isForm1Submitted && form1.file.errors?.required" class="invalid-feedback">
+                    Required
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm">
+                <label class="col-sm-3 col-form-label">
+                  Action Button </label>
+                <div class="col-sm-9"><button type="submit" [disabled]="!fileChosen[this.JournalId]"
+                    class="btn btn-primary" (click)="UpdateFileDocument(this.JournalId);">Upload New Document </button>
+                </div>
+                <!-- <button type="submit" style="margin-top: 27px;" [disabled]="isInputDisabled" class="btn btn-dark me-2"
+                (click)="UpdateImageData();">Submit</button> -->
+
+              </div>
+            </div>
+            <div class="row mb-4">
+
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</ng-template>

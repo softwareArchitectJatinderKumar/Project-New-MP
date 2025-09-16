@@ -1,0 +1,245 @@
+<nav>
+  <div class="nav nav-tabs nav nav-tabs d-flex justify-content-center active" id="nav-tab" role="tablist">
+    <button class="btn btn-warning me-5 active" id="NewInstrument-Entry-tab" data-bs-toggle="tab"
+      style="padding: .95rem 8rem;" data-bs-target="#NewInstrument-Entry" type="button" role="tab"
+      aria-controls="NewInstrument-Entry" aria-selected="true">Add New Instrument </button>
+
+    <button class=" btn btn-warning ms-5" id="AllInstruments-Details-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
+      data-bs-target="#AllInstruments-Details" type="button" role="tab" aria-controls="AllInstruments-Details"
+      aria-selected="false">View All Instrument</button>
+
+
+  </div>
+</nav>
+
+
+<div class="tab-content" id="nav-tabContent">
+  <div class="tab-pane fade active show" id="NewInstrument-Entry" role="tabpanel"
+    aria-labelledby="NewInstrument-Entry-tab">
+    <div class="row">
+      <div class="col-md-12 grid-margin">
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">New Instrument Form</h6>
+            <form (ngSubmit)="form1Submit()" [formGroup]="validationForm1" style="margin-top: 20px;">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="row mb-3">
+                    <label for="firstName" class="col-sm-3 col-form-label">Instrument Title :</label>
+                    <div class="col-sm-9">
+                      <input id="InstrumentTitle" formControlName="InstrumentTitle" class="form-control"
+                        placeholder="Instrument Title" [(ngModel)]="ITitle"
+                        [ngClass]="{'is-invalid': isForm1Submitted && form1.InstrumentTitle.errors}">
+                      <div *ngIf="isForm1Submitted && form1.InstrumentTitle.errors?.required" class="invalid-feedback">
+                        Required
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="row mb-3">
+                    <label for="lastName" class="col-sm-3 col-form-label">Instrument Status</label>
+                    <div class="col-sm-9">
+                      <select id="subTitle" formControlName="Status" class="form-control" [(ngModel)]="IStatus"
+                        [ngClass]="{'is-invalid': isForm1Submitted && form1.Status.errors}">
+                        <option value="" disabled>Select Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                      </select>
+                      <div *ngIf="isForm1Submitted && form1.Status.errors?.required" class="invalid-feedback">
+                        Required
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div class="col-md-6">
+                  <div class="row mb-3">
+                    <label for="userName" class="col-sm-3 col-form-label">Instrument Description:</label>
+                    <div class="col-sm-9">
+                      <quill-editor [(ngModel)]="IDescription" placeholder="Enter Text" [modules]="quillConfig"
+                        formControlName="Description"
+                        [ngClass]="{'is-invalid': isForm1Submitted && form1.Description.errors}"
+                        (onSelectionChanged)="onSelectionChanged($event)" (onContentChanged)="onContentChanged($event)">
+                      </quill-editor>
+                      <div class="mt-3">
+                        <pre class="mb-0">{{IDescription}}</pre>
+                      </div>
+                      <div *ngIf="isForm1Submitted && form1.Description.errors?.required" class="invalid-feedback">
+                        Required
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="row mb-3">
+                    <label for="file" class="col-sm-3 col-form-label">Instrument Image:</label>
+                    <div class="col-sm-9">
+                      <input class="form-control" [(ngModel)]="fileNames" type="file" id="File" name="file"
+                        (change)="onFileSelected($event)" accept=".png, .jpg, .jpeg" formControlName="file" />
+                      <div *ngIf="isForm1Submitted && form1.file.errors?.required" class="invalid-feedback">
+                        Required
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-center mt-2">
+                <button class="btn btn-primary" type="submit">Submit</button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Tab Two  Open All Instrument for Image Upload  -->
+    <div class="tab-pane fade" id="AllInstruments-Details" role="tabpanel" aria-labelledby="AllInstruments-Details-tab">
+      <div class="row">
+        <div class="col-md-12 stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <h6 class="card-title d-flex justify-content-center fs-4 text-success">All Instrument </h6>
+              <div class="row">
+                <div class="col-sm-4">
+                  <div class="mb-3">
+                    <!-- <button (click)="exportToExcel()" class="btn btn-dark "
+                      [disabled]="this.TempAllInstrumentssDetails.length==0">Export to Excel</button> -->
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="mb-3">
+                    <input [(ngModel)]="searchQueryx" (keyup)="searchx()" id="searchx" type="text" style=" width: 21rem;"
+                      class="form-control" placeholder="Type Search Text " aria-label="Search"
+                      aria-describedby="basic-addon1" />
+                  </div>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <ngx-datatable class="bootstrap table table-striped material" [rows]="this.TempAllInstrumentsDetails"
+                  [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
+                  [headerHeight]="80" rowHeight="auto">
+                  <ngx-datatable-column *ngFor="let col of columns" [prop]="col"></ngx-datatable-column>
+                  <ngx-datatable-column name="Download Image" [sortable]="false" prop="Id">
+                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                      <ng-container *ngIf="row.imageUrl != null">
+                        <button class="btn btn-dark" (click)="onSelectFile(row)">
+                          Download
+                        </button>
+                      </ng-container>
+                      <ng-container *ngIf="row.imageUrl == null">
+                        <span style="margin: auto;float: left;
+                          font-weight: bold;padding: 10px 10px 10px 10px;">No FIle</span>
+                      </ng-container>
+                    </ng-template>
+                  </ngx-datatable-column>
+                  <ngx-datatable-column name="Description" [sortable]="false" prop="Id">
+                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                      <ng-container *ngIf="row.description.length > 1">
+                        <span style="margin: auto;float: left;
+                          font-weight: bold;padding: 10px 10px 10px 10px;"> {{row.description | slice:0:120 }} {{ row.description.length > 20 ? '...' : '' }}</span>
+                      </ng-container>
+                      <ng-container *ngIf="row.description.length == 0">
+                        <span style="margin: auto;float: left;
+                          font-weight: bold;padding: 10px 10px 10px 10px;">No Description </span>
+                      </ng-container>
+                    </ng-template>
+                  </ngx-datatable-column>
+                  <ngx-datatable-column name="Actions" [sortable]="false" prop="Id">
+                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+  
+                      <button class="btn btn-dark" (click)="onSelect(row)">
+                        Take Action
+                      </button><br />
+                     
+                    </ng-template>
+                  </ngx-datatable-column>
+                </ngx-datatable>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+      </div>
+    </div>
+  <ng-template #loginFailed>
+    <div class="text-center bg-danger" *ngIf="isLoginFailed">
+      <h3 class="text-center fs-2 m-5 text-warn pt-5 "> Error in User Login . </h3>
+      <div class="row mt-4 mb-4">
+        <div class="col-sm-12 text-center">
+          <div class="mb-3 p-4">
+            <Label class="form-label fs-4 text-warn ">Something Went Wrong. Please Try login again!.</Label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" [fullScreen]="true" size="default" type="ball-spin-clockwise">
+    <p style="color: white">Please Wait... </p>
+  </ngx-spinner>
+</div>
+
+
+<ng-template #viewDescModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Instrument Image Modify</h5>
+    <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    <label for="InstrumentId" class="form-label">{{this.InstrumentTitles}}</label>
+    <div class="col-md-12 grid-margin stretch-card">
+      <div class="card">
+        <form id="UpdateImage">
+          <div class="row p-3 m-3">
+
+            <div class="row mb-4">
+              <div class="col-3">
+                <label for="userName" class="col-12 col-form-label">Instrument Id</label>
+                <label for="InstrumentId" class="form-label">{{this.InstrumentId}}</label>
+                
+              </div>
+              <div class="col-3">
+                <div class="col-12">
+                <label for="userName" class="col-12 col-form-label">Instrument Status </label>
+                  <input type="checkbox" id="StatusInstrument" name="StatusInstrument"  [(ngModel)]="StatusInstrument" (change)="ChangeStatus($event)"/>
+                  <div *ngIf="isForm1Submitted && form1.file.errors?.required" class="invalid-feedback">
+                    Required
+                  </div>
+                </div>
+              </div>
+              <div class="col-3">
+                <label for="userName" class="col-12 col-form-label">Instrument Image:</label>
+                <div class="col-12">
+                  <input class="form-control" [(ngModel)]="fileNamesX" type="file" id="File" name="file"
+                    (change)="onFileXSelected($event, this.InstrumentId)" accept=".png, .jpg, .jpeg" />
+                  <div *ngIf="isForm1Submitted && form1.file.errors?.required" class="invalid-feedback">
+                    Required
+                  </div>
+                </div>
+              </div>
+              <div class="col-3 text-end">
+                <label class="col-12 col-form-label"> Action Button </label>
+                <div class="col-12"><button type="submit" [disabled]="!fileChosen[this.InstrumentId]"
+                    class="btn btn-primary" (click)="UpdateFileDocument(this.InstrumentId);">Upload Image </button>
+                </div>
+                <!-- <button type="submit" style="margin-top: 27px;" [disabled]="isInputDisabled" class="btn btn-dark me-2"
+                (click)="UpdateImageData();">Submit</button> -->
+
+              </div>
+            </div>
+            <div class="row mb-4">
+
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,342 @@
+<div class="container-fluid" id="adminPage" *ngIf="isLoginFailed==false; else loginFailed">
+    <div class="row">
+        <div class="col-md-4 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row d-flex justify-content-around">
+                        <label class="col-md-6 form-label text-danger" style="font-weight: 700;">Employee Name / UID  </label>
+                        <label class="col-md-6 form-label text-dark  "
+                            style="text-align: right; font-weight: 700;">{{EmployeeName}} / {{this.EmployeeCode}}</label>
+                    </div>
+                    <!-- <div class="row d-flex justify-content-around">
+                        <label class="col-md-5 form-label text-danger " style="font-weight: 700;">Employee Id</label>
+                        <label class="col-md-7 form-label text-dark " style="text-align: right;font-weight: 700;">
+                            {{this.EmployeeCode}}
+                        </label>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 grid-margin ">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="text-success text-center mt-1 mb-4 "> Upload Form</h3>
+                </div>
+            </div>
+        </div>        
+            <div class="col-md-4 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">                       
+                        <div class="row d-flex justify-content-around">
+                            <label class="col-md-5 form-label text-danger " style="font-weight: 700;">Department Name</label>
+                            <label class="col-md-7 form-label text-dark " style="text-align: right;font-weight: 700;">
+                                {{this.Department}}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>        
+    </div>
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body ">
+                <div class="row d-flex justify-content-around mb-4 mt-5">
+                    <div class="col-md-2"> 
+                      <label for="mouId" class="fs-5">Select MOU ID:</label>
+                    </div>
+                    <div class="col-md-3">
+                      <select id="mouId" (change)="onMouIdChange($event)" class="w-50 fs-5 text-center">
+                        <option value="select Id" selected>Select MOU ID</option>
+                        <option *ngFor="let id of MouIdList" [value]="id"> MOU/{{ id }}</option>
+                      </select>
+                      
+                    </div>
+                    <div class="col-md-3">
+                      <label class="form-label fs-5">MOU Partner Organisation Name</label>
+                    </div>
+                    <div class="col-md-3">
+                      <label for="partnerName" class="fs-5">{{ partnerName }}</label>
+                    </div>
+                </div>
+                  
+                <div class="row d-flex justify-content-around mb-4 mt-5">
+                <div class="col-md-2"> 
+                    <label for="mouActivity" class="fs-5">MOU Activity Conducted</label>
+                </div>
+                <div class="col-md-3">
+                    <!-- <select id="mouActivity" [(ngModel)]="mouActivity" class="w-98 fs-5">
+                    <option value="select Id" selected>Select MOU Activity Conducted</option>
+                    <option *ngFor="let id of MouIdList" [value]="mouActivity">{{ mouActivity }}</option>
+                    </select> -->
+                    <select id="mouActivity" (change)="onActivitySelected($event)" class="col-md-12 p-2 fs-5">
+                        <option value="select Id" selected><span class="text-danger fs-5">Select MOU Activity Conducted</span></option>
+                        <option *ngFor="let activity of mouActivities" [value]="activity.id">
+                            {{ activity.description }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fs-5"> Activity Document Format</label>
+                </div>
+                <div class="col-md-3">
+                    <a (click)="testClick()" class="link link-danger fs-5">Download Format</a>
+                </div>
+                </div>
+                  
+                <div class="row d-flex justify-content-around mb-4 mt-5">
+                <div class="col-md-2">
+                    <label for="startDate" class="fs-5">Start Date:</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="date" class="w-50 col-md-4" required [(ngModel)]="startDate" id="startDate" name="startDate" (change)="checkFormValidity()" autocomplete="off" />
+                </div>
+                <div class="col-md-3">
+                    <label for="endDateOut" class="fs-5">End Date:</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="date" class="w-50 col-md-4" required [(ngModel)]="endDate" id="endDateOut" name="endDateOut" (change)="checkFormValidity()" autocomplete="off" />
+                </div>
+                </div>
+                  
+                <div class="row d-flex justify-content-around mb-4 mt-5">
+                <div class="col-md-2">
+                    <label class="form-label fs-5 text-end">Upload Document</label>
+                </div>
+                <div class="col-md-3">
+                    <input required type="file" id="File" name="File" (change)="onFileSelected($event)" accept=".pdf, .doc, .docx" />
+                    <br/>
+                    <br/>
+                    <span class="text-danger fs-6">Allowed Documents format Doc, pdf and of Max size 5MB</span>
+                </div>
+                <div class="col-md-3 text-center">
+                    <button type="submit" [disabled]="!uploadEnabled" class="btn btn-primary me-2 col-md-5" (click)="UploadActivity()">Save Activity</button>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fs-5 text-danger"></label>
+                </div>
+                </div>
+                  
+                <!-- <div class="row d-flex justify-content-center  mb-4 mt-5">
+                    <div class="col-md-2"> <label for="mouId" class="fs-5">Select MOU ID:</label>
+                    </div>
+                    <div class="col-md-3 ">
+                        <select id="mouId" [(ngModel)]="mouId" (change)="onMouIdChange($event)" class="w-50 fs-5 text-center">
+                            <option value="select Id" selected> Select MouId </option>
+                            <option *ngFor="let mouId of MouIdList" [value]="mouId">MOU/{{ mouId }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 ">
+                        <label class="form-label fs-5 ">
+                            Name of MOU Partner Organisation
+                        </label>
+                    </div>
+                    <div class="col-md-3 ">
+                        <label for="partnerName" class="fs-5" [(ngModel)]="partnerName">{{ this.partnerName}}</label>
+                       
+                    </div>
+                </div>
+                <div class="row d-flex justify-content-center  mb-4 mt-5">
+                    <div class="col-md-2"> <label for="mouId" class="fs-5">MOU Activity Conducted </label>
+                    </div>
+                    <div class="col-md-3 ">
+                        <select id="mouId" (change)="onMouIdChange($event)" required ngModel [(ngModel)]="mouActivity" class="w-98 fs-5">
+                            <option value="select Id" [selected]="true"> Select MOU Activity Conducted </option>
+                            <option *ngFor="let mouId of MouIdList" [value]="mouId">MOU/{{ mouId }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 ">
+                        <label class="form-label fs-5 ">
+                            Format for Activity
+                        </label>
+                    </div>
+                    <div class="col-md-3 ">
+                        <a (click)="testClick()" class="btn btn-success ">Download Format</a>
+                    </div>
+                </div>
+                <div class="row d-flex justify-content-center  mb-4 mt-5">
+                    <div class="col-md-2">
+                        <label for="startDate" class=" fs-5 "> Start Date:</label>
+                    </div>
+                    <div class="col-md-3 ">
+                        <input type="date" class="w-50 col-md-4" required ngModel [(ngModel)]="startDate" id="startDate" name="startDate" ngModel required
+                            placeholder="Activity End Date " autocomplete="off" />
+                    </div>
+                    <div class="col-md-3">
+                        <label for="endDateOut" class=" fs-5"> End Date:</label>
+                    </div>
+                    <div class="col-md-3 ">
+                        <input type="date" class="w-50 col-md-4" required ngModel [(ngModel)]="endDate" id="endDateOut" name="endDateOut" ngModel required
+                            placeholder="Activity End Date " autocomplete="off" />
+                    </div>
+                </div>
+                <div class="row d-flex justify-content-center  mb-4 mt-5 ">
+                    <div class="col-md-2">
+                        <label class="form-label fs-5 text-end"> Upload Document </label>
+                    </div>
+                    <div class="col-md-3">
+                        <input required type="file" id="File" name="File" required ngModel (change)="onFileSelected($event)" accept=".pdf, .doc, .docx" #fileInput />
+                        <br/>
+                        <br/>
+                        <span class="text-danger fs-6 "> Allowed Documents format Doc, pdf and of Max size 5MB </span>
+                    </div>
+                   
+                    <div class="col-md-3 text-center "><button type="submit" [disabled]="!uploadEnabled"
+                        class="btn btn-primary me-2 col-md-5" (click)="UploadActivity();">Save Activity</button>
+                        
+                    </div>
+                     <div class="col-md-3 ">
+                        <label class="form-label fs-5 text-danger ">
+                          
+                        </label>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    <ng-container *ngIf="MouActivityData.length > 0  ; else noRecords">
+        <div class="col-md-12 stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title d-flex justify-content-center fs-4 text-success"> MOU Activities Details</h6>
+                    <div class="col-md-12 d-flex justify-content-between">
+                        <div class="col-md-4">
+                            <div class="mb-3 ms-1 text-start">
+                                <button (click)="exportToExcel()" class="btn btn-success ">Export to Excel</button>
+                            </div>
+                        </div>
+                        <div class="col-md-4 ">
+                            <input type="text" [(ngModel)]="filterText" (ngModelChange)="filterData()" placeholder="Search by any Field Text " class="form-control" /> 
+                        </div>
+                        <div class="col-md-4 ">
+                            <input type="text" style="display: none;" />
+                        </div>
+                    </div>
+                    <div *ngIf="filteredMouActivityData.length >0; else SeachNoRecords">
+                        <table id="dataTableExample " class="table table-responsive">
+                            <thead>
+                                <tr>
+                                    <th class="form-label fs-6 text-danger">MOU Activity Id </th>
+                                    <th class="form-label fs-6 text-danger ">Partner Organisation Name </th>
+                                    <th class="form-label fs-6 text-danger">Activity Start Date</th>
+                                    <th class="form-label fs-6 text-danger">Activity End Date </th>
+                                    <th class="form-label fs-6 text-danger">View Document </th>
+                                    <th class="form-label fs-6 text-danger">View Document </th>
+                                    <th class="form-label fs-6 text-danger">Approval Status </th>
+    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngFor="let DocumentRow of getRecordsForCurrentPage()">
+                                    <tr>
+                                        <td class="fw-bold fs-6 text-success"> <label class="form-label text-success "> MOU/{{DocumentRow.mouId}} </label> </td>
+                                        <td class="fw-bold fs-6 text-success">{{DocumentRow.mouPartnerName}} </td>
+                                        <td class="fw-bold fs-6 text-success"> {{ formatDates(DocumentRow.activityStartDate)}} </td>
+                                        <td class="fw-bold fs-6 text-success"> {{ formatDates(DocumentRow.activityEndDate)}} </td>
+                                        <ng-container *ngIf="DocumentRow.filePath; else NoFile">
+                                            <td> <a class="btn btn-primary fs-5 me-2" [href]=this.ServerUrl+DocumentRow.fileName
+                                                    target="_blank"> View 
+                                                </a> </td>
+                                            <!-- <td> <a class="btn btn-primary fs-5 me-2" [href]="DocumentRow.filePath"
+                                                    target="_blank"> View 
+                                                </a> </td> -->
+                                            </ng-container>
+                                            <ng-template #NoFile>
+                                                <td> No Doc Uploaded </td>
+                                            </ng-template>
+                                                <td>
+                                                    <ng-container *ngIf="DocumentRow.disapprovalReason?.length >0; else NotApplicable">
+                                                        <div class="row  ">
+                                                            <div class="col-md-">
+                                                                <input class="w-30" required type="file" id="FileX" name="FileX"
+                                                                    (change)="onFileXSelected($event, DocumentRow.id)" accept=".pdf, .doc, .docx" #fileInput />
+                                                            </div>
+                                                        </div>
+                                                        <div class="row ">
+                                                            <div class="col-md- ">
+                                                                <br /><button type="submit" [disabled]="!fileChosen[DocumentRow.id]" class="btn btn-primary"
+                                                                    (click)="UpdateFileDocument(DocumentRow.id);">Upload New Document </button>
+                                                            </div>
+                                                        </div>
+                                                    </ng-container>
+                                                    <ng-template #NotApplicable>
+                                                <td> <label class="form-label text-success ">Not Applicable</label></td>
+                                                </ng-template>
+                                                </td>
+                              
+                                        <td *ngIf="DocumentRow.isApproved == 'True'; else OtherCheck">
+                                            <div class="fw-bold fs-6 text-success">Approved By {{ DocumentRow.approvedBy }}</div>
+                                        </td>
+                                        <ng-template #OtherCheck>
+                                            <td *ngIf="DocumentRow.isApproved == 'False'; else NullValue">
+                                                <div class="fw-bold fs-6 text-danger col-md-8">
+                                                    Disapproved by {{ DocumentRow.approvedBy }} <br />**
+                                                    {{ DocumentRow.disapprovalReason  }}  <br /></div>
+                                            </td>
+                                            <ng-template #NullValue>
+                                                <div class="fw-bold fs-6 text-info">Pending Approval</div>
+                                            </ng-template>
+                                        </ng-template>
+                                             
+                                    </tr>
+                                </ng-container>
+                            </tbody>
+                        </table>
+                        <div class="row d-flex justify-content-between mt-5 mb-3 align-items-center">
+                            <div class="  text-end">
+                                <mat-paginator [length]="filteredMouActivityData.length" [pageSize]="recordsPerPage"
+                                    [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange($event)">
+                                </mat-paginator>
+                            </div>
+                            <div class=" text-danger fs-5 text-end">
+                                Total Records: {{ filteredMouActivityData.length }}
+                            </div>
+                        </div>
+                    </div>
+                    <ng-template #SeachNoRecords>
+                        <div class="col-md-12 stretch-card">
+                            <table id="dataTableExample" class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="form-label fs-6 text-danger">MOU Id </th>
+                                        <th class="form-label fs-6 text-danger ">Partner Organisation </th>
+                                        <th class="form-label fs-6 text-danger">Uploaded On</th>
+                                        <th class="form-label text-danger"> Approval Date</th>
+                                        <th class="form-label fs-6 text-danger">View Document </th>
+                                        <th class="form-label fs-6 text-danger">New Uploads </th>
+                                        <th class="form-label fs-6 text-danger">Approval Status </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                  <td colspan="7" class="text-center"> <label class="text-center fs-2 text-danger"> No Record(s) found .</label></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    <ng-template #noRecords>
+        <div class="col-md-12 stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <label class="text-center fs-2 text-danger d-flex justify-content-center"> No Record(s) are Available .</label>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</div>
+<ng-template #loginFailed>
+    <div class="text-center bg-info" *ngIf="isLoginFailed">
+        <h3 class="text-center fs-2 m-5 text-danger pt-5 "> Error in User Login . </h3>
+        <div class="row mt-4 mb-4">
+            <div class="col-sm-12 text-center">
+                <div class="mb-3 p-4">
+                    <Label class="form-label fs-4 text-danger ">Unauthorise Access.</Label>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

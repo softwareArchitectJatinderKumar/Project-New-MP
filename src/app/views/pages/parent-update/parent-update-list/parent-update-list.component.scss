@@ -1,0 +1,62 @@
+
+.mat-table {
+    width: 100%;
+    margin: 20px 0;
+    overflow-x: auto;
+    text-align: left;
+  }
+  .mett-cell{
+    padding-right: 0;
+  }
+  .mat-header-cell {
+    font-weight: bold;
+    font-size : 15px;
+    color: #000;
+    background-color: #f8ba87;
+  }
+  
+  .mat-row:nth-child(even) {
+    background-color: #f0f0f0;
+  }
+  .mat-row:nth-child(odd) {
+    background-color: #c6e0e0;
+  }
+
+
+.update-button {
+    background-color: #f0954a;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color  1.0s ease;
+  }
+  
+  .update-button:hover {
+    background-color: #c6e0e0;
+  }
+  
+  
+
+  @media (max-width: 600px) {
+    .mat-table {
+      overflow-x: hidden;
+    }
+    
+    .mat-header-cell, .mat-cell {
+      // white-space: pre-wrap
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+  }
+  
+  
+  // .mat-header-cell, .mat-cell:hover{
+  //   overflow: visible; 
+  //   white-space: normal; 
+  //   }
+  
+  
+  

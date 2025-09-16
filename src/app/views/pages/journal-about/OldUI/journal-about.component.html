@@ -1,0 +1,62 @@
+<app-topslider></app-topslider>
+<app-journalmenubar></app-journalmenubar>
+<app-journal-inner-menu></app-journal-inner-menu>
+<div class="row" *ngIf="bookData?.bookId > 0 ; else noRecords;">
+    <section>
+        <div class="container about-journal">
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <img [src]="bookData?.imagePath" [alt]="bookData?.bookTitle" [title]="bookData?.bookTitle"
+                        width="auto" height="auto" alt="" />
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <h2>{{bookData?.bookTitle}} </h2>
+                    <ul>
+                        <li>Volume: <span>{{bookData?.volume == null ? 'NA': bookData.volume }}</span></li>
+                        <li>Year: <span>{{ bookData?.year == null ? 'NA' : bookData.year}}</span></li>
+                        <li>Editor in chief: <span>{{bookData?.editorName}}</span></li>
+                    </ul>
+                    <p>{{bookData?.aboutBook}} </p>
+                </div>
+                <div class="col-lg-4">
+                    <div class="journal-details">
+                        <ul>
+                            <li>ISSN No.: <span> {{ bookData?.issnNo }}</span></li>
+                            <li>Reg No.: <span> {{ bookData?.regNo }}</span></li>
+                            <li>Periodicity: <span>{{ bookData?.periodicity }}</span></li>
+                            <li>Language: <span>{{ bookData?.languages }}</span></li>
+                            <li>Scope: <span>{{ bookData?.scope }}</span></li>
+                            <li>Article Process Charges: <span>{{ bookData?.charges }}</span></li>
+                            <li>Open Access: <span> {{ bookData?.openAccess }}</span></li>
+                            <li>Print: <span>{{ bookData?.modeofAvailable =='Print' ? 'Yes': "NA" }}</span></li>
+                            <li>Online: <span>{{ bookData?.modeofAvailable =='Online' ? 'Yes': "NA" }}</span></li>
+                            <li>Review Process: <span>{{ bookData?.review }}</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center pt-5">
+                    <h1 class="mb-4">Publish your article in the Journal</h1>
+                    <a href="#" class="popular-genre-btn bg-color-lpu">Upload</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <app-journal-details-tab [items]="bookData"></app-journal-details-tab>
+    </section>
+</div>
+<div class="row">
+    <ng-template #noRecords>
+        <div class="row">
+            <div class="text-center">
+            <!-- <h4 class="text-center fs-3 text-danger"> Loading Data.. </h4> -->
+            <span class="text-danger fs-3">Loading </span><br />
+            <div class="spinner-grow text-danger text-center" style=" width: 14rem; height: 14rem;" role="status">
+            </div>
+        </div>
+        </div>
+    </ng-template>
+</div>
+<app-journalfooter></app-journalfooter>

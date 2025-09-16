@@ -1,0 +1,317 @@
+<app-menu-bar ></app-menu-bar>
+<ng-container *ngIf="CandidateData?.length >0; else noRecords">
+  <div class="home mt-5 container-fluid">
+    <div class="info">
+      <div class="dp">
+        <img src="../../../../../assets/PlacementImg/STUDENT.jpg" height="100px" width="100px">
+        <h3>{{CandidateDataIn.studentName}}</h3>
+      </div>
+      <div class="tab">
+        <table class="data">
+          <!-- "placementPolicy":"Policy Not Accepted","emailId":"","mobile":9915662280,"experience":"NA","currentCGPA":7.6,"blackLogCount":0,"allowedPart":null,"eepFeeDetails":"Preparatory Session Fee Not Deposited","xMarks":null,"xpassout":null,"xiIpassout":null,"xiiMarks":null,"graduationpassout":null,"gradMarks":null,"diplomapassout":null,"diplomaMarks":null,"companies":"Not Selected","opportunityStartDate":"","paymentDate":"","placementStatus":"" -->
+          <tr>
+            <th>Prov. Reg.No</th>
+            <td>{{CandidateDataIn.registrationNumber}}</td>
+            <th>CGPA</th>
+            <td>{{CandidateDataIn.currentCGPA}}</td>
+          </tr>
+          <tr>
+            <th>Placement Id</th>
+            <td>{{CandidateDataIn.uniquePlacementId}}</td>
+            <th>Repear/Backlog</th>
+            <td>{{CandidateDataIn.blackLogCount}}</td>
+          </tr>
+          <tr>
+            <th>Basic Details</th>
+            <td>{{CandidateDataIn.basicDetails}}</td>
+            <th>PEP Fee Details</th>
+            <td> {{CandidateDataIn.eepFeeDetails}}</td>
+          </tr>
+          <tr>
+            <th>Placement Services Status</th>
+            <td>Active</td>
+            <th>{{CandidateDataIn.placementPolicy}}</th>
+            <!-- <td>21 Aug 2021</td> -->
+            <td>{{CandidateDataIn.paymentDate}}</td>
+          </tr>
+          <tr>
+            <th>Opportunity Start Date</th>
+            <td>{{CandidateDataIn.opportunityStartDate}}</td>
+            <th>X Marks(PassOut)</th>
+            <td>{{CandidateDataIn.xpassout}} </td>
+          </tr>
+          <tr>
+            <th>Email</th>
+            <td>{{CandidateDataIn.emailId}}</td>
+            <th>XII Marks</th>
+            <td>{{CandidateDataIn.xiiMarks}}</td>
+          </tr>
+          <tr>
+            <th>Contact No</th>
+            <td>{{CandidateDataIn.mobile}}</td>
+            <th>Graduation Marks</th>
+            <td>{{CandidateDataIn.graduationpassout}}</td>
+          </tr>
+          <tr>
+            <th>Program</th>
+            <td>{{CandidateDataIn.program}}</td>
+            <th>Diploma Marks</th>
+            <td>{{CandidateDataIn.diplomapassout}}</td>
+          </tr>
+          <tr>
+            <th>Company Selected In</th>
+            <td>{{CandidateDataIn.companies}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="labela">
+      <h4>Training and Placement Co-ordinator (TPC) Details</h4>
+    </div>
+    <div class="det">
+      <table class="table table-striped">
+        <tr>
+          <th>Role</th>
+          <th>Name</th>
+          <th>EmailId</th>
+          <th>Phone Number</th>
+          <th>Seating Place</th>
+        </tr>
+        <tr *ngFor="let TpcData of TpcDetails">
+          <td>Training and Placement Coordinator (TPC)</td>
+          <td>
+            {{ TpcData.tpcName}}
+          </td>
+          <td>
+            {{ TpcData.tpcEmail }}
+          </td>
+          <td>
+            {{ TpcData.tpcPhone }}
+          </td>
+          <td>
+            {{ TpcData.seatingLocation }}
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="labelb">
+      <h4>Placement Policy and Drive Messages</h4>
+    </div>
+    <div class="box">
+      <div class="boxa">
+        <p style="text-align: center; font-weight: bold; color:brown">Job Offer policy</p>
+        <div class="policy">
+          <p> <a
+              href="https://ums.lpu.in/Placements/PlacementPolicy/Drive%20Registration%20Counters%20for%20Students.pdf">Drive
+              Registration Counters 2023 batch</a></p>
+          <p><a href="https://ums.lpu.in/Placements/PlacementPolicy/CareerServicesPolicy2026.pdf">Career Services Policy
+              2026 Graduating Batch</a></p>
+          <p><a href="https://ums.lpu.in/Placements/PlacementPolicy/CareerServicesPolicy2025.pdf">Career Services Policy
+              2025 Graduating Batch</a></p>
+          <p><a href="https://ums.lpu.in/Placements/PlacementPolicy/CareerServicesPolicy2024.pdf">Career Services Policy
+              2024 Graduating Batch</a></p>
+          <p><a href="https://ums.lpu.in/Placements/PlacementPolicy/CareerServicesPolicy2023.pdf">Career Services Policy
+              2023 Graduating Batch</a></p>
+        </div>
+      </div>
+      <div class="boxb">
+        <p style="text-align: center; font-weight: bold; color:brown">
+          <a href="DriveMessages">Click to view My Messages</a>
+        </p>
+        <div class="container-fluid">
+          <ng-container *ngIf="DriveMessageData?.length >0; else noDriveRecords">
+            <table class="table table-striped">
+              <tbody>
+                <tr class="row" *ngFor="let driveData of DriveMessageData">
+                  <td>
+                    {{ driveData.subject + driveData.entryDate }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </ng-container>
+          <ng-template #noDriveRecords>
+            <p class="fs-2 text-danger text-center "> </p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+    <div class="labelc">
+      <h4>Upcoming Placement Conduct</h4>
+    </div>
+    <div class="boxc">
+      <div class="container-fluid">
+        <ng-container *ngIf="UpcomingDriveConductDetails?.length >0; else noConductiveRecords">
+          <table class="table table-striped">
+            <tr>
+              <th>
+                Drive Id
+              </th>
+              <th>
+                Company Name
+              </th>
+              <th>
+                Round Name
+              </th>
+              <th>
+                Date
+              </th>
+              <th>
+                Process Details
+              </th>
+              <th>
+                Description
+              </th>
+            </tr>
+            <tbody>
+              <tr *ngFor="let driveData of UpcomingDriveConductDetails">
+                <td>
+                  {{ driveData.driveCode}}
+                </td>
+                <td>
+                  {{ driveData.companyName }}
+                </td>
+                <td>
+                  {{ driveData.roundName }}
+                </td>
+                <td>
+                  {{ driveData.conductedOn }}
+                </td>
+                <td>
+                  {{ driveData.processDetails }}
+                </td>
+                <td>
+                  {{ driveData.remarks }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </ng-container>
+        <ng-template #noConductiveRecords>
+          <p class="fs-2 text-danger text-center "> No Data Record Found! </p>
+        </ng-template>
+      </div>
+    </div>
+    <div class=" labeld">
+      <h4>Placement Announcements
+        <!-- <a id="announ" href="https://ums.lpu.in/Placements/frmPlacementSAnnouncement.aspx">(View All)</a></h4> -->
+        <a id="announ" href="AllAnnouncements">(View All)</a>
+      </h4>
+    </div>
+    <div class="boxd">
+      <!--  Data from DATABASE Using WEBAPI  -->
+      <div class="container-fluid">
+        <ng-container *ngIf="Announcements?.length >0; else noAnnouncementsRecords">
+          <table class="table table-striped">
+            <tbody>
+              <tr class="row p-4" *ngFor="let Announcement of Announcements">
+                <td>
+                  {{ Announcement.subject + Announcement.entryDate }}
+                </td>
+                <td [innerHTML]="Announcement.description ">
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </ng-container>
+        <ng-template #noAnnouncementsRecords>
+          <p class="fs-2 text-danger text-center "> </p>
+        </ng-template>
+      </div>
+    </div>
+    <div class="labele">
+      <h4>Upcoming Placement Drives</h4>
+    </div>
+    <div class="boxe">
+      <app-upcomingcompany [Item]="registrationNumber"></app-upcomingcompany>
+    </div>
+
+    <div class="labelf">
+      <h4>My Placement Record</h4>
+    </div>
+    <div class="boxf">
+      <ng-container *ngIf="MyPlacementRecords?.length >0; else noMyRecords">
+        <table class="table table-striped">
+          <tr>
+            <th>
+              Total Drives MadeAvailable
+            </th>
+            <th>
+              Registered
+            </th>
+            <th>
+              Participated
+            </th>
+            <th>
+              Selected
+            </th>
+            <th>
+              May Attend
+            </th>
+            <th>
+              Must Attend
+            </th>
+            <th>
+              May Attend Registered
+            </th>
+            <th>
+              Must Attend Registered
+            </th>
+          </tr>
+          <tbody>
+            <tr *ngFor="let MyRecord of MyPlacementRecords">
+              <td>
+                {{ MyRecord.totalDrivesMadeAvailable}}
+              </td>
+              <td>
+                {{ MyRecord.registered }}
+              </td>
+              <td>
+                {{ MyRecord.participated }}
+              </td>
+              <td>
+                {{ MyRecord.selected }}
+              </td>
+              <td>
+                {{ MyRecord.mayAttend }}
+              </td>
+              <td>
+                {{ MyRecord.mustAttend }}
+              </td>
+              <td>
+                {{ MyRecord.mustAttendRegistered }}
+              </td>
+              <td>
+                {{ MyRecord.mustAttendRegistered }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
+      <ng-template #noMyRecords>
+        <p class="fs-2 text-danger text-center "> No Record Found! </p>
+      </ng-template>
+    </div>
+    <div class="labelg">
+      <h4>Current Placed Students</h4>
+    </div>
+    <div class="boxg">
+      <app-crousel></app-crousel>
+    </div>
+    <div class="labelh">
+      <h4>Recently Visited Companies</h4>
+    </div>
+    <div class="boxh">
+      <app-vistedcompany></app-vistedcompany>
+    </div>
+
+  </div>
+</ng-container>
+<ng-template #noRecords>
+  <div class="d-flex justify-content-center">
+    <p class="fs-2 ms-5 text-danger text-center mb-5 "> Loading ..
+    </p><br />
+    <div class="spinner-grow text-danger tex-center mt-5" style=" width: 14rem; height: 14rem;" role="status"></div>
+  </div>
+</ng-template>

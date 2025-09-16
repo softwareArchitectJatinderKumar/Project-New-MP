@@ -1,0 +1,62 @@
+.autocomplete-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .suggestions {
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    position: absolute;
+    background-color: white;
+    width: 100%;
+    z-index: 1;
+  }
+  
+  .suggestions div {
+    padding: 8px;
+    cursor: pointer;
+  }
+  
+  .suggestions div.active {
+    background-color: #ddd;
+  }
+  
+  .suggestions div:hover {
+    background-color: #ddd;
+  }
+  
+
+  .fullscreen-modal .modal-dialog {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+  }
+  
+  .fullscreen-modal .modal-content {
+    height: 100%;
+    border: none;
+    border-radius: 0;
+  }
+  .widthStyle{
+    width: 23rem;
+  }
+
+  #nav-tab .btn.active {
+    background-color: #FD6C04; 
+  }
+  #nav-tab .btn {
+    color: black;  
+    background-color: white;
+  }
+
+  // #nav-tab .btn.active {
+  //   background-color:  #0d6efd;// #c9936d; 
+  //   color: #fff
+  // }
+  // #nav-tab .btn {
+  //   color: #000;  
+  //   background-color: #fff;
+  // }

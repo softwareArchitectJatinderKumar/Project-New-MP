@@ -1,0 +1,87 @@
+#nav-tab .btn.active {
+    background-color: green;
+    color: white;
+  }
+.myTextBox
+{
+    border-radius: 2.1rem;
+    border-style: outset;
+    box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.2);
+}
+.myButton{
+    width: 20rem;
+    border-radius: 2.1rem;
+    background-color: green;
+    color: white;
+    box-shadow: 0px 0px 4px 3px rgba(0, 0, 0, 0.2);
+}
+.myButton:hover{
+    background-color: black;
+    color: white;
+}
+
+.navbar-brand {
+    display: inline-flex;
+    color: brown;
+}
+
+h2 {
+    margin-left: 280px;
+}
+
+.div1 {
+    display: inline-flex;
+    color: brown;
+    padding: 10px;
+
+}
+
+.planner {
+    display: inline-flex;
+    padding: 10px;
+}
+
+select {
+    width: 350px;
+    height: 50px;
+}
+.customSelect{
+  // width: fit-content !important;
+  width: 11.5rem !important;
+  height: 2.2rem  !important;
+}
+.description {
+    display: inline-flex;
+    padding: 10px;
+    margin-left: 50px;
+}
+
+h4 {
+    padding: 10px;
+}
+
+.div2 {
+    display: inline-flex;
+    margin-top: 20px;
+    margin-left: 30px;
+    color: brown;
+}
+
+.priority {
+    display: inline-flex;
+
+}
+
+select {
+    border-color: brown;
+
+    border-radius: 5px;
+    border: solid 2px;
+}
+
+select:focus {
+    outline: brown 2px;
+    border-radius: 5px;
+    border: solid 2px;
+}
+

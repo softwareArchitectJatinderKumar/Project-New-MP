@@ -1,0 +1,188 @@
+<!-- <app-sm-admin-bar></app-sm-admin-bar>
+
+<div class="row">
+  <div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title text-center fs-3 text-success">All Universities Details</h4>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+
+<div class="row">
+  <div class="col-md-12 stretch-card">
+    <div class="card">
+      <div class="row d-flex justify-content-center mb-4">
+        <div class="col-sm-2 ms-2 mt-4">
+          <button (click)="exportToExcel()" class="btn btn-success me-4">Export to ExcelSheet</button>
+        </div>
+        <div class="col-sm-3 mt-4"></div>
+        <div class="col-sm-3 p-0">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label class="text-danger fs-4">Search your Text Here</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Search Data" />
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 w-100">
+
+         
+          <ng-container matColumnDef="universityName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger">University</th>
+            <td mat-cell *matCellDef="let element" class="text-success">{{ element.universityName }}</td>
+          </ng-container>
+
+        
+          <ng-container matColumnDef="programCode">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger">Program Code</th>
+            <td mat-cell *matCellDef="let element" class="text-success">{{ element.programCode }}</td>
+          </ng-container>
+
+         
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+       
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell text-center text-danger fs-5" [attr.colspan]="displayedColumns.length">
+              No Records found.
+            </td>
+          </tr>
+
+        </table>
+
+       
+        <mat-paginator
+          [length]="dataSource.data.length"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="pageSizeOptions"
+          showFirstLastButtons>
+        </mat-paginator>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #noRecords>
+  <div class="col-md-12 stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <label class="text-center fs-2 text-danger d-flex justify-content-center">No Records found.</label>
+      </div>
+    </div>
+  </div>
+</ng-template> -->
+
+
+<app-sm-admin-bar></app-sm-admin-bar>
+
+<div class="row">
+  <div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title text-center fs-3 text-success">
+          All Universities Details
+        </h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- check for records -->
+<div class="row" *ngIf="UniverstiesData.length > 0; else noRecords">
+  <div class="col-md-12 stretch-card">
+    <div class="card">
+      <div class="row d-flex justify-content-center mb-4">
+        <div class="col-sm-2 ms-2 mt-4">
+          <button (click)="exportToExcel()" class="btn btn-success me-4">
+            Export to ExcelSheet
+          </button>
+        </div>
+        <div class="col-sm-3 mt-4"></div>
+        <div class="col-sm-3 p-0">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label class="text-danger fs-4">Search your Text Here</mat-label>
+            <input
+              matInput
+              (keyup)="applyFilter($event)"
+              placeholder="Search Data"
+            />
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          matSort
+          class="mat-elevation-z8 w-100"
+        >
+          <!-- University Name Column -->
+          <ng-container matColumnDef="universityName">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              class="text-danger"
+            >
+              University
+            </th>
+            <td mat-cell *matCellDef="let element" class="text-success">
+              {{ element.universityName }}
+            </td>
+          </ng-container>
+
+          <!-- Program Code Column -->
+          <ng-container matColumnDef="programCode">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              class="text-danger"
+            >
+              Program Code
+            </th>
+            <td mat-cell *matCellDef="let element" class="text-success">
+              {{ element.programCode }}
+            </td>
+          </ng-container>
+
+          <!-- Header and Row Declarations -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+          ></tr>
+        </table>
+
+        <!-- Paginator always exists -->
+        <mat-paginator
+          [length]="dataSource.data.length"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="pageSizeOptions"
+          showFirstLastButtons
+        >
+        </mat-paginator>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- No records template -->
+<ng-template #noRecords>
+  <div class="col-md-12 stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <label
+          class="text-center fs-2 text-danger d-flex justify-content-center"
+          >No Records found.</label
+        >
+      </div>
+    </div>
+  </div>
+</ng-template>

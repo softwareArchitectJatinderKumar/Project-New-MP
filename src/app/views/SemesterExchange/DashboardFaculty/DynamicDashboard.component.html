@@ -1,0 +1,281 @@
+<div class="container-fluid mt-4" id="UserDashboardId" *ngIf="!isLoginFailed; else ErrorApplication">
+
+    <div class="row mb-4">
+        <div class="col-md-4 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label class="form-label text-danger fw-bold mb-0">Employee Name / UID:</label>
+                        <label class="form-label text-dark fw-bold text-end mb-0">{{EmployeeName}} /
+                            {{EmployeeCode}}</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-center align-items-center">
+                        <label class="form-label text-center text-danger fw-bold mb-0">{{ pageTitle }}</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label class="form-label text-danger fw-bold mb-0">Department Name:</label>
+                        <label class="form-label text-dark fw-bold text-end mb-0">{{DepartmentName}}</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ngx-datatable class="bootstrap table table-striped material" [rows]="visibleApplications"
+        [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
+        [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true">
+
+        <ngx-datatable-column name="Application Id" prop="applicationId" [width]="80">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.applicationId }}
+            </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Registration No" prop="registrationNo" [width]="80">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.registrationNo }}
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Contact No" prop="phoneNumber" [width]="80">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.phoneNumber }}
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="WhatsApp No" prop="whatsAppNo" [width]="80">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.whatsAppNo }}
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Parent Phone" prop="parentContact" [width]="80">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.parentContact }}
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Counselling Status" prop="counsellingStatus" [width]="80">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <span class="badge" [ngClass]="{
+                  'bg-success': row.counsellingStatus === 'True',
+                  'bg-danger': row.counsellingStatus === 'False',
+                  'bg-warning text-dark': !row.counsellingStatus || row.counsellingStatus === 'null'
+                }">
+                    {{ row.counsellingStatus === 'True' ? 'Done' : (row.counsellingStatus === 'False' ? 'Rejected' :
+                    'Pending') }}
+                </span>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Application Status" prop="isApproved" [width]="80">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <span class="badge" [ngClass]="{
+            'bg-success': row.isApproved === 'True',
+            'bg-danger': row.isApproved === 'False',
+            'bg-warning text-dark': !row.isApproved || row.isApproved === 'null'
+          }">
+                    {{ row.isApproved === 'True' ? 'Done' : (row.isApproved === 'False' ? 'Rejected' : 'Pending') }}
+                </span>
+            </ng-template>
+        </ngx-datatable-column>
+
+
+        <ngx-datatable-column name="Actions" [sortable]="false" prop="Id" [width]="520">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <!-- Common Task: View Application (All roles) -->
+                <button class="btn btn-info btn-sm me-1 mb-1" (click)="GetStudentApplication(row)">View
+                    Application</button>
+
+                <!-- Dealing Authority Tasks -->
+                <ng-container *ngIf="row.isDealingAuthority">
+                    <!-- <button class="btn btn-success btn-sm me-1 mb-1"
+                        (click)="acceptApplication(row)">Accept</button> -->
+                    <button class="btn btn-danger btn-sm me-1 mb-1" 
+                        (click)="disapproveApplication(row)">Reject</button>
+                    <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'Hod')">Forward to
+                        HOD</button>
+                    <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToFaculty(row)">Forward to
+                        Faculty</button>
+                    <button class="btn btn-primary btn-sm me-1 mb-1"
+                        (click)="row.counsellingStatus === 'True' ? viewCounsellingRemarks(row) : submitCounsellingRemarks(row)">
+                        {{ row.counsellingStatus === 'True' ? 'View Counselling' : 'Submit Counselling' }}
+                    </button>
+                    <button class="btn btn-primary btn-sm mb-1"
+                        (click)="UploadEvaluationRemarks(row, 'Authority')">Submit Evaluation</button>
+                </ng-container>
+
+                <!-- Dealing Faculty Tasks -->
+                <ng-container *ngIf="row.isdealingFaculty">
+                    <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'Hod')">Forward to
+                        HOD</button>
+                    <button class="btn btn-primary btn-sm" (click)="UploadEvaluationRemarks(row, 'Faculty')">Submit
+                        Evaluation</button>
+                </ng-container>
+
+                <!-- Dealing HOD Tasks -->
+                <ng-container *ngIf="row.isHOD">
+                    <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'How')">Forward to
+                        HoW</button>
+                    <button class="btn btn-primary btn-sm me-1 mb-1"
+                        (click)="row.counsellingStatus === 'True' ? viewCounsellingRemarks(row) : submitCounsellingRemarks(row)">
+                        {{ row.counsellingStatus === 'True' ? 'View Counselling' : 'Submit Counselling' }}
+                    </button>
+                    <!-- ADDED: Submit Evaluation Remarks for HOD -->
+                    <button class="btn btn-primary btn-sm me-1 mb-1"
+                        (click)="UploadEvaluationRemarks(row, 'HOD')">Submit Evaluation</button>
+
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewEvaluationRemarks(row)" >View
+                        Evaluation</button>
+
+                    <!-- ADDED: View Remarks buttons for HoD -->
+                    <button class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)">Accept</button>
+                    <button class="btn btn-danger btn-sm me-1 mb-1"  (click)="disapproveApplication(row)">Reject</button>
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)" [disabled]="!hasFacultyRemarks(row)">View Faculty
+                        Remarks</button>
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewHODRemarks(row)" [disabled]="!hasHODRemarks(row)"> View HOD
+                        Remarks</button>
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewHOWRemarks(row)" [disabled]="!hasHOWRemarks(row)"> View HoW
+                        Remarks</button> <!-- Added HoW Remarks button -->
+                    <button class="btn btn-info btn-sm mb-1" (click)="viewAuthorityRemarks(row)" [disabled]="!hasAuthorityRemarks(row)"> View Authority
+                        Remarks</button>
+              
+                </ng-container>
+
+                <!-- Dealing HoW Tasks -->
+                <ng-container *ngIf="row.isHoW">
+                    <button class="btn btn-success btn-sm me-1 mb-1"  
+                        (click)="acceptApplication(row)" [disabled]="row.isApproved == 'False'">Accept</button>
+                    <button class="btn btn-danger btn-sm me-1 mb-1" [disabled]="row.isApproved == 'False'"
+                        (click)="disapproveApplication(row)">Reject</button>
+                    <!-- ADDED: View Evaluation Remarks for HoW -->
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewEvaluationRemarks(row)" [disabled]="!hasEvaluationRemarks(row)">View
+                        Evaluation</button>
+                    <!-- ADDED: View Remarks buttons for HoW -->
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)" [disabled]="!hasFacultyRemarks(row)">View Faculty
+                        Remarks</button>
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewHODRemarks(row)" [disabled]="!hasHODRemarks(row)"> View HOD
+                        Remarks</button>
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewHOWRemarks(row)" [disabled]="!hasHOWRemarks(row)"> View HoW
+                        Remarks</button> <!-- Added HoW Remarks button -->
+                    <button class="btn btn-info btn-sm mb-1" (click)="viewAuthorityRemarks(row)" [disabled]="!hasAuthorityRemarks(row)"> View Authority
+                        Remarks</button>
+                </ng-container>
+
+            </ng-template>
+        </ngx-datatable-column>
+
+    </ngx-datatable>
+</div>
+
+<div class="full-page-loader" *ngIf="loadingIndicator" aria-label="Loading">
+    <div class="loader-spinner">
+        <span class="material-icons md-48 spin-icon">autorenew</span>
+    </div>
+</div>
+
+<!-- Evaluation Modal -->
+<ng-template #EvaluationModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Evaluation Form</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="EvaluationForm" (ngSubmit)="submitEvaluationForm()" class="forms-sample" novalidate>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Application ID:</label>
+                    <input type="text" class="form-control" [value]="ApplicationId" disabled />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Registration Number:</label>
+                    <input type="text" class="form-control" [value]="RegistrationNo" disabled />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4" *ngFor="let field of [
+                 {label: 'Academics Marks', name: 'AcademicsMarks'},
+                 {label: 'Communication Skills Marks', name: 'CommunicationSkillsMarks'},
+                 {label: 'Attitude Marks', name: 'AttitudeMarks'},
+                 {label: 'Extra-Curricular Activities Marks', name: 'ExtraCurricularMarks'},
+                 {label: 'Knowledge Marks', name: 'KnowledgeMarks'}
+               ]">
+                    <label class="form-label">{{ field.label }}:</label>
+                    <input type="number" class="form-control" [formControlName]="field.name" min="0" max="100" />
+                    <div class="text-danger"
+                        *ngIf="evaluationFormControls[field.name]?.invalid && (evaluationFormControls[field.name]?.touched || isEvaluationFormSubmitted)">
+                        Please enter a valid {{ field.label }} (0-100).
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label class="form-label">Comments:</label>
+                    <textarea class="form-control" rows="3" formControlName="Comments"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cancel click')">Cancel</button>
+                <button type="submit" class="btn btn-success" [disabled]="EvaluationForm.invalid">Submit
+                    Evaluation</button>
+            </div>
+        </form>
+    </div>
+</ng-template>
+
+<!-- Error Template -->
+<ng-template #ErrorApplication>
+    <div class="text-center" *ngIf="isLoginFailed">
+        <h3 class="text-center fs-2 m-5 text-danger pt-5"> Error in User Login. </h3>
+        <div class="row mt-4 mb-4">
+            <div class="col-sm-12 text-center">
+                <div class="mb-3 p-4">
+                    <label class="form-label fs-4 text-danger">Unauthorized Access.</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<!-- Counselling Remarks Modal -->
+<ng-template #CounsellingRemarksModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Counselling Remarks Form</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="CounsellingRemarksForm" (ngSubmit)="submitCounsellingRemarksForm()" class="forms-sample"
+            novalidate>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label class="form-label">Your Remarks: <span class="text-danger">*</span></label>
+                    <textarea class="form-control" rows="5" formControlName="Comments"></textarea>
+                    <div class="text-danger"
+                        *ngIf="counsellingRemarksFormControls['Comments']?.invalid && (counsellingRemarksFormControls['Comments']?.touched || isCounsellingFormSubmitted)">
+                        Counselling remarks are required.
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Cancel click')">Cancel</button>
+                <button type="submit" class="btn btn-success" [disabled]="CounsellingRemarksForm.invalid">Submit
+                    Remarks</button>
+            </div>
+        </form>
+    </div>
+</ng-template>

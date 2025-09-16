@@ -1,0 +1,43 @@
+/* Example of custom styles */
+.container {
+    
+    margin: auto;
+    padding-top: 20px;
+    margin-top:2rem;
+    margin-bottom:4rem;
+  }
+  
+  .form-label {
+    font-weight: bold;
+    color: brown;
+  }
+  
+  .mb-2 {
+    margin-bottom: 0.5rem;
+  }
+  input,select{
+    border-style: outset;
+    
+  }
+ 
+  
+  #nav-tab .btn.active {
+    background-color: #FD6C04; 
+  }
+  #nav-tab .btn {
+    color: black;  
+    background-color: white;
+  }
+  
+  .btn-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  
+  /* Add this to make it visually clear when disabled */
+  button:disabled {
+    background-color: #cccccc;
+    color: #666666;
+  }
+  
