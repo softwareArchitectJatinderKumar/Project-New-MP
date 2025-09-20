@@ -1,17 +1,15 @@
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { NgbDateStruct, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { MatPaginator, _MatPaginatorBase } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { _MatPaginatorBase } from '@angular/material/paginator';
 import { AuthService } from 'src/app/_services/auth.service';
 import { StorageService } from 'src/app/_services/storage.service';
 import * as XLSX from 'xlsx';
-import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import swal from 'sweetalert2';
 import { ColumnMode } from '@swimlane/ngx-datatable';
 import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
@@ -153,7 +151,7 @@ export class MouDocumentsReportComponent implements OnInit {
           this.columns = []; this.headHtmlData = [];
           this.headHtmlData = this.MouDocumentDetails[0];
           this.columns = Object.keys(this.MouDocumentDetails[0]);
-          this.columns = this.columns.filter((item: any) => item !== 'fileName' && item!=='mouPartnerName' && item!== 'mouUploadedBy' && item!== 'mouUploadedByUID' && item!== 'mouApprovedBy' && item !== 'mouEndDate'  && item !== 'mouStartDate' && item !== 'mouStatus' && item !== 'filePath' && item !== 'uid' && item !== 'updatedOn'  && item !== 'facultyName'  && item !== 'mouTitle' && item !== 'mouPartnerName' && item !== 'spocContactNo'&& item !== 'spocName' && item !== 'spocEmailId' && item !== 'mouPartner' && item !== 'createdOn' && item !== 'createdBy' && item !== 'ipAddress' && item !== 'updatedBy' && item !== 'disapprovalReason' && item !== 'approvedBy'    && item !== 'updatedOn'  && item !== 'isActive' && item !== 'isApproved' && item !== 'approvalDate' && item !== 'schoolDivisionInvolved' && item !== 'mouId'  && item !== 'id' && item !== 'activityStartDate' && item !== 'activityEndDate' && item!=='assignedBy' && item!=='assignedTo');
+          this.columns = this.columns.filter((item: any) => item !== 'fileName' && item !== 'newMouId' && item!=='mouPartnerName' && item!== 'mouUploadedBy' && item!== 'mouUploadedByUID' && item!== 'mouApprovedBy' && item !== 'mouEndDate'  && item !== 'mouStartDate' && item !== 'mouStatus' && item !== 'filePath' && item !== 'uid' && item !== 'updatedOn'  && item !== 'facultyName'  && item !== 'mouTitle' && item !== 'mouPartnerName' && item !== 'spocContactNo'&& item !== 'spocName' && item !== 'spocEmailId' && item !== 'mouPartner' && item !== 'createdOn' && item !== 'createdBy' && item !== 'ipAddress' && item !== 'updatedBy' && item !== 'disapprovalReason' && item !== 'approvedBy'    && item !== 'updatedOn'  && item !== 'isActive' && item !== 'isApproved' && item !== 'approvalDate' && item !== 'schoolDivisionInvolved' && item !== 'mouId'  && item !== 'id' && item !== 'activityStartDate' && item !== 'activityEndDate' && item!=='assignedBy' && item!=='assignedTo');
           this.columns.push()
           this.loadingIndicator = false;
 

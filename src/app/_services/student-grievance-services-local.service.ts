@@ -25,38 +25,46 @@ export class StudentGrievanceServicesLocalService {
   // private authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJMb2dpbk5hbWUiOiIzMTMwOSIsIkRlcGFydG1lbnROYW1lIjoiTi9BIiwiUm9sbElkIjoiNTAiLCJlbWFpbElkIjoiamF0aW5kZXIuMzEzMDlAbHB1LmNvLmluIiwiTkFNRSI6IkphdGluZGVyIEt1bWFyIiwiaXNBY3RpdmUiOiJUcnVlIiwiVW5pcXVlaWQiOiJmYzJhYjI4Yi0zYmFiLTRmNmMtOWE3MS0yNTk2OTYwZWM2ZDAiLCJJc1BhcmVudCI6IkZhbHNlIiwiVXNlclR5cGUiOiJOL0EiLCJTcGVjaWFsQmxvY2siOiJOL0EiLCJuYmYiOjE3MDc3MDc4MjksImV4cCI6MTcwNzc5NDIyOSwiaWF0IjoxNzA3NzA3ODI5LCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo3MTI1LyIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjcxMjUvIn0.X8u6FgsUq2E2pmIumzLQSGKpbGIXHNETBKgxx8im6HE';
   private authToken = environment.authToken;
 
-  // GetEmpInfo(id:any): Observable<any> {
-  //   const httpOptions = {
-  //     headers: new HttpHeaders({
-  //       'Authorization': `Bearer ${this.authToken}`
-  //     })
-  //   };
-  //   return this.http.get<any>(`${AUTH_APILOCAL}SemesterExchangeStudent/GetIdWiseEmpLoyeeInfo?Id=${id}`, httpOptions);
-  // }
+ 
 
   GetAllStudentsCases(): Observable<any> {
-    var authToken = this.storageService.getUser();
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Authorization': `Bearer ${authToken}`
-      })
-    };
-    return this.http.get<any>(`${AUTH_APILOCAL}StudentGrievance/GetStudentGrievanceDetails`, httpOptions);
+     let token = this.storageService.getUser();
+        let headers = new HttpHeaders()
+        .set('Authorization', 'Bearer ' + token)
+        .set('Content-Type', 'application/json'); 
+        return this.http.get(
+          AUTH_API + 'StudentGrievance/Get',
+          // AUTH_API + 'api/Planning/GeteGovDivisionMaster',
+         {headers}
+        );
   }
 
 
   GetAllStudentsCasesRemarks(id: any): Observable<any> {
+    
+     let token = this.storageService.getUser();
+        let headers = new HttpHeaders()
+        .set('Authorization', 'Bearer ' + token)
+        .set('Content-Type', 'application/json'); 
+    
+        //httpOptions.headers.set('Authentication', 'Bearer ' + token);
+        return this.http.get(
+          AUTH_APILOCAL + 'StudentGrievance/GetStudentGrievanceRemarksDetails?Id=' + id,
+          // AUTH_API + 'api/Planning/GeteGovDivisionMaster', /GetDisplayemployeeByEmpDepartment?empCode='+empCode,
+         {headers}
+        );
 
-    let token = this.storageService.getUser();
-    let headers = new HttpHeaders()
-      .set('Authorization', 'Bearer ' + token)
-      .set('Accept', '*/*',);
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-      })
-    };
-    return this.http.get<any>(`${AUTH_APILOCAL}StudentGrievance/GetStudentGrievanceRemarksDetails?Id=${id}`, httpOptions);
+
+    // let token = this.storageService.getUser();
+    // let headers = new HttpHeaders()
+    //   .set('Authorization', 'Bearer ' + token)
+    //   .set('Accept', '*/*',);
+    // const httpOptions = {
+    //   headers: new HttpHeaders({
+    //     'Authorization': `Bearer ${token}`
+    //   })
+    // };
+    // return this.http.get<any>(`${AUTH_APILOCAL}StudentGrievance/GetStudentGrievanceRemarksDetails?Id=${id}`, httpOptions);
   }
 
 

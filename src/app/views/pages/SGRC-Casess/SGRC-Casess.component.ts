@@ -440,7 +440,8 @@ export class SGRCComponenent implements OnInit {
   onSelectFile(a: any) {
     debugger;
     let aa = a;
-    window.open('https://schools.lpu.in/Services/StudentGrievance/' + a.fileName, '_blank');
+    alert(JSON.stringify(a))
+    window.open('ftp://schools.lpu.in/Services/StudentGrievance/' + a['fileName'], '_blank');
   }
 
 
@@ -481,7 +482,8 @@ export class SGRCComponenent implements OnInit {
   onSelectClosedcases(a: any) {
     debugger;
     this.IdClosedCase = a['id'];
-
+    alert(JSON.stringify(a))
+    alert(a['masterId'])
     this.studendGservicelocal.GetAllStudentsCasesRemarks(this.IdClosedCase).subscribe(
       (response) => {
         if (response.item1.length > 0) {
@@ -537,7 +539,6 @@ export class SGRCComponenent implements OnInit {
         this.headHtmlData = this.studentLists[0];
         this.columns = Object.keys(this.studentLists[0]);
         this.columns = this.columns.filter((item: any) => item !== 'fileName');
-        debugger;
         this.columns.push()
         this.loadingIndicator = false;
       } else {

@@ -4,14 +4,14 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 import { StorageService } from './storage.service';
-const AUTH_API = 'https://projectsapi.lpu.in/';//'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
-const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
-const AUTH_API_LOCALs = 'https://projectsapi.lpu.in/'; //'https://localhost:7125/'; 
-const AUTH_API_LOCAs = 'https://projectsapi.lpu.in/'; //'https://localhost:7125/';  
-// const AUTH_API = 'https://localhost:7125/';//'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
-// const AUTH_API_LOCAL = 'https://localhost:7125/';
-// const AUTH_API_LOCALs = 'https://localhost:7125/'; //'https://localhost:7125/'; 
-// const AUTH_API_LOCAs = 'https://localhost:7125/'; //'https://localhost:7125/';  
+// const AUTH_API = 'https://projectsapi.lpu.in/';//'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
+// const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
+// const AUTH_API_LOCALs = 'https://projectsapi.lpu.in/'; //'https://localhost:7125/'; 
+// const AUTH_API_LOCAs = 'https://projectsapi.lpu.in/'; //'https://localhost:7125/';  
+const AUTH_API = 'https://localhost:7125/';//'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
+const AUTH_API_LOCAL = 'https://localhost:7125/';
+const AUTH_API_LOCALs = 'https://localhost:7125/'; //'https://localhost:7125/'; 
+const AUTH_API_LOCAs = 'https://localhost:7125/'; //'https://localhost:7125/';  
 
 @Injectable({
   providedIn: 'root'

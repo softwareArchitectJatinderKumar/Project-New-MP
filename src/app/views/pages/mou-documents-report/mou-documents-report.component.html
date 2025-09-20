@@ -31,6 +31,15 @@
                                     ngx-datatable-cell-template>
                                     <ng-container *ngIf="row.id != null">   
                                         <span
+                                        style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.newMouId}}</span>                                     
+                                    </ng-container>                                     
+                                </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id">
+                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                    ngx-datatable-cell-template>
+                                    <ng-container *ngIf="row.id != null">   
+                                        <span
                                         style="margin: auto;float: left; padding: 10px 10px 10px 10px;">MOU/{{row.id}}</span>                                     
                                     </ng-container>                                     
                                 </ng-template>
