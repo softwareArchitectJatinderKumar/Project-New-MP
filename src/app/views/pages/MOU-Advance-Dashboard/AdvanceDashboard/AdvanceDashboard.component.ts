@@ -34,8 +34,8 @@ interface SchoolDivision {
 
 @Component({
   selector: 'MouActivityActionPlan',
-  templateUrl: './MouActivityActionPlan.component.html',
-  styleUrls: ['./MouActivityActionPlan.component.scss'],
+  templateUrl: './AdvanceDashboard.component.html',
+  styleUrls: ['./AdvanceDashboard.component.scss'],
   standalone: false
 })
 export class MouActivityActionPlanComponent implements OnInit {
@@ -772,7 +772,7 @@ export class MouActivityActionPlanComponent implements OnInit {
 
 
   GetAllMouActionsTakenData(): void {
-    this.mouDocumentsService.MouActionsTakenData(this.EmployeeCode).subscribe({
+    this.mouDocumentsService.MouActionsTakenData(this.EmployeeCode,'').subscribe({
       next: response => {
         if (response.item1.length > 0) {
           this.filteredMouActionTakenDocuments = this.MouActionTakenDocuments = response.item1;

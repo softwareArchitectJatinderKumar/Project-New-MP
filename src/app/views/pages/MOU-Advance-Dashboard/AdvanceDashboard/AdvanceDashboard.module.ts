@@ -17,8 +17,8 @@ import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { MaterialModule } from 'src/material.module'; 
 
-import { MouActivityActionPlanComponent } from './MouActivityActionPlan.component';
-import {} from './MouActivityActionPlan.component'
+import { MouActivityActionPlanComponent } from './AdvanceDashboard.component';
+import {} from './AdvanceDashboard.component'
 
 const routes: Routes = [
   {

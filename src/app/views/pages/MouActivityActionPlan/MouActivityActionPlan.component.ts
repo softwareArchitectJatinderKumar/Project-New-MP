@@ -1,16 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators, FormsModule } from '@angular/forms';
-import { NgbDateStruct, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute } from '@angular/router';
-import { debounceTime, distinctUntilChanged, finalize } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { AuthService } from 'src/app/_services/auth.service';
 import { StorageService } from 'src/app/_services/storage.service';
-import { PlacementService } from 'src/app/_services/placement.service';
 import { AgreementEntryService } from 'src/app/_services/agreement-entry.service';
-import { MatPaginator, _MatPaginatorBase } from '@angular/material/paginator';
+import { _MatPaginatorBase } from '@angular/material/paginator';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { DOCUMENT } from '@angular/common';
-import { Details, RESPONSE, RESULT } from 'src/app/_model/placementDrive';
 import { DatePipe } from '@angular/common';
 import swal from 'sweetalert2';
 import { ColumnMode } from '@swimlane/ngx-datatable';
@@ -19,7 +17,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MouActivity } from './MouActivity';
 import { LpuPlannerServiceService } from 'src/app/_services/lpu-planner-service.service';
 import * as XLSX from 'xlsx';
-import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
 import { mouActivities } from './mouActivities';
 interface Employee {
   employeeName: string;
@@ -57,7 +54,7 @@ export class MouActivityActionPlanComponent implements OnInit {
   EmployeeData: Employee[] = [];
   filteredEmployeesData: Employee[] = [];
   Reason: any;
-  AssignedToUid: any='';
+  AssignedToUid: any = '';
   filteredMouActivityAssigned: any[] = [];
   MouActivityAssigned: any[] = [];
   searchQueryx: any;
@@ -125,59 +122,6 @@ export class MouActivityActionPlanComponent implements OnInit {
       this.getToken(loginName);
     }
   }
-  onActivitySelected(event: any): void {
-    this.selectedActivityId = event.target.value;
-    // alert(this.selectedActivityId)
-    // this.SelectedActivityDetails = activity.description
-  }
-
-  private formatDate(date: Date): string {
-    const year = date.getFullYear();
-    const month = this.padZero(date.getMonth() + 1); // Months are zero-based
-    const day = this.padZero(date.getDate());
-    return `${year}-${month}-${day}`;
-  }
-  private padZero(value: number): string {
-    return value < 10 ? `0${value}` : `${value}`;
-  }
-// aaded on 28-may-25
-  
-allPlannerSessions: any[] = [];
-selectedPlannerSession: any = '0';  // default selected value
-allOBPStaffData: any[] = [];
-getAllActivitiesDetails(): void{
-  this.mouDocumentsService.GetAllActivities().subscribe({
-    next: response =>{
-      if (response.item1)
-      {
-        console.log(JSON.stringify(response.item1));
-      }
-    }
-  })
-}
-getAllPlannerSession(): void {
-  this.mouDocumentsService.GetAllOBPPlannerSessions().subscribe({
-    next: response => {
-      if (response.item1) {
-        this.allPlannerSessions = response.item1;           
-      }
-    }
-  });
-}
-setSessionId(event: any) {
-  const selectedId = event.target.value;
-  this.selectedPlannerSession = selectedId;
-  // alert('Selected Session ID: ' + selectedId);
-  this.GetAllActivtiesAssigned(this.EmployeeCode,this.selectedPlannerSession);
-}
-// end new add 28-May-25 
-
-// Added on 29 -may-25
-
-
-isLoading: boolean = false;
-//End logic on 29-may-25
-
   getToken(id: any) {
     this.authService.loginTemp(id).subscribe({
       next: data => {
@@ -198,113 +142,34 @@ isLoading: boolean = false;
       }
     });
   }
-  LoginFailed(_NewError: any) {
-    this.isLoginFailed = true;
-    swal.fire({
-      title: 'Login Failed',
-      text: 'Login details are Invalid!',
-      icon: 'warning',
+
+  // aaded on 28-may-25
+
+  allPlannerSessions: any[] = [];
+  selectedPlannerSession: any = '0';  // default selected value
+  allOBPStaffData: any[] = [];
+  getAllActivitiesDetails(): void {
+    this.mouDocumentsService.GetAllActivities().subscribe({
+      next: response => {
+        if (response.item1) {
+          // console.log(JSON.stringify(response.item1));
+        }
+      }
     })
-    const element = document.getElementById('ActivityPage');
-    if (element) {
-      element.hidden = true;
-    }
   }
-  GetAllMouDocumentsForApprovals(IdCode: any): void {
-    this.mouDocumentsService.GetMouDocumentToAssignActivity(IdCode).subscribe({
-      // this.mouDocumentsService.MouDocumentsforApproval(IdCode).subscribe({
-      next: response => {
-        if (response.item1.length > 0) {
-          this.filteredMouActivityDocuments = this.MouActivityDocuments = response.item1;
-          this.dataSource.data = this.MouActivityDocuments;
-          //console.log(JSON.stringify(this.MouActivityDocuments));
-          this.MouActivityDocuments.sort((a, b) => {
-            return (b.id - a.id);
-          });
-          this.loadingIndicator = false;
-          this.SchoolDivisionInvolved = this.MouActivityDocuments[0].schoolDivisionInvolved;
-          this.SchoolDivisionInvolved = this.getDivisionNameById(this.SchoolDivisionInvolved);
-          this.columns = []; this.headHtmlData = [];
-          this.headHtmlData = this.MouActivityDocuments[0];
-          this.columns = Object.keys(this.MouActivityDocuments[0]);
-          this.columns = this.columns.filter((item: any) => item !== 'filePath' && item !== 'activityDetails' && item !== 'activityPerformed' && item !== 'mouStartDate' && item !== 'mouEndDate' && item !== 'mouStatus' && item !== 'approvedBy' && item !== 'createdBy' && item !== 'mouId' && item !== 'schoolDivisionInvolved' && item !== 'isApproved' && item !== 'approvalDate' && item !== 'disapprovalReason' && item !== 'uid' && item !== 'id' && item !== 'spocContactNo');
-          // this.columns = this.columns.filter((item: any) => item !== 'filePath' && item !== 'mouStartDate' && item !== 'mouEndDate' && item !== 'mouStatus' && item !== 'approvedBy'&& item !== 'createdBy' && item !== 'mouId' && item !== 'schoolDivisionInvolved' && item !== 'isApproved' && item !== 'approvalDate' && item !== 'disapprovalReason' && item !== 'uid' && item !== 'id' && item !== 'spocContactNo');
-          this.columns.push()
-          this.loadingIndicator = false;
 
-        } else {
-          this.dataSource.data = this.MouActivityDocuments = [];
-          this.showNoDataFoundMessage = true;
-        }
-      },
-      error: err => {
-        this.LoginFailed(err);
-      }
-    });
-  }
-  removeNumberPrefix(activityDetails: string): string {
-    return activityDetails ? activityDetails.replace(/^\d+-\s*/, '') : '';
-  }
- 
-  GetAllActivtiesAssigned(IdCode: any, sessionId: any): void {
-    // Show loader before request starts
-    this.loadingIndicator = true;
-    this.showNoDataFoundMessage = false;
-  
-    this.mouDocumentsService.GetAllActivitiesAssignedwithSession(IdCode, sessionId).subscribe({
-      next: response => {
-        if (response.item1 && response.item1.length > 0) {
-          this.filteredMouActivityAssigned = this.MouActivityAssigned = response.item1;
-          this.dataSource.data = this.MouActivityAssigned;
-  
-          this.MouActivityDocuments.sort((a, b) => b.id - a.id);
-  
-          // Setup columns
-          this.columnsAssigned = [];
-          this.headHtmlData = this.MouActivityAssigned[0];
-          this.columnsAssigned = Object.keys(this.headHtmlData);
-          this.columnsAssigned = this.columnsAssigned.filter((item: string) =>
-            ![
-              'filePath', 'activityDetails', 'mouStartDate', 'mouEndDate', 'mouStatus',
-              'mouTitle', 'actionAssignedBy', 'uid', 'createdBy', 'createdOn', 'mouId','id', 'sessionAcademicYear'
-            ].includes(item)
-          );
-  
-          this.showNoDataFoundMessage = false;
-        } else {
-          this.dataSource.data = this.MouActivityDocuments = this.filteredMouActivityAssigned = this.MouActivityAssigned =[];
-          this.showNoDataFoundMessage = true;
-        }
-  
-        // Delay hiding the loader for 2.5 seconds
-        setTimeout(() => {
-          this.loadingIndicator = false;
-        }, 2500);
-      },
-      error: err => {
-        this.dataSource.data = this.MouActivityDocuments = this.filteredMouActivityAssigned = this.MouActivityAssigned =[];
-        this.showNoDataFoundMessage = true;
-        setTimeout(() => {
-          this.loadingIndicator = false;          
-          this.showNoDataFoundMessage = true;
-        }, 2500);
-  
-        this.LoginFailed(err);
-      }
-    });
-  }
-  
- 
 
-  GetAllActivities(): void {
-    this.lpuPlannerServiceService.GetSchoolDivisions().subscribe((response) => {
-      if (response.item1.length > 0) {
-        this.allSchoolDivisions = response.item1;
-      } else {
-        this.allSchoolDivisions = [];
+  getAllPlannerSession(): void {
+    this.mouDocumentsService.GetAllOBPPlannerSessions().subscribe({
+      next: response => {
+        if (response.item1) {
+          this.allPlannerSessions = response.item1;
+        }
       }
     });
   }
+
+
   UserRole: any;
   GetEmployeeDetails(): void {
     this.mouDocumentsService.GetEmployeeDetails().subscribe({
@@ -324,7 +189,7 @@ isLoading: boolean = false;
           // if(this.UserRole!=null)
           // {
           this.GetAllMouDocumentsForApprovals(this.EmployeeCode);
-          this.GetAllActivtiesAssigned(this.EmployeeCode,this.selectedPlannerSession);
+          this.GetAllActivtiesAssigned(this.EmployeeCode, this.selectedPlannerSession);
         } else {
           this.EmployeeDetails = [];
           this.showNoDataFoundMessage = true;
@@ -336,6 +201,179 @@ isLoading: boolean = false;
       }
     });
   }
+
+    GetAllMouDocumentsForApprovals(IdCode: any): void {
+    this.mouDocumentsService.GetMouDocumentToAssignActivity(IdCode).subscribe({
+      // this.mouDocumentsService.MouDocumentsforApproval(IdCode).subscribe({
+      next: response => {
+        if (response.item1.length > 0) {
+          this.filteredMouActivityDocuments = this.MouActivityDocuments = response.item1;
+          this.dataSource.data = this.MouActivityDocuments;
+          //console.log(JSON.stringify(this.MouActivityDocuments));
+          this.MouActivityDocuments.sort((a, b) => {
+            return (b.id - a.id);
+          });
+          this.loadingIndicator = false;
+          this.SchoolDivisionInvolved = this.MouActivityDocuments[0].schoolDivisionInvolved;
+          this.SchoolDivisionInvolved = this.getDivisionNameById(this.SchoolDivisionInvolved);
+          this.columns = []; this.headHtmlData = [];
+          this.headHtmlData = this.MouActivityDocuments[0];
+          this.columns = Object.keys(this.MouActivityDocuments[0]);
+          this.columns = this.columns.filter((item: any) => item !== 'newMouId' && item !== 'filePath' && item !== 'activityDetails' && item !== 'activityPerformed' && item !== 'mouStartDate' && item !== 'mouEndDate' && item !== 'mouStatus' && item !== 'approvedBy' && item !== 'createdBy' && item !== 'mouId' && item !== 'schoolDivisionInvolved' && item !== 'isApproved' && item !== 'approvalDate' && item !== 'disapprovalReason' && item !== 'uid' && item !== 'id' && item !== 'spocContactNo');
+          // this.columns = this.columns.filter((item: any) => item !== 'filePath' && item !== 'mouStartDate' && item !== 'mouEndDate' && item !== 'mouStatus' && item !== 'approvedBy'&& item !== 'createdBy' && item !== 'mouId' && item !== 'schoolDivisionInvolved' && item !== 'isApproved' && item !== 'approvalDate' && item !== 'disapprovalReason' && item !== 'uid' && item !== 'id' && item !== 'spocContactNo');
+          this.columns.push()
+          this.loadingIndicator = false;
+
+        } else {
+          this.dataSource.data = this.MouActivityDocuments = [];
+          this.showNoDataFoundMessage = true;
+        }
+      },
+      error: err => {
+        this.LoginFailed(err);
+      }
+    });
+  }
+
+
+   GetAllActivtiesAssigned(IdCode: any, sessionId: any): void {
+    // Show loader before request starts
+    this.loadingIndicator = true;
+    this.showNoDataFoundMessage = false;
+
+    this.mouDocumentsService.GetAllActivitiesAssignedwithSession(IdCode, sessionId).subscribe({
+      next: response => {
+        if (response.item1 && response.item1.length > 0) {
+          this.filteredMouActivityAssigned = this.MouActivityAssigned = response.item1;
+          this.dataSource.data = this.MouActivityAssigned;
+
+          this.MouActivityDocuments.sort((a, b) => b.id - a.id);
+
+          // Setup columns
+          this.columnsAssigned = [];
+          this.headHtmlData = this.MouActivityAssigned[0];
+          this.columnsAssigned = Object.keys(this.headHtmlData);
+          this.columnsAssigned = this.columnsAssigned.filter((item: string) =>
+            ![
+              'filePath', 'activityDetails', 'mouStartDate', 'mouEndDate', 'mouStatus', 'newMouId',
+              'mouTitle', 'actionAssignedBy', 'uid', 'createdBy', 'createdOn', 'mouId', 'id', 'sessionAcademicYear'
+            ].includes(item)
+          );
+
+          this.showNoDataFoundMessage = false;
+        } else {
+          this.dataSource.data = this.MouActivityDocuments = this.filteredMouActivityAssigned = this.MouActivityAssigned = [];
+          this.showNoDataFoundMessage = true;
+        }
+
+        // Delay hiding the loader for 2.5 seconds
+        setTimeout(() => {
+          this.loadingIndicator = false;
+        }, 2500);
+      },
+      error: err => {
+        this.dataSource.data = this.MouActivityDocuments = this.filteredMouActivityAssigned = this.MouActivityAssigned = [];
+        this.showNoDataFoundMessage = true;
+        setTimeout(() => {
+          this.loadingIndicator = false;
+          this.showNoDataFoundMessage = true;
+        }, 2500);
+
+        this.LoginFailed(err);
+      }
+    });
+  }
+
+  
+  GetAllActivities(): void {
+    this.lpuPlannerServiceService.GetSchoolDivisions().subscribe((response) => {
+      if (response.item1.length > 0) {
+        this.allSchoolDivisions = response.item1;
+      } else {
+        this.allSchoolDivisions = [];
+      }
+    });
+  }
+
+  GetEmployeeData(): void {
+    this.mouDocumentsService.GetEmployeeData().subscribe({
+      next: response => {
+        if (response.item1.length > 0) {
+          this.EmployeeData = response.item1;
+        } else {
+          this.EmployeeData = [];
+        }
+      },
+      error: err => {
+        console.error(err);
+      }
+    });
+  }
+
+
+  setupEmployeeControl() {
+    this.employeeControl.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      )
+      .subscribe(() => this.onInput());
+  }
+
+  setSessionId(event: any) {
+    const selectedId = event.target.value;
+    this.selectedPlannerSession = selectedId;
+    // alert('Selected Session ID: ' + selectedId);
+    this.GetAllActivtiesAssigned(this.EmployeeCode, this.selectedPlannerSession);
+  }
+  // end new add 28-May-25 
+
+
+  onActivitySelected(event: any): void {
+    this.selectedActivityId = event.target.value;
+    // alert(this.selectedActivityId)
+    // this.SelectedActivityDetails = activity.description
+  }
+
+  private formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = this.padZero(date.getMonth() + 1); // Months are zero-based
+    const day = this.padZero(date.getDate());
+    return `${year}-${month}-${day}`;
+  }
+  private padZero(value: number): string {
+    return value < 10 ? `0${value}` : `${value}`;
+  }
+
+  // Added on 29 -may-25
+
+
+  isLoading: boolean = false;
+  //End logic on 29-may-25
+
+
+  LoginFailed(_NewError: any) {
+    this.isLoginFailed = true;
+    swal.fire({
+      title: 'Login Failed',
+      text: 'Login details are Invalid!',
+      icon: 'warning',
+    })
+    const element = document.getElementById('ActivityPage');
+    if (element) {
+      element.hidden = true;
+    }
+  }
+
+  removeNumberPrefix(activityDetails: string): string {
+    return activityDetails ? activityDetails.replace(/^\d+-\s*/, '') : '';
+  }
+
+ 
+
+
+
+
   onSelectFileX(a: any) {
     let aa = a;
     window.open(this.ServerUrl + aa.filePath, '_blank');
@@ -372,36 +410,14 @@ isLoading: boolean = false;
       icon: 'warning',
     })
   }
-  GetEmployeeData(): void {
-    this.mouDocumentsService.GetEmployeeData().subscribe({
-      next: response => {
-        if (response.item1.length > 0) {
-          this.EmployeeData = response.item1;
-        } else {
-          this.EmployeeData = [];
-        }
-      },
-      error: err => {
-        console.error(err);
-      }
-    });
-  }
 
-  setupEmployeeControl() {
-    this.employeeControl.valueChanges
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged()
-      )
-      .subscribe(() => this.onInput());
-  }
 
   checkFormValidity(): void {
     this.uploadEnabled = this.mouId !== '' && this.mouId !== 'select Id'
       && this.partnerName !== ''
       && this.ResponsiblePerson !== ''
       && this.startDate !== ''
-      && this.AssignedToUid.length>4
+      && this.AssignedToUid.length > 4
       && this.endDate !== '' && this.remarks !== '' && this.remarks?.length > 5;
   }
 
@@ -615,7 +631,6 @@ isLoading: boolean = false;
   }
 
   exportToExcels(): void {
-    // {"mouId":282,"uid":"14336,25815","startDate":null,"endDate":null,"actionAssignedBy":"11840","remarks":"Collaboration ","createdBy":"11840","createdOn":"27 Jan 2025"},{"mouId":300,"uid":"21842","startDate":null,"endDate":null,"actionAssignedBy":"11840","remarks":"Collaboration Research","createdBy":"11840","createdOn":"06 Feb 2025"},{"mouId":314,"uid":"20283","startDate":null,"endDate":null,"actionAssignedBy":"11840","remarks":"Research collaboration","createdBy":"11840","createdOn":"22 Jan 2025"},{"mouId":322,"uid":"25999,32064","startDate":"29 Sep 2023","endDate":"29 Sep 2025","actionAssignedBy":"11840","remarks":"Collaboration Research","createdBy":"11840","createdOn":"17 Mar 2025"},{"mouId":326,"uid":"19383","startDate":null,"endDate":null,"actionAssignedBy":"11840","remarks":"Research collaboration","createdBy":"11840","createdOn":"24 Sep 2024"},
     const fileName = 'Mou_Document_report.xlsx';
     const exportedData = this.MouActivityAssigned.map(item => ({
       MOUId: "MOU/" + item.mouId,//1
@@ -723,7 +738,7 @@ isLoading: boolean = false;
     startDate: new FormControl('', Validators.required),
     endDate: new FormControl('', Validators.required),
   })
- 
+
 
 
   UploadActivity() {
@@ -933,18 +948,18 @@ isLoading: boolean = false;
 
 
   // Added on 29-May-25
-  MouTitleX: any=''; IdX: any;
-  MouStartDateX       : any='';
-  MouEndDateX     : any='';
-  MouStatusX      : any='';
-  ActivityDetailsX: any='';
-  UidX                : any='';
-  StartDateX          : any='';
-  EndDateX            : any='';
-  ActionAssignedByX   : any='';          
-  RemarksX            : any='';    
-  CreatedByX          : any='';  
-  CreatedOnX          : any='';      
+  MouTitleX: any = ''; IdX: any;
+  MouStartDateX: any = '';
+  MouEndDateX: any = '';
+  MouStatusX: any = '';
+  ActivityDetailsX: any = '';
+  UidX: any = '';
+  StartDateX: any = '';
+  EndDateX: any = '';
+  ActionAssignedByX: any = '';
+  RemarksX: any = '';
+  CreatedByX: any = '';
+  CreatedOnX: any = '';
   AssignUid(rows: any) {
     // Assigning individual values to component-level variables
     this.MouidX = rows['mouId'];
@@ -961,21 +976,21 @@ isLoading: boolean = false;
     this.RemarksX = rows['remarks'];
     this.CreatedByX = rows['createdBy'];
     this.CreatedOnX = rows['createdOn'];
-  
+
     // Optional: Alert to verify the values
     // alert(`MouId: ${this.MouidX}, MouTitle: ${this.MouTitleX}, StartDate: ${this.MouStartDateX}, EndDate: ${this.MouEndDateX}`);
-  
+
     // Open modal
     this.modalService.open(this.AssignNewUIDModal, { size: 'sm' }).result.then((result) => {
       window.location.reload();
     }).catch((res) => { });
   }
 
-  
+
   // added on 29-MAy-25
 
   checkUIDValidity(): void {
-    this.uploadEnabled = this.IdX !== '' && this.AssignedToUid !='';
+    this.uploadEnabled = this.IdX !== '' && this.AssignedToUid != '';
   }
   UploadUID() {
     const formData = new FormData();

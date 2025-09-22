@@ -42,7 +42,15 @@
                 [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50"
                 [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="15">
 
-                <ngx-datatable-column name="MOU Id" [sortable]="false" prop="Id">
+                <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="Id">
+                  <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.newMouId != null">
+                      <span
+                        style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.newMouId}}</span>
+                    </ng-container>
+                  </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id">
                   <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                     <ng-container *ngIf="row.id != null">
                       <span

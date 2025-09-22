@@ -271,7 +271,7 @@ this.AgreementType2=[
   changeCollab(event:any){
   
   let aa = event;
-  console.log(JSON.stringify(aa));
+  // console.log(JSON.stringify(aa));
   let df = '';
   for(let i=0; i < event.length; i++){
     df += event[i]['areaId'] + ','
@@ -444,7 +444,7 @@ this.AgreementType2=[
   }
 
   onSessionChange($event:any){
-    console.log($event.sessionId);
+    // console.log($event.sessionId);
     let sessionid = $event.sessionId
     this.SessionA = sessionid;
     this.getMetricBySessionID(sessionid);
@@ -453,7 +453,7 @@ this.AgreementType2=[
 
   onddlMoUName($event:any){
 
-    console.log($event.id);
+    // console.log($event.id);
 if($event != undefined){
   if($event != ''){
     this.ddlMoUName_ID = $event.id;
@@ -700,7 +700,7 @@ if($event != undefined){
     
 
     let aa = event;
-    console.log(JSON.stringify(aa));
+    // console.log(JSON.stringify(aa));
     let df = '';
     for(let i=0; i < event.length; i++){
       df += event[i]['value'] + ','

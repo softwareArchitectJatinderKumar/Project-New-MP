@@ -999,7 +999,7 @@ export class AgreementActivityPlanComponent implements OnInit {
   }
 
   AddMouEntryData1(user: any) {
-    console.log(user)
+    // console.log(user)
   }
 
   MouActivityData() {
