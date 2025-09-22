@@ -144,7 +144,8 @@ Number: any;
     // this.getExcelData();
     if (this.MouDocumentsListsExcel?.length > 0) {
       const exportedData = this.MouDocumentsListsExcel.map((item: {
-        mouid: string; mouUploadedBy: any; mouTitle: any;
+        newMouId: string;
+        mouid: string; mouUploadedBy: any; mouTitle: any;        
         mouStartDate: any; mouEndDate: any; mouStatus: any;
         responsibleSchool: any;
         mouActivityApprovalStatus:any;
@@ -156,7 +157,8 @@ Number: any;
         assignedBy: any,
         activityStartDate: any; activityEndDate: any; mOUActivityAssignedBy: any; endDate: any; authorityRemarks: any;
       }) => ({
-        MOUId: "MOU/" + item.mouid,
+        NewMOUId: item.newMouId,
+        OldMOUId: "MOU/" + item.mouid,
         CreatedBy: item.mouUploadedBy,
         MouTitle: item.mouTitle,
         MouStartDate: item.mouStartDate,
@@ -181,7 +183,7 @@ Number: any;
 
       // Headers
       const header = [
-        'MOU Id', 'MOU Uploaded By', 'MOU Title', 'MOU StartDate', 'MOU EndDate', 'SchoolInvolved',
+        'New MOU Id','Old MOU Id', 'MOU Uploaded By', 'MOU Title', 'MOU StartDate', 'MOU EndDate', 'SchoolInvolved',
         'MOU Assigned to Concern Faculty ', 'Proof Details', 'Document Uploaded', 'Session', 'Activity Category', 'Participants Count', 'No of Activities',
         'Approval Status',
         //  'Activity Start Date',      'Activity End Date', 

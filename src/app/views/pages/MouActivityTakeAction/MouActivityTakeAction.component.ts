@@ -180,8 +180,7 @@ export class MouActivityTakeActionComponent implements OnInit {
         this.storageService.saveUser(data);
         this.getAllPlannerSession();
         this.GetEmployeeDetails();
-        this.GetAllActivities();
-        this.GetAllMouActionsTaken();
+       
 
 
       },
@@ -218,6 +217,8 @@ export class MouActivityTakeActionComponent implements OnInit {
           this.GetAllMouDocumentsForActions();
           this.getDropdownData();
           this.getAllMouActivities();
+           this.GetAllActivities();
+        this.GetAllMouActionsTaken();
 
         } else {
           this.EmployeeDetails = [];
