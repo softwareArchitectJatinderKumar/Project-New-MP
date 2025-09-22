@@ -363,8 +363,30 @@
   </div>
 </div>
 
-
-
+<ng-template #loginFailed>
+    <div class="text-center " *ngIf="isLoginFailed">
+        <h3 class="text-center fs-2 m-5 text-warn pt-2 "> Unauthorised Access </h3>
+        <div class="row mt-4 mb-4 d-flex justify-content-center ">
+            <div class="col-3 ">
+                <ul class="list-group  w-20">
+                    <Label class="form-label fs-4 badge bg-white themeClr">Why ? </Label>
+                    <li class="list-group-item">You are trying to access the page not available for you.</li>
+                    <li class="list-group-item">Your current session has expired.</li>
+                </ul>
+            </div>
+            <!-- </div>
+        <div class="row mt-4 mb-4 d-flex justify-content-center "> -->
+            <div class="col-3 ">
+                <ul class="list-group  w-20">
+                    <Label class="form-label fs-4 badge bg-white themeClr">Try Following step(s) :- </Label>
+                    <li class="list-group-item">Logout your current session. </li>
+                    <li class="list-group-item">Try Login again.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</ng-template>
+<!-- 
 <ng-template #loginFailed>
   <div class="text-center " *ngIf="isLoginFailed">
     <h3 class="text-center fs-2 m-5 pt-5 "> Error in User Login . </h3>
@@ -376,7 +398,7 @@
       </div>
     </div>
   </div>
-</ng-template>
+</ng-template> -->
 
 
 <ng-template #viewDescModal let-modal>

@@ -182,7 +182,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
           this.Email = response.item1[0].email;
-          this.EmployeeCode = '11840';//response.item1[0].employeeCode;
+          this.EmployeeCode = response.item1[0].employeeCode;
           this.OfficialEmailId = response.item1[0].officialEmailId;
           this.ContactNoX = response.item1[0].contactNo;
           this.Department = response.item1[0].department;

@@ -563,7 +563,6 @@ export class MouActivityActionPlanComponent implements OnInit {
   }
 
   exportToExcels(): void {
-    // {"mouId":282,"uid":"14336,25815","startDate":null,"endDate":null,"actionAssignedBy":"11840","remarks":"Collaboration ","createdBy":"11840","createdOn":"27 Jan 2025"},{"mouId":300,"uid":"21842","startDate":null,"endDate":null,"actionAssignedBy":"11840","remarks":"Collaboration Research","createdBy":"11840","createdOn":"06 Feb 2025"},{"mouId":314,"uid":"20283","startDate":null,"endDate":null,"actionAssignedBy":"11840","remarks":"Research collaboration","createdBy":"11840","createdOn":"22 Jan 2025"},{"mouId":322,"uid":"25999,32064","startDate":"29 Sep 2023","endDate":"29 Sep 2025","actionAssignedBy":"11840","remarks":"Collaboration Research","createdBy":"11840","createdOn":"17 Mar 2025"},{"mouId":326,"uid":"19383","startDate":null,"endDate":null,"actionAssignedBy":"11840","remarks":"Research collaboration","createdBy":"11840","createdOn":"24 Sep 2024"},
     const fileName = 'Mou_Document_report.xlsx';
     const exportedData = this.MouActivityAssigned.map(item => ({
       MOUId: "MOU/" + item.mouId,//1

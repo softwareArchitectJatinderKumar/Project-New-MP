@@ -457,7 +457,7 @@ export class AgreementActivityPlanComponent implements OnInit {
 
   onddlMoUName($event: any) {
 
-    console.log($event.id);
+    // console.log($event.id);
     if ($event != undefined) {
       if ($event != '') {
         this.ddlMoUName_ID = $event.id;
