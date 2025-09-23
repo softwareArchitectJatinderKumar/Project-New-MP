@@ -424,6 +424,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
       next: response => {
         if (response.item1.length > 0) {
           this.MouDocumentsData = response.item1;
+           console.log(JSON.stringify(this.MouDocumentsData))
           this.filteredMouDocumentsData = this.MouDocumentsData;
           this.dataSource.data = this.filteredMouDocumentsData;
           this.showNoDataFoundMessage = this.filteredMouDocumentsData.length === 0;
@@ -534,9 +535,10 @@ export class MouDocumentsUploadsComponent implements OnInit {
   
   exportToExcel(): void {
     const fileName = 'Mou_Document_report.xlsx';
-  
+ 
     const exportedData = this.MouDocumentsData.map(item => ({
-      MOUId: "MOU/" + (item.id ?? 'N/A'),//1
+      NewMouid:(item.newMouId ?? 'Disapproved'),//1
+      OldMOUId: "MOU/" + (item.id ?? 'N/A'),//1
       'Mou Partner Name': item.mouPartnerName ?? 'N/A',//2
       'Mou Start Date': item.mouStartDate ?? 'N/A',//3
       'Mou End Date': item.mouEndDate ?? 'N/A',//4

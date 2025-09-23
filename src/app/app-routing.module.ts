@@ -30,6 +30,7 @@ const routes: Routes = [
         loadChildren :() => import('./views/SemesterExchange/LoginPage/LoginPage.module').then(m=>m.LoginPageNComponentModule),
 
       },
+        { path: 'SMAdmin/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
       {
         path: 'FacultyDashboard/:LoginName',
         loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule),
@@ -284,31 +285,31 @@ const routes: Routes = [
       },
 
       {
-        path: 'MouNewRequest/:loginName',
+        path: 'MouNewRequest/:loginName', // 23-sep-25 added newmouid , ExportExcel fixed
         loadChildren: () => import('./views/pages/mou-documents-uploads/mou-documents-uploads.module').then(m => m.MouDocumentsUploadsModule)
       }, //Bug sheet Point 2 Export to Excel is Working  18-March-25  SP pGetMouDocumentsUidWise
 
       // MOU APPROVALS From HOS OR HEAD
       {
-        path: 'MouApprovals/:loginName', ////22-sep-25 added new mouid 1
+        path: 'MouApprovals/:loginName', ////22-sep-25 added new mouid 1 // 23-sep-25 added newmouid , ExportExcel fixed
         loadChildren: () => import('./views/pages/mou-documents-report/mou-documents-report.module').then(m => m.MouDocumentsReportModule)
       }, // ok  sp pGetAllUploadedMOUDocuments  //Bug sheet Point 1 Export to Excel is Working   18-March-25
 
       // MOU ACtivity Action From HOS OR HEAD
       {
-        path: 'MouActivityPlan/:loginName', // 7-march-25 //22-sep-25 added new mouid 2
+        path: 'MouActivityPlan/:loginName', // 7-march-25 //22-sep-25 added new mouid 2 // 23-sep-25 added newmouid , ExportExcel fixed
         loadChildren: () => import('./views/pages/MouActivityActionPlan/MouActivityActionPlan.module').then(m => m.MouActivityActionPlanModule)
       }, // ok  pGetMouDocumentsforApprovals (2) pGetAllActivitiesAssigned
       {
-        path: 'MouActivityTakeAction/:loginName', // 7-march-25 //22-sep-25 added new mouid 3
+        path: 'MouActivityTakeAction/:loginName', // 7-march-25 //22-sep-25 added new mouid 3 // 23-sep-25 added newmouid , ExportExcel fixed
         loadChildren: () => import('./views/pages/MouActivityTakeAction/MouActivityTakeAction.module').then(m => m.MouActivityTakeActionModule)
       }, // ok SP pGetAllMouActivityPlanRequest  (2) pGetAllMouActivityActionTakenMaster
       {
-        path: 'MouActivityApprovals/:loginName', //7-march-25 //22-sep-25 added new mouid  4
+        path: 'MouActivityApprovals/:loginName', //7-march-25 //22-sep-25 added new mouid  4 // 23-sep-25 added newmouid , ExportExcel fixed
         loadChildren: () => import('./views/pages/MouActivityApprovals/MouActivityApprovals.module').then(m => m.MouActivityApprovalsModule)
       }, // ok  SP pGetMouActivityActionTakenDetails
       {
-        path: 'MouAdminAction/:loginName', // added newMouId on 22-sep-25 5
+        path: 'MouAdminAction/:loginName', // added newMouId on 22-sep-25 5 // 23-sep-25 added newmouid , ExportExcel fixed
         loadChildren: () => import('./views/pages/MouReportDateWise/MouReportDateWise.module').then(m => m.MouReportDateWiseComponentModule)
       },// new interface 
       {

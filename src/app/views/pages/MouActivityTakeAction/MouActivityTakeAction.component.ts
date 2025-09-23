@@ -208,7 +208,7 @@ export class MouActivityTakeActionComponent implements OnInit {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
-          this.EmployeeCode =  response.item1[0].employeeCode;
+          this.EmployeeCode = response.item1[0].employeeCode;
           this.Department = response.item1[0].department;
           this.DepartmentName = response.item1[0].departmentName;
           this.loadingIndicator = false;
@@ -481,7 +481,8 @@ export class MouActivityTakeActionComponent implements OnInit {
   exportToExcel(): void {
     const fileName = 'Mou_Document_report.xlsx';
     const exportedData = this.MouActivityDocuments.map(item => ({
-      MOUId: "MOU/" + item.id,
+      NewMOUId: item.newMouId,
+      OldMOUId: "MOU/" + item.id,
       'Name of MOU Organisation': item.mouTitle==null?'-':item.mouTitle,
       'Assigned To Faculty Name': item.assignedToFacultyName==null?'-':item.assignedToFacultyName,
       'Assigned To Faculty Uid': item.uid==null?'-':item.uid,
@@ -505,7 +506,8 @@ export class MouActivityTakeActionComponent implements OnInit {
 
     // Add headers
     const header = [
-      'MOU Id',
+      'New MOU Id',
+      'Old MOU Id',
       'Name of MOU Organisation',
       'Assigned To Faculty Name',
       'Assigned To Faculty Uid',

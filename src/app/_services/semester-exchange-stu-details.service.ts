@@ -9,10 +9,10 @@ import { UniversityUpdate } from '../views/pages/sm-add-new-university/universit
 import { xmlUniversity } from '../views/pages/sm-add-new-university/xmlUniversity.model';
 import { deleteUniversity } from '../views/pages/sm-add-new-university/deleteUniversity.model';
 
-const AUTH_API = 'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
-const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/'; //'https://localhost:7125/';
-// const AUTH_API = 'https://projectsapi.lpu.in/';
-// const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
+// const AUTH_API = 'https://localhost:7125/'; //'https://projectsapi.lpu.in/';
+// const AUTH_API_LOCAL = 'https://localhost:7125/'; //'https://localhost:7125/';
+const AUTH_API = 'https://projectsapi.lpu.in/';
+const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
 @Injectable({
   providedIn: 'root'
 })
@@ -395,8 +395,8 @@ export class SemesterExchangeStuDetailsService {
     var authToken = this.storageService.getUser();
     const httpOptions = {
       headers: new HttpHeaders({
-        // 'Authorization': `Bearer ${token}`
-        'Authorization': `Bearer ${this.authToken}`
+        'Authorization': `Bearer ${authToken}`
+        // 'Authorization': `Bearer ${authToken}`
       })
     };
     return this.http.get<any>(`${this.baseUrl}api/SemesterExchangeStudent/AllSemesterExchangeApplication`, httpOptions);

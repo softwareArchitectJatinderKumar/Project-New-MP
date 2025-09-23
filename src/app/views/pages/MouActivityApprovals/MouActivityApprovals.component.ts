@@ -309,7 +309,8 @@ GetAllUploadsDetails(SessionId: any): void {
   exportToExcel(): void {
     const fileName = 'Mou_ACtivityApprovals_Document_report.xlsx';
     const exportedData = this.MouActivityData.map(item => ({
-      MOUId: item.mouId,
+      NewMOUId: item.newMouId,
+      OldMOUId: 'MOU/' + item.mouId,
       'Name of Mou Organisation': item.mouPartnerName,
       'MOU Activity Assigned to Uid': item.assignedToFacultyUID,
       'School Division Name': item.schoolDivisionInvolved
@@ -331,7 +332,8 @@ GetAllUploadsDetails(SessionId: any): void {
       'Document Uploaded File': item.documentUploadedFile
     }));
     const header = [
-      'MOUId',
+      'New MOU Id',
+      'Old MOU Id',
       'Name of Mou Organisation',
       'MOU Activity Assigned to' ,
       'School Division Name',

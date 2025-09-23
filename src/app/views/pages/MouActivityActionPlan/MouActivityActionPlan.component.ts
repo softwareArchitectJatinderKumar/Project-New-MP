@@ -559,6 +559,7 @@ export class MouActivityActionPlanComponent implements OnInit {
       next: response => {
         if (response.item1.length > 0) {
           this.MouActivityExcelDocuments = response.item1;
+          console.log(this.MouActivityExcelDocuments)
         } else {
           this.EmployeeData = [];
         }
@@ -572,7 +573,8 @@ export class MouActivityActionPlanComponent implements OnInit {
     this.GetAllDataForExportToExcelData(this.EmployeeCode);
     const fileName = 'Mou_Document_report.xlsx';
     const exportedData = this.MouActivityExcelDocuments.map(item => ({
-      MOUId: item.MOUId,
+      NewMOUId: item.newMouId,
+      oldMOUId: item.MOUId,
       MouDocumentUploadedBy: item.MouDocumentUploadedBy,
       MouDocumentDownloadLink: item.MouDocumentDownloadLink,
       MouApprovalStatus: item.MouApprovalStatus,
@@ -590,7 +592,8 @@ export class MouActivityActionPlanComponent implements OnInit {
       MouActivityUploadedDownloadLink: item.MouActivityUploadedDownloadLink,
     }));
     const header = [
-      'MOUId',
+      'NewMOUId',
+      'OldMOUId',
       'MouDocumentUploadedBy ',
       'MouPartnerName',
       'MouDocumentDownloadLink',
@@ -633,7 +636,8 @@ export class MouActivityActionPlanComponent implements OnInit {
   exportToExcels(): void {
     const fileName = 'Mou_Document_report.xlsx';
     const exportedData = this.MouActivityAssigned.map(item => ({
-      MOUId: "MOU/" + item.mouId,//1
+      NewMOUId:  item.newMouId ?? 'N/A',//1
+      OldMOUId: "MOU/" + item.mouId,//1
       'Name of Mou Organisation': item.mouTitle,//2
       'MOU Activity Assigned to Faculty UID': item.uid,//3 4
       'Activity Start Date assigned By HOS': item.startDate,//5
@@ -643,7 +647,8 @@ export class MouActivityActionPlanComponent implements OnInit {
       'Date of MOU Activity Assigned By HOS': item.createdOn,//9
     }));
     const header = [
-      'MOUId',
+      'New MOU Id',
+      'Old MOU Id',
       'Name of Mou Organisation',
       'MOU Activity Assigned to Faculty UID',
       'Activity Start Date assigned By HOS',
@@ -680,7 +685,8 @@ export class MouActivityActionPlanComponent implements OnInit {
     const fileName = 'Mou_Document_report.xlsx';
 
     const exportedData = this.MouActivityDocuments.map(item => ({
-      MOUId: "MOU/" + item.mouId, //1
+      NewMOUId: item.newMouId ?? 'N/A', //1
+      OldMOUId: "MOU/" + item.mouId, //1
       'Name of Mou Organisation': item.mouTitle, //2
       'MOU Uploaded By Faculty Name/UID': item.createdBy ?? 'N/A', //3,4
       'SPOC Person Name (MOU Partner Organisation)': item.spocName ?? 'N/A', //5
@@ -694,7 +700,8 @@ export class MouActivityActionPlanComponent implements OnInit {
     }));
 
     const header = [
-      'MOU Id', //1
+      'New MOU Id', //1
+      'Old MOU Id', //1
       'Name of Mou Organisation', //2
       'MOU Uploaded By Faculty Name/UID', //3,4
       'SPOC Person Name (MOU Partner Organisation)', //5

@@ -291,7 +291,8 @@ export class MouDocumentsReportComponent implements OnInit {
     const fileName = 'Mou_Document_report.xlsx';
   
     const exportedData = this.MouDocumentDetails.map(item => ({
-      MOUId: "MOU/" + (item.id ?? 'N/A'),
+      NewMOUId:  (item.newMouId ?? 'N/A'),
+      OldMOUId: "MOU/" + (item.id ?? 'N/A'),
       'Mou Partner Organisation Name': item.mouTitle ?? 'N/A',
       'Mou Start Date': item.mouStartDate ?? 'N/A',
       'Mou End Date': item.mouEndDate ?? 'N/A',

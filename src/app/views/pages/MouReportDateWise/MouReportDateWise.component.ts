@@ -157,8 +157,8 @@ Number: any;
         assignedBy: any,
         activityStartDate: any; activityEndDate: any; mOUActivityAssignedBy: any; endDate: any; authorityRemarks: any;
       }) => ({
-        NewMOUId: item.newMouId,
-        OldMOUId: "MOU/" + item.mouid,
+        NewMOUId: item.newMouId  ?? 'Disapproved',
+        OldMOUId: "MOU/" + item.mouid ,
         CreatedBy: item.mouUploadedBy,
         MouTitle: item.mouTitle,
         MouStartDate: item.mouStartDate,
