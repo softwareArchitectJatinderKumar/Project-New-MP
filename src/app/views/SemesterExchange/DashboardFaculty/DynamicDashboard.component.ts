@@ -302,13 +302,13 @@ export class DynamicDashboardComponent implements OnInit {
       application.isDealingAuthority = empCode ? (dealingAuthority === empCode) : false;
       application.isHOD = empCode ? (dealingHODId === empCode) : false;
       application.isHoW = empCode ? (dealingHow === empCode) : false;
-
+  // application.isHOD =true;
       // Update global flags if any application matches the role
       if (application.isdealingFaculty) this.isdealingFaculty = true;
       if (application.isDealingAuthority) this.isDealingAuthority = true;
       if (application.isHOD) this.isHOD = true;
       if (application.isHoW) this.isHoW = true;
-
+//  this.isHOD = true;
       return application;
     });
 
@@ -414,7 +414,6 @@ export class DynamicDashboardComponent implements OnInit {
   private handleStatusChange(formData: FormData, action: string): void {
     this.loadingIndicator = true;
     const startTime = Date.now();
-
     this.studentService.SendApproveRequest(formData).pipe(
       finalize(() => {
         const elapsed = Date.now() - startTime;
@@ -426,11 +425,12 @@ export class DynamicDashboardComponent implements OnInit {
       })
     ).subscribe({
       next: (data: any) => {
-        if (data.responseData === 'Success') {
+        // console.log(JSON.stringify(data));
+        if (data.item1 && data.item1.length > 0 && data.item1[0].msg === 'Approved') {
           Swal.fire('Success!', `Application ${action}ed successfully!`, 'success').then(() => {
             this.getSEAllApplications(); // Refresh data
           });
-        } else if (data.responseData === 'Cancel') {
+        } else if (data.item1 && data.item1.length > 0 && data.item1[0].msg === 'Disapproved') {
           Swal.fire('No Change!', 'The application status was not changed.', 'info');
         } else {
           Swal.fire('Error!', `Failed to ${action} application.`, 'error');
@@ -1061,7 +1061,7 @@ export class DynamicDashboardComponent implements OnInit {
     ).subscribe({
       next: response => {
         this.AllAuthorityRemarks = Array.isArray(response?.item1) ? response.item1 : [];
-        console.log("All Authority Remarks:", JSON.stringify(this.AllAuthorityRemarks));
+        // console.log("All Authority Remarks:", JSON.stringify(this.AllAuthorityRemarks));
       },
       error: err => {
         this.isLoginFailed = true;
