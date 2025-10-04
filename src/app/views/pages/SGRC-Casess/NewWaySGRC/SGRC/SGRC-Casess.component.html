@@ -1,0 +1,145 @@
+<div class="row">
+  <nav>
+    <div class="nav nav-tabs d-flex justify-content-center" role="tablist">
+     <button
+  class="btn btn-danger me-5"
+  [class.active]="activeTab === 'all'"
+  (click)="onTabClick('all')"
+  style="padding: .95rem 8rem;"
+  type="button"
+  role="tab"
+  [attr.aria-selected]="activeTab === 'all'"
+>
+  All Cases
+</button>
+
+<button
+  class="btn btn-danger ms-5"
+  [class.active]="activeTab === 'open'"
+  (click)="onTabClick('open')"
+  style="padding: .95rem 8rem;"
+  type="button"
+  role="tab"
+  [attr.aria-selected]="activeTab === 'open'"
+>
+  Open Cases
+</button>
+
+<button
+  class="btn btn-danger ms-5"
+  [class.active]="activeTab === 'closed'"
+  (click)="onTabClick('closed')"
+  style="padding: .95rem 8rem;"
+  type="button"
+  role="tab"
+  [attr.aria-selected]="activeTab === 'closed'"
+>
+  Closed Cases
+</button>
+
+    </div>
+  </nav>
+
+  <div class="tab-content" id="nav-tabContent">
+    <div
+      class="tab-pane fade"
+      [class.show]="activeTab === 'all'"
+      [class.active]="activeTab === 'all'"
+      role="tabpanel"
+    >
+      <app-case-table
+        [cases]="filteredStudentLists"
+        [loading]="loadingIndicator"
+        [columns]="columns"
+        [recordCount]="filteredStudentLists.length"
+        (export)="exportToExcel()"
+        (downloadFile)="onSelectFile($event)"
+        (takeAction)="onSelect($event)"
+        (searchChange)="onSearchChange($event)"
+      ></app-case-table>
+    </div>
+
+    <div
+      class="tab-pane fade"
+      [class.show]="activeTab === 'open'"
+      [class.active]="activeTab === 'open'"
+      role="tabpanel"
+    >
+      <app-case-table
+        [cases]="filteredStudentListsOpen"
+        [loading]="loadingIndicator"
+        [columns]="columns"
+        [recordCount]="filteredStudentListsOpen.length"
+        (export)="exportToExcel()"
+        (downloadFile)="onSelectFile($event)"
+        (takeAction)="onSelect($event)"
+        (searchChange)="onSearchChange($event)"
+      ></app-case-table>
+    </div>
+
+    <div
+      class="tab-pane fade"
+      [class.show]="activeTab === 'closed'"
+      [class.active]="activeTab === 'closed'"
+      role="tabpanel"
+    >
+      <app-case-table
+        [cases]="filteredStudentListsClosed"
+        [loading]="loadingIndicator"
+        [columns]="columns"
+        [recordCount]="filteredStudentListsClosed.length"
+        (export)="exportToExcel()"
+        (downloadFile)="onSelectFile($event)"
+        (searchChange)="onSearchChange($event)"
+      ></app-case-table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Template -->
+<ng-template #actionModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">SGRC Status Action</h5>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="mb-3">
+      <label for="statusSelect" class="form-label">Status:</label>
+      <select
+        id="statusSelect"
+        class="form-select"
+        [(ngModel)]="sgrcStatus"
+        [disabled]="isInputDisabled"
+      >
+        <option value="">Select Status</option>
+        <option value="O">Open</option>
+        <option value="C">Close</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="remarksTextarea" class="form-label">Remarks:</label>
+      <textarea
+        id="remarksTextarea"
+        class="form-control"
+        rows="3"
+        [(ngModel)]="sgrcRemarks"
+        [disabled]="isInputDisabled"
+      ></textarea>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      class="btn btn-primary"
+      [disabled]="isInputDisabled"
+      (click)="VerifyData()"
+    >
+      Submit
+    </button>
+    <button class="btn btn-secondary" (click)="modal.dismiss()">Close</button>
+  </div>
+</ng-template>

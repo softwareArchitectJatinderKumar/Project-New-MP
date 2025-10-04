@@ -1,0 +1,71 @@
+<div class="card">
+  <div class="card-body">
+    <h6 class="card-title d-flex justify-content-center fs-4 text-success">
+      Student Grievance Cases
+    </h6>
+    <div class="row d-flex justify-content-center p-3 mx-5">
+      <div class="col-sm-3 mb-3">
+        <button (click)="export.emit()" class="btn btn-success">Export to ExcelSheet</button>
+      </div>
+      <div class="col-sm-3 mb-3">
+        <input
+          [(ngModel)]="searchText"
+          (input)="onSearchChange()"
+          type="text"
+          class="form-control"
+          placeholder="Search"
+          aria-label="Search"
+          style="width: 21rem;"
+        />
+      </div>
+      <div class="col-sm-3 mb-3" *ngIf="recordCount !== null">
+        <div>Search Record Count: {{ recordCount }} Records</div>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <ngx-datatable
+        class="bootstrap table table-striped material"
+        [rows]="cases"
+        [loadingIndicator]="loading"
+        [columnMode]="ColumnMode.force"
+        [footerHeight]="50"
+        [limit]="10"
+        [headerHeight]="80"
+        rowHeight="auto"
+      >
+        <ngx-datatable-column *ngFor="let col of columns" [prop]="col"></ngx-datatable-column>
+
+        <ngx-datatable-column name="Download File" [sortable]="false" prop="Id">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <button
+              *ngIf="row.fileName"
+              class="btn btn-dark"
+              (click)="downloadFile.emit(row)"
+            >
+              Download
+            </button>
+            <span *ngIf="!row.fileName" class="fw-bold p-2">No File</span>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Actions" [sortable]="false" prop="Id">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <button
+              *ngIf="row.status === 'O'"
+              class="btn btn-dark"
+              (click)="takeAction.emit(row)"
+            >
+              Take Action
+            </button>
+            <span
+              *ngIf="row.status === 'C'"
+              class="fw-bold p-2"
+              >Ticket Closed</span
+            >
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+  </div>
+</div>

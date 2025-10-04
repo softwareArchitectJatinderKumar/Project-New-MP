@@ -1,0 +1,317 @@
+<div class="row">
+    <nav>
+        <div class="nav nav-tabs nav nav-tabs d-flex justify-content-center active" id="nav-tab" role="tablist">
+            <button class="btn btn-danger me-5 active" id="studentGrievance-all-tab" data-bs-toggle="tab"
+                (click)="onTabClick('all')" style="padding: .95rem 8rem;" data-bs-target="#studentGrievance-all"
+                type="button" role="tab" aria-controls="studentGrievance-all" aria-selected="true">All cases</button>
+
+            <button class=" btn btn-danger ms-5 me-5" id="studentGrievance-open-tab" data-bs-toggle="tab"
+                (click)="onTabClick('open')" style="padding: .95rem 8rem;" data-bs-target="#studentGrievance-open"
+                type="button" role="tab" aria-controls="studentGrievance-open" aria-selected="false">Open Cases</button>
+
+            <button class=" btn btn-danger ms-5" id="studentGrievance-closed-tab" data-bs-toggle="tab"
+                (click)="onTabClick('closed')" style="padding: .95rem 8rem;" data-bs-target="#studentGrievance-closed"
+                type="button" role="tab" aria-controls="studentGrievance-closed" aria-selected="false">Closed
+                Cases</button>
+        </div>
+    </nav>
+
+    <div class="tab-content" id="nav-tabContent">
+
+        <div class="tab-pane fade active show" id="studentGrievance-all" role="tabpanel"
+            aria-labelledby="studentGrievance-all-tab">
+            <div class="row">
+                <div class="col-md-12 stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title d-flex justify-content-center fs-4 text-success">Student Grievance All
+                                Cases</h6>
+                            <div class="row d-flex justify-content-center p-3 mx-5 ">
+                                <div class="col-sm-3">
+                                    <div class="mb-3">
+                                        <button (click)="exportToExcel()" class="btn btn-success ">Export to
+                                            ExcelSheet</button>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="mb-3">
+                                        <input [(ngModel)]="searchQuery" (ngModelChange)="DataSearch()" id="search"
+                                            type="text" style="width: 21rem;" class="form-control" placeholder="Search"
+                                            aria-label="Search" aria-describedby="basic-addon1" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-3" *ngIf="searchQuery.length>0 && activeTab === 'all'">
+                                    <div class="mb-3">
+                                        Search Record Count : - {{studentLists.length}} Records
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <ngx-datatable class="bootstrap table table-striped material" [rows]="studentLists"
+                                    [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force"
+                                    [footerHeight]="50" [limit]="10" [headerHeight]="80" rowHeight="auto">
+                                    <ngx-datatable-column *ngFor="let col of columns"
+                                        [prop]="col"></ngx-datatable-column>
+                                    <ngx-datatable-column name="Download File" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <ng-container *ngIf="row.fileName != null">
+                                                <button class="btn btn-dark" (click)="onSelectFile(row)"> Download
+                                                </button>
+                                            </ng-container>
+                                            <ng-container *ngIf="row.fileName == null">
+                                                <span
+                                                    style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">No
+                                                    FIle</span>
+                                            </ng-container>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    <ngx-datatable-column name="Actions" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <ng-container *ngIf="row.status=='O'">
+                                                <button class="btn btn-dark" (click)="onSelect(row)">
+                                                    Take Action
+                                                </button>
+                                            </ng-container>
+                                            <ng-container *ngIf="row.status=='C'"><span style="margin: auto;float: left;
+                                                font-weight: bold;padding: 10px 10px 10px 10px;">Ticket
+                                                    Closed</span></ng-container>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                </ngx-datatable>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="studentGrievance-open" role="tabpanel"
+            aria-labelledby="studentGrievance-open-tab">
+            <div class="row">
+                <div class="col-md-12 stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title d-flex justify-content-center fs-4 text-success">Student
+                                Grievance Open Cases</h6>
+                            <div class="row d-flex justify-content-center p-3 mx-5 ">
+                                <div class="col-sm-3">
+                                    <div class="mb-3">
+                                        <button (click)="exportToExcel()" class="btn btn-success ">Export to
+                                            ExcelSheet</button>
+                                    </div>
+                                </div>
+                                <!-- <div class="col-sm-3">
+                                    <div class="mb-3">
+                                        <input [(ngModel)]="searchQuery" (ngModelChange)="DataSearchOpen()" id="search"
+                                            type="text" style="width: 21rem;" class="form-control" placeholder="Search"
+                                            aria-label="Search" aria-describedby="basic-addon1" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-3" *ngIf="searchQuery.length>0 && activeTab === 'open'">
+                                    <div class="mb-3">
+                                        Search Record Count : - {{studentListsOpenCases.length}} Records
+                                    </div>
+                                </div> -->
+                            </div>
+                            <div class="table-responsive">
+                                <ngx-datatable class="bootstrap table table-striped material"
+                                    [rows]="studentListsOpenCases" [loadingIndicator]="loadingIndicator"
+                                    [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10" [headerHeight]="80"
+                                    rowHeight="auto">
+                                    <ngx-datatable-column *ngFor="let col of columns"
+                                        [prop]="col"></ngx-datatable-column>
+                                    <ngx-datatable-column name="Download File" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <ng-container *ngIf="row.fileName != null">
+                                                <button class="btn btn-dark" (click)="onSelectFile(row)">
+                                                    Download
+                                                </button>
+                                            </ng-container>
+                                            <ng-container *ngIf="row.fileName == null">
+                                                <span
+                                                    style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">No
+                                                    FIle</span>
+                                            </ng-container>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    <ngx-datatable-column name="Actions" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <ng-container *ngIf="row.status=='O'">
+                                                <button class="btn btn-dark" (click)="onSelect(row)">
+                                                    Take Action
+                                                </button>
+                                            </ng-container>
+                                            <ng-container *ngIf="row.status=='C'"><span
+                                                    style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">Ticket
+                                                    Closed</span></ng-container>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                </ngx-datatable>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade " id="studentGrievance-closed" role="tabpanel"
+            aria-labelledby="studentGrievance-closed-tab">
+            <div class="row">
+                <div class="col-md-12 stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title d-flex justify-content-center fs-4 text-success">Student Grievance
+                                Closed Cases</h6>
+                            <div class="row d-flex justify-content-center p-3 mx-5 ">
+                                <div class="col-sm-3">
+                                    <div class="mb-3">
+                                        <button (click)="exportToExcel()" class="btn btn-success ">Export to
+                                            ExcelSheet</button>
+                                    </div>
+                                </div>
+                                <!-- <div class="col-sm-3">
+                                    <div class="mb-3">
+                                        <input [(ngModel)]="searchQuery" (ngModelChange)="DataSearchClosed()" id="search"
+                                            type="text" style="width: 21rem;" class="form-control" placeholder="Search"
+                                            aria-label="Search" aria-describedby="basic-addon1" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-3" *ngIf="searchQuery.length>0 && activeTab === 'closed'">
+                                    <div class="mb-3">
+                                        Search Record Count : - {{studentListsClosedCases.length}} Records
+                                    </div>
+                                </div> -->
+                            </div>
+                            <div class="table-responsive">
+                                <ngx-datatable class="bootstrap table table-striped material"
+                                    [rows]="studentListsClosedCases" [loadingIndicator]="loadingIndicator"
+                                    [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10" [headerHeight]="80"
+                                    rowHeight="auto">
+                                    <ngx-datatable-column *ngFor="let col of columns"
+                                        [prop]="col"></ngx-datatable-column>
+                                    <ngx-datatable-column name="Download File" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <ng-container *ngIf="row.fileName != null">
+                                                <button class="btn btn-dark" (click)="onSelectFile(row)">
+                                                    Download
+                                                </button>
+                                            </ng-container>
+                                            <ng-container *ngIf="row.fileName == null">
+                                                <span style="margin: auto;float: left;
+                                                font-weight: bold;padding: 10px 10px 10px 10px;">No FIle</span>
+                                            </ng-container>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    </ngx-datatable>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title text-center fs-3 text-success"> </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ng-template #viewDescModal let-modal>
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">SGRC Status Action</h5>
+            <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+
+                    <div class="card-body">
+
+                        <div class="row mb-4">
+                            <div class="col-sm">
+                                <label for="MOUName" class="form-label">Status:</label>
+                                <br>
+                                <select class="form-select" id="ddlSelect" [(ngModel)]="sgrcStatus">
+                                    <option value="">Select Status</option>
+                                    <option value="O">Open</option>
+                                    <option value="C">Close</option>
+
+                                </select>
+
+                            </div>
+                            <div class="col-sm">
+
+                                <label for="MOUName" class="form-label">Remarks:</label>
+                                <br>
+                                <textarea id="txtRemarks" [(ngModel)]="sgrcRemarks" class="form-control"></textarea>
+
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-sm">
+                                <label for="MOUName" class="form-label">&nbsp;</label>
+                                <button style="margin-top: 27px;" class="btn btn-primary" *ngIf="isInputDisabled"
+                                    type="button" disabled>
+                                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                    Please wait...
+                                </button> &nbsp;
+                                <button type="submit" style=" margin-top: 27px;" *ngIf="!isInputDisabled"
+                                    class="btn btn-primary me-2" (click)="VerifyData();">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #viewDescModal2 let-modal>
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">SGRC Closed Cases </h5>
+            <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-sm">
+                                <table id="dataTableAllClosedRemarks" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th class=" fs-4 text-danger">Status</th>
+                                            <th class=" fs-4 text-danger">Remarks Details</th>
+                                            <th class=" fs-4 text-danger">Updated By</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let dt of studentClosedCasesRemarks">
+                                            <td class=" fs-5"><ng-container *ngIf="dt.status=='C'"><span
+                                                        style="margin: auto;float: left;
+                                                        font-weight: bold;">Ticket Closed</span></ng-container> </td>
+                                            <td class=" fs-5 ">{{dt.remarks}} </td>
+                                            <td class=" fs-5 ">{{dt.entryBy}} </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</div>

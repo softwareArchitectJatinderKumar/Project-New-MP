@@ -17,7 +17,7 @@ export const environment = {
   //apiUrl:'https://devums.lpu.in/webapi/api/'
   // apiUrl: 'https://ums.lpu.in/obpapi/api/'
   // apiUrl:'https://localhost:7178/api/'
-   apiUrl:'https://localhost:7125/api/',
+   apiUrl:'https://projectsapi.lpu.in/api/',
   authToken:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJMb2dpbk5hbWUiOiIzMTMwOSIsIkRlcGFydG1lbnROYW1lIjoiTi9BIiwiUm9sbElkIjoiNTAiLCJlbWFpbElkIjoiamF0aW5kZXIuMzEzMDlAbHB1LmNvLmluIiwiTkFNRSI6IkphdGluZGVyIEt1bWFyIiwiaXNBY3RpdmUiOiJUcnVlIiwiVW5pcXVlaWQiOiJmYzJhYjI4Yi0zYmFiLTRmNmMtOWE3MS0yNTk2OTYwZWM2ZDAiLCJJc1BhcmVudCI6IkZhbHNlIiwiVXNlclR5cGUiOiJOL0EiLCJTcGVjaWFsQmxvY2siOiJOL0EiLCJuYmYiOjE3MTMxNTI5NTksImV4cCI6MTcxMzIzOTM1OCwiaWF0IjoxNzEzMTUyOTU5LCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo3MTI1LyIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjcxMjUvIn0.-uzNlWGGWMVQdaFy7I5Es2Zv4Fh8WhfNq1YousyPCgw'
 };
 

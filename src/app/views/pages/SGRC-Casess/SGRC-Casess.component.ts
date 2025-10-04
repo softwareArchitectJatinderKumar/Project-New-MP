@@ -30,6 +30,10 @@ import { map, debounceTime } from 'rxjs/operators';
 })
 
 export class SGRCComponenent implements OnInit {
+
+  isLoginFailed = false;
+
+
   @ViewChild('ngSelectComponent') ngSelectComponent: NgSelectComponent;
   @ViewChild('ngSelectComponentStream') ngSelectComponentStream: NgSelectComponent;
   @ViewChild('verticalCenteredModal') verticalCenteredModal: TemplateRef<any>;
@@ -153,24 +157,16 @@ export class SGRCComponenent implements OnInit {
   }
 
   ngOnInit(): void {
-    debugger;
-    //this.GetAllStudentsCases();
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML = 'SGRC <span class="themeClr" >Cases</span>';
-    //(<HTMLInputElement>document.getElementById('btnPlannerDashboard')).style.display='none';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
     let loginName = this.route.snapshot.params['loginName'];
-    //   const dataTable = new DataTable("#dataTableExample");
 
     if (loginName != '' && loginName != undefined) {
       this.getToken(loginName);
     }
-
-    //this.AgreementType=['MOU','Credit Transfer','Semester Abroad','Agreement']
     this.MessageType = ['Grievance', 'Request', 'Feedback', 'Enquiry']
 
     this.Block = ['BH1', 'BH1', 'BH1', 'BH1']
-    // const dataTable = new DataTable('#dataTableRejected');
-
 
   }
 
@@ -204,9 +200,7 @@ export class SGRCComponenent implements OnInit {
   }
 
   changeCollab(event: any) {
-    debugger;
     let aa = event;
-    console.log(JSON.stringify(aa));
 
 
   }
@@ -217,7 +211,6 @@ export class SGRCComponenent implements OnInit {
 
 
   VerifyData() {
-    debugger
     this.isInputDisabled = true;
     if (this.sgrcStatus === '') {
       swal.fire(
@@ -236,14 +229,6 @@ export class SGRCComponenent implements OnInit {
       this.isInputDisabled = false;
     }
 
-    // else  if(this.selectedEmmployeeResponsible===''){
-    //   swal.fire(
-
-    //     {title: 'MOU Agreement Approval', text: 'Please select mou document responsible !', icon: 'error'}
-
-    //     );
-    //     this.isButtonShwoing = false;
-    // }
     else {
       const denominations =
       {
@@ -268,41 +253,12 @@ export class SGRCComponenent implements OnInit {
       });
 
 
-      //     const formData = new FormData();
-      //      formData.append('File', this.FileData);
-      //      formData.append('Name', this.enterMouName);
-      //      formData.append('Type', this.selectedAgreementType);
-      //      formData.append('SubType', this.selectedAgreementSubType);
-      //      formData.append('DocResPerson', this.selectedEmmployeeResponsible);
-      //      formData.append('NotingSheetRefNo', this.notingSheetRefNo);
-      //      this.Agreement.addMouEntryforApproval(formData).subscribe({
-      //       next: data => {
-      //         this.isButtonShwoing = false;
-      //         swal.fire(
-      //           {title: 'MOU Agreement Approval', text: data.item1[0]['msg'], icon: 'success'}
 
-      //           );
-      //           this.enterMouName = '';
-      //           this.selectedAgreementType = '';
-      //           this.selectedAgreementSubType = '';
-      //           this.selectedEmmployeeResponsible = '';
-      //           this.userPhoto.nativeElement.value = null;
-      // this.selectCollabType ='';
-      // this.selectCollabSubType = '';
-      // this.selectResponsible = '';
-      // this.AgreementTypeDisplay2 = [];
-      //           const file: File = this.userPhoto.nativeElement.files[0];
-      //           this.FileData = file;
-
-      //       },
-      //     });
 
     }
   }
 
   ngAfterViewInit(): void {
-    // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
-    // Add 'implements AfterViewInit' to the class.
     fromEvent(this.search.nativeElement, 'keydown')
       .pipe(
         debounceTime(550),
@@ -336,11 +292,8 @@ export class SGRCComponenent implements OnInit {
 
   updateFilter(val: any) {
     const value = val.toString().toLowerCase().trim();
-    // get the amount of columns in the table
     const count = this.columns.length;
-    // get the key names of each column in the dataset
     const keys = Object.keys(this.tmpstudentLists[0]);
-    // assign filtered matches to the active datatable
     this.studentLists = this.tmpstudentLists.slice().filter((item: any) => {
       let searchStr = '';
       for (let i = 0; i < this.columns.length; i++) {
@@ -348,18 +301,13 @@ export class SGRCComponenent implements OnInit {
       }
       return searchStr.indexOf(val) !== -1 || !val;
     });
-    // Whenever the filter changes, always go back to the first page
-    // this.table.offset = 0;
   }
 
 
   updateOpenFilter(val: any) {
     const value = val.toString().toLowerCase().trim();
-    // get the amount of columns in the table
     const count = this.columns.length;
-    // get the key names of each column in the dataset
     const keys = Object.keys(this.tmpstudentLists[0]);
-    // assign filtered matches to the active datatable
     this.studentListsOpenCases = this.tmpstudentListsOpenCases.slice().filter((item: any) => {
       let searchStr = '';
       for (let i = 0; i < this.columns.length; i++) {
@@ -367,17 +315,13 @@ export class SGRCComponenent implements OnInit {
       }
       return searchStr.indexOf(val) !== -1 || !val;
     });
-    // Whenever the filter changes, always go back to the first page
-    // this.table.offset = 0;
+
   }
 
   updateCloseFilter(val: any) {
     const value = val.toString().toLowerCase().trim();
-    // get the amount of columns in the table
     const count = this.columns.length;
-    // get the key names of each column in the dataset
     const keys = Object.keys(this.tmpstudentLists[0]);
-    // assign filtered matches to the active datatable
     this.studentListsClosedCases = this.tmpstudentListsClosedCases.slice().filter((item: any) => {
       let searchStr = '';
       for (let i = 0; i < this.columns.length; i++) {
@@ -385,8 +329,6 @@ export class SGRCComponenent implements OnInit {
       }
       return searchStr.indexOf(val) !== -1 || !val;
     });
-    // Whenever the filter changes, always go back to the first page
-    // this.table.offset = 0;
   }
 
 
@@ -397,21 +339,17 @@ export class SGRCComponenent implements OnInit {
 
         this.storageService.saveUser(data);
         this.GetAllStudentsCases();
-        // this.GetAllStudentsCasesRemarks(); 5-feb-24 commented 
       },
-      error: err => {
-        // this.isLoading=0;
-        // this.errorMessage = err.error.message;
-        // this.isLoginFailed = true;
+      error: (err) => {
+        this.isLoginFailed = true;
+        swal.fire('Error', 'Failed to load event data', 'error');
       }
     });
-    // console.log("Closed Cases Lists " + JSON.stringify(this.studentClosedCasesRemarks)); Delete this line 5-feb-24
   }
 
 
 
   openVerticalCenteredModal(ticketNumber: any) {
-    /// let content: TemplateRef<any>;
     this.ticketNumber = ticketNumber;
     this.modalService.open(this.verticalCenteredModal, { centered: true }).result.then((result: string) => {
       console.log("Modal closed" + result);
@@ -438,15 +376,11 @@ export class SGRCComponenent implements OnInit {
   }
 
   onSelectFile(a: any) {
-    debugger;
-    let aa = a;
-    alert(JSON.stringify(a))
-    window.open('ftp://schools.lpu.in/Services/StudentGrievance/' + a['fileName'], '_blank');
+    window.open(a['fileName'], '_blank');
   }
 
 
   onSelect(a: any) {
-    debugger;
     let aa = a;
     this.ticketNumbers = a['ticketNumber']
     this.modalService.open(this.viewDescModal, { size: 'sm' }).result.then((result) => {
@@ -454,10 +388,8 @@ export class SGRCComponenent implements OnInit {
     }).catch((res) => { });
   }
 
-  // Updated Function   GetAllStudentsCases on 5-feb -24
-  //  Added New Method Export to Excel Sheet 5-feb-24
   exportToExcel(): void {
-    const fileName = 'allCasesData.xlsx';
+    const fileName = 'SGRC-Cases-Details.xlsx';
     const exportedData = this.studentLists.map(item => ({
       studentName: item.name,
       email: item.email,
@@ -479,32 +411,63 @@ export class SGRCComponenent implements OnInit {
     link.click();
   }
 
+    exportToExcelClosedCases(): void {
+    const fileName = 'SGRC-Closed-Cases-Details.xlsx';
+    const exportedData = this.studentListsClosedCases.map(item => ({
+      studentName: item.name,
+      email: item.email,
+      phone: item.phone,
+      description: item.description,
+      TicketNo: item.ticketNumber,
+      subject: item.subject,
+      Nature: item.nature,
+      createdOn: item.createdOn,
+    }));
+
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([blobData], { type: 'application/octet-stream' }));
+    link.download = fileName;
+    link.click();
+  }
+
+    exportToExcelOpenCases(): void {
+    const fileName = 'SGRC-Open-Cases-Details.xlsx';
+    const exportedData = this.studentListsOpenCases.map(item => ({
+      studentName: item.name,
+      email: item.email,
+      phone: item.phone,
+      description: item.description,
+      TicketNo: item.ticketNumber,
+      subject: item.subject,
+      Nature: item.nature,
+      createdOn: item.createdOn,
+    }));
+
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([blobData], { type: 'application/octet-stream' }));
+    link.download = fileName;
+    link.click();
+  }
+
   onSelectClosedcases(a: any) {
-    debugger;
+
     this.IdClosedCase = a['id'];
-    alert(JSON.stringify(a))
-    alert(a['masterId'])
     this.studendGservicelocal.GetAllStudentsCasesRemarks(this.IdClosedCase).subscribe(
       (response) => {
         if (response.item1.length > 0) {
           this.studentClosedCasesRemarks = response.item1;
-          // this.loadingIndicator = false;
-          // this.columns = [];
-          // this.headHtmlData = [];
 
-          // this.headHtmlData = this.studentClosedCasesRemarks[0];
-          // this.columns = Object.keys(this.studentClosedCasesRemarks[0]);
-          // this.columns = this.columns.filter((item: any) => item !== 'fileName');
-          // debugger;
-          // this.columns.push();
-          // this.loadingIndicator = false;
         } else {
           this.studentClosedCasesRemarks = [];
         }
-
-        console.log("Closed Cases Lists " + JSON.stringify(this.studentClosedCasesRemarks));
-
-        // Assuming you want to display modal only after receiving the response
         this.modalService.open(this.viewDescModal2, { size: 'sm' }).result.then(
           (result) => {
             console.log("Modal closed" + result);
@@ -526,8 +489,9 @@ export class SGRCComponenent implements OnInit {
       if (response.item1.length > 0) {
         this.tmpstudentLists = response.item1;
         this.studentLists = response.item1;
-        this.studentListsOpenCases = this.studentLists.filter(x => x["status"] == 'O');
-        this.studentListsClosedCases = this.studentLists.filter(x => x["status"] == 'C');
+        this.FilteredstudentLists = this.studentLists;
+        this.studentListsOpenCases = this.studentLists.filter(x => x["status"] === 'O');
+        this.studentListsClosedCases = this.studentLists.filter(x => x["status"] === 'C');
         this.tmpstudentListsOpenCases = this.studentListsOpenCases;
         this.tmpstudentListsClosedCases = this.studentListsClosedCases;
         this.loadingIndicator = false;
@@ -544,38 +508,136 @@ export class SGRCComponenent implements OnInit {
       } else {
         this.studentLists = [];
       }
-      // console.log("Documents List " + JSON.stringify(this.studentLists));
     });
   }
-  // Commented following function on 5-feb-24
-  // GetAllStudentsCasesRemarks(): void {
-  //   debugger;
-  //   this.loadingIndicator = true;
-  //   this.studendGservicelocal.GetAllStudentsCasesRemarks().subscribe((response) => {
-  //     if (response.item1.length > 0) {
-  //      this.studentClosedCasesRemarks = response.item1;
-  //       this.studentListsClosedCases = this.studentClosedCasesRemarks.filter(x => x["status"] == 'C');
-  //       this.loadingIndicator = false;
-  //       this.columns =[];
-  //       this.headHtmlData=[];
 
-
-  //           this.headHtmlData = this.studentLists[0];
-  //           this.columns = Object.keys(this.studentLists[0]);
-  //           this.columns = this.columns.filter((item: any) => item !== 'fileName');
-  //           debugger;
-  //           this.columns.push()
-  //        // this.htmlData=data;
-  //         //this.temp = data;
-  //        this.loadingIndicator = false;
-  //     } else {
-  //       this.studentClosedCasesRemarks = [];
-  //     }
-  //     console.log("Closed Cases Lists " + JSON.stringify(this.studentClosedCasesRemarks));
-  //   });
-  // }
-
-
+  searchQuery: any;
+  FilteredstudentLists: any[];
   @ViewChild('table') table: ElementRef;
 
+  DataSearch() {
+    // Ensure that searchQuery is not null/undefined and trim any extra spaces.
+    const query = this.searchQuery?.trim().toLowerCase() || '';
+
+    // If search query is empty, reset to the original list
+    if (!query) {
+      this.FilteredstudentLists = this.studentLists;
+      return;
+    }
+
+    // Filter student lists based on the search query
+    this.FilteredstudentLists = this.studentLists.filter(item => {
+      // Use Object.entries to loop through all key-value pairs in the object
+      return Object.entries(item).some(([key, val]) => {
+        if (val !== null && val !== undefined) {
+          // Convert the value to a string and make it case-insensitive
+          let valueString = String(val).toLowerCase();
+
+          // Special handling for 'ticketNumber' field
+          if (key === 'ticketNumber') {
+            const numericId = Number(val); // Convert the ticket number to a number
+
+            // Handle both numericId and 'SG-<numericId>' formats
+            if (!isNaN(numericId)) {
+              // Check if the query matches the numericId or 'SG-<numericId>' format
+              return numericId.toString().includes(query) || `SG-${numericId}`.includes(query);
+            }
+          }
+
+          // General case for other fields (text search)
+          return valueString.includes(query);
+        }
+        return false;
+      });
+    });
+  }
+
+  DataSearchOpen() {
+    const query = this.searchQuery?.trim().toLowerCase() || '';
+
+    if (!query) {
+      this.GetAllStudentsCases();
+      return;
+    }
+
+    this.studentListsOpenCases = this.studentListsOpenCases.filter(item => {
+      // Use Object.entries to loop through all key-value pairs in the object
+      return Object.entries(item).some(([key, val]) => {
+        if (val !== null && val !== undefined) {
+          // Convert the value to a string and make it case-insensitive
+          let valueString = String(val).toLowerCase();
+
+          // Special handling for 'ticketNumber' field
+          if (key === 'ticketNumber') {
+            const numericId = Number(val); // Convert the ticket number to a number
+
+            // Handle both numericId and 'SG-<numericId>' formats
+            if (!isNaN(numericId)) {
+              // Check if the query matches the numericId or 'SG-<numericId>' format
+              return numericId.toString().includes(query) || `SG-${numericId}`.includes(query);
+            }
+          }
+
+          // General case for other fields (text search)
+          return valueString.includes(query);
+        }
+        return false;
+      });
+    });
+  }
+
+  DataSearchClosed() {
+    const query = this.searchQuery?.trim().toLowerCase() || '';
+    if (!query) {
+      this.GetAllStudentsCases();
+
+      return;
+    }
+
+    this.studentListsClosedCases = this.studentListsClosedCases.filter(item => {
+      return Object.entries(item).some(([key, val]) => {
+        if (val !== null && val !== undefined) {
+          let valueString = String(val).toLowerCase();
+
+          if (key === 'ticketNumber') {
+            const numericId = Number(val); // Convert the ticket number to a number
+            if (!isNaN(numericId)) {
+              return numericId.toString().includes(query) || `SG-${numericId}`.includes(query);
+            }
+          }
+          return valueString.includes(query);
+        }
+        return false;
+      });
+    });
+  }
+  onTabClick(tabType: string): void {
+    if (tabType === 'all') {
+      this.searchQuery = "";
+
+    } else if (tabType === 'open') {
+      this.searchQuery = "";
+
+    } else if (tabType === 'closed') {
+      this.searchQuery = "";
+    }
+    this.GetAllStudentsCases();
+  }
+
+
+
+
+
+  LoginFailed(_NewError: any) {
+    this.isLoginFailed = true;
+    swal.fire({
+      title: 'Login Failed',
+      text: 'Login details are Invalid!',
+      icon: 'warning',
+    })
+    const element = document.getElementById('SGRCCases');
+    if (element) {
+      element.hidden = true;
+    }
+  }
 }

@@ -19,7 +19,7 @@
                             <label class="col-md-7 form-label text-dark ">{{RegistrationNo}} </label>
                         </div>
                         <div class="row d-flex justify-content-start">
-                            <label class="col-md-5 form-label text-danger">Course</label>
+                            <label class="col-md-5 form-label text-danger">Program Name</label>
                             <label class="col-md-7 form-label text-dark">{{courseName}}</label>
                         </div>
                     </div>
@@ -45,8 +45,13 @@
                             </label>
                         </div>
                         <div class="row d-flex justify-content-center">
-                            <label class="col-md-4 form-label text-danger">Program Code </label>
-                            <label class="col-md-7 form-label text-dark">{{this.ProgramCode}}{{this.SectionCode}}
+                            <label class="col-md-4 form-label text-danger">Program  </label>
+                            <label class="col-md-7 form-label text-dark">{{this.ProgramCode}}
+                            </label>
+                        </div>
+                        <div class="row d-flex justify-content-center">
+                            <label class="col-md-4 form-label text-danger">Section</label>
+                            <label class="col-md-7 form-label text-dark">{{this.SectionCode}}
                             </label>
                         </div>
                     </div>
@@ -80,8 +85,8 @@
                         <div *ngIf="form1['WhatsAppNo'].invalid && (form1['WhatsAppNo'].touched || isForm1Submitted)"
                             class="text-danger">
                             <div *ngIf="form1['WhatsAppNo'].errors?.required">Please enter a valid WhatsApp Number.</div>
-                            <div *ngIf="form1['WhatsAppNo'].errors?.pattern">Please enter a valid 10-15 digit number.</div>
-                            <div *ngIf="form1['WhatsAppNo'].errors?.numbersMustBeDistinct">WhatsApp number must be different from phone and parent contact numbers.</div>
+                            <div *ngIf="form1['WhatsAppNo'].errors?.pattern">Please enter a valid 10 digit number.</div>
+                            <!-- <div *ngIf="form1['WhatsAppNo'].errors?.numbersMustBeDistinct">WhatsApp number must be different from phone and parent contact numbers.</div> -->
                         </div>
                     </div>
 
@@ -94,8 +99,8 @@
                         <div *ngIf="form1['PhoneNumber'].invalid && (form1['PhoneNumber'].touched || isForm1Submitted)"
                             class="text-danger">
                             <div *ngIf="form1['PhoneNumber'].errors?.required">Please enter a valid Phone Number.</div>
-                            <div *ngIf="form1['PhoneNumber'].errors?.pattern">Please enter a valid 10-15 digit number.</div>
-                            <div *ngIf="form1['PhoneNumber'].errors?.numbersMustBeDistinct">Phone number must be different from WhatsApp and parent contact numbers.</div>
+                            <div *ngIf="form1['PhoneNumber'].errors?.pattern">Please enter a valid 10 digit number.</div>
+                            <!-- <div *ngIf="form1['PhoneNumber'].errors?.numbersMustBeDistinct">Phone number must be different from WhatsApp and parent contact numbers.</div> -->
                         </div>
                     </div>
 
@@ -108,7 +113,7 @@
                         <div *ngIf="form1['ParentContact'].invalid && (form1['ParentContact'].touched || isForm1Submitted)"
                             class="text-danger">
                             <div *ngIf="form1['ParentContact'].errors?.required">Please enter a valid Parent Contact Number.</div>
-                            <div *ngIf="form1['ParentContact'].errors?.pattern">Please enter a valid 10-15 digit number.</div>
+                            <div *ngIf="form1['ParentContact'].errors?.pattern">Please enter a valid 10 digit number.</div>
                             <div *ngIf="form1['ParentContact'].errors?.numbersMustBeDistinct">Parent contact must be different from WhatsApp and phone numbers.</div>
                         </div>
                     </div>
@@ -137,13 +142,24 @@
                     <ng-container *ngIf="SemesterExchangeRegistration.get('HasRelativeDetails')?.value === 'Yes'">
                         <!-- Email Address -->
                         <div class="col-md-3">
-                            <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                            <label class="form-label">Email Address  </label>
                             <input type="email" id="EmailId" formControlName="EmailId" class="form-control"
                                 placeholder="Enter Email"
-                                [ngClass]="{'is-invalid': form1['EmailId'].invalid && (form1['EmailId'].touched || isForm1Submitted)}" />
-                            <div *ngIf="form1['EmailId'].invalid && (form1['EmailId'].touched || isForm1Submitted)"
+                                />
+                                <!-- [ngClass]="{'is-invalid': form1['EmailId'].invalid && (isForm1Submitted)}"  -->
+                            <!-- <div *ngIf="form1['EmailId'].invalid && (form1['EmailId'].touched || isForm1Submitted)"
                                 class="text-danger">
                                 Please enter a valid Email Address.
+                            </div> -->
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Relative Phone </label>
+                            <input type="text" id="RelativePhone" formControlName="RelativePhone" class="form-control"
+                                placeholder="Enter RelativePhone"
+                                [ngClass]="{'is-invalid': form1['RelativePhone'].invalid && (form1['RelativePhone'].touched || isForm1Submitted)}" />
+                            <div *ngIf="form1['RelativePhone'].invalid && (form1['RelativePhone'].touched || isForm1Submitted)"
+                                class="text-danger">
+                                Please enter a valid Relative Phone.
                             </div>
                         </div>
                         <!-- Relative Name -->
@@ -417,9 +433,10 @@
                             [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('EnglishTestType')?.invalid}"
                             [(ngModel)]="EnglishTestType">
                             <option value="">Select</option>
-                            <option value="NotGiven">NotGiven</option>
+                            <option value="NotRequried">Not Required</option>
+                            <option value="NotGiven">Not Given</option>
                             <option value="Applied">Applied</option>
-                            <option value="Appeared">Appeared</option>
+                            <option value="Appeared">Appeared/ Given</option>
                             <option value="PTE">PTE</option>
                             <option value="DULINGO">DULINGO</option>
                             <option value="IELTS">IELTS</option>
@@ -443,7 +460,7 @@
                     </ng-container>
                 </div>
                 <div class="row g-4 mb-4"
-                    *ngIf="['DULINGO', 'IELTS', 'TOFEL'].includes(EnglishTestType)">
+                    *ngIf="['PTE','DULINGO', 'IELTS', 'TOFEL'].includes(EnglishTestType)">
                     <div class="col-md-2">
                         <label class="form-label">Listening Score <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="ListeningScore" formControlName="ListeningScore"
@@ -568,7 +585,7 @@
             </fieldset>
 
             <fieldset class="border p-3 mb-4">
-                <legend class="w-auto px-2">Legal Policy </legend>
+                <legend class="w-auto px-2">Declaration </legend>
                 <!-- Policy Acceptance -->
                 <div class="row g-4 mb-4">
                     <div class="col-md-3">
@@ -585,15 +602,20 @@
                         </label>
                         <div *ngIf="SemesterExchangeRegistration.get('AcceptPolicy')?.invalid && (SemesterExchangeRegistration.get('AcceptPolicy')?.touched || isForm1Submitted)"
                             class="text-danger">
-                            You must accept the policy to proceed.
+                            
+                            <!-- I do hereby declare that all the above said information provided by me is true & correct to the best of my knowledge and belief. All formalities and expenses relating to visa, travel accommodation and food would be borne by me. My parents/guardian/relatives have given their consent for the same. Any kind of fees levied by Partner University or Home University would be acceptable to me and would be borne by me. Lovely Professional University would not be liable in case the visa application is rejected, and the student cannot make any claims for reimbursement of the expense incurred in the above process. -->
                         </div>
+                    </div>
+                    <div *ngIf="SemesterExchangeRegistration.get('AcceptPolicy')?.invalid && (SemesterExchangeRegistration.get('AcceptPolicy')?.touched || isForm1Submitted)"
+                        class="text-danger">
+                        Aggreement Acceptance is required.
                     </div>
                 </div>
 
                 <!-- Show Policy Text -->
                 <div *ngIf="showPolicy" class="mb-4">
-                    <p><strong>Policy details:</strong> 
-                        Kindly read the policy before submitteing the Application Form. 
+                    <p class="text-danger"> <strong>Declaration Statement:</strong> 
+                       I do hereby declare that all the above said information provided by me is true & correct to the best of my knowledge and belief. All formalities and expenses relating to visa, travel accommodation and food would be borne by me. My parents/guardian/relatives have given their consent for the same. Any kind of fees levied by Partner University or Home University would be acceptable to me and would be borne by me. Lovely Professional University would not be liable in case the visa application is rejected, and the student cannot make any claims for reimbursement of the expense incurred in the above process.
                     </p>
                 </div>
 
@@ -623,26 +645,40 @@
                     </div>
                     <div class="col-md-3">
                         <input type="file" name="ResumeDocumentPath" id="ResumeDocumentPath" class="form-control"
-                            (change)="onFileSelected($event, 'resume')" [ngClass]="{
-                                        'is-invalid': form1['ResumeDocumentPath'].invalid && (form1['ResumeDocumentPath'].touched || isForm1Submitted)
-                                      }" />
-
-                        <div *ngIf="form1['ResumeDocumentPath'].invalid && (form1['ResumeDocumentPath'].touched || isForm1Submitted)"
+                            (change)="onResumeFileSelected($event)"
+                            [ngClass]="{ 'is-invalid': !UploadedResume }" />
+                        <div *ngIf="!this.UploadedResume && isForm1Submitted"
                             class="text-danger">
                             Please upload Resume Document.
                         </div>
+                    </div>
+                    <div class="col-md-3">
+                        <!-- <input type="file" name="ResumeDocumentPath" id="ResumeDocumentPath" class="form-control" (change)="onResumeFileSelected($event)" 
+                        /> -->
+                          <!-- <div *ngIf="SemesterExchangeRegistration.get('ResumeDocumentPath')?.invalid "  [ngClass]="{ 'is-invalid': form1['ResumeDocumentPath'].invalid && (form1['ResumeDocumentPath'].touched || isForm1Submitted) }"
+                               class="text-danger">
+                              Resume Document  is required.
+                           </div> -->
+
+                        <!-- <div *ngIf="SemesterExchangeRegistration.get('ResumeDocumentPath')?.invalid && (isForm1Submitted)"
+                            class="text-danger">
+                            Please upload Resume Document.
+                        </div> -->
+                        
                     </div>
                 </div>
 
                 <div class="row g-4 mb-4">
                     <div class="col-md-3">
                         <label class="form-label">Consent Letter <span class="text-danger">*</span>
-                        <span> <br/>  Kindly fill this form and get it signed from PArents , upload in PDF format. 
+                        <span> <br/>  Kindly fill this form and get it signed from Parents , upload in PDF format. 
                             <br/>
-                            <a href="https://files.lpu.in/umsweb/DIA/SemesterExchangedocuments/Consent_Letter.pdf" download
+                            <!-- <a href="https://files.lpu.in/umsweb/DIA/SemesterExchangedocuments/Consent_Letter.pdf" download
                                 target="_blank"  >
                                 Download Format
-                            </a>
+                            </a> -->
+                             <a (click)="DownloadFormat()" href="" download
+                                target="_blank"  >Download Format</a>
                         </span>
                         </label>
                     </div>
@@ -677,7 +713,7 @@
             <!-- Submit Button -->
             <div class="text-center mt-4">
                 <!-- <button type="submit" class="btn btn-primary px-5" [disabled]="!SemesterExchangeRegistration.valid"> -->
-                    <button type="submit" class="btn btn-primary px-5" [disabled]="!eligible || isLoading">Create Your Application</button>
+                    <button type="submit" class="btn btn-primary px-5" [disabled]="!eligible || isLoading || !UploadedResume">Create Your Application</button>
 
                     <!-- Create Your Application
                 </button> -->
