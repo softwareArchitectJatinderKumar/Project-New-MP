@@ -1,4 +1,4 @@
-<div class="full-page-loader" *ngIf="isLoading" aria-label="Loading">
+<!-- <div class="full-page-loader" *ngIf="isLoading" aria-label="Loading">
     <div class="loader-spinner">
         <span class="material-icons lg-48 spin-icon">autorenew</span>
     </div>
@@ -67,10 +67,10 @@
 
         <form [formGroup]="form" (ngSubmit)="submitFinalApplication()">
 
-            <!-- STEP 0: Contact / Relative / University Preferences -->
+          
             <section *ngIf="currentStep === 0" class="step-section">
                 <div class="row g-3">
-                    <!-- Contact -->
+       
                     <div class="col-md-4">
                         <div class="card section">
                             <div class="card-header">Contact Information</div>
@@ -114,8 +114,7 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Relative -->
+ 
                     <div class="col-md-4">
                         <div class="card section">
                             <div class="card-header">Relative Details</div>
@@ -161,7 +160,7 @@
                         </div>
                     </div>
 
-                    <!-- University Preferences -->
+           
                     <div class="col-md-4">
                         <div class="card section">
                             <div class="card-header">University Preferences</div>
@@ -229,7 +228,7 @@
                     </div>
                 </div>
 
-                <!-- navigation -->
+  
                 <div class="d-flex justify-content-between mt-3">
                     <div></div>
                     <div>
@@ -238,10 +237,10 @@
                 </div>
             </section>
 
-            <!-- STEP 1: Passport / Visa / English -->
+       
             <section *ngIf="currentStep === 1" class="step-section ">
                 <div class="row g-3">
-                    <!-- Passport -->
+                  
                     <div class="col-md-4">
                         <div class="card section">
                             <div class="card-header">Passport Details</div>
@@ -284,7 +283,7 @@
                         </div>
                     </div>
 
-                    <!-- Previous Visa -->
+                    
                     <div class="col-md-4">
                         <div class="card section">
                             <div class="card-header">Previous Visa</div>
@@ -318,8 +317,7 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- English -->
+ 
                     <div class="col-md-4">
                         <div class="card section">
                             <div class="card-header">English Proficiency</div>
@@ -370,17 +368,16 @@
                     </div>
                 </div>
 
-                <!-- navigation -->
+        
                 <div class="d-flex justify-content-between mt-3">
                     <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
                     <button type="button" class="btn btn-primary" (click)="nextStep()">Next</button>
                 </div>
             </section>
-
-            <!-- STEP 2: Sponsor / Declaration / Documents -->
+ 
             <section *ngIf="currentStep === 2" class="step-section">
                 <div class="row g-3">
-                    <!-- Sponsor -->
+                
                     <div class="col-md-4">
                         <div class="card section">
                             <div class="card-header">Sponsor Information</div>
@@ -425,7 +422,7 @@
                         </div>
                     </div>
 
-                    <!-- Declaration -->
+                 
                     <div class="col-md-4">
                         <div class="card section">
                             <div class="card-header">Declaration</div>
@@ -514,14 +511,14 @@
                     </div>
                 </div>
 
-                <!-- navigation -->
+             
                 <div class="d-flex justify-content-between mt-3">
                     <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
                     <button type="button" class="btn btn-primary" (click)="nextStep()">Next</button>
                 </div>
             </section>
 
-            <!-- STEP 3: Final Review -->
+        
             <section *ngIf="currentStep === 3" class="step-section">
                 <div class="card">
                     <div class="card-header">Final Review</div>
@@ -673,4 +670,4 @@
                 </div>
             </div>
         </div>
-    </ng-template>
+    </ng-template> -->
