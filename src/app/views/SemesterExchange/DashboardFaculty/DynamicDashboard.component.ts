@@ -672,13 +672,14 @@ export class DynamicDashboardComponent implements OnInit {
           Swal.fire({ title: 'Success!', text: 'Evaluation Marks Updated Successfully', icon: 'success' }).then(() => {
             this.currentModalRef?.close(); // Close modal on success
           });
-        } else if (errorCode === -1) {
+        } else if (errorCode === "-1") {
           Swal.fire({ title: 'Info', text: 'Evaluation Marks Already Uploaded', icon: 'info' }).then(() => {
             this.currentModalRef?.close();
           });
-        } else {
-          Swal.fire({ title: 'Error!', text: 'Some Technical Issue Occurred', icon: 'error' });
         }
+        //  else {
+        //   Swal.fire({ title: 'Error!', text: 'Some Technical Issue Occurred', icon: 'error' });
+        // }
       },
       error: (err) => {
         Swal.fire({ title: 'Error!', text: 'Unable to complete the request. Please try again later.', icon: 'error' });
@@ -800,6 +801,12 @@ export class DynamicDashboardComponent implements OnInit {
   hasEvaluationRemarks(row: Application): boolean {
     const remarks = this.evaluationDataMap.get(row.registrationNo);
     // Check both the new ApprovalRemarks and the old DealingUidRemarks
+    return !!(remarks?.academicsMarks !== null || remarks?.communicationSkillsMarks !== null);
+  }
+  evaluationData:any;
+  CheckEvaluationRemarks(row: Application): boolean {
+    const remarks = this.evaluationData.find((r: { registrationNo: string; }) => r.registrationNo === row.registrationNo);
+    // Check both the new FacultyRemarks and the old dealingUserInterviewRemarks
     return !!(remarks?.academicsMarks !== null || remarks?.communicationSkillsMarks !== null);
   }
   /**

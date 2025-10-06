@@ -307,7 +307,8 @@
                 <input type="checkbox" class="form-check-input" id="acceptPolicy" formControlName="acceptPolicy"
                   [disabled]="!isSection1Edit" [class.is-invalid]="isFieldInvalidApplication('acceptPolicy')" />
                 <label class="form-check-label" for="acceptPolicy">
-                  I accept the policy.
+                  Declaration Status 
+                  <!-- {{policyAccepted}} -->
                 </label>
                 <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('acceptPolicy')">
                   You must accept the policy.

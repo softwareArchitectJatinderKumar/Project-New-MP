@@ -60,8 +60,21 @@
     </div>
   </div>
 </div>
- 
-  <ng-container *ngFor="let section of formSections">
+<ng-container *ngFor="let section of getFilteredFormSections()"> 
+  <h5 class="mt-4 mb-3 text-info">{{ section.label }}</h5>
+  <div class="row">
+    <div class="col-md-4 mb-3" *ngFor="let key of section.keys">
+      <label class="form-label fw-semibold" *ngIf="key !=='acceptPolicy'; else polcy">{{ beautifyLabel(key) }}</label>
+      <p class="form-control-plaintext border rounded p-2 bg-light"  >
+        {{ studentForm.get(key)?.value || 'N/A' }} 
+      </p>
+      <ng-template #polcy>
+       <label class="form-label fw-semibold"> {{'Declaration Statement'}}</label>
+      </ng-template>
+    </div>
+  </div>
+</ng-container> 
+  <!-- <ng-container *ngFor="let section of formSections">
     <h5 class="mt-4 mb-3 text-info">{{ section.label }}</h5>
     <div class="row">
       <div class="col-md-4 mb-3" *ngFor="let key of section.keys">
@@ -72,7 +85,7 @@
       </div>
 
     </div>
-  </ng-container>
+  </ng-container> -->
 
   <!-- Document Uploads -->
   <h5 class="mt-4 text-info">Uploaded Documents</h5>

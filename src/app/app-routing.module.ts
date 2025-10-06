@@ -31,6 +31,10 @@ const routes: Routes = [
         loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule),
       },
       {
+        path: 'stuPotalNewForm/:LoginName',
+        loadChildren: () => import('./views/SemesterExchange/StudentForm/NewLogic/NewLogicForm.module').then(m => m.NewLogicFormModule),
+      },
+      {
         path: 'stuPotal/:LoginName',
         loadChildren: () => import('./views/SemesterExchange/StudentForm/StudentForm.module').then(m => m.StudentFormModule),
       },

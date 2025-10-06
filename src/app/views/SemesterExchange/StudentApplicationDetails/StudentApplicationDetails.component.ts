@@ -69,10 +69,11 @@ export class StudentApplicationDetailsComponent implements OnInit {
   ];
   
   documentUploads = [
-    { key: 'feesProofFileName', label: 'Fees Proof Document' },
     { key: 'resumeFileName', label: 'Resume Document' },
+    { key: 'feesProofFileName', label: 'Fees Proof Document' },
     { key: 'consentLetterFileName', label: 'Consent Letter' },
-    { key: 'passportFileName', label: 'Passport File' }
+    { key: 'passportFileName', label: 'Passport Document' },
+    { key: 'englishTestDocumentPath', label: 'English Test Proof ' }
   ];
   
   printDetails() {
@@ -710,4 +711,43 @@ export class StudentApplicationDetailsComponent implements OnInit {
       }
     });
   }
+
+
+  public getFilteredFormSections() {    
+    const fundingType = this.studentForm.get('isSelfFunded')?.value; 
+
+    // Define the funding types that DO NOT require detailed sponsor info
+    const excludedFundingTypes = ['Parent', 'Applied','No']; // Assuming 'Self' and 'Parent' are the values for self-funded/parent-sponsored
+
+    // 2. Map and Filter the original sections
+    return this.formSections.map(section => {
+        // If it's not the 'Sponsor Details' section, return it as is
+        if (section.label !== 'Sponsor Details' && section.label!=='English Test Details' && section.label !=='Visa Details') {
+            return section;
+        }
+
+        // If it IS the 'Sponsor Details' section, check the funding type
+        if (excludedFundingTypes.includes(fundingType)  ) {
+            
+            const filteredKeys = section.keys.filter(key => key === 'isSelfFunded' || key === 'availableFunds' || key=='englishTestType' || key=='isVisaRejected');
+            
+            return {
+                ...section,
+                keys: filteredKeys
+            };
+        }
+        // if (excludedFundingTypes.includes(fundingType)) {
+            
+        //     const filteredKeys = section.keys.filter(key => key === 'isSelfFunded' || key === 'availableFunds' || key=='englishTestType');
+            
+        //     return {
+        //         ...section,
+        //         keys: filteredKeys
+        //     };
+        // }
+        
+        // If fundingType is 'Other', return all sponsor keys
+        return section;
+    });
+}
 }

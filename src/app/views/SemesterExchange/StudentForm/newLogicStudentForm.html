@@ -1,0 +1,263 @@
+<!-- <div class="full-page-loader" *ngIf="isLoading" aria-label="Loading">
+  <div class="loader-spinner">
+    <span class="material-icons lg-48 spin-icon">autorenew</span>
+  </div>
+</div>
+
+<div class="container-fluid mt-4" id="NewRegsiterPage" *ngIf="!loginFailed; else ErrorApplication">
+  <div class="card shadow-sm p-4" *ngIf="eligible; else NotElgible">
+    <h2 class="text-center text-dark mb-3">New Application Form</h2>
+
+    <form [formGroup]="SemesterExchangeRegistration" (ngSubmit)="Onsubmit()" class="forms-sample">
+      <fieldset class="border p-3 mb-4">
+        <legend class="w-auto px-2">Contact Information</legend>
+        <div class="row g-4 mb-4">
+          <div class="col-md-3">
+            <label class="form-label">Nationality <span class="text-danger">*</span></label>
+            <select formControlName="CountryName" class="form-select" [ngClass]="{'is-invalid': form1['CountryName'].invalid && (form1['CountryName'].touched || isForm1Submitted)}">
+              <option value="">Select a Country</option>
+              <option *ngFor="let country of countriesList" [value]="country.name">{{country.name}} ({{country.code}})</option>
+            </select>
+            <div *ngIf="form1['CountryName'].invalid && (form1['CountryName'].touched || isForm1Submitted)" class="text-danger">Please select a valid Country Name.</div>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">WhatsApp Number <span class="text-danger">*</span></label>
+            <input type="text" formControlName="WhatsAppNo" class="form-control" placeholder="Enter WhatsApp Number" [ngClass]="{'is-invalid': form1['WhatsAppNo'].invalid && (form1['WhatsAppNo'].touched || isForm1Submitted)}" />
+            <div *ngIf="form1['WhatsAppNo'].invalid && (form1['WhatsAppNo'].touched || isForm1Submitted)" class="text-danger">
+              <div *ngIf="form1['WhatsAppNo'].errors?.required">Please enter a valid WhatsApp Number.</div>
+              <div *ngIf="form1['WhatsAppNo'].errors?.pattern">Please enter a valid 6-15 digit number.</div>
+              <div *ngIf="form1['WhatsAppNo'].errors?.numbersMustBeDistinct">Number must be different from other contacts.</div>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+            <input type="text" formControlName="PhoneNumber" class="form-control" placeholder="Enter Phone Number" [ngClass]="{'is-invalid': form1['PhoneNumber'].invalid && (form1['PhoneNumber'].touched || isForm1Submitted)}" />
+            <div *ngIf="form1['PhoneNumber'].invalid && (form1['PhoneNumber'].touched || isForm1Submitted)" class="text-danger">
+              <div *ngIf="form1['PhoneNumber'].errors?.required">Please enter a valid Phone Number.</div>
+              <div *ngIf="form1['PhoneNumber'].errors?.pattern">Please enter a valid 6-15 digit number.</div>
+              <div *ngIf="form1['PhoneNumber'].errors?.numbersMustBeDistinct">Number must be different from other contacts.</div>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Parent Contact Number <span class="text-danger">*</span></label>
+            <input type="text" formControlName="ParentContact" class="form-control" placeholder="Enter Parent Phone Number" [ngClass]="{'is-invalid': form1['ParentContact'].invalid && (form1['ParentContact'].touched || isForm1Submitted)}" />
+            <div *ngIf="form1['ParentContact'].invalid && (form1['ParentContact'].touched || isForm1Submitted)" class="text-danger">
+              <div *ngIf="form1['ParentContact'].errors?.required">Please enter a valid Parent Contact Number.</div>
+              <div *ngIf="form1['ParentContact'].errors?.pattern">Please enter a valid 6-15 digit number.</div>
+              <div *ngIf="form1['ParentContact'].errors?.numbersMustBeDistinct">Number must be different from other contacts.</div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="border p-3 mb-4">
+        <legend class="w-auto px-2">Relative Details</legend>
+        <div class="row g-4 mb-4">
+          <div class="col-md-3">
+            <label class="form-label">Any Relative/ Sibling residing out of India? <span class="text-danger">*</span></label>
+            <select formControlName="HasRelativeDetails" class="form-select" [ngClass]="{'is-invalid': form1['HasRelativeDetails'].invalid && (form1['HasRelativeDetails'].touched || isForm1Submitted)}">
+              <option value="">Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+            <div *ngIf="form1['HasRelativeDetails'].invalid && (form1['HasRelativeDetails'].touched || isForm1Submitted)" class="text-danger">Please select an option.</div>
+          </div>
+
+          <ng-container *ngIf="SemesterExchangeRegistration.get('HasRelativeDetails')?.value === 'Yes'">
+            <div class="col-md-3">
+              <label class="form-label">Email Address</label>
+              <input type="email" formControlName="EmailId" class="form-control" placeholder="Enter Email" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Relative Phone</label>
+              <input type="text" formControlName="RelativePhone" class="form-control" placeholder="Enter Relative Phone" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Relative Name <span class="text-danger">*</span></label>
+              <input type="text" formControlName="RelativeName" class="form-control" placeholder="Enter Relative Name" [ngClass]="{'is-invalid': form1['RelativeName'].invalid && (form1['RelativeName'].touched || isForm1Submitted)}" />
+              <div *ngIf="form1['RelativeName'].invalid && (form1['RelativeName'].touched || isForm1Submitted)" class="text-danger">Please enter a valid Relative Name.</div>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Relative Country Name <span class="text-danger">*</span></label>
+              <select formControlName="RelativeCountryName" class="form-select" [ngClass]="{'is-invalid': form1['RelativeCountryName'].invalid && (form1['RelativeCountryName'].touched || isForm1Submitted)}">
+                <option value="">Select a Country</option>
+                <option *ngFor="let country of countriesList" [value]="country.name">{{country.name}} ({{country.code}})</option>
+              </select>
+              <div *ngIf="form1['RelativeCountryName'].invalid && (form1['RelativeCountryName'].touched || isForm1Submitted)" class="text-danger">Please select a valid Relative Country Name.</div>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Relative Relation <span class="text-danger">*</span></label>
+              <input type="text" formControlName="RelativeRelation" class="form-control" [ngClass]="{'is-invalid': form1['RelativeRelation'].invalid && (form1['RelativeRelation'].touched || isForm1Submitted)}" />
+              <div *ngIf="form1['RelativeRelation'].invalid && (form1['RelativeRelation'].touched || isForm1Submitted)" class="text-danger">Please enter Relative Relation.</div>
+            </div>
+          </ng-container>
+        </div>
+      </fieldset>
+
+      <fieldset class="border p-3 mb-4">
+        <legend class="w-auto px-2">English Proficiency Details</legend>
+        <div class="row g-4 mb-4">
+          <div class="col-md-3">
+            <label class="form-label">English Proficiency Test <span class="text-danger">*</span></label>
+            <select formControlName="EnglishTestType" class="form-select" [(ngModel)]="EnglishTestType" [ngClass]="{'is-invalid': form1['EnglishTestType'].invalid && (form1['EnglishTestType'].touched || isForm1Submitted)}">
+              <option value="">Select</option>
+              <option value="NotRequired">Not Required</option>
+              <option value="NotGiven">Not Given</option>
+              <option value="Applied">Applied</option>
+              <option value="Appeared">Appeared / Given</option>
+            </select>
+            <div *ngIf="form1['EnglishTestType'].invalid && (form1['EnglishTestType'].touched || isForm1Submitted)" class="text-danger">Please select valid English Proficiency.</div>
+          </div>
+
+          <ng-container *ngIf="EnglishTestType === 'Appeared' || EnglishTestType === 'Applied'">
+            <div class="col-md-3">
+              <label class="form-label">English Test Date <span class="text-danger" *ngIf="EnglishTestType === 'Applied' || EnglishTestType === 'Appeared'">*</span></label>
+              <input type="date" formControlName="testDate" class="form-control" [ngClass]="{'is-invalid': form1['testDate'].invalid && (form1['testDate'].touched || isForm1Submitted)}" />
+              <div *ngIf="form1['testDate'].invalid && (form1['testDate'].touched || isForm1Submitted)" class="text-danger">Please enter Test Date.</div>
+            </div>
+          </ng-container>
+
+        </div>
+
+        <div class="row g-4 mb-4" *ngIf="['PTE','DUOLINGO','DULINGO','IELTS','TOFEL','TOEFL'].includes(SemesterExchangeRegistration.get('AppearedTestType')?.value)">
+          <div class="col-md-2">
+            <label class="form-label">Listening Score <span class="text-danger">*</span></label>
+            <input type="text" formControlName="ListeningScore" class="form-control" [ngClass]="{'is-invalid': form1['ListeningScore'].invalid && (form1['ListeningScore'].touched || isForm1Submitted)}" />
+            <div *ngIf="form1['ListeningScore'].invalid && (form1['ListeningScore'].touched || isForm1Submitted)" class="text-danger">Please enter valid Listening Score.</div>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Speaking Score <span class="text-danger">*</span></label>
+            <input type="text" formControlName="SpeakingScore" class="form-control" [ngClass]="{'is-invalid': form1['SpeakingScore'].invalid && (form1['SpeakingScore'].touched || isForm1Submitted)}" />
+            <div *ngIf="form1['SpeakingScore'].invalid && (form1['SpeakingScore'].touched || isForm1Submitted)" class="text-danger">Please enter valid Speaking Score.</div>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Reading Score <span class="text-danger">*</span></label>
+            <input type="text" formControlName="ReadingScore" class="form-control" [ngClass]="{'is-invalid': form1['ReadingScore'].invalid && (form1['ReadingScore'].touched || isForm1Submitted)}" />
+            <div *ngIf="form1['ReadingScore'].invalid && (form1['ReadingScore'].touched || isForm1Submitted)" class="text-danger">Please enter valid Reading Score.</div>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Writing Score <span class="text-danger">*</span></label>
+            <input type="text" formControlName="WritingScore" class="form-control" [ngClass]="{'is-invalid': form1['WritingScore'].invalid && (form1['WritingScore'].touched || isForm1Submitted)}" />
+            <div *ngIf="form1['WritingScore'].invalid && (form1['WritingScore'].touched || isForm1Submitted)" class="text-danger">Please enter valid Writing Score.</div>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Overall Score <span class="text-danger">*</span></label>
+            <input type="text" formControlName="OverallScore" class="form-control" [ngClass]="{'is-invalid': form1['OverallScore'].invalid && (form1['OverallScore'].touched || isForm1Submitted)}" />
+            <div *ngIf="form1['OverallScore'].invalid && (form1['OverallScore'].touched || isForm1Submitted)" class="text-danger">Please enter valid Overall Score.</div>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Year of Test <span class="text-danger">*</span></label>
+            <input type="text" formControlName="EnglishTestYear" class="form-control" [ngClass]="{'is-invalid': form1['EnglishTestYear'].invalid && (form1['EnglishTestYear'].touched || isForm1Submitted)}" />
+            <div *ngIf="form1['EnglishTestYear'].invalid && (form1['EnglishTestYear'].touched || isForm1Submitted)" class="text-danger">Please enter valid Year of Test.</div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="border p-3 mb-4">
+        <legend class="w-auto px-2">Sponsor Information</legend>
+        <div class="row g-4 mb-4">
+          <div class="col-md-3">
+            <label class="form-label">Sponsor Type<span class="text-danger">*</span></label>
+            <select formControlName="IsSelfFunded" class="form-select" [(ngModel)]="IsSelfFunded" [ngClass]="{'is-invalid': form1['IsSelfFunded'].invalid && (form1['IsSelfFunded'].touched || isForm1Submitted)}">
+              <option value="">Select</option>
+              <option value="Parent">Parent</option>
+              <option value="Relative">Relative</option>
+              <option value="Other">Other</option>
+            </select>
+            <div *ngIf="form1['IsSelfFunded'].invalid && (form1['IsSelfFunded'].touched || isForm1Submitted)" class="text-danger">Please select valid Sponsor Type.</div>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Available Funds & Budget<span class="text-danger">*</span></label>
+            <select formControlName="AvailableFunds" class="form-select" [ngClass]="{'is-invalid': form1['AvailableFunds'].invalid && (form1['AvailableFunds'].touched || isForm1Submitted)}">
+              <option value="">Select</option>
+              <option value="2to4Lakhs">2 to 4 Lakhs</option>
+              <option value="4to6Lakhs">4 to 6 Lakhs</option>
+              <option value="6to8Lakhs">6 to 8 Lakhs</option>
+            </select>
+            <div *ngIf="form1['AvailableFunds'].invalid && (form1['AvailableFunds'].touched || isForm1Submitted)" class="text-danger">Please select available funds.</div>
+          </div>
+
+          <ng-container *ngIf="IsSelfFunded === 'Other' || IsSelfFunded === 'Relative'">
+            <div class="col-md-3">
+              <label class="form-label">Sponsor Name <span class="text-danger">*</span></label>
+              <input formControlName="SponsorName" class="form-control" [ngClass]="{'is-invalid': form1['SponsorName'].invalid && (form1['SponsorName'].touched || isForm1Submitted)}" />
+              <div *ngIf="form1['SponsorName'].invalid && (form1['SponsorName'].touched || isForm1Submitted)" class="text-danger">Sponsor Name is required.</div>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Sponsor Relation <span class="text-danger">*</span></label>
+              <input formControlName="SponsorRelation" class="form-control" [ngClass]="{'is-invalid': form1['SponsorRelation'].invalid && (form1['SponsorRelation'].touched || isForm1Submitted)}" />
+              <div *ngIf="form1['SponsorRelation'].invalid && (form1['SponsorRelation'].touched || isForm1Submitted)" class="text-danger">Sponsor Relation is required.</div>
+            </div>
+          </ng-container>
+        </div>
+      </fieldset>
+
+      <fieldset class="border p-3 mb-4">
+        <legend class="w-auto px-2">Document Details</legend>
+        <div class="row g-4 mb-4">
+          <div class="col-md-3">
+            <label class="form-label">Fee Receipt Upload</label>
+          </div>
+          <div class="col-md-3">
+            <input type="file" (change)="onFileSelected($event,'feesProof')" class="form-control" />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Upload CV / Resume <span class="text-danger">*</span></label>
+          </div>
+          <div class="col-md-3">
+            <input type="file" id="ResumeDocumentPath" class="form-control" (change)="onFileSelected($event,'resume')" [ngClass]="{'is-invalid': !ResumeFileStatus && isForm1Submitted}" />
+            <div *ngIf="!ResumeFileStatus && isForm1Submitted" class="text-danger">Please upload Resume Document.</div>
+          </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <div class="col-md-3">
+            <label class="form-label">Consent Letter <span class="text-danger">*</span></label>
+            <small class="d-block">Kindly fill this form, get it signed, and upload in PDF. <a (click)="DownloadFormat()" href="javascript:void(0)">Download Format</a></small>
+          </div>
+          <div class="col-md-3">
+            <input type="file" (change)="onFileSelected($event,'consentLetter')" class="form-control" [ngClass]="{'is-invalid': form1['ConsentLetterDocumentPath'].invalid && (form1['ConsentLetterDocumentPath'].touched || isForm1Submitted)}" />
+            <div *ngIf="form1['ConsentLetterDocumentPath'].invalid && (form1['ConsentLetterDocumentPath'].touched || isForm1Submitted)" class="text-danger">Please upload Consent Letter Document.</div>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">English Proficiency Test Proof</label>
+          </div>
+          <div class="col-md-3">
+            <input type="file" (change)="onFileSelected($event,'englishProof')" class="form-control" />
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="border p-3 mb-4">
+        <legend class="w-auto px-2">Declaration</legend>
+        <div class="row g-4 mb-4">
+          <div class="col-md-1">
+            <input type="checkbox" formControlName="AcceptPolicy" class="form-check-input" />
+          </div>
+          <div class="col-md-11">
+            <label class="form-check-label">I agree to the <a href="#" (click)="togglePolicy($event)">Semester Abroad Policy</a></label>
+            <div *ngIf="form1['AcceptPolicy'].invalid && (form1['AcceptPolicy'].touched || isForm1Submitted)" class="text-danger">Agreement Acceptance is required.</div>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="text-center mt-4">
+        <button type="submit" class="btn btn-primary px-5" [disabled]="!eligible || isLoading">Create Your Application</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<ng-template #NotElgible>
+  <div class="container-fluid mt-4">
+    <div class="card shadow-sm p-4">
+      <h3 class="text-info fs-2 text-center">You are not eligible for the program.</h3>
+    </div>
+  </div>
+</ng-template> -->

@@ -255,12 +255,13 @@ type CourseRow = {
         if (!this.applicationForm) return;
         this.applicationForm.patchValue({
           ...this.stuApplication,
-          acceptPolicy: this.stuApplication?.acceptPolicy === 'true',
+          acceptPolicy: this.stuApplication?.acceptPolicy === 'Yes' || this.stuApplication?.acceptPolicy === 'yes' ,
           passportIssueDate: this.formatDateForInput(this.stuApplication?.passportIssueDate),
           passportValidUpto: this.formatDateForInput(this.stuApplication?.passportValidUpto),
           relativeName: this.stuApplication?.relativeName,
           relativeRelation: this.stuApplication?.relativeRelation,
           relativeCountry: this.stuApplication?.relativeCountry,
+          policyAccepted: this.stuApplication?.policyAccepted,
         });
       }
     
