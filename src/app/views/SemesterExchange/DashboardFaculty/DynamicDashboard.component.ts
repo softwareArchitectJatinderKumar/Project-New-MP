@@ -80,46 +80,41 @@ export class DynamicDashboardComponent implements OnInit {
   EvaluationForm!: FormGroup;
   CounsellingRemarksForm!: FormGroup;
 
-  // Aggregated/global flags (derived from user's roles across all applications)
   isdealingFaculty = false;
   isDealingAuthority = false;
   isHOD = false;
   isHoW = false;
 
-  // Employee & Login Details
   EmployeeCode: string | null = null;
   LoginName: string ;
-  EmployeeDetails: any; // Consider defining a more specific interface if structure is known
+  EmployeeDetails: any;  
   EmployeeName: string | null = null;
   ContactNoX: string | null = null;
   DepartmentName: string | null = null;
   UserRole: string | null = null;
   Department: string | null = null;
 
-  // File upload & evaluation form helpers
-  EvalutionDocumentPath: File | null = null; // Store the actual File object
-  EvalutionDocumentData: string | null = null; // Store base64 string
-  isEvaluationFormSubmitted = false; // Renamed for clarity
-  isCounsellingFormSubmitted = false; // Renamed for clarity
+  EvalutionDocumentPath: File | null = null;  
+  EvalutionDocumentData: string | null = null; 
+  isEvaluationFormSubmitted = false; 
+  isCounsellingFormSubmitted = false;
 
-  // Selected application data for modals
   ApplicationId: string | null = null;
   RegistrationNo: string | null = null;
-  RemarksBy: string | null = null; // To indicate who is submitting remarks (e.g., 'Faculty', 'HOD')
+  RemarksBy: string | null = null;  
 
-  // ViewChild references for modals
   @ViewChild('EvaluationModal') EvaluationModal!: TemplateRef<any>;
   @ViewChild('CounsellingRemarksModal') CounsellingRemarksModal!: TemplateRef<any>;
 
-  private currentModalRef: NgbModalRef | null = null; // To keep track of the currently open modal
+  private currentModalRef: NgbModalRef | null = null; 
 
   constructor(
     private fb: FormBuilder,
     private cd: ChangeDetectorRef,
     private authService: AuthService,
     private storageService: StorageService,
-    private ServicesSM: SemesterExchangeStuDetailsService, // Used for evaluation and counselling
-    private studentService: SemesterExchangeStuDetailsService, // Used for general student services (approve/reject/forward)
+    private ServicesSM: SemesterExchangeStuDetailsService,
+    private studentService: SemesterExchangeStuDetailsService,
     private route: ActivatedRoute,
     private router: Router,
     private modalService: NgbModal,
@@ -130,7 +125,6 @@ export class DynamicDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.LoginName = this.route.snapshot.params['LoginName'];
 
-    // Update static DOM elements (consider moving to a dedicated service or directive if many)
     const stMainElement = document.getElementById('stMain') as HTMLInputElement;
     if (stMainElement) {
       stMainElement.innerHTML = `Semester <span class="text-info">Exchange </span>${this.pageTitle}`;
@@ -142,13 +136,10 @@ export class DynamicDashboardComponent implements OnInit {
 
     this.title.setTitle(this.pageTitle);
 
-    this.initializeForms(); // Initialize all forms
-    this.getToken(this.LoginName); // Start authentication flow
+    this.initializeForms(); 
+    this.getToken(this.LoginName);
   }
 
-  /**
-   * Initializes all reactive forms used in the component.
-   */
   private initializeForms(): void {
     this.EvaluationForm = this.fb.group({
       AcademicsMarks: [null, [Validators.required, Validators.min(0), Validators.max(100)]],
@@ -159,16 +150,14 @@ export class DynamicDashboardComponent implements OnInit {
       Comments: [''],
     });
 
-    // Counselling Remarks Form - only comments as per requirements
     this.CounsellingRemarksForm = this.fb.group({
-      Comments: ['', Validators.required] // Counselling remarks are required
+      Comments: ['', Validators.required] 
     });
   }
 
   /**
-   * Attempts to log in a temporary user and saves the token.
-   * On success, fetches all applications.
-   * @param loginName The login name for authentication.
+   
+   * @param loginName  
    */
   private getToken(loginName: string): void {
     this.loadingIndicator = true;
@@ -180,7 +169,7 @@ export class DynamicDashboardComponent implements OnInit {
         const remaining = Math.max(this.minLoadingTime - elapsed, 0);
         setTimeout(() => {
           this.loadingIndicator = false;
-          this.cd.detectChanges(); // Ensure UI updates after loading
+          this.cd.detectChanges();
         }, remaining);
       })
     ).subscribe({
@@ -192,8 +181,8 @@ export class DynamicDashboardComponent implements OnInit {
           this.LoginFailed('Token Expired or Invalid Login');
         } else {
           this.isLoginFailed = false;
-          this.GetEmployeeDetails(); // Get employee details after successful login
-          this.getAllAuthorityRemarks(); // Fetch all authority remarks after login
+          this.GetEmployeeDetails();     
+          this.getAllAuthorityRemarks(); 
         }
       },
       error: err => {
@@ -203,10 +192,7 @@ export class DynamicDashboardComponent implements OnInit {
     });
   }
 
-  /**
-   * Fetches employee details for the logged-in user.
-   * This is crucial for determining roles and filtering applications.
-   */
+ 
   private GetEmployeeDetails(): void {
     this.loadingIndicator = true;
     const startTime = Date.now();
@@ -233,7 +219,7 @@ export class DynamicDashboardComponent implements OnInit {
           this.UserRole = employee.userRole;
 
           this.getSEAllApplications(); // Load applications after employee details are available
-          // this.getAllAuthorityRemarks(); // Already called in getToken, no need to call again here
+          this.getAllAuthorityRemarks(); // Already called in getToken, no need to call again here
         } else {
           this.EmployeeDetails = [];
           this.isLoginFailed = true;
@@ -245,10 +231,7 @@ export class DynamicDashboardComponent implements OnInit {
       }
     });
   }
-
-  /**
-   * Fetches all semester exchange applications.
-   */
+ 
   private getSEAllApplications(): void {
     this.loadingIndicator = true;
     const startTime = Date.now();
@@ -274,11 +257,7 @@ export class DynamicDashboardComponent implements OnInit {
     });
   }
 
-  /**
-   * Enriches each application with per-row role flags and sets visibleApplications.
-   * If the current user has any role (HOD/HoW/Dealing), the grid will show only rows that belong to them.
-   * Otherwise, it shows all rows.
-   */
+ 
   private enrichAndFilterApplications(): void {
     if (!this.AllApplications) {
       this.AllApplications = [];
@@ -312,25 +291,19 @@ export class DynamicDashboardComponent implements OnInit {
       return application;
     });
 
-    // Build page title based on aggregated roles
     this.buildPageTitle();
-
-    // Filter visible applications based on aggregated roles
     if (this.isdealingFaculty || this.isDealingAuthority || this.isHOD || this.isHoW) {
       this.visibleApplications = this.AllApplications.filter(a =>
         a.isdealingFaculty || a.isDealingAuthority || a.isHOD || a.isHoW
       );
     } else {
-      // If user has no specific role for any application, show all
       this.visibleApplications = [...this.AllApplications];
     }
 
     this.cd.detectChanges(); // Ensure UI updates
   }
 
-  /**
-   * Dynamically builds the page title based on the user's aggregated roles.
-   */
+  
   private buildPageTitle(): void {
     const roles: string[] = [];
     if (this.isDealingAuthority) roles.push('Dealing Authority');
@@ -343,7 +316,6 @@ export class DynamicDashboardComponent implements OnInit {
   }
 
   /**
-   * Navigates to the student application details page.
    * @param application The selected application object.
    */
   GetStudentApplication(application: Application): void {
@@ -355,7 +327,6 @@ export class DynamicDashboardComponent implements OnInit {
   }
 
   /**
-   * Handles the disapproval of an application.
    * @param application The application to disapprove.
    */
   disapproveApplication(application: Application): void {
@@ -385,7 +356,6 @@ export class DynamicDashboardComponent implements OnInit {
   }
 
   /**
-   * Handles the acceptance of an application.
    * @param application The application to accept.
    */
   acceptApplication(application: Application): void {

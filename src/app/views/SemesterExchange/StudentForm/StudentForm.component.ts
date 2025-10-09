@@ -574,7 +574,7 @@ throw new Error('Method not implemented.');
 countriesList: any = countries;
 
   EnglishTestType: any = ''; IsSelfFunded: any = ''; IsVisaRejected: any = '';
-  PassportDocumentPath: any = '';
+  PassportDocumentPath: any = ''; EnglishTest: any='';
 
   SemesterExchangeRegistration!: FormGroup;
   isForm1Submitted: boolean = false;
@@ -725,6 +725,7 @@ VisaRejectionReason: any;
 
       // English Details
       EnglishTestType: ['', Validators.required],
+      EnglishTest: ['', Validators.required ],
       ListeningScore: [''],
       SpeakingScore: [''],
       ReadingScore: [''],
@@ -1284,6 +1285,9 @@ VisaRejectionReason: any;
     formData.append("RelativeRelation", formValue.RelativeRelation || 'NA'); // Added RelativeRelation
     formData.append("HasRelativeDetails", formValue.HasRelativeDetails || 'NA'); // Added HasRelativeDetails
 
+    formData.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
     this.ServicesSM.SemesterExchangeNewRegistrationForm(formData)
       .pipe(
         finalize(() => {
@@ -1382,9 +1386,6 @@ VisaRejectionReason: any;
     link.download = fileUrl;
     link.click();
   }
-
- 
-
 }
 
 // import { Component, OnInit, TemplateRef } from '@angular/core';

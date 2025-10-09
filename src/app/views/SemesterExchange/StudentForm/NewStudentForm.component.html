@@ -76,7 +76,6 @@
                         </div>
                     </div>
 
-                    <!-- WhatsApp Number -->
                     <div class="col-md-3">
                         <label class="form-label">WhatsApp Number <span class="text-danger">*</span></label>
                         <input type="text" id="WhatsAppNo" formControlName="WhatsAppNo" class="form-control"
@@ -86,11 +85,9 @@
                             class="text-danger">
                             <div *ngIf="form1['WhatsAppNo'].errors?.required">Please enter a valid WhatsApp Number.</div>
                             <div *ngIf="form1['WhatsAppNo'].errors?.pattern">Please enter a valid 10 digit number.</div>
-                            <!-- <div *ngIf="form1['WhatsAppNo'].errors?.numbersMustBeDistinct">WhatsApp number must be different from phone and parent contact numbers.</div> -->
                         </div>
                     </div>
 
-                    <!-- Phone Number -->
                     <div class="col-md-3">
                         <label class="form-label">Phone Number <span class="text-danger">*</span></label>
                         <input type="text" id="PhoneNumber" formControlName="PhoneNumber" class="form-control"
@@ -100,11 +97,9 @@
                             class="text-danger">
                             <div *ngIf="form1['PhoneNumber'].errors?.required">Please enter a valid Phone Number.</div>
                             <div *ngIf="form1['PhoneNumber'].errors?.pattern">Please enter a valid 10 digit number.</div>
-                            <!-- <div *ngIf="form1['PhoneNumber'].errors?.numbersMustBeDistinct">Phone number must be different from WhatsApp and parent contact numbers.</div> -->
                         </div>
                     </div>
 
-                    <!-- Parent Contact -->
                     <div class="col-md-3">
                         <label class="form-label">Parent Contact Number <span class="text-danger">*</span></label>
                         <input type="text" id="ParentContact" formControlName="ParentContact" class="form-control"
@@ -122,7 +117,6 @@
             <fieldset class="border p-3 mb-4">
                 <legend class="w-auto px-2">Relative Details</legend>
                 <div class="row g-4 mb-4">
-                    <!-- Relative Details Dropdown -->
                     <div class="col-md-3">
                         <label class="form-label">Any Relative/ Sibling residing out of India? <span
                                 class="text-danger">*</span></label>
@@ -140,17 +134,12 @@
                     </div>
 
                     <ng-container *ngIf="SemesterExchangeRegistration.get('HasRelativeDetails')?.value === 'Yes'">
-                        <!-- Email Address -->
                         <div class="col-md-3">
                             <label class="form-label">Email Address  </label>
                             <input type="email" id="EmailId" formControlName="EmailId" class="form-control"
                                 placeholder="Enter Email"
                                 />
-                                <!-- [ngClass]="{'is-invalid': form1['EmailId'].invalid && (isForm1Submitted)}"  -->
-                            <!-- <div *ngIf="form1['EmailId'].invalid && (form1['EmailId'].touched || isForm1Submitted)"
-                                class="text-danger">
-                                Please enter a valid Email Address.
-                            </div> -->
+                        
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Relative Phone </label>
@@ -162,7 +151,6 @@
                                 Please enter a valid Relative Phone.
                             </div>
                         </div>
-                        <!-- Relative Name -->
                         <div class="col-md-3">
                             <label class="form-label">Relative Name <span class="text-danger">*</span></label>
                             <input type="text" id="RelativeName" formControlName="RelativeName" class="form-control"
@@ -173,7 +161,6 @@
                                 Please enter a valid Relative Name.
                             </div>
                         </div>
-                        <!-- Relative Country Name-->
                         <div class="col-md-3">
                             <label class="form-label">Relative Country Name <span class="text-danger">*</span></label>
                             <select id="RelativeCountryName" formControlName="RelativeCountryName" class="form-select"
@@ -188,7 +175,6 @@
                             </div>
                         </div>
 
-                        <!-- Relative Relation-->
                         <div class="col-md-3">
                             <label class="form-label">Relative Relation <span class="text-danger">*</span></label>
                             <input type="text" id="RelativeRelation" formControlName="RelativeRelation"
@@ -207,7 +193,6 @@
             <fieldset class="border p-3 mb-4">
                 <legend class="w-auto px-2">University Preferences</legend>
                 <div class="row g-4 mb-4">
-                    <!-- Applying In -->
                     <div class="col-md-3">
                         <label class="form-label">Applying In <span class="text-danger">*</span></label>
                         <select class="form-select" id="ApplyingOption" formControlName="ApplyingOption"
@@ -221,7 +206,6 @@
                             Please select an applying option.
                         </div>
                     </div>
-                    <!-- Preference 1 -->
                     <div class="col-md-3">
                         <label class="form-label">Preference 1 <span class="text-danger">*</span></label>
                         <select class="form-select" id="UniversityOption1" formControlName="UniversityOption1"
@@ -243,7 +227,6 @@
                         </div>
                     </div>
 
-                    <!-- Preference 2 -->
                     <div class="col-md-3">
                         <label class="form-label">Preference 2 <span class="text-danger">*</span></label>
                         <select class="form-select" id="UniversityOption2" formControlName="UniversityOption2"
@@ -269,7 +252,6 @@
                         </div>
                     </div>
 
-                    <!-- Preference 3 -->
                     <div class="col-md-3">
                         <label class="form-label">Preference 3 <span class="text-danger">*</span></label>
                         <select class="form-select" id="UniversityOption3" formControlName="UniversityOption3"
@@ -385,8 +367,8 @@
                                           'is-invalid': form1['IsVisaRejected'].invalid && (form1['IsVisaRejected'].touched || isForm1Submitted)
                                         }">
                             <option value="">Select</option>
-                            <option value="No">No</option>
                             <option value="Yes">Yes</option>
+                            <option value="No">No</option>
                         </select>
 
                         <div *ngIf="form1['IsVisaRejected'].invalid && (form1['IsVisaRejected'].touched || isForm1Submitted)"
@@ -437,10 +419,10 @@
                             <option value="NotGiven">Not Given</option>
                             <option value="Applied">Applied</option>
                             <option value="Appeared">Appeared/ Given</option>
-                            <option value="PTE">PTE</option>
+                            <!-- <option value="PTE">PTE</option>
                             <option value="DULINGO">DULINGO</option>
                             <option value="IELTS">IELTS</option>
-                            <option value="TOFEL">TOFEL</option>
+                            <option value="TOFEL">TOFEL</option> -->
                         </select>
                         <div *ngIf="SemesterExchangeRegistration.get('EnglishTestType')?.invalid && (SemesterExchangeRegistration.get('EnglishTestType')?.touched || isForm1Submitted)"
                             class="text-danger">
@@ -457,10 +439,25 @@
                                 Please enter Test Date.
                             </div>
                         </div>
+                            <div class="col-md-3">
+                        <label class="form-label">English Proficiency Test<span class="text-danger">*</span></label>
+                        <select class="form-select" id="EnglishTest" formControlName="EnglishTest"
+                            [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('EnglishTest')?.invalid}"
+                            [(ngModel)]="EnglishTest">
+                            <option value="">Select</option>
+                            <option value="PTE">PTE</option>
+                            <option value="DULINGO">DULINGO</option>
+                            <option value="IELTS">IELTS</option>
+                            <option value="TOFEL">TOFEL</option>
+                        </select>
+                        <div *ngIf="SemesterExchangeRegistration.get('EnglishTest')?.invalid && (SemesterExchangeRegistration.get('EnglishTest')?.touched || isForm1Submitted)"
+                            class="text-danger">
+                            Please select valid English Proficiency.
+                        </div>
+                    </div>
                     </ng-container>
                 </div>
-                <div class="row g-4 mb-4"
-                    *ngIf="['PTE','DULINGO', 'IELTS', 'TOFEL'].includes(EnglishTestType)">
+                <div class="row g-4 mb-4" *ngIf="['PTE','DULINGO', 'IELTS', 'TOFEL'].includes(EnglishTest) && EnglishTestType !== 'Applied'  && EnglishTestType !== 'NotGiven'  && EnglishTestType !== 'NotRequried' ">
                     <div class="col-md-2">
                         <label class="form-label">Listening Score <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="ListeningScore" formControlName="ListeningScore"

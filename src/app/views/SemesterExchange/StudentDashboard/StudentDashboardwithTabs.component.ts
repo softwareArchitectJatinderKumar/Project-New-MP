@@ -181,7 +181,7 @@ type CourseRow = {
             this.isLoading = false;
             if (response?.item1?.length > 0) {
               this.stuApplication = response.item1[0];
-              console.log(JSON.stringify(this.stuApplication))
+              // console.log(JSON.stringify(this.stuApplication))
               this.ApplicationId = this.stuApplication.applicationId;
               this.detectOtherDocs();
               this.buildApplicationForm();     // re-build form with real values

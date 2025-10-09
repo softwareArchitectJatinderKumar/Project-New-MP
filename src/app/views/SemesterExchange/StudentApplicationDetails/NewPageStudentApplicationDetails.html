@@ -1,0 +1,125 @@
+<div class="card shadow-lg p-4" id="StudentDashboard" *ngIf="!IsLoginFailed; else Error">
+  <div class="container-fluid mt-1">
+    <div class="row">
+      <div class="col-md-6"></div>
+      <div class="col-md-3"></div>
+      <div class="col-md-3 text-end">
+        <button class="btn btn-success" (click)="printDetails()">Print Details</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div class="flex-grow-1">
+            <div class="row mb-2">
+              <div class="col-md-3">
+                <label class="form-label fw-bold text-danger">Student Name:</label>
+              </div>
+              <div class="col-md-3">
+                <p class="text-dark fw-bold">{{ studentDetailsWithImage?.studentName || 'N/A' }}</p>
+              </div>
+
+              <div class="col-md-3">
+                <label class="form-label fw-bold text-danger">Batch Year:</label>
+              </div>
+              <div class="col-md-3">
+                <p class="text-dark fw-bold">{{ studentDetailsWithImage?.batchYear || 'N/A' }}</p>
+              </div>
+            </div>
+
+            <div class="row mb-2">
+              <div class="col-md-3">
+                <label class="form-label fw-bold text-danger">Course:</label>
+              </div>
+              <div class="col-md-3">
+                <p class="text-dark fw-bold">{{ studentDetailsWithImage?.courseName || 'N/A' }}</p>
+              </div>
+
+              <div class="col-md-3">
+                <label class="form-label fw-bold text-danger">Program:</label>
+              </div>
+              <div class="col-md-3">
+                <p class="text-dark fw-bold">{{ studentDetailsWithImage?.programCode || 'N/A' }} ({{ studentDetailsWithImage?.schoolName || 'N/A' }})</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="ms-4" *ngIf="StudentImage; else noImage">
+            <img alt="Student Image" class="img-fluid rounded-circle border border-3 border-primary"
+                 [src]="StudentImage" style="width: 130px; height: 130px; object-fit: cover;">
+          </div>
+          <ng-template #noImage>
+            <div class="ms-4 d-flex align-items-center justify-content-center" style="width:130px; height:130px;">
+              <span class="text-muted">No Image</span>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Guard rendering until form exists -->
+  <ng-container *ngIf="studentForm && getFilteredFormSections()?.length; else noSections">
+    <ng-container *ngFor="let section of getFilteredFormSections()">
+      <h5 class="mt-4 mb-3 text-info">{{ section.label }}</h5>
+      <div class="row">
+        <div class="col-md-4 mb-3" *ngFor="let key of section.keys">
+          <label class="form-label fw-semibold" *ngIf="key !== 'acceptPolicy'; else policyLabel">
+            {{ beautifyLabel(key) }}
+          </label>
+
+          <p class="form-control-plaintext border rounded p-2 bg-light">
+            {{ studentForm.get(key)?.value ?? 'N/A' }}
+          </p>
+
+          <ng-template #policyLabel>
+            <label class="form-label fw-semibold">Declaration Statement</label>
+          </ng-template>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <ng-template #noSections>
+    <p class="text-muted mt-3">No form sections available.</p>
+  </ng-template>
+
+  <!-- Document Uploads (read-only view) -->
+  <h5 class="mt-4 text-info">Uploaded Documents</h5>
+  <div class="row">
+    <ng-container *ngFor="let doc of documentUploads">
+      <div class="col-md-4 mt-3 mb-3">
+        <label class="form-label fw-semibold">{{ doc.label }}</label>
+        <div class="d-flex align-items-center gap-2" *ngIf="hasDocument(doc.key); else NoUpload">
+          <a class="btn btn-outline-primary btn-sm" [href]="getDocumentUrl(doc.key)" target="_blank" rel="noopener">
+            <span class="material-icons md-18">description</span> View Uploaded
+          </a>
+        </div>
+        <ng-template #NoUpload>
+          <p class="text-muted">No document uploaded.</p>
+        </ng-template>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<!-- Unauthorized Message -->
+<ng-template #Error>
+  <div class="d-flex justify-content-center mt-3">
+    <div class="card">
+      <div class="card-body text-center">
+        <h4 class="fs-3 text-danger">Unauthorised Access!<br />Session expired.</h4>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Loading -->
+<div class="full-page-loader" *ngIf="loadingIndicator" aria-label="Loading">
+  <div class="loader-spinner">
+    <span class="material-icons md-48 spin-icon">autorenew</span>
+  </div>
+</div>
