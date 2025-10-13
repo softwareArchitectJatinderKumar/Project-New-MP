@@ -572,6 +572,7 @@ throw new Error('Method not implemented.');
 }
 
 countriesList: any = countries;
+// &&  formatDate(form.get('TestDate')?.value) < PresentDate
 
   EnglishTestType: any = ''; IsSelfFunded: any = ''; IsVisaRejected: any = '';
   PassportDocumentPath: any = ''; EnglishTest: any='';
@@ -588,8 +589,22 @@ VisaRejectionReason: any;
   get form1() {
     return this.SemesterExchangeRegistration.controls;
   }
+  
+  formatDate(date: Date): string {
+    const DateX = new Date(date).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+    return DateX;
+  }
 
-  showPolicy = false;
+
+  PresentDate = new Date();  
+  isTestDateBeforePresent(): boolean {
+    const testDateValue = this.SemesterExchangeRegistration.get('testDate')?.value;
+    if (!testDateValue) return false; 
+    const testDate = new Date(testDateValue);
+    if (isNaN(testDate.getTime())) return false;
+    return testDate < this.PresentDate;
+  }
+  showPolicy = true;
 
   ApplyingOption: any = '';
   folderUrl: string; serverUrl: string; serverUrlX: string;
@@ -628,6 +643,7 @@ VisaRejectionReason: any;
     private router: Router, private title: Title) { }
 
   ngOnInit(): void {
+    //  this.PresentDate= this.formatDate(new Date()) ;   
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML = 'Semester <span class="text-info">Exchange </span>Registration';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
     this.title.setTitle("Semester Exchange Registration");
@@ -741,7 +757,7 @@ VisaRejectionReason: any;
       AvailableFunds: ['', Validators.required],
 
       // Legal Policy
-      AcceptPolicy: [false, Validators.requiredTrue],
+      AcceptPolicy: [true, Validators.requiredTrue],
 
       // Documents
       FeesProofDocumentPath: [''],
@@ -907,7 +923,11 @@ VisaRejectionReason: any;
           this.StudentStatus = this.stuData.studentStatus;
           this.studentEmailId = this.stuData.studentEmail.length < 5 ? 'N/A' : this.stuData.studentEmail;
           this.EmailId = this.studentEmailId != 'N/A' ? this.studentEmailId : ' ';
+          if(this.CurrentTerm>1)
           this.GetStudentMarksDetails(this.RegistrationNo);
+          else if(this.CurrentTerm==1)
+          this.GetStudentAllPreviousMarks(this.RegistrationNo);
+          
           this.getApplicationDetails(this.RegistrationNo);
           this.eligible = true; // Will be updated after marks details are fetched
         }
@@ -959,20 +979,6 @@ VisaRejectionReason: any;
         }).then(() => {
           this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
         });
-        
-        // Swal.fire({
-        //   title: 'Semester Exchange',
-        //   text: 'Application already Exists',
-        //   icon: 'info',
-        //   showCancelButton: true,
-        //   confirmButtonText: 'Yes, Proceed',
-        //   cancelButtonText: 'No, Stay Here'
-        // }).then((result) => {
-        //   if (result.isConfirmed) {
-            
-        //   }
-        // });
-
       }
       else {
         this.stuApplication = null;
@@ -983,8 +989,6 @@ VisaRejectionReason: any;
 
   getUniversityDetails(): void {
     this.ServicesSM.getUniversityLists(this.ProgramCode).subscribe((response) => {
-    // this.ServicesSM.getUniversityLists('P4AE').subscribe((response) => {
-    // this.ServicesSM.getUniversityDetails().subscribe((response) => {
       this.uniData = response.item1;
       this.university = this.uniData;
     });
@@ -995,6 +999,34 @@ VisaRejectionReason: any;
   getAllProgramcode(): void {
     this.ServicesSM.FetchAllProgramCodesList().subscribe((response) => {
       this.allProgramCode = response.item1
+    });
+  }
+MarksPlus2: any;Percetnages:any;
+  StudentPreviousMarksData: any;
+  GetStudentAllPreviousMarks(Regdno: any) {
+    this.ServicesSM.GetStudentAllPreviousMarks(Regdno).subscribe({
+      next: response => {
+        if (response.item1.length > 0) {
+          const StudentPreviousMarksData = response.item1[0];
+          this.MarksPlus2 = StudentPreviousMarksData['ExamDescription'];
+          this.Percetnages = StudentPreviousMarksData['Perecentage'];
+        
+          
+          this.GradeFcount = 0; // Reset count
+          
+          // Set eligibility after GradeFcount is determined
+          this.eligible = (this.MarksPlus2 ==='10+2') && (this.Percetnages >90 );
+          alert(this.eligible)
+        } else {
+          this.StudentPreviousMarksData = [];
+       
+          this.eligible = false; // Not eligible if no marks data or F grades exist
+        }
+      },
+      error: err => {
+        this.LoginFailed(err);
+        this.eligible = false; // Not eligible on error
+      }
     });
   }
   GetStudentMarksDetails(Regdno: any) {

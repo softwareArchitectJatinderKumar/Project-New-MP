@@ -6,6 +6,7 @@
 
   .step {
     text-align: center;
+
     .step-badge {
       font-size: 0.95rem;
       font-weight: 600;
@@ -16,6 +17,7 @@
       justify-content: center;
       transition: all 0.3s ease;
     }
+
     &.active .step-badge {
       transform: scale(1.08);
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -34,6 +36,7 @@
       min-width: 130px;
       padding: 0.4rem 0.8rem;
     }
+
     .divider {
       width: 20px;
     }

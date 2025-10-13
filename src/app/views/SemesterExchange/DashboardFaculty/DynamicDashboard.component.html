@@ -1,3 +1,12 @@
+<div *ngIf="loadingIndicator" class="fullscreen-loader">
+    <div class="custom-spinner-overlay" *ngIf="loadingIndicator">
+        <div class="custom-spinner-content text-center">
+            <img src="assets/images/spinner.gif" alt="Loading..." />
+            <p>Loading...</p>
+        </div>
+    </div>
+</div>
+
 <div class="container-fluid mt-4" id="UserDashboardId" *ngIf="!isLoginFailed; else ErrorApplication">
 
     <div class="row mb-4">
@@ -179,12 +188,12 @@
 
     </ngx-datatable>
 </div>
-
+<!-- 
 <div class="full-page-loader" *ngIf="loadingIndicator" aria-label="Loading">
     <div class="loader-spinner">
         <span class="material-icons md-48 spin-icon">autorenew</span>
     </div>
-</div>
+</div> -->
 
 <!-- Evaluation Modal -->
 <ng-template #EvaluationModal let-modal>

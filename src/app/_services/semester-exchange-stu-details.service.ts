@@ -9,6 +9,33 @@ import { UniversityUpdate } from '../views/pages/sm-add-new-university/universit
 import { xmlUniversity } from '../views/pages/sm-add-new-university/xmlUniversity.model';
 import { deleteUniversity } from '../views/pages/sm-add-new-university/deleteUniversity.model';
 
+interface IStudentDetails {
+    RegisterationNumber: string;
+    Name: string;
+    // ... include all other fields used in the Student Profile card ...
+    CGPA: number;
+    FailCount: number; // Important for eligibility check (assuming this is used for 'F' grades)
+}
+
+interface IApiTupleResponse {
+    item1: any[]; // ExamDescription, University, Perecentage
+    item2: any[]; // Term, coursecode, Delivered, Attended... (Course Attendance)
+    item3: any[]; // GradeNum, Grade, RecordCount (Grade Summary)
+    item4: IStudentDetails[]; // RegisterationNumber, Name, Section... (Student Details)
+}
+
+// Internal interface for organized data delivery to the component
+interface IFormattedApiResponse {
+    OverallSummary: any[];
+    CourseAttendance: any[];
+    GradeSummary: any[];
+    StudentDetails: IStudentDetails;
+}
+
+
+
+
+
 // const AUTH_API = 'https://localhost:7125/'; //'https://projectsapi.lpu.in/';
 // const AUTH_API_LOCAL = 'https://localhost:7125/'; //'https://localhost:7125/';
 const AUTH_API = 'https://projectsapi.lpu.in/';
@@ -36,6 +63,7 @@ export class SemesterExchangeStuDetailsService {
   getFolderUrl(): string {
     return this.folderUrl;
   }
+
 
   getStudentById(): Observable<any> {
     var authToken = this.storageService.getUser();
@@ -520,4 +548,44 @@ GetStuDetailsWithImage(RegId: string): Observable<any> {
     };
     return this.http.get<any>(`${this.baseUrl}api/SemesterExchangeStudent/GetUniversityLists`, httpOptions);
   }
+
+
+// Added on 10-oct-25
+    GetStudentAllPreviousMarks(regdno: any): Observable<any> {
+    var authToken = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      // .set('Authorization', 'Bearer ' + authToken)
+      .set('Authorization', 'Bearer ' + authToken)
+    return this.http.get(
+      AUTH_API_LOCAL + 'api/SemesterExchangeStudent/GetStudentPreviousMarksDetails?RegistrationNo=' + regdno,
+      { headers }
+    );
+  }
+
+    // getStudentMarks(regNo: string): Observable<IFormattedApiResponse> {
+    //     return this.http.get<IApiTupleResponse>(`${AUTH_API_LOCAL}/GetStudentPreviousMarksDetails?RegistrationNo=${regNo}`).pipe(
+    //         map(response => {
+                
+    //             // Ensure all items are present and map them to meaningful names:
+    //             if (!response.item1 || !response.item2 || !response.item3 || !response.item4) {
+    //                 throw new Error("API response is missing one or more required datasets (item1-item4).");
+    //             }
+
+    //             return {
+    //                 // Item1: OverallSummary (First dataset listed in the procedure)
+    //                 OverallSummary: response.item1,
+
+    //                 // Item2: CourseAttendance (Second dataset)
+    //                 CourseAttendance: response.item2,
+
+    //                 // Item3: GradeSummary (Third dataset)
+    //                 GradeSummary: response.item3,
+
+    //                 // Item4: StudentDetails (Fourth dataset - Assuming a single record)
+    //                 StudentDetails: response.item4[0],
+    //             } as IFormattedApiResponse;
+    //         })
+    //     );
+    // }
+
 }

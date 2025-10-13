@@ -1,6 +1,14 @@
-<div class="full-page-loader" *ngIf="isLoading" aria-label="Loading">
+<!-- <div class="full-page-loader" *ngIf="isLoading" aria-label="Loading">
     <div class="loader-spinner">
         <span class="material-icons lg-48 spin-icon">autorenew</span>
+    </div>
+</div> -->
+<div *ngIf="isLoading" class="fullscreen-loader">
+    <div class="custom-spinner-overlay" *ngIf="isLoading">
+        <div class="custom-spinner-content text-center">
+            <img src="assets/images/spinner.gif" alt="Loading..." />
+            <p>Loading...</p>
+        </div>
     </div>
 </div>
 <div class="container-fluid mt-4" id="NewRegsiterPage" *ngIf="loginFailed==false; else ErrorApplication">
@@ -45,7 +53,7 @@
                             </label>
                         </div>
                         <div class="row d-flex justify-content-center">
-                            <label class="col-md-4 form-label text-danger">Program  </label>
+                            <label class="col-md-4 form-label text-danger">Program </label>
                             <label class="col-md-7 form-label text-dark">{{this.ProgramCode}}
                             </label>
                         </div>
@@ -83,7 +91,8 @@
                             [ngClass]="{'is-invalid': form1['WhatsAppNo'].invalid && (form1['WhatsAppNo'].touched || isForm1Submitted)}" />
                         <div *ngIf="form1['WhatsAppNo'].invalid && (form1['WhatsAppNo'].touched || isForm1Submitted)"
                             class="text-danger">
-                            <div *ngIf="form1['WhatsAppNo'].errors?.required">Please enter a valid WhatsApp Number.</div>
+                            <div *ngIf="form1['WhatsAppNo'].errors?.required">Please enter a valid WhatsApp Number.
+                            </div>
                             <div *ngIf="form1['WhatsAppNo'].errors?.pattern">Please enter a valid 10 digit number.</div>
                         </div>
                     </div>
@@ -96,7 +105,8 @@
                         <div *ngIf="form1['PhoneNumber'].invalid && (form1['PhoneNumber'].touched || isForm1Submitted)"
                             class="text-danger">
                             <div *ngIf="form1['PhoneNumber'].errors?.required">Please enter a valid Phone Number.</div>
-                            <div *ngIf="form1['PhoneNumber'].errors?.pattern">Please enter a valid 10 digit number.</div>
+                            <div *ngIf="form1['PhoneNumber'].errors?.pattern">Please enter a valid 10 digit number.
+                            </div>
                         </div>
                     </div>
 
@@ -107,9 +117,12 @@
                             [ngClass]="{'is-invalid': form1['ParentContact'].invalid && (form1['ParentContact'].touched || isForm1Submitted)}" />
                         <div *ngIf="form1['ParentContact'].invalid && (form1['ParentContact'].touched || isForm1Submitted)"
                             class="text-danger">
-                            <div *ngIf="form1['ParentContact'].errors?.required">Please enter a valid Parent Contact Number.</div>
-                            <div *ngIf="form1['ParentContact'].errors?.pattern">Please enter a valid 10 digit number.</div>
-                            <div *ngIf="form1['ParentContact'].errors?.numbersMustBeDistinct">Parent contact must be different from WhatsApp and phone numbers.</div>
+                            <div *ngIf="form1['ParentContact'].errors?.required">Please enter a valid Parent Contact
+                                Number.</div>
+                            <div *ngIf="form1['ParentContact'].errors?.pattern">Please enter a valid 10 digit number.
+                            </div>
+                            <div *ngIf="form1['ParentContact'].errors?.numbersMustBeDistinct">Parent contact must be
+                                different from WhatsApp and phone numbers.</div>
                         </div>
                     </div>
                 </div>
@@ -135,11 +148,10 @@
 
                     <ng-container *ngIf="SemesterExchangeRegistration.get('HasRelativeDetails')?.value === 'Yes'">
                         <div class="col-md-3">
-                            <label class="form-label">Email Address  </label>
+                            <label class="form-label">Email Address </label>
                             <input type="email" id="EmailId" formControlName="EmailId" class="form-control"
-                                placeholder="Enter Email"
-                                />
-                        
+                                placeholder="Enter Email" />
+
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Relative Phone </label>
@@ -166,7 +178,8 @@
                             <select id="RelativeCountryName" formControlName="RelativeCountryName" class="form-select"
                                 [ngClass]="{'is-invalid': form1['RelativeCountryName'].invalid && (form1['RelativeCountryName'].touched || isForm1Submitted)}">
                                 <option value="">Select a Country</option>
-                                <option *ngFor="let country of countriesList" [value]="country.name">{{ country.name }} ({{
+                                <option *ngFor="let country of countriesList" [value]="country.name">{{ country.name }}
+                                    ({{
                                     country.code }})</option>
                             </select>
                             <div *ngIf="form1['RelativeCountryName'].invalid && (form1['RelativeCountryName'].touched || isForm1Submitted)"
@@ -341,11 +354,12 @@
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Upload Passport Document <span class="text-danger">*</span></label>
+                            <label class="form-label">Upload Passport Document <span
+                                    class="text-danger">*</span></label>
                         </div>
                         <div class="col-md-3">
-                            <input type="file" name="PassportDocumentPath" id="PassportDocumentPath" class="form-control"
-                                (change)="onFileSelected($event, 'passport')" [ngClass]="{
+                            <input type="file" name="PassportDocumentPath" id="PassportDocumentPath"
+                                class="form-control" (change)="onFileSelected($event, 'passport')" [ngClass]="{
                                 'is-invalid': form1['PassportDocumentPath'].invalid && (form1['PassportDocumentPath'].touched || isForm1Submitted)
                               }" />
                             <div *ngIf="form1['PassportDocumentPath'].invalid && (form1['PassportDocumentPath'].touched || isForm1Submitted)"
@@ -393,7 +407,8 @@
                             <select id="VisaRejectedCountry" formControlName="VisaRejectedCountry" class="form-select"
                                 [ngClass]="{'is-invalid': form1['VisaRejectedCountry'].invalid && (form1['VisaRejectedCountry'].touched || isForm1Submitted)}">
                                 <option value="">Select a Country</option>
-                                <option *ngFor="let country of countriesList" [value]="country.name">{{ country.name }} ({{
+                                <option *ngFor="let country of countriesList" [value]="country.name">{{ country.name }}
+                                    ({{
                                     country.code }})
                                 </option>
                             </select>
@@ -439,25 +454,26 @@
                                 Please enter Test Date.
                             </div>
                         </div>
-                            <div class="col-md-3">
-                        <label class="form-label">English Proficiency Test<span class="text-danger">*</span></label>
-                        <select class="form-select" id="EnglishTest" formControlName="EnglishTest"
-                            [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('EnglishTest')?.invalid}"
-                            [(ngModel)]="EnglishTest">
-                            <option value="">Select</option>
-                            <option value="PTE">PTE</option>
-                            <option value="DULINGO">DULINGO</option>
-                            <option value="IELTS">IELTS</option>
-                            <option value="TOFEL">TOFEL</option>
-                        </select>
-                        <div *ngIf="SemesterExchangeRegistration.get('EnglishTest')?.invalid && (SemesterExchangeRegistration.get('EnglishTest')?.touched || isForm1Submitted)"
-                            class="text-danger">
-                            Please select valid English Proficiency.
+                        <div class="col-md-3">
+                            <label class="form-label">English Proficiency Test<span class="text-danger">*</span></label>
+                            <select class="form-select" id="EnglishTest" formControlName="EnglishTest"
+                                [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('EnglishTest')?.invalid}"
+                                [(ngModel)]="EnglishTest">
+                                <option value="">Select</option>
+                                <option value="PTE">PTE</option>
+                                <option value="DULINGO">DULINGO</option>
+                                <option value="IELTS">IELTS</option>
+                                <option value="TOFEL">TOFEL</option>
+                            </select>
+                            <div *ngIf="SemesterExchangeRegistration.get('EnglishTest')?.invalid && (SemesterExchangeRegistration.get('EnglishTest')?.touched || isForm1Submitted)"
+                                class="text-danger">
+                                Please select valid English Proficiency.
+                            </div>
                         </div>
-                    </div>
                     </ng-container>
                 </div>
-                <div class="row g-4 mb-4" *ngIf="['PTE','DULINGO', 'IELTS', 'TOFEL'].includes(EnglishTest) && EnglishTestType !== 'Applied'  && EnglishTestType !== 'NotGiven'  && EnglishTestType !== 'NotRequried' ">
+                <div class="row g-4 mb-4"
+                    *ngIf="['PTE','DULINGO', 'IELTS', 'TOFEL'].includes(EnglishTest) &&  isTestDateBeforePresent() ">
                     <div class="col-md-2">
                         <label class="form-label">Listening Score <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="ListeningScore" formControlName="ListeningScore"
@@ -508,14 +524,30 @@
                             Please enter valid Overall Score.
                         </div>
                     </div>
-                    <div class="col-md-2">
-                        <label class="form-label">Year of Test <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="EnglishTestYear" formControlName="EnglishTestYear"
-                            [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('EnglishTestYear')?.invalid}"
-                            placeholder="Year of Test" />
-                        <div *ngIf="SemesterExchangeRegistration.get('EnglishTestYear')?.invalid && (SemesterExchangeRegistration.get('EnglishTestYear')?.touched || isForm1Submitted)"
-                            class="text-danger">
-                            Please enter valid Year of Test.
+                    <!-- <div class="col-md-2">
+                                            <label class="form-label">Year of Test <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="EnglishTestYear" formControlName="EnglishTestYear"
+                                                [ngClass]="{'is-invalid': isForm1Submitted && SemesterExchangeRegistration.get('EnglishTestYear')?.invalid}"
+                                                placeholder="Year of Test" />
+                                            <div *ngIf="SemesterExchangeRegistration.get('EnglishTestYear')?.invalid && (SemesterExchangeRegistration.get('EnglishTestYear')?.touched || isForm1Submitted)"
+                                                class="text-danger">
+                                                Please enter valid Year of Test.
+                                            </div>
+                                        </div> -->
+                    <div class="row mt-4 mb-3">
+                        <div class="col-md-2">
+                            <label class="form-label">English Proficiency Test Proof <span
+                                    class="text-danger">*</span></label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="file" name="EnglishProofDocumentPath" id="EnglishProofDocumentPath"
+                                class="form-control" (change)="onFileSelected($event, 'englishProof')"
+                                [ngClass]="{ 'is-invalid': form1['EnglishProofDocumentPath'].invalid && (form1['EnglishProofDocumentPath'].touched || isForm1Submitted) }" />
+
+                            <div *ngIf="form1['EnglishProofDocumentPath'].invalid && (form1['EnglishProofDocumentPath'].touched || isForm1Submitted)"
+                                class="text-danger">
+                                Please upload English Proof Document.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -599,7 +631,13 @@
                         </label>
                         <div *ngIf="SemesterExchangeRegistration.get('AcceptPolicy')?.invalid && (SemesterExchangeRegistration.get('AcceptPolicy')?.touched || isForm1Submitted)"
                             class="text-danger">
-                            
+                            I do hereby declare that all the above said information provided by me is true & correct to
+                            the best of my knowledge and belief. All formalities and expenses relating to visa, travel
+                            accommodation and food would be borne by me. My parents/guardian/relatives have given their
+                            consent for the same. Any kind of fees levied by Partner University or Home University would
+                            be acceptable to me and would be borne by me. Lovely Professional University would not be
+                            liable in case the visa application is rejected, and the student cannot make any claims for
+                            reimbursement of the expense incurred in the above process.
                             <!-- I do hereby declare that all the above said information provided by me is true & correct to the best of my knowledge and belief. All formalities and expenses relating to visa, travel accommodation and food would be borne by me. My parents/guardian/relatives have given their consent for the same. Any kind of fees levied by Partner University or Home University would be acceptable to me and would be borne by me. Lovely Professional University would not be liable in case the visa application is rejected, and the student cannot make any claims for reimbursement of the expense incurred in the above process. -->
                         </div>
                     </div>
@@ -611,8 +649,14 @@
 
                 <!-- Show Policy Text -->
                 <div *ngIf="showPolicy" class="mb-4">
-                    <p class="text-danger"> <strong>Declaration Statement:</strong> 
-                       I do hereby declare that all the above said information provided by me is true & correct to the best of my knowledge and belief. All formalities and expenses relating to visa, travel accommodation and food would be borne by me. My parents/guardian/relatives have given their consent for the same. Any kind of fees levied by Partner University or Home University would be acceptable to me and would be borne by me. Lovely Professional University would not be liable in case the visa application is rejected, and the student cannot make any claims for reimbursement of the expense incurred in the above process.
+                    <p class="text-danger"> <strong>Declaration Statement:</strong>
+                        I do hereby declare that all the above said information provided by me is true & correct to the
+                        best of my knowledge and belief. All formalities and expenses relating to visa, travel
+                        accommodation and food would be borne by me. My parents/guardian/relatives have given their
+                        consent for the same. Any kind of fees levied by Partner University or Home University would be
+                        acceptable to me and would be borne by me. Lovely Professional University would not be liable in
+                        case the visa application is rejected, and the student cannot make any claims for reimbursement
+                        of the expense incurred in the above process.
                     </p>
                 </div>
 
@@ -642,17 +686,15 @@
                     </div>
                     <div class="col-md-3">
                         <input type="file" name="ResumeDocumentPath" id="ResumeDocumentPath" class="form-control"
-                            (change)="onResumeFileSelected($event)"
-                            [ngClass]="{ 'is-invalid': !UploadedResume }" />
-                        <div *ngIf="!this.UploadedResume && isForm1Submitted"
-                            class="text-danger">
+                            (change)="onResumeFileSelected($event)" [ngClass]="{ 'is-invalid': !UploadedResume }" />
+                        <div *ngIf="!this.UploadedResume && isForm1Submitted" class="text-danger">
                             Please upload Resume Document.
                         </div>
                     </div>
                     <div class="col-md-3">
                         <!-- <input type="file" name="ResumeDocumentPath" id="ResumeDocumentPath" class="form-control" (change)="onResumeFileSelected($event)" 
                         /> -->
-                          <!-- <div *ngIf="SemesterExchangeRegistration.get('ResumeDocumentPath')?.invalid "  [ngClass]="{ 'is-invalid': form1['ResumeDocumentPath'].invalid && (form1['ResumeDocumentPath'].touched || isForm1Submitted) }"
+                        <!-- <div *ngIf="SemesterExchangeRegistration.get('ResumeDocumentPath')?.invalid "  [ngClass]="{ 'is-invalid': form1['ResumeDocumentPath'].invalid && (form1['ResumeDocumentPath'].touched || isForm1Submitted) }"
                                class="text-danger">
                               Resume Document  is required.
                            </div> -->
@@ -661,22 +703,21 @@
                             class="text-danger">
                             Please upload Resume Document.
                         </div> -->
-                        
+
                     </div>
                 </div>
 
                 <div class="row g-4 mb-4">
                     <div class="col-md-3">
                         <label class="form-label">Consent Letter <span class="text-danger">*</span>
-                        <span> <br/>  Kindly fill this form and get it signed from Parents , upload in PDF format. 
-                            <br/>
-                            <!-- <a href="https://files.lpu.in/umsweb/DIA/SemesterExchangedocuments/Consent_Letter.pdf" download
+                            <span> <br /> Kindly fill this form and get it signed from Parents , upload in PDF format.
+                                <br />
+                                <!-- <a href="https://files.lpu.in/umsweb/DIA/SemesterExchangedocuments/Consent_Letter.pdf" download
                                 target="_blank"  >
                                 Download Format
                             </a> -->
-                             <a (click)="DownloadFormat()" href="" download
-                                target="_blank"  >Download Format</a>
-                        </span>
+                                <a (click)="DownloadFormat()" href="" download target="_blank">Download Format</a>
+                            </span>
                         </label>
                     </div>
                     <div class="col-md-3">
@@ -690,29 +731,33 @@
                             Please upload Consent Letter Document.
                         </div>
                     </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label">English Proficiency Test Proof </label>
-                    </div>
-                    <div class="col-md-3">
-                        <input type="file" name="EnglishProofDocumentPath" id="EnglishProofDocumentPath" class="form-control"
-                            (change)="onFileSelected($event, 'englishProof')" [ngClass]="{
-                                        'is-invalid': form1['EnglishProofDocumentPath'].invalid && (form1['EnglishProofDocumentPath'].touched || isForm1Submitted)
-                                      }" />
-
-                        <div *ngIf="form1['EnglishProofDocumentPath'].invalid && (form1['EnglishProofDocumentPath'].touched || isForm1Submitted)"
-                            class="text-danger">
-                            Please upload English Proof Document.
+                    <!-- <div class="row g-4 mb-4" *ngIf="['PTE','DULINGO', 'IELTS', 'TOFEL'].includes(EnglishTest) && EnglishTestType !== 'Applied'  && EnglishTestType !== 'Appeared' && EnglishTestType !== 'NotGiven'  && EnglishTestType !== 'NotRequried' "> -->
+                    <div class="row g-4 mb-4"
+                        *ngIf="['PTE','DULINGO', 'IELTS', 'TOFEL'].includes(EnglishTest) &&  isTestDateBeforePresent() ">
+                        <!-- <div class="col-md-3">
+                            <label class="form-label">English Proficiency Test Proof </label>
                         </div>
+                        <div class="col-md-3">
+                            <input type="file" name="EnglishProofDocumentPath" id="EnglishProofDocumentPath" class="form-control"
+                                (change)="onFileSelected($event, 'englishProof')" [ngClass]="{
+                                                            'is-invalid': form1['EnglishProofDocumentPath'].invalid && (form1['EnglishProofDocumentPath'].touched || isForm1Submitted)
+                                                          }" />
+                    
+                            <div *ngIf="form1['EnglishProofDocumentPath'].invalid && (form1['EnglishProofDocumentPath'].touched || isForm1Submitted)"
+                                class="text-danger">
+                                Please upload English Proof Document.
+                            </div>
+                        </div> -->
                     </div>
                 </div>
             </fieldset>
             <!-- Submit Button -->
             <div class="text-center mt-4">
                 <!-- <button type="submit" class="btn btn-primary px-5" [disabled]="!SemesterExchangeRegistration.valid"> -->
-                    <button type="submit" class="btn btn-primary px-5" [disabled]="!eligible || isLoading || !UploadedResume">Create Your Application</button>
+                <button type="submit" class="btn btn-primary px-5"
+                    [disabled]="!eligible || isLoading || !UploadedResume">Create Your Application</button>
 
-                    <!-- Create Your Application
+                <!-- Create Your Application
                 </button> -->
             </div>
 
@@ -791,7 +836,8 @@
                                 <!-- , which makes you ineligible. -->
                             </div>
                             <div *ngIf="!(CurrentTerm > 0 && CurrentTerm < CourseTotalTerms)" class="text-danger mt-3">
-                                Your current term ({{CurrentTerm}}) is not within the eligible range (0 to {{CourseTotalTerms}}).
+                                Your current term ({{CurrentTerm}}) is not within the eligible range (0 to
+                                {{CourseTotalTerms}}).
                             </div>
                         </div>
                     </div>

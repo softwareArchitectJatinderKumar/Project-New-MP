@@ -33,6 +33,7 @@ const routes: Routes = [
       {
         path: 'stuPotal/:LoginName',
         loadChildren: () => import('./views/SemesterExchange/StudentForm/StudentForm.module').then(m => m.StudentFormModule),
+        // loadChildren: () => import('./views/SemesterExchange/StudentForm/NewLogic/NewLogicForm.module').then(m => m.NewLogicFormModule),
       },
       {
         path: 'StudentDashboard/:LoginName/:RegistrationNo',
