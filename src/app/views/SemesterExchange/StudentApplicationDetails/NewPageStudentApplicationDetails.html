@@ -118,8 +118,17 @@
 </ng-template>
 
 <!-- Loading -->
-<div class="full-page-loader" *ngIf="loadingIndicator" aria-label="Loading">
+<!-- <div class="full-page-loader" *ngIf="loadingIndicator" aria-label="Loading">
   <div class="loader-spinner">
     <span class="material-icons md-48 spin-icon">autorenew</span>
   </div>
+</div> -->
+
+<div *ngIf="loadingIndicator" class="fullscreen-loader">
+    <div class="custom-spinner-overlay" *ngIf="isLoading">
+        <div class="custom-spinner-content text-center">
+            <img src="assets/images/spinner.gif" alt="Loading..." />
+            <p>Loading...</p>
+        </div>
+    </div>
 </div>

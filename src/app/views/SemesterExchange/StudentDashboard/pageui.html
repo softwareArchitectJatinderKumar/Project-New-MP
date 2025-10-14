@@ -1,0 +1,532 @@
+<!-- <div class="container-fluid mt-4" id="StudentDashboardWithTabs" *ngIf="!isLoginFailed; else ErrorTemplate">
+    <div class="card shadow-lg p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="text-primary m-0">My Dashboard</h2>
+            <div><span class=" fs-4 me-3"> Hi! </span> <span [ngClass]="'fs-4 badge'"
+                    style=" background-color: #FD6C04 !important; "> {{studentDetailsWithImage?.studentName}} </span>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs mb-3" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" [class.active]="activeTab==='application'" (click)="selectTab('application')"
+                    type="button" role="tab">
+                    Student Application Details
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" [class.active]="activeTab==='documents'" (click)="selectTab('documents')"
+                    type="button" role="tab">
+                    Application Documents
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" [class.active]="activeTab==='courses'" (click)="selectTab('courses')"
+                    type="button" role="tab">
+                    Semester Exchanged Details
+                </button>
+            </li>
+        </ul>
+
+        <div *ngIf="isLoading" class="mb-3">
+            <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+        </div>
+
+        <div class="tab-content">
+
+            <div class="tab-pane fade" [class.show]="activeTab==='application'"
+                [class.active]="activeTab==='application'">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="ms-5 mb-3 text-center">
+
+                        <div class="ms-4" *ngIf="StudentImage else placeholderImg">
+                            <img alt="Student Image" class="img-fluid rounded-circle border border-3 border-primary"
+                                [src]="StudentImage" style="width: 130px; height: 130px; object-fit: cover;">
+                        </div>
+                        <ng-template #placeholderImg>
+                            <img src="https://placehold.co/150x150" alt="No Image" class="img-thumbnail"
+                                style="max-width:150px; max-height:150px; object-fit:cover;" />
+                        </ng-template>
+                    </div>
+
+                    <h2 class="text-info m-0">Application Details</h2>
+                    <div>
+                        <button class="btn btn-dark  me-2" *ngIf="!isSection1Edit"
+                            (click)="enableSection1Edit()">Edit</button>
+                        <button class="btn btn-primary" *ngIf="isSection1Edit" (click)="updateApplicationSection()"
+                            [disabled]="isLoading || applicationForm.invalid">Update</button>
+                    </div>
+
+                </div>
+                <form [formGroup]="applicationForm" (ngSubmit)="updateApplicationSection()" novalidate>
+
+                    <h5 class="mt-4 mb-3 text-info">Personal Details</h5>
+                    <div class="row">
+                        <ng-container
+                            *ngFor="let key of ['applicationId', 'registrationNo', 'emailId', 'countryName', 'whatsAppNo', 'phoneNumber', 'parentContact']">
+                            <div class="col-md-4 mb-3">
+                                <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+                                <ng-container *ngIf="!isSection1Edit">
+                                    <p class="form-control-plaintext border rounded p-2 bg-light">{{
+                                        applicationForm.get(key)?.value || 'N/A' }}</p>
+                                </ng-container>
+                                <ng-container *ngIf="isSection1Edit">
+                                    <input class="form-control" [type]="key.includes('email') ? 'email' : 'text'"
+                                        [id]="key" [formControlName]="key" [readonly]="alwaysDisabledKeys.includes(key)"
+                                        [class.is-invalid]="isFieldInvalidApplication(key)" />
+                                    <div class="invalid-feedback" *ngIf="isFieldInvalidApplication(key)">
+                                        {{ getFirstErrorApplication(key) }}
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ng-container>
+                    </div>
+
+                    <h5 class="mt-4 mb-3 text-info">Relative Details</h5>
+                    <div class="row">
+                        <ng-container *ngFor="let key of ['relativeName', 'relativeRelation', 'relativeCountry']">
+                            <div class="col-md-4 mb-3">
+                                <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+                                <ng-container *ngIf="!isSection1Edit">
+                                    <p class="form-control-plaintext border rounded p-2 bg-light">{{
+                                        applicationForm.get(key)?.value || 'N/A' }}</p>
+                                </ng-container>
+                                <ng-container *ngIf="isSection1Edit">
+                                    <ng-container [ngSwitch]="key">
+                                        <select *ngSwitchCase="'relativeCountry'" class="form-select" [id]="key"
+                                            [formControlName]="key" [class.is-invalid]="isFieldInvalidApplication(key)">
+                                            <option value="" disabled>Select a Country</option>
+                                            <option *ngFor="let country of countriesList" [value]="country.name">{{
+                                                country.name }}</option>
+                                        </select>
+                                        <input *ngSwitchDefault class="form-control" type="text" [id]="key"
+                                            [formControlName]="key"
+                                            [class.is-invalid]="isFieldInvalidApplication(key)" />
+                                    </ng-container>
+                                    <div class="invalid-feedback" *ngIf="isFieldInvalidApplication(key)">
+                                        {{ getFirstErrorApplication(key) }}
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ng-container>
+                    </div>
+
+                    <h5 class="mt-4 mb-3 text-info">University Preference</h5>
+                    <div class="row">
+                        <ng-container
+                            *ngFor="let key of ['applyingOption', 'universityOption1', 'universityOption2', 'universityOption3']">
+                            <div class="col-md-4 mb-3">
+                                <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+                                <ng-container *ngIf="!isSection1Edit">
+                                    <p class="form-control-plaintext border rounded p-2 bg-light">
+                                        {{ applicationForm.get(key)?.value || 'N/A' }}
+                                    </p>
+                                </ng-container>
+                                <ng-container *ngIf="isSection1Edit">
+                                    <select *ngIf="key === 'applyingOption'" class="form-select" [id]="key"
+                                        [formControlName]="key" [class.is-invalid]="isFieldInvalidApplication(key)">
+                                        <option value="" disabled>Select Option</option>
+                                        <option *ngFor="let opt of applyingOptions" [value]="opt">{{ opt }}</option>
+                                    </select>
+                                    <select *ngIf="key.includes('universityOption')" class="form-select" [id]="key"
+                                        [formControlName]="key" [class.is-invalid]="isFieldInvalidApplication(key)">
+                                        <option value="" disabled>Select University</option>
+                                        <option *ngFor="let uni of universityOptions" [value]="uni.universityId">{{
+                                            uni.universityName }}</option>
+                                    </select>
+                                    <div class="invalid-feedback" *ngIf="isFieldInvalidApplication(key)">
+                                        {{ getFirstErrorApplication(key) }}
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ng-container>
+                    </div>
+
+
+                    <h5 class="mt-4 mb-3 text-info">Passport Details</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="passportStatus" class="form-label fw-semibold">Passport Status</label>
+                            <ng-container *ngIf="!isSection1Edit">
+                                <p class="form-control-plaintext border rounded p-2 bg-light">{{
+                                    f['passportStatus'].value || 'N/A' }}</p>
+                            </ng-container>
+                            <ng-container *ngIf="isSection1Edit">
+                                <select class="form-select" id="passportStatus" formControlName="passportStatus"
+                                    [class.is-invalid]="isFieldInvalidApplication('passportStatus')">
+                                    <option value="" disabled>Select Status</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                    <option value="Applied">Applied</option>
+                                </select>
+                                <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('passportStatus')">
+                                    {{ getFirstErrorApplication('passportStatus') }}
+                                </div>
+                            </ng-container>
+                        </div>
+
+                        <ng-container *ngIf="f['passportStatus'].value === 'Yes' || !isSection1Edit">
+                            <ng-container
+                                *ngFor="let key of ['passportNumber', 'passportIssueDate', 'passportValidUpto']">
+                                <div class="col-md-4 mb-3">
+                                    <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+                                    <ng-container *ngIf="!isSection1Edit">
+                                        <p class="form-control-plaintext border rounded p-2 bg-light">{{
+                                            applicationForm.get(key)?.value || 'N/A' }}</p>
+                                    </ng-container>
+                                    <ng-container *ngIf="isSection1Edit">
+                                        <input [type]="key.includes('Date') ? 'date' : 'text'" class="form-control"
+                                            [id]="key" [formControlName]="key"
+                                            [class.is-invalid]="isFieldInvalidApplication(key)" />
+                                        <div class="invalid-feedback" *ngIf="isFieldInvalidApplication(key)">
+                                            {{ getFirstErrorApplication(key) }}
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+
+                    <h5 class="mt-4 mb-3 text-info">Visa Details</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="isVisaRejected" class="form-label fw-semibold">Visa Ever Been Rejected?</label>
+                            <ng-container *ngIf="!isSection1Edit">
+                                <p class="form-control-plaintext border rounded p-2 bg-light">{{
+                                    f['isVisaRejected'].value || 'N/A' }}</p>
+                            </ng-container>
+                            <ng-container *ngIf="isSection1Edit">
+                                <select class="form-select" id="isVisaRejected" formControlName="isVisaRejected"
+                                    [class.is-invalid]="isFieldInvalidApplication('isVisaRejected')">
+                                    <option value="" disabled>Select</option>
+                                    <option value="No">No</option>
+                                    <option value="Yes">Yes</option>
+                                </select>
+                                <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('isVisaRejected')">
+                                    {{ getFirstErrorApplication('isVisaRejected') }}
+                                </div>
+                            </ng-container>
+                        </div>
+
+                        <ng-container *ngIf="f['isVisaRejected'].value === 'Yes' || !isSection1Edit">
+                            <ng-container *ngFor="let key of ['visaRejectedReason', 'visaRejectedCountry']">
+                                <div class="col-md-4 mb-3">
+                                    <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+                                    <ng-container *ngIf="!isSection1Edit">
+                                        <p class="form-control-plaintext border rounded p-2 bg-light">{{
+                                            applicationForm.get(key)?.value || 'N/A' }}</p>
+                                    </ng-container>
+                                    <ng-container *ngIf="isSection1Edit">
+                                        <ng-container *ngIf="key === 'visaRejectedCountry'; else defaultVisaInput">
+                                            <select class="form-select" [id]="key" [formControlName]="key"
+                                                [class.is-invalid]="isFieldInvalidApplication(key)">
+                                                <option value="" disabled>Select a Country</option>
+                                                <option *ngFor="let country of countriesList" [value]="country.name">{{
+                                                    country.name }}</option>
+                                            </select>
+                                        </ng-container>
+                                        <ng-template #defaultVisaInput>
+                                            <input type="text" class="form-control" [id]="key" [formControlName]="key"
+                                                [class.is-invalid]="isFieldInvalidApplication(key)" />
+                                        </ng-template>
+                                        <div class="invalid-feedback" *ngIf="isFieldInvalidApplication(key)">
+                                            {{ getFirstErrorApplication(key) }}
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+
+                    <h5 class="mt-4 mb-3 text-info">English Proficiency Test Details</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="englishTestType" class="form-label fw-semibold">English Test Type/Status</label>
+                            <ng-container *ngIf="!isSection1Edit">
+                                <p class="form-control-plaintext border rounded p-2 bg-light">{{
+                                    f['englishTestType'].value || 'N/A' }}</p>
+                            </ng-container>
+                            <ng-container *ngIf="isSection1Edit">
+                                <select class="form-select" id="englishTestType" formControlName="englishTestType"
+                                    [class.is-invalid]="isFieldInvalidApplication('englishTestType')">
+                                    <option value="" disabled>Select Status</option>
+                                    <option value="Passed">Passed</option>
+                                    <option value="Applied">Applied</option>
+                                    <option value="Appeared">Appeared</option>
+                                    <option value="not Applicable">Not Applicable</option>
+                                    <option value="Exempted">Exempted</option>
+                                </select>
+                                <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('englishTestType')">
+                                    {{ getFirstErrorApplication('englishTestType') }}
+                                </div>
+                            </ng-container>
+                        </div>
+
+                        <ng-container
+                            *ngIf="!isSection1Edit || (f['englishTestType'].value !== 'Applied' && f['englishTestType'].value !== 'Appeared' && f['englishTestType'].value !== 'not Applicable')">
+                            <ng-container
+                                *ngFor="let key of ['speakingScore', 'listeningScore', 'readingScore', 'writingScore', 'overallScore', 'englishTestYear']">
+                                <div class="col-md-4 mb-3">
+                                    <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+                                    <ng-container *ngIf="!isSection1Edit">
+                                        <p class="form-control-plaintext border rounded p-2 bg-light">{{
+                                            applicationForm.get(key)?.value || 'N/A' }}</p>
+                                    </ng-container>
+                                    <ng-container *ngIf="isSection1Edit">
+                                        <input type="text" class="form-control" [id]="key" [formControlName]="key"
+                                            [class.is-invalid]="isFieldInvalidApplication(key)" />
+                                        <div class="invalid-feedback" *ngIf="isFieldInvalidApplication(key)">
+                                            {{ getFirstErrorApplication(key) }}
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+
+                    <h5 class="mt-4 mb-3 text-info">Sponsor Details</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="isSelfFunded" class="form-label fw-semibold">Sponsor Type</label>
+                            <ng-container *ngIf="!isSection1Edit">
+                                <p class="form-control-plaintext border rounded p-2 bg-light">{{ f['isSelfFunded'].value
+                                    || 'N/A' }}</p>
+                            </ng-container>
+                            <ng-container *ngIf="isSection1Edit">
+                                <select class="form-select" id="isSelfFunded" formControlName="isSelfFunded"
+                                    [class.is-invalid]="isFieldInvalidApplication('isSelfFunded')">
+                                    <option value="" disabled>Select Sponsor Type</option>
+                                    <option value="Parent">Parent</option>
+                                    <option value="Relative">Relative</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('isSelfFunded')">
+                                    {{ getFirstErrorApplication('isSelfFunded') }}
+                                </div>
+                            </ng-container>
+                        </div>
+
+                        <ng-container *ngIf="f['isSelfFunded'].value !== 'Parent' || !isSection1Edit">
+                            <ng-container
+                                *ngFor="let key of ['sponsorName', 'sponsorRelation', 'sponsorContact', 'sponsorEmail']">
+                                <div class="col-md-4 mb-3">
+                                    <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+                                    <ng-container *ngIf="!isSection1Edit">
+                                        <p class="form-control-plaintext border rounded p-2 bg-light">{{
+                                            applicationForm.get(key)?.value || 'N/A' }}</p>
+                                    </ng-container>
+                                    <ng-container *ngIf="isSection1Edit">
+                                        <input [type]="key.includes('Email') ? 'email' : 'text'" class="form-control"
+                                            [id]="key" [formControlName]="key"
+                                            [class.is-invalid]="isFieldInvalidApplication(key)" />
+                                        <div class="invalid-feedback" *ngIf="isFieldInvalidApplication(key)">
+                                            {{ getFirstErrorApplication(key) }}
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+
+                    <h5 class="mt-4 mb-3 text-info">Finance Details</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3" *ngFor="let key of ['availableFunds', 'acceptPolicy']">
+                            <label [for]="key" class="form-label fw-semibold" *ngIf="key !== 'acceptPolicy'">{{
+                                beautifyLabel(key) }}</label>
+                            <ng-container *ngIf="!isSection1Edit && key !== 'acceptPolicy'">
+                                <p class="form-control-plaintext border rounded p-2 bg-light">{{
+                                    applicationForm.get(key)?.value || 'N/A' }}</p>
+                            </ng-container>
+                            <ng-container *ngIf="isSection1Edit && key !== 'acceptPolicy'">
+                                <input type="number" min="0" class="form-control" [id]="key" [formControlName]="key"
+                                    [class.is-invalid]="isFieldInvalidApplication(key)" />
+                                <div class="invalid-feedback" *ngIf="isFieldInvalidApplication(key)">
+                                    {{ getFirstErrorApplication(key) }}
+                                </div>
+                            </ng-container>
+
+                            <ng-container *ngIf="key === 'acceptPolicy'">
+                                <label class="form-label fw-semibold"> Declaration Statement</label>
+                                <div class="form-check mt-2">
+                                    <input type="checkbox" class="form-check-input" [id]="key" [formControlName]="key"
+                                        [disabled]="!isSection1Edit">
+                                    <label class="form-check-label" [for]="key">I accept the policy and terms.</label>
+                                    <div class="invalid-feedback" *ngIf="isFieldInvalidApplication(key)">
+                                        You must accept the policy.
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="tab-pane fade" [class.show]="activeTab==='documents'" [class.active]="activeTab==='documents'">
+                <h5 class="mt-4 text-info">Core Documents</h5>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="text-info m-0">Application Documents</h5>
+          <div>
+            <button class="btn btn-outline-secondary me-2" *ngIf="!isSection2Edit"
+              (click)="enableSection2Edit()">Edit</button>
+            <button class="btn btn-primary" *ngIf="isSection2Edit" (click)="Onsubmit()" [disabled]="isLoading">Update
+              Documents</button>
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <span class="text-danger mt-0 mb-5">All Documents Upload required.** </span>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-semibold">Fees Proof Document</label>
+              <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.feesProofFileName.length>0; ">
+                <a class="btn icon-btn"
+                  [attr.href]="stuApplication?.feesProofFileName ? (serverUrl + stuApplication.feesProofFileName) : null"
+                  [class.disabled]="!stuApplication?.feesProofFileName"
+                  [attr.target]="stuApplication?.feesProofFileName ? '_blank' : null" title="View Resume Document"
+                  [attr.aria-disabled]="!stuApplication?.feesProofFileName"
+                  tabindex="{{stuApplication?.feesProofFileName ? 0 : -1}}">
+                  <span class="material-icons md-18">description</span> View Uploaded
+                </a>
+              </div>
+              <div>
+                <input type="file" (change)="onFileSelectedFeesProof($event)" [disabled]="!isSection2Edit"
+                  class="form-control" required />
+                <br />
+              </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-semibold">Resume Document</label>
+              <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.resumeFileName.length>0; ">
+                <a class="btn icon-btn"
+                  [attr.href]="stuApplication?.resumeFileName ? (serverUrl + stuApplication.resumeFileName) : null"
+                  [class.disabled]="!stuApplication?.resumeFileName"
+                  [attr.target]="stuApplication?.resumeFileName ? '_blank' : null" title="View Resume Document"
+                  [attr.aria-disabled]="!stuApplication?.resumeFileName"
+                  tabindex="{{stuApplication?.resumeFileName ? 0 : -1}}">
+                  <span class="material-icons md-18">description</span>View Uploaded
+                </a>
+              </div>
+              <div>
+                <input type="file" (change)="onFileSelectedResumeFile($event)" [disabled]="!isSection2Edit"
+                  class="form-control" required /><br />
+              </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-semibold">Consent Letter</label>
+              <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.consentLetterFileName.length>0; ">
+                <a class="btn icon-btn"
+                  [attr.href]="stuApplication?.consentLetterFileName ? (serverUrl + stuApplication.consentLetterFileName) : null"
+                  [class.disabled]="!stuApplication?.consentLetterFileName"
+                  [attr.target]="stuApplication?.consentLetterFileName ? '_blank' : null" title="View Resume Document"
+                  [attr.aria-disabled]="!stuApplication?.consentLetterFileName"
+                  tabindex="{{stuApplication?.consentLetterFileName ? 0 : -1}}">
+                  <span class="material-icons md-18">description</span>View Uploaded
+                </a>
+              </div>
+              <div>
+                <input type="file" (change)="onFileSelectedConsentLetter($event)" [disabled]="!isSection2Edit"
+                  class="form-control" required /><br />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-semibold">Passport File</label>
+              <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.passportFileName.length>0;">
+                <a class="btn icon-btn"
+                  [attr.href]="stuApplication?.passportFileName ? (serverUrl + stuApplication.passportFileName) : null"
+                  [class.disabled]="!stuApplication?.passportFileName"
+                  [attr.target]="stuApplication?.passportFileName ? '_blank' : null" title="View Resume Document"
+                  [attr.aria-disabled]="!stuApplication?.passportFileName"
+                  tabindex="{{stuApplication?.passportFileName ? 0 : -1}}">
+                  <span class="material-icons md-18">description</span>View Uploaded
+                </a>
+              </div>
+              <div>
+                <input type="file" (change)="onFileSelectedPassportFile($event)" [disabled]="!isSection2Edit"
+                  class="form-control" required /><br />
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-semibold">English Test Proof</label>
+              <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.englishProofFileName?.length>0;">
+                <a class="btn icon-btn"
+                  [attr.href]="stuApplication?.englishProofFileName ? (serverUrl + stuApplication.englishProofFileName) : null"
+                  [class.disabled]="!stuApplication?.englishProofFileName"
+                  [attr.target]="stuApplication?.englishProofFileName ? '_blank' : null" title="View Resume Document"
+                  [attr.aria-disabled]="!stuApplication?.englishProofFileName"
+                  tabindex="{{stuApplication?.englishProofFileName ? 0 : -1}}">
+                  <span class="material-icons md-18">description</span>View Uploaded
+                </a>
+              </div>
+              <div>
+                <input type="file" (change)="onFileSelectedEnglishProof($event)" [disabled]="!isSection2Edit"
+                  class="form-control" required /><br />
+              </div>
+            </div>
+          </div>
+        </div>
+            </div>
+
+
+
+                 
+      <div class="tab-pane fade" [class.show]="activeTab==='courses'" [class.active]="activeTab==='courses'">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="text-info m-0">Course Covered & Uploads</h5>
+          <div>
+            <button class="btn btn-success me-2" (click)="addCourseRow()">Add Row</button>
+            <button class="btn btn-primary" (click)="saveAllCourseCovered()"
+              [disabled]="isSavingCourses || courseRows.length===0">Save All</button>
+          </div>
+        </div>
+
+
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Course Name</th>
+                <th>Course Code</th>
+                <th>Hours</th>
+                <th>Upload Document</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of courseRows; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td><input class="form-control" [(ngModel)]="row.courseName" name="courseName{{i}}" /></td>
+                <td><input class="form-control" [(ngModel)]="row.courseCode" name="courseCode{{i}}" /></td>
+                <td><input type="number" min="0" class="form-control" [(ngModel)]="row.hours" name="hours{{i}}" /></td>
+                <td>
+                  <div class="d-flex gap-2 align-items-center">
+                    <input type="file" (change)="onCourseFilePicked($event, i)" />
+                    <a *ngIf="row.fileName" href="#" class="btn btn-outline-secondary btn-sm"
+                      (click)="downloadCourseFile(i, $event)">{{ row.fileName }}</a>
+                  </div>
+                </td>
+                <td>
+                  <button class="btn btn-danger btn-sm" (click)="removeCourseRow(i)">Remove</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+            
+        </div>
+
+    </div>
+</div>
+
+<ng-template #ErrorTemplate>
+    <div class="text-center">
+        <h3 class="text-danger mt-5"> Error in User Login. </h3>
+    </div>
+</ng-template> -->

@@ -37,6 +37,7 @@ const routes: Routes = [
       },
       {
         path: 'StudentDashboard/:LoginName/:RegistrationNo',
+        // loadChildren: () => import('./views/SemesterExchange/StudentDashboard/StudentDashboard.module').then(m => m.StudentDashboardModule),
         loadChildren: () => import('./views/SemesterExchange/StudentDashboard/StudentDashboardwithTabs.module').then(m => m.StudentDashboardwithTabsModule),
       },
 
