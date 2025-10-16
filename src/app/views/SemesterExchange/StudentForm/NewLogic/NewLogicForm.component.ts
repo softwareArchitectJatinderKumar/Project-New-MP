@@ -274,23 +274,38 @@ export class NewLogicFormComponent implements OnInit {
           next: response => {
             if (response.item1.length > 0) {
               this.stuData = response.item1[0];
-              console.log(JSON.stringify(this.stuData))
-              this.studentStatus = this.stuData.studentStatus
-              this.loginFailed = false;
-              this.studentName = this.stuData.studentName;
-              this.RegistrationNo = this.stuData.registerationNumber;
-              this.ContactNo = this.stuData.studentMobile;
-              this.courseName = this.stuData.courseName;
-              this.cgpa = this.stuData.cgpa;
-              this.cgpa1 = this.stuData.cgpA1;
-              this.CurrentYear = this.stuData.currentYear;
-              this.CurrentTerm = this.stuData.currentTerm;
-              this.CourseTotalDuration = this.stuData.courseTotalDuration;
-              this.CourseTotalTerms = this.stuData.courseTotalTerms;
-              this.StudentStatus = this.stuData.studentStatus;
-              this.studentEmailId = this.stuData.studentEmail.length < 5 ? 'N/A' : this.stuData.studentEmail;
-              this.EmailId = this.studentEmailId != 'N/A' ? this.studentEmailId : ' ';
-              this.getApplicationDetails(this.RegistrationNo);              
+       
+          this.loginFailed = false;
+          this.studentName = this.stuData.studentName;
+          this.RegistrationNo = this.stuData.registerationNumber;
+          this.ContactNo = this.stuData.studentMobile;
+          this.courseName = this.stuData.courseName;
+          this.cgpa = this.stuData.cgpa;
+          this.cgpa1 = this.stuData.cgpA1;
+          this.CurrentYear = this.stuData.currentYear;
+          this.CurrentTerm = this.stuData.currentTerm;
+          this.CourseTotalDuration = this.stuData.courseTotalDuration;
+          this.CourseTotalTerms = this.stuData.courseTotalTerms;
+          this.StudentStatus = this.stuData.studentStatus;
+          this.studentEmailId = this.stuData.studentEmail.length < 5 ? 'N/A' : this.stuData.studentEmail;
+          this.EmailId = this.studentEmailId != 'N/A' ? this.studentEmailId : ' ';
+          this.studentStatus = this.stuData.studentStatus;
+          // if (this.studentStatus === 'A' || this.studentStatus === 'ACT') {
+          //   // Added on 13-Oct-25
+          //   if (this.CurrentTerm > 1)
+          //     this.GetStudentMarksDetails(this.RegistrationNo);
+          //   else if (this.CurrentTerm == 1)
+          //     this.GetStudentAllPreviousMarks(this.RegistrationNo);
+
+
+          // }
+          // else{
+          //   this.eligible=false;
+          // }
+
+
+
+          this.getApplicationDetails(this.RegistrationNo);           
             }
             else {
               this.stuData = [];
@@ -319,15 +334,12 @@ export class NewLogicFormComponent implements OnInit {
       GetStudentMarksDetails(Regdno: any) {
         this.ServicesSM.getStudentDetailsWithMarks(Regdno).subscribe({
           next: response => {
-            if (response.item1.length > 0) {
+          if (response.item1.length > 0) {
               this.StudentDetailsWithMarks = response.item1;
               this.ProgramCode = this.StudentDetailsWithMarks[0].officialCode;
               this.SectionCode = this.StudentDetailsWithMarks[0].section;
               this.SchoolId = this.StudentDetailsWithMarks[0].schoolId;
-              //  console.log(JSON.stringify(this.StudentDetailsWithMarks))
-
-
-              this.getUniversityDetails();
+              
               this.GradeFcount = 0; // Reset count
               for (const item of this.StudentDetailsWithMarks) {
                 const gradeStr = item.grade?.toUpperCase();
@@ -338,11 +350,16 @@ export class NewLogicFormComponent implements OnInit {
                   this.GradeFcount++;
                 }
               }
+
+              // ** FIX 1: Set eligibility based on GradeFcount **
+              // If GradeFcount is 0, the student is eligible to proceed.
+              this.eligible = (this.GradeFcount === 0);
+              this.getUniversityDetails(); // Call after eligibility is determined
     
             } else {
               this.StudentDetailsWithMarks = [];
               this.GradeFcount = 0;
-              this.eligible = false; // Not eligible if no marks data or F grades exist
+              this.eligible = false; // Not eligible if no marks data
             }
           },
           error: err => {
@@ -389,68 +406,69 @@ export class NewLogicFormComponent implements OnInit {
         });
       }
          
-      getApplicationDetails(regId: string): void {
-        this.ServicesSM.getApplicationDetailsBYId(regId).subscribe((response) => {
-          if (response.item1.length > 0) {
-            this.stuApplication = response.item1[0];
-            if (this.stuApplication.applicationId > 0 && this.stuApplication.isRejected == null) {
-              this.ApplicationStatus = true;
-            } else if (this.stuApplication.applicationId > 0 && this.stuApplication.isRejected === true) {
-              this.ApplicationStatus = false;
-            }
-    
-            this.CountryCode = this.stuApplication.countryCode;
-            this.stuWhatsNo = this.stuApplication.whatsAppNo;
-            this.EmailId = this.stuApplication.emailId;
-            this.ApplicationId = this.stuApplication.applicationId;
-            this.UniversityOption1 = this.stuApplication.universityOption1;
-            this.UniversityOption2 = this.stuApplication.universityOption2;
-            this.UniversityOption3 = this.stuApplication.universityOption3;
-    
-            // Swal.fire({
-            //   title: 'Application already Exists',
-            //   text: '..',
-            //   icon: 'success',
-            //   showConfirmButton: false, // Hide the OK button
-            //   timer: 5000  
-            // }).then(() => {
-            //   this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
-            // });
-            
-           
-    
-          }
-          else {
-            this.stuApplication = null;
-            this.ApplicationStatus = null;
-          }
-
-          // --- MOVED CODE START: This executes AFTER the API call completes ---
-          if (this.ApplicationId > 0) {
-            Swal.fire({
-              title: 'Application already Exists',
-              text: '..',
-              icon: 'success',
-              showConfirmButton: false, // Hide the OK button
-              timer: 5000  
-            }).then(() => {
-              this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
-            });
-            
-          }
-          else if (this.studentStatus === 'A' || this.studentStatus === 'ACT') {
-            // Added on 13-Oct-25
-            if (this.CurrentTerm > 1)
-              this.GetStudentMarksDetails(this.RegistrationNo);
-            else if (this.CurrentTerm == 1)
-              this.GetStudentAllPreviousMarks(this.RegistrationNo);               
-          }
-          else {
-            this.eligible = false;
-          }
-          // --- MOVED CODE END ---
-        });
-  }
+   getApplicationDetails(regId: string): void {
+           this.ServicesSM.getApplicationDetailsBYId(regId).subscribe((response) => {
+             if (response.item1.length > 0) {
+               this.stuApplication = response.item1[0];
+               if (this.stuApplication.applicationId > 0 && this.stuApplication.isRejected == null) {
+                 this.ApplicationStatus = true;
+               } else if (this.stuApplication.applicationId > 0 && this.stuApplication.isRejected === true) {
+                 this.ApplicationStatus = false;
+               }
+       
+               this.CountryCode = this.stuApplication.countryCode;
+               this.stuWhatsNo = this.stuApplication.whatsAppNo;
+               this.EmailId = this.stuApplication.emailId;
+               this.ApplicationId = this.stuApplication.applicationId;
+               this.UniversityOption1 = this.stuApplication.universityOption1;
+               this.UniversityOption2 = this.stuApplication.universityOption2;
+               this.UniversityOption3 = this.stuApplication.universityOption3;
+       
+               // Swal.fire({
+               //   title: 'Application already Exists',
+               //   text: '..',
+               //   icon: 'success',
+               //   showConfirmButton: false, // Hide the OK button
+               //   timer: 5000  
+               // }).then(() => {
+               //   this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
+               // });
+               
+              
+       
+             }
+             else {
+               this.stuApplication = null;
+               this.ApplicationStatus = null;
+             }
+   
+           // --- MOVED CODE START: This executes AFTER the API call completes ---
+             if (this.ApplicationId > 0) {
+               Swal.fire({
+                 title: 'Application already Exists',
+                 text: '..',
+                 icon: 'success',
+                 showConfirmButton: false, 
+                 timer: 5000  
+               }).then(() => {
+                 this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
+               });
+               
+             } else { // ** FIX 2: Only check student status/marks if no application exists **
+               if (this.studentStatus === 'A' || this.studentStatus === 'ACT') {
+                 // Added on 13-Oct-25
+                 if (this.CurrentTerm > 1)
+                   this.GetStudentMarksDetails(this.RegistrationNo);
+                 else if (this.CurrentTerm == 1)
+                   this.GetStudentAllPreviousMarks(this.RegistrationNo);               
+               }
+               else {
+                 this.eligible = false;
+               }
+             }
+             // --- MOVED CODE END ---
+           });
+     }
   private distinctPhoneNumbersValidator(): ValidatorFn {
       return (group: AbstractControl): ValidationErrors | null => {
         const wa = group.get('WhatsAppNo')?.value?.trim() || '';
@@ -787,43 +805,83 @@ export class NewLogicFormComponent implements OnInit {
     const fileNameRegex = /^[a-zA-Z0-9._-]+$/;
     if (file && !fileNameRegex.test(file.name)) {
       const validFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-
       const modifiedFile = new File([file], validFileName, { type: file.type });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(modifiedFile);
-      target.files = dataTransfer.files;
-
+      target.files = dataTransfer.files;   
+      
       this.PassportFileData = modifiedFile;
-      this.PassportDocumentPath = this.PassportFileName = name;//ResumeDocumentPath
+      // FIX: Ensure correct variable is used and form control is updated
+      this.PassportDocumentPath = validFileName;
+      this.PassportFileName = validFileName;
+      this.form.get('PassportDocumentPath')!.setValue(validFileName); // <-- CRITICAL FIX
       this.PassportFileStatus = true;
-
-
 
       reader.readAsDataURL(modifiedFile);
       reader.onload = () => {
         const ssss = reader.result as string;
         const ssssArray = ssss.split(',');
         this.PassportFileData = ssssArray[1];
-        this.PassportDocumentPath = validFileName;
       };
-
       return;
     }
 
     this.PassportFileData = file;
     this.PassportFileStatus = true;
     this.UploadedPassport = true;
-    // alert(10);  
     if (file) {
       reader.readAsDataURL(file);
       reader.onload = () => {
         const ssss = reader.result as string;
         const ssssArray = ssss.split(',');
         this.PassportFileData = ssssArray[1];
+        // FIX: Ensure form control is updated
         this.PassportDocumentPath = file.name;
+        this.PassportFileName = file.name;
+        this.form.get('PassportDocumentPath')!.setValue(file.name); // <-- CRITICAL FIX
         this.UploadedPassport = true;
       };
     }
+  
+    // if (file && !fileNameRegex.test(file.name)) {
+    //   const validFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+
+    //   const modifiedFile = new File([file], validFileName, { type: file.type });
+    //   const dataTransfer = new DataTransfer();
+    //   dataTransfer.items.add(modifiedFile);
+    //   target.files = dataTransfer.files;
+
+    //   this.PassportFileData = modifiedFile;
+    //   this.PassportDocumentPath = this.PassportFileName = name;//ResumeDocumentPath
+    //   this.PassportFileStatus = true;
+
+
+
+    //   reader.readAsDataURL(modifiedFile);
+    //   reader.onload = () => {
+    //     const ssss = reader.result as string;
+    //     const ssssArray = ssss.split(',');
+    //     this.PassportFileData = ssssArray[1];
+    //     this.PassportDocumentPath = validFileName;
+    //   };
+
+    //   return;
+    // }
+
+    // this.PassportFileData = file;
+    // this.PassportFileStatus = true;
+    // this.UploadedPassport = true;
+    // // alert(10);  
+    // if (file) {
+    //   reader.readAsDataURL(file);
+    //   reader.onload = () => {
+    //     const ssss = reader.result as string;
+    //     const ssssArray = ssss.split(',');
+    //     this.PassportFileData = ssssArray[1];
+    //     this.PassportDocumentPath = file.name;
+    //     this.UploadedPassport = true;
+    //   };
+    // }
   }
 
   onEnglishFileSelected(event: any): void {
@@ -849,38 +907,70 @@ export class NewLogicFormComponent implements OnInit {
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(modifiedFile);
       target.files = dataTransfer.files;
-
       this.EnglishProofData = modifiedFile;
-      this.EnglishProofDocumentPath = this.EnglishProofFileName = name;//ResumeDocumentPath
+      // FIX: Ensure correct variable is used and form control is updated
+      this.EnglishProofDocumentPath = validFileName;
+      this.EnglishProofFileName = validFileName;
+      this.form.get('EnglishDocumentPath')!.setValue(validFileName); // <-- CRITICAL FIX
       this.EnglishProofStatus = true;
-
-
 
       reader.readAsDataURL(modifiedFile);
       reader.onload = () => {
         const ssss = reader.result as string;
         const ssssArray = ssss.split(',');
         this.EnglishProofData = ssssArray[1];
-        this.EnglishProofFileName = validFileName;
       };
-
       return;
     }
 
     this.EnglishProofData = file;
     this.EnglishProofStatus = true;
     this.UploadedEnglish = true;
-    // alert(10);  
     if (file) {
       reader.readAsDataURL(file);
       reader.onload = () => {
         const ssss = reader.result as string;
         const ssssArray = ssss.split(',');
         this.EnglishProofData = ssssArray[1];
+        // FIX: Ensure form control is updated
+        this.EnglishProofDocumentPath = file.name;
         this.EnglishProofFileName = file.name;
+        this.form.get('EnglishDocumentPath')!.setValue(file.name); // <-- CRITICAL FIX
         this.UploadedEnglish = true;
       };
     }
+
+    //   this.EnglishProofData = modifiedFile;
+    //   this.EnglishProofDocumentPath = this.EnglishProofFileName = name;//ResumeDocumentPath
+    //   this.EnglishProofStatus = true;
+
+
+
+    //   reader.readAsDataURL(modifiedFile);
+    //   reader.onload = () => {
+    //     const ssss = reader.result as string;
+    //     const ssssArray = ssss.split(',');
+    //     this.EnglishProofData = ssssArray[1];
+    //     this.EnglishProofFileName = validFileName;
+    //   };
+
+    //   return;
+    // }
+
+    // this.EnglishProofData = file;
+    // this.EnglishProofStatus = true;
+    // this.UploadedEnglish = true;
+    // // alert(10);  
+    // if (file) {
+    //   reader.readAsDataURL(file);
+    //   reader.onload = () => {
+    //     const ssss = reader.result as string;
+    //     const ssssArray = ssss.split(',');
+    //     this.EnglishProofData = ssssArray[1];
+    //     this.EnglishProofFileName = file.name;
+    //     this.UploadedEnglish = true;
+    //   };
+    // }
   }
 
 
@@ -907,38 +997,72 @@ export class NewLogicFormComponent implements OnInit {
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(modifiedFile);
       target.files = dataTransfer.files;
-
       this.ResumeFileData = modifiedFile;
-      this.ResumeDocumentPath = this.ResumeFileName = name;//ResumeDocumentPath
+      // FIX: Ensure correct variable is used and form control is updated
+      this.ResumeDocumentPath = validFileName;
+      this.ResumeFileName = validFileName;
+      this.uploadedResumeName = validFileName;
+      this.form.get('ResumeDocumentPath')!.setValue(validFileName); // <-- CRITICAL FIX
       this.ResumeFileStatus = true;
-
-
 
       reader.readAsDataURL(modifiedFile);
       reader.onload = () => {
         const ssss = reader.result as string;
         const ssssArray = ssss.split(',');
         this.ResumeFileData = ssssArray[1];
-        this.ResumeDocumentPath = this.uploadedResumeName= validFileName;
       };
-
       return;
     }
 
     this.ResumeFileData = file;
     this.ResumeFileStatus = true;
     this.UploadedResume = true;
-    // alert(10);  
     if (file) {
       reader.readAsDataURL(file);
       reader.onload = () => {
         const ssss = reader.result as string;
         const ssssArray = ssss.split(',');
         this.ResumeFileData = ssssArray[1];
-        this.ResumeDocumentPath = this.uploadedResumeName= file.name;
+        // FIX: Ensure form control is updated
+        this.ResumeDocumentPath = file.name;
+        this.ResumeFileName = file.name;
+        this.uploadedResumeName = file.name;
+        this.form.get('ResumeDocumentPath')!.setValue(file.name); // <-- CRITICAL FIX
         this.UploadedResume = true;
       };
     }
+  
+    //   this.ResumeFileData = modifiedFile;
+    //   this.ResumeDocumentPath = this.ResumeFileName = name;//ResumeDocumentPath
+    //   this.ResumeFileStatus = true;
+
+
+
+    //   reader.readAsDataURL(modifiedFile);
+    //   reader.onload = () => {
+    //     const ssss = reader.result as string;
+    //     const ssssArray = ssss.split(',');
+    //     this.ResumeFileData = ssssArray[1];
+    //     this.ResumeDocumentPath = this.uploadedResumeName= validFileName;
+    //   };
+
+    //   return;
+    // }
+
+    // this.ResumeFileData = file;
+    // this.ResumeFileStatus = true;
+    // this.UploadedResume = true;
+    // // alert(10);  
+    // if (file) {
+    //   reader.readAsDataURL(file);
+    //   reader.onload = () => {
+    //     const ssss = reader.result as string;
+    //     const ssssArray = ssss.split(',');
+    //     this.ResumeFileData = ssssArray[1];
+    //     this.ResumeDocumentPath = this.uploadedResumeName= file.name;
+    //     this.UploadedResume = true;
+    //   };
+    // }
   }
 
   onFeesFileSelected(event: any): void {
@@ -964,19 +1088,18 @@ export class NewLogicFormComponent implements OnInit {
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(modifiedFile);
       target.files = dataTransfer.files;
-
       this.FeesProofData = modifiedFile;
-      this.FeesProofDocumentPath = this.FeesProofFileName = name;//ResumeDocumentPath
+      // FIX: Ensure correct variable is used and form control is updated
+      this.FeesProofDocumentPath = validFileName; 
+      this.FeesProofFileName = validFileName;
+      this.form.get('FeesDocumentPath')!.setValue(validFileName); // <-- CRITICAL FIX
       this.FeesProofStatus = true;
-
-
 
       reader.readAsDataURL(modifiedFile);
       reader.onload = () => {
         const ssss = reader.result as string;
         const ssssArray = ssss.split(',');
         this.FeesProofData = ssssArray[1];
-        this.FeesProofDocumentPath = validFileName;
       };
 
       return;
@@ -985,17 +1108,50 @@ export class NewLogicFormComponent implements OnInit {
     this.FeesProofData = file;
     this.FeesProofStatus = true;
     this.UploadedFees = true;
-    // alert(10);  
     if (file) {
       reader.readAsDataURL(file);
       reader.onload = () => {
         const ssss = reader.result as string;
         const ssssArray = ssss.split(',');
         this.FeesProofData = ssssArray[1];
+        // FIX: Ensure form control is updated
         this.FeesProofDocumentPath = file.name;
+        this.FeesProofFileName = file.name;
+        this.form.get('FeesDocumentPath')!.setValue(file.name); // <-- CRITICAL FIX
         this.UploadedFees = true;
       };
     }
+    //   this.FeesProofData = modifiedFile;
+    //   this.FeesProofDocumentPath = this.FeesProofFileName = name;//ResumeDocumentPath
+    //   this.FeesProofStatus = true;
+
+
+
+    //   reader.readAsDataURL(modifiedFile);
+    //   reader.onload = () => {
+    //     const ssss = reader.result as string;
+    //     const ssssArray = ssss.split(',');
+    //     this.FeesProofData = ssssArray[1];
+    //     this.FeesProofDocumentPath = validFileName;
+    //   };
+
+    //   return;
+    // }
+
+    // this.FeesProofData = file;
+    // this.FeesProofStatus = true;
+    // this.UploadedFees = true;
+    // // alert(10);  
+    // if (file) {
+    //   reader.readAsDataURL(file);
+    //   reader.onload = () => {
+    //     const ssss = reader.result as string;
+    //     const ssssArray = ssss.split(',');
+    //     this.FeesProofData = ssssArray[1];
+    //     this.FeesProofDocumentPath = file.name;
+    //     this.UploadedFees = true;
+    //   };
+    // }
   }
 
   onConsentLetterFileSelected(event: any): void {
@@ -1021,19 +1177,18 @@ export class NewLogicFormComponent implements OnInit {
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(modifiedFile);
       target.files = dataTransfer.files;
-
       this.ConsentLetterData = modifiedFile;
-      this.ConsentLetterDocumentPath = this.ResumeFileName = name;//ResumeDocumentPath
+      // FIX: Ensure correct variable is used and form control is updated
+      this.ConsentLetterDocumentPath = validFileName;
+      this.ConsentLetterFileName = validFileName;
+      this.form.get('ConsentLetterDocumentPath')!.setValue(validFileName); // <-- CRITICAL FIX
       this.ConsentLetterStatus = true;
-
-
 
       reader.readAsDataURL(modifiedFile);
       reader.onload = () => {
         const ssss = reader.result as string;
         const ssssArray = ssss.split(',');
         this.ConsentLetterData = ssssArray[1];
-        this.ConsentLetterDocumentPath = validFileName;
       };
 
       return;
@@ -1042,17 +1197,50 @@ export class NewLogicFormComponent implements OnInit {
     this.ConsentLetterData = file;
     this.ConsentLetterStatus = true;
     this.UploadedConsenLetter = true;
-    // alert(10);  
     if (file) {
       reader.readAsDataURL(file);
       reader.onload = () => {
         const ssss = reader.result as string;
         const ssssArray = ssss.split(',');
         this.ConsentLetterData = ssssArray[1];
+        // FIX: Ensure form control is updated
         this.ConsentLetterDocumentPath = file.name;
+        this.ConsentLetterFileName = file.name;
+        this.form.get('ConsentLetterDocumentPath')!.setValue(file.name); // <-- CRITICAL FIX
         this.UploadedConsenLetter = true;
       };
     }
+    //   this.ConsentLetterData = modifiedFile;
+    //   this.ConsentLetterDocumentPath = this.ResumeFileName = name;//ResumeDocumentPath
+    //   this.ConsentLetterStatus = true;
+
+
+
+    //   reader.readAsDataURL(modifiedFile);
+    //   reader.onload = () => {
+    //     const ssss = reader.result as string;
+    //     const ssssArray = ssss.split(',');
+    //     this.ConsentLetterData = ssssArray[1];
+    //     this.ConsentLetterDocumentPath = validFileName;
+    //   };
+
+    //   return;
+    // }
+
+    // this.ConsentLetterData = file;
+    // this.ConsentLetterStatus = true;
+    // this.UploadedConsenLetter = true;
+    // // alert(10);  
+    // if (file) {
+    //   reader.readAsDataURL(file);
+    //   reader.onload = () => {
+    //     const ssss = reader.result as string;
+    //     const ssssArray = ssss.split(',');
+    //     this.ConsentLetterData = ssssArray[1];
+    //     this.ConsentLetterDocumentPath = file.name;
+    //     this.UploadedConsenLetter = true;
+    //   };
+    // }
   }
 ValidationCheck: boolean= false;
 
@@ -1167,49 +1355,49 @@ ValidationCheck: boolean= false;
         formData.append("RelativeRelation", formValue.RelativeRelation || 'NA'); // Added RelativeRelation
         formData.append("HasRelativeDetails", formValue.HasRelativeDetails || 'NA'); // Added HasRelativeDetails
     
-        formData.forEach((value, key) => {
-          console.log(`${key}: ${value}`);
-        });
-        // this.ServicesSM.SemesterExchangeNewRegistrationForm(formData)
-        //   .pipe(
-        //     finalize(() => {
-        //       const elapsed = Date.now() - startTime;
-        //       const remaining = Math.max(minLoadingTime - elapsed, 0);
-        //       setTimeout(() => {
-        //         this.isLoading = false;
-        //       }, remaining);
-        //     })
-        //   )
-        //   .subscribe({
-        //     next: (data) => {
-        //       let errorCode = data[0].returnData;
+        // formData.forEach((value, key) => {
+        //   console.log(`${key}: ${value}`);
+        // });
+        this.ServicesSM.SemesterExchangeNewRegistrationForm(formData)
+          .pipe(
+            finalize(() => {
+              const elapsed = Date.now() - startTime;
+              const remaining = Math.max(minLoadingTime - elapsed, 0);
+              setTimeout(() => {
+                this.isLoading = false;
+              }, remaining);
+            })
+          )
+          .subscribe({
+            next: (data) => {
+              let errorCode = data[0].returnData;
     
-        //       if (errorCode > 0) {
-        //         Swal.fire({
-        //           title: 'Application Created Successfully',
-        //           text: "",
-        //           icon: 'success',
-        //         }).then(() => {
-        //           window.location.reload();
-        //         });
-        //       } else if (errorCode == -1) {
-        //         Swal.fire({ title: 'User Already Exists', icon: 'error' }).then(() => {
-        //           window.location.reload();
-        //         });
-        //       } else {
-        //         Swal.fire({ title: 'Some Technical Issue', text: "", icon: 'error' }).then(() => {
-        //           window.location.reload();
-        //         });
-        //       }
-        //     },
-        //     error: () => {
-        //       Swal.fire({
-        //         title: 'Error Occurred',
-        //         text: 'Unable to complete the request. Please try again later.',
-        //         icon: 'error',
-        //       });
-        //     }
-        //   });
+              if (errorCode > 0) {
+                Swal.fire({
+                  title: 'Application Created Successfully',
+                  text: "",
+                  icon: 'success',
+                }).then(() => {
+                  window.location.reload();
+                });
+              } else if (errorCode == -1) {
+                Swal.fire({ title: 'User Already Exists', icon: 'error' }).then(() => {
+                  window.location.reload();
+                });
+              } else {
+                Swal.fire({ title: 'Some Technical Issue', text: "", icon: 'error' }).then(() => {
+                  window.location.reload();
+                });
+              }
+            },
+            error: () => {
+              Swal.fire({
+                title: 'Error Occurred',
+                text: 'Unable to complete the request. Please try again later.',
+                icon: 'error',
+              });
+            }
+          });
 
     
                 const elapsed = Date.now() - startTime;
@@ -1219,6 +1407,103 @@ ValidationCheck: boolean= false;
             }, remaining);
   }
   
+  // /**
+  //  * Constructs a data URL from Base64 data and opens the file in a new tab.
+  //  * @param fileData The Base64 string of the file.
+  //  * @param fileName The name of the file (used to determine extension/MIME type).
+  //  */
+  // viewFile(fileData: string, fileName: string): void {
+  //   if (!fileData) {
+  //     Swal.fire('Error', 'File data is not available.', 'error');
+  //     return;
+  //   }
+
+  //   let mimeType = '';
+  //   const extension = fileName.split('.').pop()?.toLowerCase();
+
+  //   switch (extension) {
+  //     case 'pdf':
+  //       mimeType = 'application/pdf';
+  //       break;
+  //     case 'jpg':
+  //     case 'jpeg':
+  //       mimeType = 'image/jpeg';
+  //       break;
+  //     case 'png':
+  //       mimeType = 'image/png';
+  //       break;
+  //     default:
+  //       // Default to PDF as it's the most common document type.
+  //       mimeType = 'application/octet-stream'; 
+  //       break;
+  //   }
+
+  //   const dataUrl = `data:${mimeType};base64,${fileData}`;
+    
+  //   // Create a temporary link element to trigger the download/view
+  //   const link = document.createElement('a');
+  //   link.href = dataUrl;
+  //   link.target = '_blank'; // Open in a new tab
+  //   link.rel = 'noopener noreferrer';
+  //   link.click();
+  //   link.remove();
+  // }
+
+  // NewtsCode.ts - inside NewLogicFormComponent class
+
+  /**
+   * Constructs a data URL from Base64 data and opens the file in a new tab.
+   * @param fileData The raw Base64 string of the file (without the 'data:...' prefix).
+   * @param fileName The name of the file (used to determine extension/MIME type).
+   */
+  viewFile(fileData: string, fileName: string): void {
+    if (!fileData) {
+      Swal.fire('Error', 'File data is not available.', 'error');
+      return;
+    }
+
+    let mimeType = '';
+    // Use the file name extension to reliably determine the MIME type
+    const extension = fileName.split('.').pop()?.toLowerCase();
+
+    switch (extension) {
+      case 'pdf':
+        mimeType = 'application/pdf';
+        break;
+      case 'jpg':
+      case 'jpeg':
+        mimeType = 'image/jpeg';
+        break;
+      case 'png':
+        mimeType = 'image/png';
+        break;
+      case 'doc':
+      case 'docx':
+        // Modern browsers usually don't display DOCX inline, but setting the MIME helps.
+        // It may prompt a download instead of an inline view.
+        mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+        break;
+      default:
+        // Use a generic MIME type as a fallback
+        mimeType = 'application/octet-stream'; 
+        break;
+    }
+
+    // CRITICAL FIX: The data URL must be constructed with the correct MIME type
+    const dataUrl = `data:${mimeType};base64,${fileData}`;
+    
+    // Open the data URL in a new tab
+    const win = window.open();
+    if (win) {
+      win.document.write(
+        `<iframe src="${dataUrl}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`
+      );
+      // Optional: Add a title for clarity
+      win.document.title = fileName; 
+    } else {
+      Swal.fire('Error', 'Could not open new window. Check your browser pop-up blocker.', 'error');
+    }
+  }
 }
 // import { Component, OnInit } from '@angular/core';
 // import {

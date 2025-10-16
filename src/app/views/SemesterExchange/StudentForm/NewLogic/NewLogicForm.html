@@ -7,8 +7,8 @@
     </div>
 </div>
 <div class="container-fluid mt-4" id="NewRegsiterPage" *ngIf="loginFailed==false; else ErrorApplication">
-    
-    <div class="student-registration container-fluid py-4"  *ngIf="eligible; else NotElgible">
+
+    <div class="student-registration container-fluid py-4" *ngIf="eligible; else NotElgible">
         <div class="row mt-2 mb-4">
             <div class="col-md-6 grid-margin stretch-card">
                 <div class="card">
@@ -406,8 +406,7 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label">Test Date *</label>
-                                                <input type="date" class="form-control"
-                                                    formControlName="TestDate" />
+                                                <input type="date" class="form-control" formControlName="TestDate" />
                                                 <div class="text-danger small"
                                                     *ngIf="(form.get('TestDate')?.touched || isSubmitted) && form.get('TestDate')?.invalid">
                                                     Required</div>
@@ -497,8 +496,7 @@
                                     <div class="col-md-6">
                                         <label class="form-label">Available Funds *</label>
                                         <select class="form-select" formControlName="AvailableFunds">
-                                            <option *ngFor="let option of availableFundsOptions"
-                                                [value]="option.value">
+                                            <option *ngFor="let option of availableFundsOptions" [value]="option.value">
                                                 {{ option.label }}</option>
                                         </select>
                                         <div class="text-danger small"
@@ -549,7 +547,19 @@
                                     You must accept the terms and conditions.
                                 </div>
                                 <div *ngIf="showPolicy" class="mt-3 p-3 border rounded bg-light">
-                                    <p>Detailed Terms and Conditions will go here...</p>
+                                    <p>I do hereby declare that all the above said information provided by me is true &
+                                        correct to
+                                        the best of my knowledge and belief. All formalities and expenses relating to
+                                        visa, travel
+                                        accommodation and food would be borne by me. My parents/guardian/relatives have
+                                        given their
+                                        consent for the same. Any kind of fees levied by Partner University or Home
+                                        University would
+                                        be acceptable to me and would be borne by me. Lovely Professional University
+                                        would not be
+                                        liable in case the visa application is rejected, and the student cannot make any
+                                        claims for
+                                        reimbursement of the expense incurred in the above process.</p>
                                 </div>
                             </div>
                         </div>
@@ -569,14 +579,12 @@
                             <div class="card-body">
                                 <hr>
                                 <div class="mb-3">
-                                    <label class="form-label">Consent Letter <span
-                                            class="text-danger">*</span></label>
+                                    <label class="form-label">Consent Letter <span class="text-danger">*</span></label>
                                     <input type="file" class="form-control"
-                                        (change)="onConsentLetterFileSelected($event)"
-                                        accept=".pdf,.jpg,.jpeg,.png" />
+                                        (change)="onConsentLetterFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png" />
                                     <!-- <input type="file" class="form-control" (change)="onFileSelected($event, 'consent', 'ConsentDocumentPath')" accept=".pdf,.jpg,.jpeg,.png" /> -->
-                                    <div class="small mt-1" *ngIf="uploadedConsentName">Uploaded: <strong>{{
-                                            uploadedConsentName }}</strong></div>
+                                    <div class="small mt-1" *ngIf="ConsentLetterFileName">Uploaded: <strong>{{
+                                            ConsentLetterFileName }}</strong></div>
                                 </div>
                                 <hr />
                                 <div class="mb-3">
@@ -598,14 +606,14 @@
                                             class="text-danger">*</span>
                                     </label>
                                     <!-- <input type="file" class="form-control" (change)="onFileSelected($event, 'passport', 'PassportDocumentPath')" accept=".pdf,.jpg,.jpeg,.png" /> -->
-                                    <input type="file" class="form-control"
-                                        (change)="onPassportFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png" />
+                                    <input type="file" class="form-control" (change)="onPassportFileSelected($event)"
+                                        accept=".pdf,.jpg,.jpeg,.png" />
                                     <div class="text-danger small"
                                         *ngIf="(form.get('PassportDocumentPath')?.touched || isSubmitted) && form.get('PassportDocumentPath')?.invalid">
                                         Passport is required as you confirmed having passport details.
                                     </div>
-                                    <div class="small mt-1" *ngIf="uploadedPassportName">Uploaded: <strong>{{
-                                            uploadedPassportName }}</strong></div>
+                                    <div class="small mt-1" *ngIf="PassportFileName">Uploaded: <strong>{{
+                                            PassportFileName }}</strong></div>
                                 </div>
 
                                 <hr>
@@ -619,8 +627,8 @@
                                         *ngIf="(form.get('EnglishDocumentPath')?.touched || isSubmitted) && form.get('EnglishDocumentPath')?.invalid">
                                         English Test document is required as you confirmed taking a test.
                                     </div>
-                                    <div class="small mt-1" *ngIf="uploadedEnglishName">Uploaded: <strong>{{
-                                            uploadedEnglishName }}</strong></div>
+                                    <div class="small mt-1" *ngIf="EnglishProofFileName">Uploaded: <strong>{{
+                                            EnglishProofFileName }}</strong></div>
                                 </div>
                                 <hr>
                                 <div class="mb-3">
@@ -628,8 +636,8 @@
                                     <!-- <input type="file" class="form-control" (change)="onFileSelected($event, 'fees', 'FeesDocumentPath')" accept=".pdf,.jpg,.jpeg,.png" /> -->
                                     <input type="file" class="form-control" (change)="onFeesFileSelected($event)"
                                         accept=".pdf,.jpg,.jpeg,.png" />
-                                    <div class="small mt-1" *ngIf="uploadedFeesName">Uploaded: <strong>{{
-                                            uploadedFeesName }}</strong></div>
+                                    <div class="small mt-1" *ngIf="FeesProofFileName">Uploaded: <strong>{{
+                                            FeesProofFileName }}</strong></div>
                                 </div>
 
 
@@ -668,42 +676,92 @@
                                                 <td class="fw-bold">{{ item.key }}</td>
                                                 <td>{{ item.value ||'NA'}}</td>
                                             </tr>
-                                        </ng-container>
-                                    </tbody>
-                                </table>
-
-                                <h5 class="mt-4 text-danger">II. Document Summary (Uploaded Files)</h5>
-                                <table class="table table-bordered table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Document Type</th>
-                                            <th>File Name</th>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>**Resume / CV**</td>
-                                            <td>{{ uploadedResumeName || 'N/A' }}</td>
-
-                                        </tr>
-                                        <tr>
-                                            <td>**Consent Letter**</td>
-                                            <td>{{ uploadedConsentName || 'N/A' }}</td>
-
-                                        </tr>
-                                        <tr *ngIf="uploadedPassportName">
-                                            <td>Passport Copy</td>
-                                            <td>{{ uploadedPassportName }}</td>
-
-                                        </tr>
-                                        <tr *ngIf="uploadedEnglishName">
-                                            <td>English Test Score</td>
-                                            <td>{{ uploadedEnglishName }}</td>
-
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                            </ng-container>
+                                            </tbody>
+                                            </table>
+                                            
+                                            <h5 class="mt-4 text-danger">II. Document Summary (Uploaded Files)</h5>
+                                            <!-- <table class="table table-bordered table-hover">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>Document Type</th>
+                                                                                        <th>File Name</th>
+                                            
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    <tr>
+                                                                                        <td>**Resume / CV**</td>
+                                                                                        <td>{{ uploadedResumeName || 'N/A' }}</td>
+                                            
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>**Consent Letter**</td>
+                                                                                        <td>{{ ConsentLetterFileName || 'N/A' }}</td>
+                                            
+                                                                                    </tr>
+                                                                                    <tr *ngIf="PassportFileName">
+                                                                                        <td>Passport Copy</td>
+                                                                                        <td>{{ PassportFileName }}</td>
+                                            
+                                                                                    </tr>
+                                                                                    <tr *ngIf="EnglishProofFileName">
+                                                                                        <td>English Test Score</td>
+                                                                                        <td>{{ EnglishProofFileName }}</td>
+                                            
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table> -->
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Passport Document:</label>
+                                                    <span class="text-success ms-2">{{PassportFileName || 'Not Uploaded'}}</span>
+                                                    <button type="button" class="btn btn-sm btn-info ms-3" (click)="viewFile(PassportFileData, PassportFileName)"
+                                                        [disabled]="!PassportFileData">
+                                                        View File
+                                                    </button>
+                                                </div>
+                                            
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">English Proof Document:</label>
+                                                    <span class="text-success ms-2">{{EnglishProofFileName || 'Not Uploaded'}}</span>
+                                                    <button type="button" class="btn btn-sm btn-info ms-3"
+                                                        (click)="viewFile(EnglishProofData, EnglishProofFileName)" [disabled]="!EnglishProofData">
+                                                        View File
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Resume / CV:</label>
+                                                    <span class="text-success ms-2">{{ResumeFileName || 'Not Uploaded'}}</span>
+                                                    <button type="button" class="btn btn-sm btn-info ms-3" (click)="viewFile(ResumeFileData, ResumeFileName)"
+                                                        [disabled]="!ResumeFileData">
+                                                        View File
+                                                    </button>
+                                                </div>
+                                            
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Fees Payment Proof:</label>
+                                                    <span class="text-success ms-2">{{FeesProofFileName || 'Not Uploaded'}}</span>
+                                                    <button type="button" class="btn btn-sm btn-info ms-3" (click)="viewFile(FeesProofData, FeesProofFileName)"
+                                                        [disabled]="!FeesProofData">
+                                                        View File
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Consent Letter:</label>
+                                                    <span class="text-success ms-2">{{ConsentLetterFileName || 'Not Uploaded'}}</span>
+                                                    <button type="button" class="btn btn-sm btn-info ms-3"
+                                                        (click)="viewFile(ConsentLetterData, ConsentLetterFileName)" [disabled]="!ConsentLetterData">
+                                                        View File
+                                                    </button>
+                                                </div>
+                                            </div>
                             </div>
                         </div>
                     </div>
@@ -720,7 +778,7 @@
 
         </form>
     </div>
-  
+
     <!-- Not Eligible Message -->
     <ng-template #NotElgible>
         <div class="container-fluid mt-4">
@@ -728,19 +786,19 @@
                 <div class="col-md-6 grid-margin stretch-card">
                     <div class="card">
                         <div class="card-body">
-                        <div class="row d-flex justify-content-start">
-                            <label class="col-md-5 form-label text-danger">Name</label>
-                            <label class="col-md-7 form-label text-dark  ">{{studentName}}</label>
+                            <div class="row d-flex justify-content-start">
+                                <label class="col-md-5 form-label text-danger">Name</label>
+                                <label class="col-md-7 form-label text-dark  ">{{studentName}}</label>
+                            </div>
+                            <div class="row d-flex justify-content-start">
+                                <label class="col-md-5 form-label text-danger">Registration Number</label>
+                                <label class="col-md-7 form-label text-dark ">{{RegistrationNo}} </label>
+                            </div>
+                            <div class="row d-flex justify-content-start">
+                                <label class="col-md-5 form-label text-danger">Program Name</label>
+                                <label class="col-md-7 form-label text-dark">{{courseName}}</label>
+                            </div>
                         </div>
-                        <div class="row d-flex justify-content-start">
-                            <label class="col-md-5 form-label text-danger">Registration Number</label>
-                            <label class="col-md-7 form-label text-dark ">{{RegistrationNo}} </label>
-                        </div>
-                        <div class="row d-flex justify-content-start">
-                            <label class="col-md-5 form-label text-danger">Program Name</label>
-                            <label class="col-md-7 form-label text-dark">{{courseName}}</label>
-                        </div>
-                    </div>
                     </div>
                 </div>
 
@@ -759,7 +817,7 @@
                                 </ng-template>
                             </div>
                             <div class="row d-flex justify-content-center">
-                                <label class="col-md-4 form-label text-danger">Overall Score  </label>
+                                <label class="col-md-4 form-label text-danger">Overall Score </label>
                                 <label class="col-md-7 form-label text-dark">{{this.cgpa}}
                                 </label>
                             </div>
@@ -782,13 +840,13 @@
                                     eligible for Semester Exchange program </span> for more details<br />
                                 Kindly Contact Division of international Affairs Block 32 Room No 310, <br />
                                 Or Email us at <span class="text-danger">{{"study.abroard@lpu.co.in"}}</span>
-                                 Your Account Status is {{this.studentStatus}}
+
                             </h3>
                             <div *ngIf="GradeFcount >= 1" class="text-danger mt-3">
                                 You have {{GradeFcount}} 'F' grade(s)
-                               
+
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>
