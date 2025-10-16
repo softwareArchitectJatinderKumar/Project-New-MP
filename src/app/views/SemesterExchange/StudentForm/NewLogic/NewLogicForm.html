@@ -728,19 +728,19 @@
                 <div class="col-md-6 grid-margin stretch-card">
                     <div class="card">
                         <div class="card-body">
-                            <div class="row d-flex justify-content-start">
-                                <label class="col-md-5 form-label text-danger">Name</label>
-                                <label class="col-md-7 form-label text-dark  ">{{studentName}}</label>
-                            </div>
-                            <div class="row d-flex justify-content-start">
-                                <label class="col-md-5 form-label text-danger">Registration Number</label>
-                                <label class="col-md-7 form-label text-dark ">{{RegistrationNo}} </label>
-                            </div>
-                            <div class="row d-flex justify-content-start">
-                                <label class="col-md-5 form-label text-danger">Course</label>
-                                <label class="col-md-7 form-label text-dark">{{courseName}}</label>
-                            </div>
+                        <div class="row d-flex justify-content-start">
+                            <label class="col-md-5 form-label text-danger">Name</label>
+                            <label class="col-md-7 form-label text-dark  ">{{studentName}}</label>
                         </div>
+                        <div class="row d-flex justify-content-start">
+                            <label class="col-md-5 form-label text-danger">Registration Number</label>
+                            <label class="col-md-7 form-label text-dark ">{{RegistrationNo}} </label>
+                        </div>
+                        <div class="row d-flex justify-content-start">
+                            <label class="col-md-5 form-label text-danger">Program Name</label>
+                            <label class="col-md-7 form-label text-dark">{{courseName}}</label>
+                        </div>
+                    </div>
                     </div>
                 </div>
 
@@ -782,6 +782,7 @@
                                     eligible for Semester Exchange program </span> for more details<br />
                                 Kindly Contact Division of international Affairs Block 32 Room No 310, <br />
                                 Or Email us at <span class="text-danger">{{"study.abroard@lpu.co.in"}}</span>
+                                 Your Account Status is {{this.studentStatus}}
                             </h3>
                             <div *ngIf="GradeFcount >= 1" class="text-danger mt-3">
                                 You have {{GradeFcount}} 'F' grade(s)

@@ -391,7 +391,7 @@ VisaRejectionReason: any;
           this.StudentStatus = this.stuData.studentStatus;
           this.studentEmailId = this.stuData.studentEmail.length < 5 ? 'N/A' : this.stuData.studentEmail;
           this.EmailId = this.studentEmailId != 'N/A' ? this.studentEmailId : ' ';
-          // this.studentStatus = this.stuData.studentStatus;
+          this.studentStatus = this.stuData.studentStatus;
           // if (this.studentStatus === 'A' || this.studentStatus === 'ACT') {
           //   // Added on 13-Oct-25
           //   if (this.CurrentTerm > 1)
@@ -429,53 +429,115 @@ VisaRejectionReason: any;
   }
 
   getApplicationDetails(regId: string): void {
-    this.ServicesSM.getApplicationDetailsBYId(regId).subscribe((response) => {
-      if (response.item1.length > 0) {
-        this.stuApplication = response.item1[0];
-        // console.log(JSON.stringify(this.stuApplication))
+          this.ServicesSM.getApplicationDetailsBYId(regId).subscribe((response) => {
+            if (response.item1.length > 0) {
+              this.stuApplication = response.item1[0];
+              if (this.stuApplication.applicationId > 0 && this.stuApplication.isRejected == null) {
+                this.ApplicationStatus = true;
+              } else if (this.stuApplication.applicationId > 0 && this.stuApplication.isRejected === true) {
+                this.ApplicationStatus = false;
+              }
+      
+              this.CountryCode = this.stuApplication.countryCode;
+              this.stuWhatsNo = this.stuApplication.whatsAppNo;
+              this.EmailId = this.stuApplication.emailId;
+              this.ApplicationId = this.stuApplication.applicationId;
+              this.UniversityOption1 = this.stuApplication.universityOption1;
+              this.UniversityOption2 = this.stuApplication.universityOption2;
+              this.UniversityOption3 = this.stuApplication.universityOption3;
+      
+              // Swal.fire({
+              //   title: 'Application already Exists',
+              //   text: '..',
+              //   icon: 'success',
+              //   showConfirmButton: false, // Hide the OK button
+              //   timer: 5000  
+              // }).then(() => {
+              //   this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
+              // });
+              
+             
+      
+            }
+            else {
+              this.stuApplication = null;
+              this.ApplicationStatus = null;
+            }
+  
+            // --- MOVED CODE START: This executes AFTER the API call completes ---
+            if (this.ApplicationId > 0) {
+              Swal.fire({
+                title: 'Application already Exists',
+                text: '..',
+                icon: 'success',
+                showConfirmButton: false, // Hide the OK button
+                timer: 5000  
+              }).then(() => {
+                this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
+              });
+              
+            }
+            if (this.studentStatus === 'A' || this.studentStatus === 'ACT') {
+              // Added on 13-Oct-25
+              if (this.CurrentTerm > 1)
+                this.GetStudentMarksDetails(this.RegistrationNo);
+              else if (this.CurrentTerm == 1)
+                this.GetStudentAllPreviousMarks(this.RegistrationNo);               
+            }
+            else {
+              this.eligible = false;
+            }
+            // --- MOVED CODE END ---
+          });
+    }
+  // getApplicationDetails(regId: string): void {
+  //   this.ServicesSM.getApplicationDetailsBYId(regId).subscribe((response) => {
+  //     if (response.item1.length > 0) {
+  //       this.stuApplication = response.item1[0];
+  //       // console.log(JSON.stringify(this.stuApplication))
        
-        if (this.stuApplication.applicationId > 0 && this.stuApplication.isRejected == null) {
-          this.ApplicationStatus = true;
-        } else if (this.stuApplication.applicationId > 0 && this.stuApplication.isRejected === true) {
-          this.ApplicationStatus = false;
-        }
+  //       if (this.stuApplication.applicationId > 0 && this.stuApplication.isRejected == null) {
+  //         this.ApplicationStatus = true;
+  //       } else if (this.stuApplication.applicationId > 0 && this.stuApplication.isRejected === true) {
+  //         this.ApplicationStatus = false;
+  //       }
 
-        this.CountryCode = this.stuApplication.countryCode;
-        this.stuWhatsNo = this.stuApplication.whatsAppNo;
-        this.EmailId = this.stuApplication.emailId;
-        this.ApplicationId = this.stuApplication.applicationId;
-        this.UniversityOption1 = this.stuApplication.universityOption1;
-        this.UniversityOption2 = this.stuApplication.universityOption2;
-        this.UniversityOption3 = this.stuApplication.universityOption3;       
-      }
-      else {
-        this.stuApplication = null;
-        this.ApplicationStatus = null;
-      }
+  //       this.CountryCode = this.stuApplication.countryCode;
+  //       this.stuWhatsNo = this.stuApplication.whatsAppNo;
+  //       this.EmailId = this.stuApplication.emailId;
+  //       this.ApplicationId = this.stuApplication.applicationId;
+  //       this.UniversityOption1 = this.stuApplication.universityOption1;
+  //       this.UniversityOption2 = this.stuApplication.universityOption2;
+  //       this.UniversityOption3 = this.stuApplication.universityOption3;       
+  //     }
+  //     else {
+  //       this.stuApplication = null;
+  //       this.ApplicationStatus = null;
+  //     }
 
-      if (this.ApplicationId > 0) {
-            Swal.fire({
-              title: 'Application already Exists',
-              text: '..',
-              icon: 'success',
-              showConfirmButton: false, // Hide the OK button
-              timer: 5000
-            }).then(() => {
-              this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
-            });
-          }
-          else if (this.studentStatus === 'A' || this.studentStatus === 'ACT') {
-            // Added on 13-Oct-25
-            if (this.CurrentTerm > 1)
-              this.GetStudentMarksDetails(this.RegistrationNo);
-            else if (this.CurrentTerm == 1)
-              this.GetStudentAllPreviousMarks(this.RegistrationNo);
-          }
-          else {
-            this.eligible = false;
-          }
-    });
-  }
+  //     if (this.ApplicationId > 0) {
+  //           Swal.fire({
+  //             title: 'Application already Exists',
+  //             text: '..',
+  //             icon: 'success',
+  //             showConfirmButton: false, // Hide the OK button
+  //             timer: 5000
+  //           }).then(() => {
+  //             this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
+  //           });
+  //         }
+  //         else if (this.studentStatus === 'A' || this.studentStatus === 'ACT') {
+  //           // Added on 13-Oct-25
+  //           if (this.CurrentTerm > 1)
+  //             this.GetStudentMarksDetails(this.RegistrationNo);
+  //           else if (this.CurrentTerm == 1)
+  //             this.GetStudentAllPreviousMarks(this.RegistrationNo);
+  //         }
+  //         else {
+  //           this.eligible = false;
+  //         }
+  //   });
+  // }
 
   getUniversityDetails(): void {
     this.ServicesSM.getUniversityLists(this.ProgramCode).subscribe((response) => {
@@ -541,7 +603,6 @@ MarksPlus2: any;Percetnages:any;
               this.GradeFcount++;
             }
           }
-
           // Set eligibility after GradeFcount is determined
           this.eligible = (this.GradeFcount < 1) && (this.CurrentTerm > 0 && this.CurrentTerm < this.CourseTotalTerms);
 
