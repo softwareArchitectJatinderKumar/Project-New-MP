@@ -122,7 +122,7 @@ export class NewLogicFormComponent implements OnInit {
     this.LoginName = this.route.snapshot.params['LoginName'];
     if (this.LoginName != '' && this.LoginName != undefined) {
       this.getToken(this.LoginName);
-      this.LoadForms();
+
     }
     
     // alert(this.PresentDate )
@@ -144,7 +144,7 @@ export class NewLogicFormComponent implements OnInit {
     this.subscribeToFormChanges();
   }
   getToken(id: any) {
-     this.isLoading=true;
+    this.isLoading=true;
     const startTime = new Date().getTime();
     this.AuthServicess.loginTemp(id).subscribe({
       next: data => {
@@ -157,7 +157,7 @@ export class NewLogicFormComponent implements OnInit {
           return;
         }
         this.loginFailed = false;
-     
+        this.LoadForms();
         this.getStudentDetail();
         this.folderUrl = this.ServicesSM.getFolderUrl();
         this.serverUrl = 'https://files.lpu.in/umsweb/DIA/SemesterExchangedocuments/';
@@ -264,15 +264,18 @@ export class NewLogicFormComponent implements OnInit {
       { validators: [this.distinctPhoneNumbersValidator()] }
     );
   }
+  studentStatus:any;
 
   // ... (Existing API functions like getToken, getStudentDetail, etc., remain unchanged to satisfy Req #9) ...
-     getStudentDetail(): void {
+      getStudentDetail(): void {
+         
         this.isLoading = true;
         this.ServicesSM.getStudentById().subscribe({
           next: response => {
             if (response.item1.length > 0) {
               this.stuData = response.item1[0];
-             
+              console.log(JSON.stringify(this.stuData))
+              this.studentStatus = this.stuData.studentStatus
               this.loginFailed = false;
               this.studentName = this.stuData.studentName;
               this.RegistrationNo = this.stuData.registerationNumber;
@@ -287,9 +290,7 @@ export class NewLogicFormComponent implements OnInit {
               this.StudentStatus = this.stuData.studentStatus;
               this.studentEmailId = this.stuData.studentEmail.length < 5 ? 'N/A' : this.stuData.studentEmail;
               this.EmailId = this.studentEmailId != 'N/A' ? this.studentEmailId : ' ';
-              this.GetStudentMarksDetails(this.RegistrationNo);
-              this.getApplicationDetails(this.RegistrationNo);
-              this.eligible = true; // Will be updated after marks details are fetched
+              this.getApplicationDetails(this.RegistrationNo);              
             }
             else {
               this.stuData = [];
@@ -308,7 +309,7 @@ export class NewLogicFormComponent implements OnInit {
           }
         });
       }
-           SectionCode: any;         SchoolId: any;        allProgramCode:any; StudentDetailsWithMarks:any; GradeFcount:any;
+      SectionCode: any;         SchoolId: any;        allProgramCode:any; StudentDetailsWithMarks:any; GradeFcount:any;
       StudentPreviousMarks:any;
       getAllProgramcode(): void {
         this.ServicesSM.FetchAllProgramCodesList().subscribe((response) => {
@@ -350,7 +351,36 @@ export class NewLogicFormComponent implements OnInit {
           }
         });
       }
-    
+            //start Logic for 10+2 students Added on 13-Oct-25
+      MarksPlus2: any;Percetnages:any;
+        StudentPreviousMarksData: any;
+        GetStudentAllPreviousMarks(Regdno: any) {
+          this.ServicesSM.GetStudentAllPreviousMarks(Regdno).subscribe({
+            next: response => {
+              if (response.item1.length > 0) {
+                const StudentPreviousMarksData = response.item1[0];
+                this.MarksPlus2 = StudentPreviousMarksData['ExamDescription'];
+                this.Percetnages = StudentPreviousMarksData['Perecentage'];
+              
+                
+                this.GradeFcount = 0; // Reset count
+                
+                // Set eligibility after GradeFcount is determined
+                this.eligible = (this.MarksPlus2 ==='10+2') && (this.Percetnages >90 );
+                this.getUniversityDetails();
+                // alert(this.eligible)
+              } else {
+                this.StudentPreviousMarksData = [];
+            
+                this.eligible = false; // Not eligible if no marks data or F grades exist
+              }
+            },
+            error: err => {
+              this.LoginFailed(err);
+              this.eligible = false; // Not eligible on error
+            }
+          });
+        }
             
       getUniversityDetails(): void {
         this.ServicesSM.getUniversityLists(this.ProgramCode).subscribe((response) => {
@@ -377,7 +407,26 @@ export class NewLogicFormComponent implements OnInit {
             this.UniversityOption2 = this.stuApplication.universityOption2;
             this.UniversityOption3 = this.stuApplication.universityOption3;
     
+            // Swal.fire({
+            //   title: 'Application already Exists',
+            //   text: '..',
+            //   icon: 'success',
+            //   showConfirmButton: false, // Hide the OK button
+            //   timer: 5000  
+            // }).then(() => {
+            //   this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
+            // });
+            
+           
     
+          }
+          else {
+            this.stuApplication = null;
+            this.ApplicationStatus = null;
+          }
+
+          // --- MOVED CODE START: This executes AFTER the API call completes ---
+          if (this.ApplicationId > 0) {
             Swal.fire({
               title: 'Application already Exists',
               text: '..',
@@ -388,13 +437,18 @@ export class NewLogicFormComponent implements OnInit {
               this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
             });
             
-           
-    
+          }
+          else if (this.studentStatus === 'A' || this.studentStatus === 'ACT') {
+            // Added on 13-Oct-25
+            if (this.CurrentTerm > 1)
+              this.GetStudentMarksDetails(this.RegistrationNo);
+            else if (this.CurrentTerm == 1)
+              this.GetStudentAllPreviousMarks(this.RegistrationNo);               
           }
           else {
-            this.stuApplication = null;
-            this.ApplicationStatus = null;
+            this.eligible = false;
           }
+          // --- MOVED CODE END ---
         });
   }
   private distinctPhoneNumbersValidator(): ValidatorFn {
@@ -654,16 +708,7 @@ export class NewLogicFormComponent implements OnInit {
       Swal.fire('Incomplete Details', 'Please fill all required fields before proceeding.', 'error');
       return;
     }
-    // #5: Show all fields data on console when moving to Final Review (Step 4)
-    // if (this.currentStep === 3) { 
-    //     console.log('--- Form Data for Final Review (Req #5) ---');
-    //     console.log(this.form.value);
-    //     console.log('--- Uploaded Files Metadata ---');
-    //     this.uploadedFiles.forEach(f => {
-    //       console.log(`${f.key}: ${f.name}`);
-    //     });
-    //     console.log('------------------------------');
-    // }
+    
 
     this.currentStep++;
     this.isSubmitted = false;

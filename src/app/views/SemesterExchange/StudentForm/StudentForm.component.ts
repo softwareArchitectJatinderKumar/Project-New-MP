@@ -368,6 +368,7 @@ VisaRejectionReason: any;
       sponsorRelationControl?.updateValueAndValidity();
     });
   }
+  studentStatus: any;
 
   getStudentDetail(): void {
     this.isLoading = true;
@@ -375,7 +376,7 @@ VisaRejectionReason: any;
       next: response => {
         if (response.item1.length > 0) {
           this.stuData = response.item1[0];
-         
+
           this.loginFailed = false;
           this.studentName = this.stuData.studentName;
           this.RegistrationNo = this.stuData.registerationNumber;
@@ -390,14 +391,24 @@ VisaRejectionReason: any;
           this.StudentStatus = this.stuData.studentStatus;
           this.studentEmailId = this.stuData.studentEmail.length < 5 ? 'N/A' : this.stuData.studentEmail;
           this.EmailId = this.studentEmailId != 'N/A' ? this.studentEmailId : ' ';
-          // Added on 13-Oct-25
-          if(this.CurrentTerm>1)
-          this.GetStudentMarksDetails(this.RegistrationNo);
-          else if(this.CurrentTerm==1)
-          this.GetStudentAllPreviousMarks(this.RegistrationNo);
-          
+          // this.studentStatus = this.stuData.studentStatus;
+          // if (this.studentStatus === 'A' || this.studentStatus === 'ACT') {
+          //   // Added on 13-Oct-25
+          //   if (this.CurrentTerm > 1)
+          //     this.GetStudentMarksDetails(this.RegistrationNo);
+          //   else if (this.CurrentTerm == 1)
+          //     this.GetStudentAllPreviousMarks(this.RegistrationNo);
+
+
+          // }
+          // else{
+          //   this.eligible=false;
+          // }
+
+
+
           this.getApplicationDetails(this.RegistrationNo);
-          this.eligible = true; // Will be updated after marks details are fetched
+          
         }
         else {
           this.stuData = [];
@@ -435,23 +446,34 @@ VisaRejectionReason: any;
         this.ApplicationId = this.stuApplication.applicationId;
         this.UniversityOption1 = this.stuApplication.universityOption1;
         this.UniversityOption2 = this.stuApplication.universityOption2;
-        this.UniversityOption3 = this.stuApplication.universityOption3;
-
-
-        swal.fire({
-          title: 'Application already Exists',
-          text: '..',
-          icon: 'success',
-          showConfirmButton: false, // Hide the OK button
-          timer: 2000  
-        }).then(() => {
-          this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
-        });
+        this.UniversityOption3 = this.stuApplication.universityOption3;       
       }
       else {
         this.stuApplication = null;
         this.ApplicationStatus = null;
       }
+
+      if (this.ApplicationId > 0) {
+            Swal.fire({
+              title: 'Application already Exists',
+              text: '..',
+              icon: 'success',
+              showConfirmButton: false, // Hide the OK button
+              timer: 5000
+            }).then(() => {
+              this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
+            });
+          }
+          else if (this.studentStatus === 'A' || this.studentStatus === 'ACT') {
+            // Added on 13-Oct-25
+            if (this.CurrentTerm > 1)
+              this.GetStudentMarksDetails(this.RegistrationNo);
+            else if (this.CurrentTerm == 1)
+              this.GetStudentAllPreviousMarks(this.RegistrationNo);
+          }
+          else {
+            this.eligible = false;
+          }
     });
   }
 
@@ -478,14 +500,13 @@ MarksPlus2: any;Percetnages:any;
         if (response.item1.length > 0) {
           const StudentPreviousMarksData = response.item1[0];
           this.MarksPlus2 = StudentPreviousMarksData['ExamDescription'];
-          this.Percetnages = StudentPreviousMarksData['Perecentage'];
-        
+          this.Percetnages = StudentPreviousMarksData['Perecentage'];       
           
           this.GradeFcount = 0; // Reset count
           
           // Set eligibility after GradeFcount is determined
-          this.eligible = (this.MarksPlus2 ==='10+2') && (this.Percetnages >90 );
-          alert(this.eligible)
+          this.eligible = (this.MarksPlus2 ==='10+2') && (this.Percetnages >70 );
+          // alert(this.eligible)
         } else {
           this.StudentPreviousMarksData = [];
        
@@ -522,7 +543,7 @@ MarksPlus2: any;Percetnages:any;
           }
 
           // Set eligibility after GradeFcount is determined
-          // this.eligible = (this.GradeFcount < 1) && (this.CurrentTerm > 0 && this.CurrentTerm < this.CourseTotalTerms);
+          this.eligible = (this.GradeFcount < 1) && (this.CurrentTerm > 0 && this.CurrentTerm < this.CourseTotalTerms);
 
         } else {
           this.StudentDetailsWithMarks = [];

@@ -801,13 +801,13 @@
                                         Available </label>
                                 </ng-template>
                             </div>
-                            <div class="row d-flex justify-content-center">
-                                <label class="col-md-4 form-label text-danger">Overall Score **************</label>
+                             <div class="row d-flex justify-content-center">
+                                <label class="col-md-4 form-label text-danger">Overall Score  </label>
                                 <label class="col-md-7 form-label text-dark">{{this.cgpa}}
                                 </label>
                             </div>
                             <div class="row d-flex justify-content-center">
-                                <label class="col-md-4 form-label text-danger">Program Code ********</label>
+                                <label class="col-md-4 form-label text-danger">Program Code </label>
                                 <label class="col-md-7 form-label text-dark">{{this.ProgramCode}}-{{this.SectionCode}}
                                 </label>
                             </div>
@@ -835,10 +835,10 @@
                                 You have {{GradeFcount}} 'F' grade(s)
                                 <!-- , which makes you ineligible. -->
                             </div>
-                            <div *ngIf="!(CurrentTerm > 0 && CurrentTerm < CourseTotalTerms)" class="text-danger mt-3">
+                            <!-- <div *ngIf="!(CurrentTerm > 0 && CurrentTerm < CourseTotalTerms)" class="text-danger mt-3">
                                 Your current term ({{CurrentTerm}}) is not within the eligible range (0 to
                                 {{CourseTotalTerms}}).
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
