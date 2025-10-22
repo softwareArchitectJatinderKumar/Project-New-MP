@@ -8,6 +8,13 @@ import { SemesterMigrationAdminComponent } from './views/SemesterExchange/HODDas
 
 
 const routes: Routes = [
+
+   {
+        path: 'OBPMetricPABinding/:loginName',
+        loadChildren: () => import('./views/HeadMappingInterface/HeadMappingWithAssistant/HeadMappingWithAssistant.module').then(m => m.OBPMetricBindingModule),
+      },
+
+
   { path: 'auth', loadChildren: () => import('./views/pages/auth/auth.module').then(m => m.AuthModule) },
   {
     path: '',

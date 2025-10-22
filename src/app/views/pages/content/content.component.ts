@@ -76,8 +76,8 @@ export class ContentComponent implements OnInit {
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML = 'Event <span class="themeClr" >Registeration</span> Form';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
     let loginName = this.route.snapshot.params['loginName'];
-     const now = new Date();
-  this.today = now.toISOString().split('T')[0];
+    const now = new Date();
+    this.today = now.toISOString().split('T')[0];
     this.formdata.get('budget')?.enable();
     if (loginName != '' && loginName != undefined) {
       this.getToken(loginName);
