@@ -1,0 +1,32 @@
+.bgColorStyle{
+  background-color: #ef7d00;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.table-responsive-wrapper {
+  /* This is the key property: enables horizontal scrolling when content overflows */
+  overflow-x: auto; 
+  /* Ensures the container respects the page margins */
+  width: 100%;
+}
+
+.card {
+  border-radius: 1rem;
+}
+.mat-header-cell {
+  font-weight: 400 !important;
+  text-align: center !important;
+  color: #ffffff !important;
+}
+ 
+/* Pagination font size */
+.mat-paginator {
+  font-size: 0.9rem;
+}
+
+/* Make the table corners slightly rounded */
+.table-responsive {
+  border-radius: 0.5rem;
+//   overflow: hidden;
+}
+ 

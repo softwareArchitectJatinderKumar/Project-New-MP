@@ -9,10 +9,7 @@ import { SemesterMigrationAdminComponent } from './views/SemesterExchange/HODDas
 
 const routes: Routes = [
 
-   {
-        path: 'OBPMetricPABinding/:loginName',
-        loadChildren: () => import('./views/HeadMappingInterface/HeadMappingWithAssistant/HeadMappingWithAssistant.module').then(m => m.OBPMetricBindingModule),
-      },
+
 
 
   { path: 'auth', loadChildren: () => import('./views/pages/auth/auth.module').then(m => m.AuthModule) },
@@ -22,7 +19,18 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
 
-    
+      {
+    path: 'OBPAdminDashboardXXXs/:loginName',
+    loadChildren: () => import('./views/OBPAdminDashboard/MasterDetailsPage.module').then(m => m.MasterDetailsPageModule),
+  },
+  {
+    path: 'OBPMetricPABinding/:loginName',
+    loadChildren: () => import('./views/HeadMappingInterface/HeadMappingWithAssistant/HeadMappingWithAssistant.module').then(m => m.OBPMetricBindingModule),
+  },
+  {
+    path: 'OBPHeadMapping/:loginName',
+    loadChildren: () => import('./views/pages/ManageHeadMappings/Manage-HeadMapping.module').then(m => m.ManageHeadMappingModule),
+  },
       // Semester Exchange 
       {
         path:'StaffLogin',

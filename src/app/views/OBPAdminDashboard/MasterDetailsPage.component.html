@@ -1,0 +1,131 @@
+<div *ngIf="loadingIndicator" class="fullscreen-loader">
+    <div class="custom-spinner-overlay" *ngIf="loadingIndicator">
+        <div class="custom-spinner-content text-center">
+            <img src="assets/images/spinner.gif" alt="Loading..." />
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-lg p-4 mt-4" id="OBPAdminDashboard" *ngIf="isLoginFailed==false; else loginFailed">
+
+    <ul class="nav nav-tabs mb-3" role="tablist">
+
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="activeTab === 'metric'" (click)="selectTab('metric')"
+                type="button">
+                Metric Master Details
+            </button>
+        </li>
+
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="activeTab === 'criteria'" [class.disabled]="isCriteriaLoading"
+                (click)="selectTab('criteria')" type="button">
+                Criteria Master Details
+            </button>
+        </li>
+
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="activeTab === 'indicator'" [class.disabled]="isIndicatorLoading"
+                (click)="selectTab('indicator')" type="button">
+                Indicator Master Details
+            </button>
+        </li>
+    </ul>
+    <div class="tab-content" id="OBPDashbaoardData">
+        <div class="tab-pane fade" [class.show]="activeTab === 'metric'" [class.active]="activeTab === 'metric'">
+
+            <div *ngIf="loadingIndicator" class="text-center p-5">...</div>
+
+            <div class="table-responsive-wrapper" *ngIf="!loadingIndicator ||metricRecords.length==0; else NoData">
+                <app-data-grid [componentTitle]="'Metric Details List'" [records]="metricRecords"
+                    [columns]="metricColumns"> </app-data-grid>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" [class.show]="activeTab === 'criteria'" [class.active]="activeTab === 'criteria'">
+
+            <div *ngIf="loadingIndicator" class="text-center p-5">...</div>
+
+            <div class="table-responsive-wrapper" *ngIf="!loadingIndicator ||criteriaRecords.length==0; else NoData" >
+                <app-data-grid [componentTitle]="'Criteria Details List'" [records]="criteriaRecords"
+                    [columns]="criteriaColumns"> </app-data-grid>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" [class.show]="activeTab === 'indicator'" [class.active]="activeTab === 'indicator'">
+
+            <div *ngIf="loadingIndicator" class="text-center p-5">...</div>
+
+            <div class="table-responsive-wrapper" *ngIf="!loadingIndicator ||indicatorRecords.length==0; else NoData">
+                <app-data-grid [componentTitle]="'Key Indicator Details List'" [records]="indicatorRecords"
+                    [columns]="indicatorColumns"> </app-data-grid>
+            </div>
+        </div>
+        <ng-template #NoData>
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+            <h4 class="text-danger">Access Denied</h4>
+        </div>
+    </div>
+</ng-template>
+    </div>
+
+
+    <!-- 
+    <div class="tab-content">
+        <div class="tab-pane fade" 
+             [class.show]="activeTab === 'metric'" 
+             [class.active]="activeTab === 'metric'">
+
+            <div *ngIf="isMetricLoading" class="text-center p-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2">Loading Metric Master Details...</p>
+            </div>
+            
+            <app-data-grid *ngIf="!isMetricLoading"
+                [componentTitle]="'Metric Details List'"
+                [records]="metricRecords"
+                [columns]="metricColumns"> </app-data-grid>
+        </div>
+
+        <div class="tab-pane fade" 
+             [class.show]="activeTab === 'criteria'" 
+             [class.active]="activeTab === 'criteria'">
+            
+            <div *ngIf="isCriteriaLoading" class="text-center p-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2">Loading Criteria Master Details...</p>
+            </div>
+
+            <app-data-grid *ngIf="!isCriteriaLoading"
+                [componentTitle]="'Criterai MasterDetails List'"
+                [records]="criteriaRecords"
+                [columns]="criteriaColumns"> </app-data-grid>
+        </div>
+
+        <div class="tab-pane fade" 
+             [class.show]="activeTab === 'indicator'" 
+             [class.active]="activeTab === 'indicator'">
+
+            <div *ngIf="isIndicatorLoading" class="text-center p-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2">Loading Key Indicator Master Details...</p>
+            </div>
+
+            <app-data-grid *ngIf="!isIndicatorLoading"
+                [componentTitle]="'KeyIndicator Details List'"
+                [records]="indicatorRecords"
+                [columns]="indicatorColumns"> </app-data-grid>
+        </div>
+    </div> -->
+</div>
+
+<ng-template #loginFailed>
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+            <h4 class="text-danger">Access Denied</h4>
+        </div>
+    </div>
+</ng-template>
