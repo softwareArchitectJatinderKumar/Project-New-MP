@@ -1,0 +1,235 @@
+<div class="container-fluid my-4">
+  <div class="card shadow-lg p-3">
+    <h3 class="text-primary text-center mb-3">OBP Left Transfer Allocations</h3>
+
+    <div class="row mt-5 d-flex justify-content-center">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="text-center m-4  text-info">OBP Left Transfer Allocations</h4>
+
+
+          <div class="row mb-3">
+            <div class="col-md-3 mb-3 mb-md-0">
+              <button class="btn btn-primary col-md-6" (click)="UploadExcelData()">
+                <i class="fas fa-file-excel me-2"></i> Upload File
+              </button>
+            </div>
+
+            <div class="col-md-3">
+              <div class="mb-3 text-start">
+                <div class="form-group">
+                  <button type="button" class="btn btn-dark" (click)="downloadSampleDocument()"><i
+                      class="fas fa-file-excel mr-2"></i> Download Sample Excel sheet</button>
+
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mt-2">
+              <h4 class=" text-danger">Please Ensure the excel sheet should match the Sample Excel
+                Format </h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row vh-100 mb-2 mt-5 ">
+      <div class="card">
+        <div class="card-body">
+          <h4 class=" text-center m-3 text-info">OBP Left Transfer Allocations</h4>
+          <div class="container-fluid ">
+            <form [formGroup]="metricSingleForm" (ngSubmit)="onSubmit()" class="forms-sample mt-4">
+    
+              <!-- Row 1 -->
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <label class="form-label">Metric ID:</label>
+                  <input type="text" class="form-control" formControlName="MetricId"
+                    [ngClass]="{'is-invalid': isTouchedInvalid('MetricId')}">
+                  <div class="text-danger" *ngIf="isTouchedInvalid('MetricId')">Metric ID is required.</div>
+                </div>
+    
+                <div class="col-md-4">
+                  <label class="form-label">Metric Description:</label>
+                  <input type="text" class="form-control" formControlName="MetricDescription"
+                    [ngClass]="{'is-invalid': isTouchedInvalid('MetricDescription')}">
+                  <div class="text-danger" *ngIf="isTouchedInvalid('MetricDescription')">Description is required.</div>
+                </div>
+    
+                <div class="col-md-4">
+                  <label class="form-label">Assigned To UID:</label>
+                  <input type="text" class="form-control" formControlName="AssignedToUID"
+                    [ngClass]="{'is-invalid': isTouchedInvalid('AssignedToUID')}">
+                  <div class="text-danger" *ngIf="isTouchedInvalid('AssignedToUID')">Assigned UID is required.</div>
+                </div>
+              </div>
+    
+              <!-- Row 2 -->
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <label class="form-label">Total Target Value:</label>
+                  <input type="number" class="form-control" formControlName="TotalTargetValue"
+                    [ngClass]="{'is-invalid': isTouchedInvalid('TotalTargetValue')}">
+                  <div class="text-danger" *ngIf="isTouchedInvalid('TotalTargetValue')">Enter a valid number.</div>
+                </div>
+    
+                <div class="col-md-4">
+                  <label class="form-label">Target Value Type:</label>
+                  <input type="text" class="form-control" formControlName="TargetValueType"
+                    [ngClass]="{'is-invalid': isTouchedInvalid('TargetValueType')}">
+                  <div class="text-danger" *ngIf="isTouchedInvalid('TargetValueType')">Target Value Type is required.</div>
+                </div>
+    
+                <div class="col-md-4">
+                  <label class="form-label">Base Value:</label>
+                  <input type="number" class="form-control" formControlName="BaseValue"
+                    [ngClass]="{'is-invalid': isTouchedInvalid('BaseValue')}">
+                  <div class="text-danger" *ngIf="isTouchedInvalid('BaseValue')">Enter a valid number.</div>
+                </div>
+              </div>
+    
+              <!-- Row 3 -->
+              <div class="row mb-3">
+                <div class="col-md-3">
+                  <label class="form-label">Q1 Target:</label>
+                  <input type="number" class="form-control" formControlName="Q1TargetValue"
+                    [ngClass]="{'is-invalid': isTouchedInvalid('Q1TargetValue')}">
+                  <div class="text-danger" *ngIf="isTouchedInvalid('Q1TargetValue')">Enter a valid number.</div>
+                </div>
+    
+                <div class="col-md-3">
+                  <label class="form-label">Q2 Target:</label>
+                  <input type="number" class="form-control" formControlName="Q2TargetValue"
+                    [ngClass]="{'is-invalid': isTouchedInvalid('Q2TargetValue')}">
+                  <div class="text-danger" *ngIf="isTouchedInvalid('Q2TargetValue')">Enter a valid number.</div>
+                </div>
+    
+                <div class="col-md-3">
+                  <label class="form-label">Q3 Target:</label>
+                  <input type="number" class="form-control" formControlName="Q3TargetValue"
+                    [ngClass]="{'is-invalid': isTouchedInvalid('Q3TargetValue')}">
+                  <div class="text-danger" *ngIf="isTouchedInvalid('Q3TargetValue')">Enter a valid number.</div>
+                </div>
+    
+                <div class="col-md-3">
+                  <label class="form-label">Q4 Target:</label>
+                  <input type="number" class="form-control" formControlName="Q4TargetValue"
+                    [ngClass]="{'is-invalid': isTouchedInvalid('Q4TargetValue')}">
+                  <div class="text-danger" *ngIf="isTouchedInvalid('Q4TargetValue')">Enter a valid number.</div>
+                </div>
+              </div>
+    
+              <!-- Row 4 -->
+              <div class="row mb-3">
+            
+    
+                <div class="col-md-12 text-center">
+                  <label class="form-label">&nbsp;</label>
+                  <button type="submit" class="btn btn-primary mt-4 w-20" [disabled]="metricSingleForm.invalid">
+                    <i class="fa fa-save"></i> Submit
+                  </button>
+                </div>
+              </div>
+    
+            </form>
+    
+    
+            </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+
+
+<ng-template #BulkLeftAllocationModal let-modal>
+  <div class="modal-header bg-info text-white d-flex justify-content-between">
+    <h5 class="modal-title me-2">OBP Left Transfer Allocations</h5>
+    <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row mt-4 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="col-sm-12">
+            <div class="mb-3">
+              <div class="form-group text-center">
+                <label class="fs-2 text-center text-danger">OBP Left Transfer Allocations </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-4 mb-4">
+          <div class="col-sm-3">
+            <div class="mb-3 text-center">
+              <div class="form-group">
+                <label class="fs-4 text-danger">Download sample Excel Sheet </label>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-2">
+            <div class="mb-3 text-start">
+              <div class="form-group">
+                <a type="button" class="btn btn-primary" [href]="filePath" target="_blank">Sample Document</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-3 me-3">
+            <div class="mb-3 text-start">
+              <div class="form-group">
+                <input type="file" class="form-control" style="width: 18rem;" (change)="onFileChange($event);">
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="mb-3">
+              <div class="form-group">
+                <label for="Files"> </label>
+                <button class="btn btn-primary mt-4 col-md-6" (click)="confirmUpload()"
+                  [disabled]="!file || hasErrors()" class="btn btn-success pull-right">
+                  <i class="fa fa-save fa-fw"></i> Upload File
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row" *ngIf="uploadedDataForDisplay && uploadedDataForDisplay.length > 0">
+      <div class="col-md-12 stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th *ngFor="let header of uploadedDataForDisplay[0]">{{ header }}</th>
+                    <th>Error</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of uploadedDataForDisplay.slice(1); let rowIndex = index">
+                    <td *ngFor="let cell of row; let cellIndex = index"
+                      [ngClass]="{'text-danger': isError(rowIndex + 1, cellIndex)}">{{ cell }}</td>
+                    <td>
+                      <span *ngIf="validationErrors[rowIndex + 1]" class="text-danger">
+                        {{ validationErrors[rowIndex + 1] }}
+                      </span>
+                    </td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+            <button class="btn btn-primary mt-3" (click)="confirmUpload()" [disabled]="hasErrors()">Confirm and
+              Upload</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

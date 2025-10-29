@@ -62,21 +62,21 @@ export class MasterDetailsPageComponent implements OnInit {
         this.storageService.saveUser(data);
         this.loadData('metric');
 
+        const stMainElement = document.getElementById('stMain');
+        if (stMainElement) {
+          stMainElement.innerHTML = 'OBP Admin <span class="themeClr"> Dashboard</span>';
+        }
 
-        if (this.metricRecords.length <= 0 || this.indicatorRecords.length<=0 || this.criteriaRecords.length <=0) {
-          const element = document.getElementById('OBPDashbaoardData');
-          if (element) {
-            element.hidden = true;
-          }
+        const imgLogoElement = document.getElementById('imgLogo') as HTMLInputElement;
+        if (imgLogoElement) {
+          imgLogoElement.style.width = '164px';
         }
       },
       error: _err => {
         this.LoginFailed(_err);
       }
     });
-    (<HTMLInputElement>document.getElementById('stMain')).innerHTML = 'OBP Admin <span class="themeClr"> Dashboard</span>';
-    //  (<HTMLInputElement>document.getElementById('ulMenu')).style.visibility='hidden';
-    (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
+
   }
   LoginFailed(_NewError: any) {
     this.isLoginFailed = true;
@@ -101,9 +101,7 @@ export class MasterDetailsPageComponent implements OnInit {
     }
   }
 
-  /**
-   * Fetches data via API and dynamically generates columns.
-   */
+
   loadData(tab: ActiveTab): void {
 
     let apiCall: any;
@@ -116,22 +114,26 @@ export class MasterDetailsPageComponent implements OnInit {
     this.loadingIndicator = true;
     switch (tab) {
       case 'metric':
+
         this.isMetricLoading = true;
         apiCall = this.dataService.apiCallgetMetricMasterDetails();
+        this.metricRecords = apiCall;
+
         break;
       case 'criteria':
         this.isCriteriaLoading = true;
         apiCall = this.dataService.getCriteriaMasterDetails();
+        this.criteriaRecords = apiCall;
         break;
       case 'indicator':
+
         this.isIndicatorLoading = true;
         apiCall = this.dataService.getKeyIndicatorMasterDetails();
+        this.indicatorRecords = apiCall;
         break;
     }
 
-    // 🚀 ACTION: Subscribe to the Observable to bind data
     apiCall.pipe(
-      // Ensure loading state is turned off when the API call completes
       finalize(() => {
         if (tab === 'metric') this.isMetricLoading = false;
         if (tab === 'criteria') this.isCriteriaLoading = false;
@@ -139,17 +141,14 @@ export class MasterDetailsPageComponent implements OnInit {
         this.loadingIndicator = false;
       })
     ).subscribe({
-      next: (response: any) => { // Renamed 'data' to 'response' for clarity
+      next: (response: any) => {
 
-        // 🚀 THE FIX: Extract the data array from the response object using the 'item1' key.
         const dataArray: any[] = response && response.item1 ? response.item1 : [];
 
         if (dataArray && dataArray.length > 0) {
 
-          // 1. Generate Columns Dynamically using the extracted array
           const columns = this.generateColumnsFromData(dataArray);
 
-          // 2. Assign extracted Records and Columns to the correct properties
           if (tab === 'metric') {
             this.metricRecords = dataArray;
             this.metricColumns = columns;
@@ -161,12 +160,11 @@ export class MasterDetailsPageComponent implements OnInit {
             this.indicatorColumns = columns;
           }
         } else {
-          // Optional: Log or display a "No data found" message if the array is empty
           console.warn(`API call succeeded for ${tab}, but data array is empty.`);
         }
       },
       error: (err: any) => {
-        // ... (error handling remains the same)
+
       }
     });
   }
@@ -189,8 +187,6 @@ export class MasterDetailsPageComponent implements OnInit {
     if (!label) return label;
     return label.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
   }
-
-  // --- Mock Data Generators (Should be moved to DataService in production) ---
   private getMockMetricData(count: number): any[] { /* ... */ return Array.from({ length: count }, (_, i) => ({ metricId: `M${100 + i}`, metricName: `Metric Title ${i + 1}`, /* ... */ })); }
   private getMockCriteriaData(count: number): any[] { /* ... */ return Array.from({ length: count }, (_, i) => ({ criteriaId: `CRI${500 + i}`, description: `Evaluation details for item ${i + 1}.`, /* ... */ })); }
   private getMockIndicatorData(count: number): any[] { /* ... */ return Array.from({ length: count }, (_, i) => ({ indicatorCode: `KI${700 + i}`, title: `Key Performance Indicator ${i + 1}`, /* ... */ })); }

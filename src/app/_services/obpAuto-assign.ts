@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { StorageService } from './storage.service';
+
+import { xmlLeftAllocation } from '../views/Multiple-Metric-Dashboard/XMLLeftTransfer.model';
 import { environment } from 'src/environments/environment';
 const AUTH_API = 'https://projectsapi.lpu.in/';//'https://projectsapi.lpu.in/';
 const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';//'https://localhost:7125/';
@@ -213,5 +215,17 @@ UpdateOBPConstructionMetricFinalRemarks(DataValues: FormData): Observable<any> {
     );
   }
 
-
+  // Upload Excel sheet Record data into University Database 
+  CreateLeftTransferDataUsingExcelSheet(LeftTransferDataXml: xmlLeftAllocation): Observable<any> {
+    var authToken = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      //  .set('Authorization', 'Bearer ' + authToken)
+      .set('Authorization', 'Bearer ' + authToken)
+      .set('Content-Type', 'application/json');
+    //httpOptions.headers.set('Authentication', 'Bearer ' + token);
+    return this.http.post(
+      'https://localhost:7125/' +   'api/LpuObpAutomation/AddLeftTransferDataUsingExcelSheet', LeftTransferDataXml,
+      { headers }
+    );
+  }
 }

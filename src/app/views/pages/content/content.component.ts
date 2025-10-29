@@ -938,10 +938,6 @@ UploadExcelData(){
   this.modalService.open(this.BulkEventModal, { size: 'lg', backdrop: 'static' });
 }
 
-
-  // Excel Upload Logic
-
-
   // Excel Upload Logic
   onFileChange(event: any): void {
     if (event.target.files.length > 0) {

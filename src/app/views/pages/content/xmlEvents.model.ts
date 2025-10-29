@@ -3,4 +3,3 @@ export interface xmlEvents {
   EventsDataXml: string;
   CreatedBy: string;
   }
-  

@@ -1,0 +1,43 @@
+.card {
+  border-radius: 1rem;
+}
+
+.table {
+  min-width: 1500px;
+  white-space: nowrap;
+
+  th {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  input {
+    text-align: center;
+  }
+
+  .is-invalid {
+    border-color: #dc3545 !important;
+  }
+
+  .invalid-feedback {
+    font-size: 0.75rem;
+    color: #dc3545;
+    display: block;
+  }
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.btn {
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+h3 {
+  font-weight: 600;
+}

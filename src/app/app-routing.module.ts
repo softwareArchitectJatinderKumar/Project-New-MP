@@ -20,28 +20,32 @@ const routes: Routes = [
     children: [
 
       {
-    path: 'OBPAdminDashboardXXXs/:loginName',
-    loadChildren: () => import('./views/OBPAdminDashboard/MasterDetailsPage.module').then(m => m.MasterDetailsPageModule),
-  },
-  {
-    path: 'OBPMetricPABinding/:loginName',
-    loadChildren: () => import('./views/HeadMappingInterface/HeadMappingWithAssistant/HeadMappingWithAssistant.module').then(m => m.OBPMetricBindingModule),
-  },
-  {
-    path: 'OBPHeadMapping/:loginName',
-    loadChildren: () => import('./views/pages/ManageHeadMappings/Manage-HeadMapping.module').then(m => m.ManageHeadMappingModule),
-  },
+        path: 'MetricTargets/:loginName',
+        loadChildren: () => import('./views/Multiple-Metric-Dashboard/metric-targets.module').then(m => m.MetricTargetsModule),
+      },
+      {
+        path: 'OBPAdminDashboard/:loginName',
+        loadChildren: () => import('./views/OBPAdminDashboard/MasterDetailsPage.module').then(m => m.MasterDetailsPageModule),
+      },
+      {
+        path: 'OBPMetricPABinding/:loginName',
+        loadChildren: () => import('./views/HeadMappingInterface/HeadMappingWithAssistant/HeadMappingWithAssistant.module').then(m => m.OBPMetricBindingModule),
+      },
+      {
+        path: 'OBPHeadMapping/:loginName',
+        loadChildren: () => import('./views/pages/ManageHeadMappings/Manage-HeadMapping.module').then(m => m.ManageHeadMappingModule),
+      },
       // Semester Exchange 
       {
-        path:'StaffLogin',
-        loadChildren :() => import('./views/SemesterExchange/LoginPage/LoginPage.module').then(m=>m.LoginPageNComponentModule),
+        path: 'StaffLogin',
+        loadChildren: () => import('./views/SemesterExchange/LoginPage/LoginPage.module').then(m => m.LoginPageNComponentModule),
 
       },
       { path: 'SMAdmin/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
       { path: 'newStudentPortal/:LoginName', redirectTo: 'newSemesterExchangeRegistration/:LoginName', pathMatch: 'full' },
-      {   path: 'DashboardDIAHOD/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
-      {   path: 'DashboardHOW/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
-      {   path: 'DashboardHOD/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
+      { path: 'DashboardDIAHOD/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
+      { path: 'DashboardHOW/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
+      { path: 'DashboardHOD/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
       {
         path: 'FacultyDashboard/:LoginName',
         loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule),
