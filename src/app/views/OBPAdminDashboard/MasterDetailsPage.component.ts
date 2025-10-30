@@ -60,6 +60,12 @@ export class MasterDetailsPageComponent implements OnInit {
     this.authService.loginTemp(id).subscribe({
       next: data => {
         this.storageService.saveUser(data);
+
+        const authToken = this.storageService.getUser();
+        if (!this.storageService.isLoggedIn() || authToken === 'Token Expired') {
+          this.LoginFailed('Token Expired');
+        }
+
         this.loadData('metric');
 
         const stMainElement = document.getElementById('stMain');

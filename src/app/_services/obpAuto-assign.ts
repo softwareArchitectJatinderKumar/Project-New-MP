@@ -228,4 +228,25 @@ UpdateOBPConstructionMetricFinalRemarks(DataValues: FormData): Observable<any> {
       { headers }
     );
   }
+  // Upload Excel sheet Record data into University Database 
+  InsertLeftTransferData(data: FormData): Observable<any> {
+    var authToken = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + authToken)
+    return this.http.post(
+      'https://localhost:7125/' +   'api/LpuObpAutomation/AddLeftTransferData', data,
+      { headers }
+    );
+  }
+
+  GetAllocationData():Observable<any>{
+     let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
+      return this.http.get(
+     'https://localhost:7125/' + 'api/LpuObpAutomation/GetMetricAllocationData', { headers }
+    );
+
+  }
 }

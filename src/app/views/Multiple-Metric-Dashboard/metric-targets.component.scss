@@ -41,3 +41,29 @@
 h3 {
   font-weight: 600;
 }
+.TargetValueStyle{
+  width: 1rem !important;
+  padding: 0rem !important;
+}
+
+.btn-circle {
+  background-color: rgb(65, 172, 65);
+  width: 34px; /* Adjust size as needed, matching the height */
+  height: 34px; /* Adjust size as needed, matching the width */
+  padding: 0;
+  border-radius: 50%;
+  
+  /* Flexbox for perfect centering */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  /* Optionally override default focus box-shadow if needed */
+  line-height: 1; 
+  flex-shrink: 0; /* Important to prevent the button from stretching in a flex container */
+}
+
+/* Ensure the icon itself scales nicely */
+.btn-circle i {
+  font-size: 16px; 
+}

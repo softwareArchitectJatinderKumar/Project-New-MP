@@ -870,9 +870,9 @@ MarksPlus2: any;Percetnages:any;
     formData.append("RelativeRelation", formValue.RelativeRelation || 'NA'); // Added RelativeRelation
     formData.append("HasRelativeDetails", formValue.HasRelativeDetails || 'NA'); // Added HasRelativeDetails
 
-    formData.forEach((value, key) => {
-      console.log(`${key}: ${value}`);
-    });
+    // formData.forEach((value, key) => {
+    //   console.log(`${key}: ${value}`);
+    // });
     this.ServicesSM.SemesterExchangeNewRegistrationForm(formData)
       .pipe(
         finalize(() => {
