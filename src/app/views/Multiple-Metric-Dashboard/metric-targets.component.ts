@@ -26,7 +26,8 @@ import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-metric-targets',
-  templateUrl: './metric-targets.component.html',
+  templateUrl: './metric-targets.component-withTabs.html',
+  // templateUrl: './metric-targets.component.html',
   styleUrls: ['./metric-targets.component.scss']
 })
 export class MetricTargetsComponent implements OnInit {
@@ -68,7 +69,7 @@ export class MetricTargetsComponent implements OnInit {
         
         const stMainElement = document.getElementById('stMain');
         if (stMainElement) {
-          stMainElement.innerHTML = 'OBP Head<span class="themeClr"> Metric Mapping</span>';
+          stMainElement.innerHTML = 'OBP Left/Transfer<span class="themeClr"> Allocation </span>';
         }
 
         const imgLogoElement = document.getElementById('imgLogo') as HTMLInputElement;
@@ -156,7 +157,7 @@ export class MetricTargetsComponent implements OnInit {
 
     const stMainElement = document.getElementById('stMain');
     if (stMainElement) {
-      stMainElement.innerHTML = 'OBP Head<span class="themeClr"> Metric Mapping</span>';
+      stMainElement.innerHTML = 'OBP Left/Transfer<span class="themeClr"> Allocation </span>';
     }
 
     const imgLogoElement = document.getElementById('imgLogo') as HTMLInputElement;

@@ -1,0 +1,322 @@
+<div *ngIf="loadingIndicator" class="fullscreen-loader">
+    <div class="custom-spinner-overlay" *ngIf="loadingIndicator">
+        <div class="custom-spinner-content text-center">
+            <img src="assets/images/spinner.gif" alt="Loading..." />
+        </div>
+    </div>
+</div>
+
+
+<div class="card shadow-lg p-3" id="OBPLeftTransfer" *ngIf="isLoginFailed==false; else loginFailed">
+    <div class="container-fluid my-4">
+        <div class="row mt-3 mb-2 d-flex justify-content-center">
+            <div class="table-responsive-wrapper" *ngIf="!loadingIndicator ||criteriaRecords.length==0; else NoData">
+                <app-data-grid [componentTitle]="'OBP Left/Transfer Allocation Details'" [records]="criteriaRecords"
+                    [columns]="criteriaColumns">
+                </app-data-grid>
+            </div>
+            <ng-template #NoData>
+                <div class="card shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                        <h4 class="text-danger">No Data</h4>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+
+
+    <nav>
+        <div class="nav nav-tabs nav nav-tabs d-flex justify-content-center active" id="nav-tab" role="tablist">
+            <button class="btn me-5 active" id="ExcelUpload-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
+                data-bs-target="#ExcelUpload" type="button" role="tab" aria-controls="ExcelUpload"
+                aria-selected="true">Bulk Uploads </button>
+
+            <button class=" btn btn-lg ms-5" id="SingleEntryForm-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
+                data-bs-target="#SingleEntryForm" type="button" role="tab" aria-controls="SingleEntryForm"
+                aria-selected="false">Single Action
+            </button>
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <!-- Tab one contents -->
+        <div class="tab-pane fade active show vh-100" id="ExcelUpload" role="tabpanel" aria-labelledby="ExcelUpload-tab">
+            <div class="row mt-5 d-flex justify-content-center">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- <h3 class="text-primary text-center mb-3">OBP Left Transfer Allocations</h3> -->
+                        <!-- <h4 class="text-center m-4  text-info">OBP Left Transfer Allocations</h4> -->
+
+
+                        <div class="row mb-3">
+                            <div class="col-md-3 mb-3 mb-md-0">
+                                <button class="btn btn-primary col-md-6" (click)="UploadExcelData()">
+                                    <i class="mdi mdi-file-excel me-2"></i> <span class="text-white">Upload File</span>
+                                </button>
+                            </div>
+
+                            <!-- <div class="col-md-3">
+                                <div class="mb-3 text-start">
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-info" (click)="downloadSampleDocument()">
+                                            <i class="mdi mdi-file-excel me-2"></i><span class="text-white">Sample Excel
+                                                sheet</span></button>
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="col-md-6 mt-2"><span class="themeClr h3">NOTE:-
+                             Ensure the excel sheet should match the  </span>
+                             <a class="badge bg-primary fs-4" (click)="downloadSampleDocument()">  <i class="mdi mdi-file-excel me-2"></i>Sample Excel Format </a> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade vh-100" id="SingleEntryForm" role="tabpanel" aria-labelledby="SingleEntryForm-tab">
+
+            <div class="container-fluid my-4">
+                <h3 class="text-primary text-center mb-3"></h3>
+                <!-- <h3 class="text-primary text-center mb-3">OBP Left Transfer Form</h3> -->
+                <div class="row vh-50 mb-2 mt-5 ">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- <h4 class=" text-center m-3 text-info">Entry Form </h4> -->
+                            <div class="container-fluid ">
+                                <form [formGroup]="metricSingleForm" (ngSubmit)="onSubmit()" class="forms-sample mt-4">
+                                    <!-- Row 1 -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label class="form-label">Metric ID:</label>
+                                            <input type="text" class="form-control" formControlName="MetricId"
+                                                [ngClass]="{'is-invalid': isTouchedInvalid('MetricId')}">
+                                            <div class="text-danger" *ngIf="isTouchedInvalid('MetricId')">Metric ID is
+                                                required.
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Metric Description:</label>
+                                            <input type="text" class="form-control" formControlName="MetricDescription"
+                                                [ngClass]="{'is-invalid': isTouchedInvalid('MetricDescription')}">
+                                            <div class="text-danger" *ngIf="isTouchedInvalid('MetricDescription')">
+                                                Description
+                                                is required.</div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Assigned To UID:</label>
+                                            <input type="text" class="form-control" formControlName="AssignedToUID"
+                                                [ngClass]="{ 'is-invalid': isTouchedInvalid('AssignedToUID') }"
+                                                maxlength="5" placeholder="Enter 5-character UID" />
+
+                                            <!-- Error: Required -->
+                                            <div class="text-danger"
+                                                *ngIf="metricSingleForm.get('AssignedToUID')?.hasError('required') && metricSingleForm.get('AssignedToUID')?.touched">
+                                                Assigned UID is required.
+                                            </div>
+
+                                            <!-- Error: Exact 5 characters -->
+                                            <div class="text-danger"
+                                                *ngIf="metricSingleForm.get('AssignedToUID')?.hasError('exactLength') && metricSingleForm.get('AssignedToUID')?.touched">
+                                                UID must be exactly 5 characters long.
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Total Target Value:</label>
+                                            <input type="number" class="form-control" formControlName="TotalTargetValue"
+                                                [ngClass]="{'is-invalid': isTouchedInvalid('TotalTargetValue')}">
+                                            <div class="text-danger" *ngIf="isTouchedInvalid('TotalTargetValue')">Enter
+                                                a valid
+                                                number.</div>
+                                        </div>
+                                    </div>
+                                    <!-- Row 2 -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label class="form-label">Target Value Type:</label> <br />
+                                            <div class="btn-group" role="group" aria-label="Type options">
+                                                <ng-container *ngFor="let type of typeOptions">
+                                                    <input type="radio" class="btn-check" [id]="'type-' + type"
+                                                        name="TargetValueType" [value]="type"
+                                                        formControlName="TargetValueType"
+                                                        (change)="onTargetValueTypeChange(type)" />
+                                                    <label class="btn btn-outline-dark" [for]="'type-' + type">
+                                                        {{ type }}
+                                                    </label>
+                                                </ng-container>
+                                            </div>
+                                            <div class="invalid-feedback d-block" *ngIf="
+                            metricSingleForm.get('TargetValueType')?.invalid &&
+                            metricSingleForm.get('TargetValueType')?.touched
+                          ">
+                                                Please select a type.
+                                            </div>
+                                        </div>
+
+                                        <!-- Base Value: visible only if TargetValueType = 'P' -->
+                                        <div class="col-md-3" *ngIf="showBaseValueField">
+                                            <label class="form-label">Base Value:</label>
+                                            <input type="number" class="form-control" formControlName="BaseValue"
+                                                [ngClass]="{ 'is-invalid': isTouchedInvalid('BaseValue') }"
+                                                placeholder="Enter base value" />
+                                            <div class="text-danger" *ngIf="isTouchedInvalid('BaseValue')">
+                                                Base Value is required and must be greater than 0.
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Q1 Target:</label>
+                                            <input type="number" class="form-control" formControlName="Q1TargetValue"
+                                                [ngClass]="{'is-invalid': isTouchedInvalid('Q1TargetValue')}">
+                                            <div class="text-danger" *ngIf="isTouchedInvalid('Q1TargetValue')">Enter a
+                                                valid
+                                                number.</div>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <label class="form-label">Q2 Target:</label>
+                                            <input type="number" class="form-control" formControlName="Q2TargetValue"
+                                                [ngClass]="{'is-invalid': isTouchedInvalid('Q2TargetValue')}">
+                                            <div class="text-danger" *ngIf="isTouchedInvalid('Q2TargetValue')">Enter a
+                                                valid
+                                                number.</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Row 3 -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <label class="form-label">Q3 Target:</label>
+                                            <input type="number" class="form-control" formControlName="Q3TargetValue"
+                                                [ngClass]="{'is-invalid': isTouchedInvalid('Q3TargetValue')}">
+                                            <div class="text-danger" *ngIf="isTouchedInvalid('Q3TargetValue')">Enter a
+                                                valid
+                                                number.</div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Q4 Target:</label>
+                                            <input type="number" class="form-control" formControlName="Q4TargetValue"
+                                                [ngClass]="{'is-invalid': isTouchedInvalid('Q4TargetValue')}">
+                                            <div class="text-danger" *ngIf="isTouchedInvalid('Q4TargetValue')">Enter a
+                                                valid
+                                                number.</div>
+                                        </div>
+                                        <div class="col-md-4 text-center">
+                                            <label class="form-label">&nbsp;</label>
+                                            <button type="submit" class="btn btn-primary mt-4 w-20"
+                                                [disabled]="metricSingleForm.invalid">
+                                                <i class="fa fa-save"></i> <span class="text-white">Submit</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #loginFailed>
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+            <h4 class="text-danger">Access Denied</h4>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #BulkLeftAllocationModal let-modal>
+    <div class="modal-header bg-info text-white d-flex justify-content-between">
+        <h5 class="modal-title me-2">OBP Left Transfer Allocations</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        <div class="row mt-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="col-sm-12">
+                        <div class="mb-3">
+                            <div class="form-group text-center">
+                                <label class="fs-2 text-center text-danger">OBP Left Transfer Allocations </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4 mb-4">
+                    <div class="col-sm-3">
+                        <div class="mb-3 text-center">
+                            <div class="form-group">
+                                <label class="fs-4 text-danger">Download sample Excel Sheet </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="mb-3 text-start">
+                            <div class="form-group">
+                                <a type="button" class="btn btn-primary" [href]="filePath" target="_blank">Sample
+                                    Document</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 me-3">
+                        <div class="mb-3 text-start">
+                            <div class="form-group">
+                                <input type="file" class="form-control" style="width: 18rem;"
+                                    (change)="onFileChange($event);">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="mb-3">
+                            <div class="form-group">
+                                <label for="Files"> </label>
+                                <button class="btn btn-primary mt-4 col-md-6" (click)="confirmUpload()"
+                                    [disabled]="!file || hasErrors()" class="btn btn-success pull-right">
+                                    <i class="fa fa-save fa-fw"></i> Upload File
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row" *ngIf="uploadedDataForDisplay && uploadedDataForDisplay.length > 0">
+            <div class="col-md-12 stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th *ngFor="let header of uploadedDataForDisplay[0]">{{ header }}</th>
+                                        <th>Error</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let row of uploadedDataForDisplay.slice(1); let rowIndex = index">
+                                        <td *ngFor="let cell of row; let cellIndex = index"
+                                            [ngClass]="{'text-danger': isError(rowIndex + 1, cellIndex)}">{{ cell }}
+                                        </td>
+                                        <td>
+                                            <span *ngIf="validationErrors[rowIndex + 1]" class="text-danger">
+                                                {{ validationErrors[rowIndex + 1] }}
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <button class="btn btn-primary mt-3" (click)="confirmUpload()" [disabled]="hasErrors()">Confirm
+                            and
+                            Upload</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

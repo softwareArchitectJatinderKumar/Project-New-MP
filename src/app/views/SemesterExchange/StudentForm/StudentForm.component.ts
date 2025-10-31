@@ -376,7 +376,6 @@ VisaRejectionReason: any;
       next: response => {
         if (response.item1.length > 0) {
           this.stuData = response.item1[0];
-
           this.loginFailed = false;
           this.studentName = this.stuData.studentName;
           this.RegistrationNo = this.stuData.registerationNumber;
@@ -562,13 +561,11 @@ MarksPlus2: any;Percetnages:any;
         if (response.item1.length > 0) {
           const StudentPreviousMarksData = response.item1[0];
           this.MarksPlus2 = StudentPreviousMarksData['ExamDescription'];
-          this.Percetnages = StudentPreviousMarksData['Perecentage'];       
+          this.Percetnages = StudentPreviousMarksData['Perecentage'];
           
           this.GradeFcount = 0; // Reset count
-          
-          // Set eligibility after GradeFcount is determined
           this.eligible = (this.MarksPlus2 ==='10+2') && (this.Percetnages >70 );
-          // alert(this.eligible)
+          this.GetStudentMarksDetails(this.RegistrationNo);
         } else {
           this.StudentPreviousMarksData = [];
        
@@ -591,21 +588,35 @@ MarksPlus2: any;Percetnages:any;
           this.ProgramCode = this.StudentDetailsWithMarks[0].officialCode;
           this.SectionCode = this.StudentDetailsWithMarks[0].section;
           this.SchoolId = this.StudentDetailsWithMarks[0].schoolId;
-          //  console.log(JSON.stringify(this.StudentDetailsWithMarks))
-          this.getUniversityDetails();
-          this.GradeFcount = 0; // Reset count
-          for (const item of this.StudentDetailsWithMarks) {
-            const gradeStr = item.grade?.toUpperCase();
-            const gradeNum = parseInt(item.gradeNum, 10);
+        
+           this.GradeFcount = 0; // Reset count
+              for (const item of this.StudentDetailsWithMarks) {
+                const gradeStr = item.grade?.toUpperCase();
+                const gradeNum = parseInt(item.gradeNum, 10);
+    
+                // If grade is F or gradeNum ≤ 6
+                if (gradeStr === 'F' || (!isNaN(gradeNum) && gradeNum <= 6)) {
+                  this.GradeFcount++;
+                }
+              }
 
-            // If grade is F or gradeNum ≤ 6
-            if (gradeStr === 'F' || (!isNaN(gradeNum) && gradeNum <= 6)) {
-              this.GradeFcount++;
-            }
-          }
-          // Set eligibility after GradeFcount is determined
-          this.eligible = (this.GradeFcount < 1) && (this.CurrentTerm > 0 && this.CurrentTerm < this.CourseTotalTerms);
+              // ** FIX 1: Set eligibility based on GradeFcount **
+              // If GradeFcount is 0, the student is eligible to proceed.
+              this.eligible = (this.GradeFcount === 0);
+              this.getUniversityDetails(); // Call after eligibility is determined
+          // this.GradeFcount = 0; // Reset count
+          // for (const item of this.StudentDetailsWithMarks) {
+          //   const gradeStr = item.grade?.toUpperCase();
+          //   const gradeNum = parseInt(item.gradeNum, 10);
 
+          //   // If grade is F or gradeNum ≤ 6
+          //   if (gradeStr === 'F' || (!isNaN(gradeNum) && gradeNum <= 6)) {
+          //     this.GradeFcount++;
+          //   }
+          // }
+          // // Set eligibility after GradeFcount is determined
+          // this.eligible = (this.GradeFcount < 1) && (this.CurrentTerm > 0 && this.CurrentTerm < this.CourseTotalTerms);
+          //  this.getUniversityDetails();
         } else {
           this.StudentDetailsWithMarks = [];
           this.GradeFcount = 0;

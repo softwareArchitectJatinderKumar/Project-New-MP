@@ -267,15 +267,16 @@ export class NewLogicFormComponent implements OnInit {
   studentStatus:any;
 
   // ... (Existing API functions like getToken, getStudentDetail, etc., remain unchanged to satisfy Req #9) ...
-      getStudentDetail(): void {
-         
-        this.isLoading = true;
-        this.ServicesSM.getStudentById().subscribe({
-          next: response => {
-            if (response.item1.length > 0) {
-              this.stuData = response.item1[0];
-       
+  getStudentDetail(): void {
+
+    this.isLoading = true;
+    this.ServicesSM.getStudentById().subscribe({
+      next: response => {
+        if (response.item1.length > 0) {
+          this.stuData = response.item1[0];
+
           this.loginFailed = false;
+          // this.ProgramCode = this.stuData.programCode;
           this.studentName = this.stuData.studentName;
           this.RegistrationNo = this.stuData.registerationNumber;
           this.ContactNo = this.stuData.studentMobile;
@@ -305,25 +306,25 @@ export class NewLogicFormComponent implements OnInit {
 
 
 
-          this.getApplicationDetails(this.RegistrationNo);           
-            }
-            else {
-              this.stuData = [];
-              this.loginFailed = true;
-            }
-            // Delay hiding the loader for 2.5 seconds
-            setTimeout(() => {
-              this.isLoading = false;
-            }, 2500);
-          },
-          error: err => {
-            setTimeout(() => {
-              this.isLoading = false;
-            }, 2500);
-            this.LoginFailed(err);
-          }
-        });
+          this.getApplicationDetails(this.RegistrationNo);
+        }
+        else {
+          this.stuData = [];
+          this.loginFailed = true;
+        }
+        // Delay hiding the loader for 2.5 seconds
+        setTimeout(() => {
+          this.isLoading = false;
+        }, 2500);
+      },
+      error: err => {
+        setTimeout(() => {
+          this.isLoading = false;
+        }, 2500);
+        this.LoginFailed(err);
       }
+    });
+  }
       SectionCode: any;         SchoolId: any;        allProgramCode:any; StudentDetailsWithMarks:any; GradeFcount:any;
       StudentPreviousMarks:any;
       getAllProgramcode(): void {
@@ -334,7 +335,7 @@ export class NewLogicFormComponent implements OnInit {
       GetStudentMarksDetails(Regdno: any) {
         this.ServicesSM.getStudentDetailsWithMarks(Regdno).subscribe({
           next: response => {
-          if (response.item1.length > 0) {
+          if (response.item1.length > 0) {            
               this.StudentDetailsWithMarks = response.item1;
               this.ProgramCode = this.StudentDetailsWithMarks[0].officialCode;
               this.SectionCode = this.StudentDetailsWithMarks[0].section;
@@ -384,7 +385,8 @@ export class NewLogicFormComponent implements OnInit {
                 
                 // Set eligibility after GradeFcount is determined
                 this.eligible = (this.MarksPlus2 ==='10+2') && (this.Percetnages >90 );
-                this.getUniversityDetails();
+                 this.GetStudentMarksDetails(this.RegistrationNo);
+               
                 // alert(this.eligible)
               } else {
                 this.StudentPreviousMarksData = [];
@@ -460,7 +462,9 @@ export class NewLogicFormComponent implements OnInit {
                  if (this.CurrentTerm > 1)
                    this.GetStudentMarksDetails(this.RegistrationNo);
                  else if (this.CurrentTerm == 1)
-                   this.GetStudentAllPreviousMarks(this.RegistrationNo);               
+                   this.GetStudentAllPreviousMarks(this.RegistrationNo);   
+                  
+                 this.getUniversityDetails();
                }
                else {
                  this.eligible = false;
