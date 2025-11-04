@@ -118,7 +118,7 @@ export class NewLogicFormComponent implements OnInit {
     this.PresentDate= this.formatDate(new Date()) ;   
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML = 'Semester <span class="text-info">Exchange </span>Registration';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
-    this.title.setTitle("Semester Exchange Registration");
+    this.title.setTitle("**Semester Exchange Registration**");
     this.LoginName = this.route.snapshot.params['LoginName'];
     if (this.LoginName != '' && this.LoginName != undefined) {
       this.getToken(this.LoginName);

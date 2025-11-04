@@ -61,7 +61,8 @@ export class MetricTargetsComponent implements OnInit {
         if (!this.storageService.isLoggedIn() || authToken === 'Token Expired') {
           this.LoginFailed('Token Expired');
         }
-          this.getallAllocatedMetricData();
+          // this.getallAllocatedMetricData();
+          this.getPendencyMetricData();
         this.metricForm = this.fb.group({
           metrics: this.fb.array([this.createMetricRow()])
         });
@@ -89,6 +90,54 @@ export class MetricTargetsComponent implements OnInit {
       }
     });
   }
+
+  
+  PendencyColumns: DataTableColumn[] = [];
+  PendencyRecords: any[] = [];
+  getPendencyMetricData() {
+    let apiCall: any;
+    apiCall = this.ObpAutoAssignService.GetPendencyData();
+
+    this.PendencyRecords = apiCall;
+
+
+    apiCall.pipe(
+      finalize(() => {
+        this.loadingIndicator = false;
+      })
+    ).subscribe({
+      next: (response: any) => {
+
+        const dataArray: any[] = response && response.item1 ? response.item1 : [];
+
+        if (dataArray && dataArray.length > 0) {
+
+          const columns = this.generateColumnsFromData(dataArray);
+
+
+          this.PendencyRecords = dataArray;
+          this.PendencyColumns = columns;
+
+          this.PendencyRecords = dataArray.map((record: any) => {
+            const isPending = record.allocatedOn == null || record.allocatedOn === '';
+            return {
+              ...record,
+              allocatedOn: isPending == true ? 'Pending' : 'Allocated '
+            };
+          });
+          console.log(JSON.stringify(this.PendencyRecords))
+          console.log(JSON.stringify(this.PendencyColumns))
+
+        } else {
+          console.warn(`API call succeeded for   but data array is empty.`);
+        }
+      },
+      error: (err: any) => {
+
+      }
+    });
+  }
+
 
   criteriaColumns: DataTableColumn[] = [];
   criteriaRecords: any[] = [];
@@ -139,10 +188,44 @@ export class MetricTargetsComponent implements OnInit {
     }));
   }
 
+//   private generateColumnsFromData(data: any[]): DataTableColumn[] {
+//   if (!data || data.length === 0) return [];
+
+//   // Collect all unique keys across all records (not just first one)
+//   const allKeys = Array.from(
+//     new Set(data.flatMap(obj => Object.keys(obj)))
+//   );
+
+//   // Filter out keys that are null/empty in all rows
+//   const validKeys = allKeys.filter(key =>
+//     data.some(row => {
+//       const val = row[key];
+//       return val !== null && val !== undefined && val !== '';
+//     })
+//   );
+
+//   // Ensure that special columns like 'AllocatedOn' always appear (if desired)
+//   if (allKeys.includes('allocatedOn') && !validKeys.includes('allocatedOn')) {
+//     validKeys.push('AllocationStatus');
+//   }
+
+//   // Return formatted column definitions
+//   return validKeys.map(key => ({
+//     field: key,
+//     header: this.beautifyLabel(key)
+//   }));
+// }
+
   private beautifyLabel(label: string): string {
     if (!label) return label;
     return label.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
   }
+
+
+
+
+
+
   LoginFailed(_NewError: any) {
     this.isLoginFailed = true;
     swal.fire({

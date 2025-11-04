@@ -113,7 +113,7 @@ VisaRejectionReason: any;
     //  this.PresentDate= this.formatDate(new Date()) ;   
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML = 'Semester <span class="text-info">Exchange </span>Registration';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
-    this.title.setTitle("Semester Exchange Registration");
+    this.title.setTitle("**Semester Exchange Registration**");
     this.LoginName = this.route.snapshot.params['LoginName'];
     if (this.LoginName != '' && this.LoginName != undefined) {
       this.getToken(this.LoginName);
@@ -279,7 +279,7 @@ VisaRejectionReason: any;
         passportNumberControl?.setValidators([Validators.required]);
         passportIssueDateControl?.setValidators([Validators.required]);
         passportValidUptoControl?.setValidators([Validators.required]);
-        passportDocumentPathControl?.setValidators([Validators.required]);
+        // passportDocumentPathControl?.setValidators([Validators.required]);
       } else {
         passportNumberControl?.clearValidators();
         passportIssueDateControl?.clearValidators();
@@ -289,7 +289,7 @@ VisaRejectionReason: any;
       passportNumberControl?.updateValueAndValidity();
       passportIssueDateControl?.updateValueAndValidity();
       passportValidUptoControl?.updateValueAndValidity();
-      passportDocumentPathControl?.updateValueAndValidity();
+      // passportDocumentPathControl?.updateValueAndValidity();
     });
 
     // Conditional validation for Visa Rejected details
@@ -562,7 +562,7 @@ MarksPlus2: any;Percetnages:any;
           const StudentPreviousMarksData = response.item1[0];
           this.MarksPlus2 = StudentPreviousMarksData['ExamDescription'];
           this.Percetnages = StudentPreviousMarksData['Perecentage'];
-          
+           console.log("CGPA data +2"+JSON.stringify(this.StudentPreviousMarksData))
           this.GradeFcount = 0; // Reset count
           this.eligible = (this.MarksPlus2 ==='10+2') && (this.Percetnages >70 );
           this.GetStudentMarksDetails(this.RegistrationNo);
@@ -588,7 +588,7 @@ MarksPlus2: any;Percetnages:any;
           this.ProgramCode = this.StudentDetailsWithMarks[0].officialCode;
           this.SectionCode = this.StudentDetailsWithMarks[0].section;
           this.SchoolId = this.StudentDetailsWithMarks[0].schoolId;
-        
+        console.log("CGPA"+JSON.stringify(this.StudentDetailsWithMarks))
            this.GradeFcount = 0; // Reset count
               for (const item of this.StudentDetailsWithMarks) {
                 const gradeStr = item.grade?.toUpperCase();
@@ -604,6 +604,7 @@ MarksPlus2: any;Percetnages:any;
               // If GradeFcount is 0, the student is eligible to proceed.
               this.eligible = (this.GradeFcount === 0);
               this.getUniversityDetails(); // Call after eligibility is determined
+              //  this.GetStudentAllPreviousMarks(this.RegistrationNo);  
           // this.GradeFcount = 0; // Reset count
           // for (const item of this.StudentDetailsWithMarks) {
           //   const gradeStr = item.grade?.toUpperCase();
