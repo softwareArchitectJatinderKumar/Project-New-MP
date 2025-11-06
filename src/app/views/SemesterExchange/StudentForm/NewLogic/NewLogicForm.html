@@ -25,6 +25,10 @@
                             <label class="col-md-5 form-label text-danger">Program Name</label>
                             <label class="col-md-7 form-label text-dark">{{courseName}}</label>
                         </div>
+                        <div class="row d-flex justify-content-start">
+                            <label class="col-md-5 form-label text-danger">Cuurent Year</label>
+                            <label class="col-md-7 form-label text-dark">{{CurrentYear}}</label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -44,6 +48,11 @@
                         <div class="row d-flex justify-content-center">
                             <label class="col-md-4 form-label text-danger">Section</label>
                             <label class="col-md-7 form-label text-dark">{{this.SectionCode}}
+                            </label>
+                        </div>
+                        <div class="row d-flex justify-content-center">
+                            <label class="col-md-4 form-label text-danger">Cuurnet Term</label>
+                            <label class="col-md-7 form-label text-dark">{{this.CurrentTerm}}
                             </label>
                         </div>
                     </div>
@@ -114,13 +123,20 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div *ngIf="
-                            form.errors?.numbersMustBeDistinct &&
-                            form.get('WhatsAppNo')?.valid &&
-                            form.get('PhoneNumber')?.valid &&
-                            form.get('ParentContact')?.valid
-                            " class="text-danger small mt-2">
+                                <div *ngIf=" form.errors?.numbersMustBeDistinct && form.get('WhatsAppNo')?.valid && form.get('PhoneNumber')?.valid && form.get('ParentContact')?.valid " class="text-danger small mt-2">
                                     WhatsApp, Phone, and Parent Contact numbers must all be different.
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Email Id *</label>
+                                        <input class="form-control" formControlName="EmailId" />
+                                        <div class="text-danger small"
+                                            *ngIf="(form.get('EmailId')?.touched || isSubmitted) && form.get('EmailId')?.invalid">
+                                            Required / invalid</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                       
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -200,8 +216,8 @@
                                         <label class="form-label">Applying For *</label>
                                         <select class="form-select" formControlName="ApplyingOption">
                                             <option value="">Select</option>
-                                            <option value="Spring">Spring</option>
-                                            <option value="Fall">Fall</option>
+                                            <option value="Spring (Jan to May Intake)">Spring (Jan to May Intake)</option>
+                                            <option value="Fall (Aug to Dec Intake)">Fall (Aug to Dec Intake)</option>
                                         </select>
                                         <div class="text-danger small"
                                             *ngIf="(form.get('ApplyingOption')?.touched || isSubmitted) && form.get('ApplyingOption')?.invalid">
@@ -406,18 +422,17 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label">Test Date *</label>
-                                                <input type="date" class="form-control" formControlName="TestDate" />
+                                                <input type="date" class="form-control" formControlName="TestDate" /> 
                                                 <div class="text-danger small"
                                                     *ngIf="(form.get('TestDate')?.touched || isSubmitted) && form.get('TestDate')?.invalid">
-                                                    Required</div>
+                                                    Required</div>{{form.get('TestDate')?.value}} **{{PresentDate}}
                                             </div>
                                         </div>
                                         <div *ngIf="englishTestNames.includes(form.get('TestName')?.value)">
                                         </div>
 
-                                        <div
-                                            *ngIf="form.get('EnglishTestType')?.value === 'Appeared' &&  formatDate(form.get('TestDate')?.value) < PresentDate">
-                                            <label class="form-label">English Test Score Card </label>
+                                        <div *ngIf="form.get('EnglishTestType')?.value === 'Appeared' && form.get('TestDate')?.value < PresentDate">
+                                            <label class="form-label">English Test Score Card </label> 
                                             <div class="row mt-2">
                                                 <div class="col-md-4">
                                                     <label class="form-label">Listening Score</label>
@@ -486,6 +501,7 @@
                                         <select class="form-select" formControlName="SponsorType">
                                             <option value="">Select Sponsor Type</option>
                                             <option value="Parents">Parents</option>
+                                             <option value="Relative">Relative</option>
                                             <option value="Other">Other</option>
                                         </select>
                                         <div class="text-danger small"
@@ -506,7 +522,7 @@
                                     </div>
                                 </div>
 
-                                <div *ngIf="form.get('SponsorType')?.value === 'Other'">
+                                <div *ngIf="form.get('SponsorType')?.value === 'Other' || form.get('SponsorType')?.value=='Relative'">
                                     <div class="row mt-2">
                                         <div class="col-md-6">
                                             <label class="form-label">Sponsor Name *</label>
@@ -578,13 +594,27 @@
                             <div class="card-header">Document Uploads (PDF, JPEG, PNG only)</div>
                             <div class="card-body">
                                 <hr>
-                                <div class="mb-3">
-                                    <label class="form-label">Consent Letter <span class="text-danger">*</span></label>
-                                    <input type="file" class="form-control"
-                                        (change)="onConsentLetterFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png" />
-                                    <!-- <input type="file" class="form-control" (change)="onFileSelected($event, 'consent', 'ConsentDocumentPath')" accept=".pdf,.jpg,.jpeg,.png" /> -->
-                                    <div class="small mt-1" *ngIf="ConsentLetterFileName">Uploaded: <strong>{{
-                                            ConsentLetterFileName }}</strong></div>
+                                <div class="row mb-3 mt-2">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Consent Letter </label>
+                                        <input type="file" class="form-control" (change)="onConsentLetterFileSelected($event)"
+                                            accept=".pdf,.jpg,.jpeg,.png" />
+                                        <!-- <input type="file" class="form-control" (change)="onFileSelected($event, 'consent', 'ConsentDocumentPath')" accept=".pdf,.jpg,.jpeg,.png" /> -->
+                                        <div class="small mt-1" *ngIf="ConsentLetterFileName">Uploaded: <strong>{{
+                                                ConsentLetterFileName }}</strong></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Consent Letter  
+                                            <span> <br /> Kindly fill this form and get it signed from Parents , upload in PDF format.
+                                                <br />
+                                                <!-- <a href="https://files.lpu.in/umsweb/DIA/SemesterExchangedocuments/Consent_Letter.pdf" download
+                                                                                                                                                        target="_blank"  >
+                                                                                                                                                        Download Format
+                                                                                                                                                    </a> -->
+                                                <a (click)="DownloadFormat()" href="" download target="_blank">Download Format</a>
+                                            </span>
+                                        </label>
+                                    </div>
                                 </div>
                                 <hr />
                                 <div class="mb-3">
@@ -797,6 +827,10 @@
                             <div class="row d-flex justify-content-start">
                                 <label class="col-md-5 form-label text-danger">Program Name</label>
                                 <label class="col-md-7 form-label text-dark">{{courseName}}</label>
+                            </div>
+                            <div class="row d-flex justify-content-start">
+                                <label class="col-md-5 form-label text-danger">F CGPA</label>
+                                <label class="col-md-7 form-label text-dark">{{GradeFcount}}</label>
                             </div>
                         </div>
                     </div>

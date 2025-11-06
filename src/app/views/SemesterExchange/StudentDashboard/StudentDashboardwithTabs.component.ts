@@ -320,7 +320,7 @@ export class StudentDashboardwithTabs implements OnInit {
       "ReadingScore", "WritingScore", "OverallScore", "EnglishTestYear",
       "IsSelfFunded", "SponsorName", "SponsorRelation", "SponsorContact", "SponsorEmail",
       "AvailableFunds", //, "TotalCountGradeF"
-      "RelativeName", "RelativeRelation", "RelativeCountry"
+      "RelativeName", "RelativeRelation", //"RelativeCountry"
     ];
 
     fieldsToAppend.forEach(k => {

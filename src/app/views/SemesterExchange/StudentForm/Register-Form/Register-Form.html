@@ -1,0 +1,1027 @@
+<div *ngIf="isLoading" class="fullscreen-loader">
+    <div class="custom-spinner-overlay" *ngIf="isLoading">
+        <div class="custom-spinner-content text-center">
+            <img src="assets/images/spinner.gif" alt="Loading..." />
+            <p>Loading...</p>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt-4" id="NewRegsiterPage" *ngIf="!loginFailed; else ErrorApplication">
+
+    <div class="student-registration container-fluid py-4">
+
+        <ng-container *ngIf="isEligible; else EligibilityCheckSection">
+            <div class="row mt-2 mb-4">
+                <div class="col-md-6 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row d-flex justify-content-start">
+                                <label class="col-md-5 form-label text-danger">Name</label>
+                                <label class="col-md-7 form-label text-dark  ">{{studentName}}</label>
+                            </div>
+                            <div class="row d-flex justify-content-start">
+                                <label class="col-md-5 form-label text-danger">Registration Number</label>
+                                <label class="col-md-7 form-label text-dark ">{{RegistrationNo}} </label>
+                            </div>
+                            <div class="row d-flex justify-content-start">
+                                <label class="col-md-5 form-label text-danger">Program Name</label>
+                                <label class="col-md-7 form-label text-dark">{{courseName}}</label>
+                            </div>
+                            <div class="row d-flex justify-content-start">
+                                <label class="col-md-5 form-label text-danger">Cuurent Year</label>
+                                <label class="col-md-7 form-label text-dark">{{CurrentYear}}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row d-flex justify-content-center">
+                                <label class="col-md-4 form-label text-danger">Overall Score</label>
+                                <label class="col-md-7 form-label text-dark">{{this.cgpa>0?this.cgpa:'NA'}}
+                                </label>
+                            </div>
+                            <div class="row d-flex justify-content-center">
+                                <label class="col-md-4 form-label text-danger">Program </label>
+                                <label class="col-md-7 form-label text-dark">{{this.ProgramCode}}
+                                </label>
+                            </div>
+                            <div class="row d-flex justify-content-center">
+                                <label class="col-md-4 form-label text-danger">Section</label>
+                                <label class="col-md-7 form-label text-dark">{{this.SectionCode}}
+                                </label>
+                            </div>
+                            <div class="row d-flex justify-content-center">
+                                <label class="col-md-4 form-label text-danger">Cuurnet Term</label>
+                                <label class="col-md-7 form-label text-dark">{{this.CurrentTerm}}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-center flex-wrap gap-3">
+                            <ng-container *ngFor="let label of stepLabels; let i = index">
+                                <div class="step" [class.active]="i === currentStep" [class.past]="i < currentStep">
+                                    <span class="badge rounded-pill step-badge" [ngClass]="{
+                                    'bg-primary': i === currentStep,
+                                    'bg-success': i < currentStep,
+                                    'bg-secondary': i > currentStep
+                                }">
+                                        <i [ngClass]="stepIcons[i]" class="me-1"></i> {{ label }}
+                                    </span>
+                                </div>
+                                <div *ngIf="i < stepLabels.length - 1" class="divider"></div>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <section *ngIf="currentStep === 0" class="step-section">
+                <div class="row m-3">
+                    <div *ngIf="studentGradeMarksDataX && studentGradeMarksDataX.length > 0">
+                        <table class="text-center table table-bordered table-striped">
+                            <thead class="table-light">
+                                <tr>
+                                    <th *ngFor="let key of getTableHeaders(studentGradeMarksDataX[0])">
+                                        {{ key }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let row of studentGradeMarksDataX">
+                                    <td *ngFor="let key of getTableHeaders(studentGradeMarksDataX[0])">
+                                        {{ row[key] || 'N/A' }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                <div class="d-flex justify-content-between mt-3">
+                    <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
+                    <button type="button" class="btn btn-primary" (click)="nextStep()">Next</button>
+                </div>
+            </section>
+
+            <form [formGroup]="form" (ngSubmit)="submitFinalApplication()">
+
+                <section *ngIf="currentStep === 1" class="step-section">
+                    <div class="row g-3">
+
+                        <div class="col-md-6 col-lg-10 mx-auto mb-3">
+                            <div class="card section">
+                                <div class="card-header">Contact Information</div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Country *</label>
+                                            <select class="form-select" formControlName="CountryName">
+                                                <option value="">Select country</option>
+                                                <option *ngFor="let c of countries" [value]="c.name">{{ c.name }}
+                                                </option>
+                                            </select>
+                                            <div class="text-danger small"
+                                                *ngIf="(form.get('CountryName')?.touched || isSubmitted) && form.get('CountryName')?.invalid">
+                                                Required</div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">WhatsApp Number *</label>
+                                            <input class="form-control" formControlName="WhatsAppNo" />
+                                            <div class="text-danger small"
+                                                *ngIf="(form.get('WhatsAppNo')?.touched || isSubmitted) && form.get('WhatsAppNo')?.invalid">
+                                                Required / invalid</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Phone Number *</label>
+                                            <input class="form-control" formControlName="PhoneNumber" />
+                                            <div class="text-danger small"
+                                                *ngIf="(form.get('PhoneNumber')?.touched || isSubmitted) && form.get('PhoneNumber')?.invalid">
+                                                Required / invalid</div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Parent Contact *</label>
+                                            <input class="form-control" formControlName="ParentContact" />
+                                            <div class="text-danger small"
+                                                *ngIf="(form.get('ParentContact')?.touched || isSubmitted) && form.get('ParentContact')?.invalid">
+                                                Required / invalid
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div *ngIf=" form.errors?.numbersMustBeDistinct && form.get('WhatsAppNo')?.valid && form.get('PhoneNumber')?.valid && form.get('ParentContact')?.valid "
+                                        class="text-danger small mt-2">
+                                        WhatsApp, Phone, and Parent Contact numbers must all be different.
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Email Id *</label>
+                                            <input class="form-control" formControlName="EmailId" />
+                                            <div class="text-danger small"
+                                                *ngIf="(form.get('EmailId')?.touched || isSubmitted) && form.get('EmailId')?.invalid">
+                                                Required / invalid</div>
+                                        </div>
+                                        <div class="col-md-6">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                            <div class="card section">
+                                <div class="card-header">Relative Details</div>
+                                <div class="card-body">
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Any Relative Abroad? *</label>
+                                            <select class="form-select " formControlName="HasRelativeDetails">
+                                                <option value="">Select</option>
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                            </select>
+                                            <div class="text-danger small"
+                                                *ngIf="(form.get('HasRelativeDetails')?.touched || isSubmitted) && form.get('HasRelativeDetails')?.invalid">
+                                                Required</div>
+                                        </div>
+
+                                        <div *ngIf="form.get('HasRelativeDetails')?.value === 'Yes'">
+                                            <div class="row mt-2">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Relative Name *</label>
+                                                    <input class="form-control" formControlName="RelativeName" />
+                                                    <div class="text-danger small"
+                                                        *ngIf="(form.get('RelativeName')?.touched || isSubmitted) && form.get('RelativeName')?.invalid">
+                                                        Required</div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Country *</label>
+                                                    <select class="form-select" formControlName="RelativeCountryName">
+                                                        <option value="">Select</option>
+                                                        <option *ngFor="let c of countries" [value]="c.name">{{ c.name
+                                                            }}
+                                                        </option>
+                                                    </select>
+                                                    <div class="text-danger small"
+                                                        *ngIf="(form.get('RelativeCountryName')?.touched || isSubmitted) && form.get('RelativeCountryName')?.invalid">
+                                                        Required</div>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Relation *</label>
+                                                    <input class="form-control" formControlName="RelativeRelation" />
+                                                    <div class="text-danger small"
+                                                        *ngIf="(form.get('RelativeRelation')?.touched || isSubmitted) && form.get('RelativeRelation')?.invalid">
+                                                        Required</div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Email (optional)</label>
+                                                    <input class="form-control" formControlName="RelativeEmail" />
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Phone (optional)</label>
+                                                    <input class="form-control" formControlName="RelativePhone" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                            <div class="card section">
+                                <div class="card-header">University Preferences</div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Applying For *</label>
+                                            <select class="form-select" formControlName="ApplyingOption">
+                                                <option value="">Select</option>
+                                                <option value="Spring (Jan to May Intake)">Spring (Jan to May Intake)
+                                                </option>
+                                                <option value="Fall (Aug to Dec Intake)">Fall (Aug to Dec Intake)
+                                                </option>
+                                            </select>
+                                            <div class="text-danger small"
+                                                *ngIf="(form.get('ApplyingOption')?.touched || isSubmitted) && form.get('ApplyingOption')?.invalid">
+                                                Required</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-md-4">
+                                            <label class="form-label">Preference 1 *</label>
+                                            <select class="form-select" id="UniversityOption1"
+                                                formControlName="UniversityOption1">
+                                                <option value="">Select University</option>
+                                                <option *ngFor="let university of uniData"
+                                                    [value]="university.universityName">
+                                                    {{ university.universityName }}
+                                                </option>
+                                            </select>
+                                            <div class="text-danger small"
+                                                *ngIf="(form.get('UniversityOption1')?.touched || isSubmitted) && form.get('UniversityOption1')?.invalid">
+                                                Required
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Preference 2 *</label>
+                                            <select class="form-select" id="UniversityOption2"
+                                                formControlName="UniversityOption2">
+                                                <option value="">Select University</option>
+                                                <ng-container *ngFor="let university of uniData">
+                                                    <option *ngIf="university.universityName !== UniversityOption1"
+                                                        [value]="university.universityName">
+                                                        {{ university.universityName }}
+                                                    </option>
+                                                </ng-container>
+                                            </select>
+                                            <div class="text-danger small"
+                                                *ngIf="(form.get('UniversityOption2')?.touched || isSubmitted) && form.get('UniversityOption2')?.invalid">
+                                                Required
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Preference 3 *</label>
+                                            <select class="form-select" id="UniversityOption3"
+                                                formControlName="UniversityOption3">
+                                                <option value="">Select University</option>
+                                                <ng-container *ngFor="let university of uniData">
+                                                    <option *ngIf="
+                                            university.universityName !== UniversityOption1 &&
+                                            university.universityName !== UniversityOption2
+                                        " [value]="university.universityName">
+                                                        {{ university.universityName }}
+                                                    </option>
+                                                </ng-container>
+                                            </select>
+                                            <div class="text-danger small"
+                                                *ngIf="(form.get('UniversityOption3')?.touched || isSubmitted) && form.get('UniversityOption3')?.invalid">
+                                                Required
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-3">
+                        <button type="button" class="btn btn-primary" (click)="nextStep()"
+                            [disabled]="!canProceedToNext(currentStep)">Next</button>
+                    </div>
+                </section>
+
+
+                <section *ngIf="currentStep === 2" class="step-section">
+                    <div class="row g-3">
+
+                        <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                            <div class="card section">
+                                <div class="card-header">Passport Details</div>
+                                <div class="card-body">
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Passport Status *</label>
+                                            <select class="form-select" formControlName="PassportStatus">
+                                                <option value="">Select</option>
+                                                <option value="Yes">Yes</option>
+                                                <option value="Applied">Applied</option>
+                                                <option value="No">No</option>
+                                            </select>
+                                            <div class="text-danger small"
+                                                *ngIf="(form.get('PassportStatus')?.touched || isSubmitted) && form.get('PassportStatus')?.invalid">
+                                                Required</div>
+                                        </div>
+                                        <div *ngIf="form.get('PassportStatus')?.value === 'Yes'">
+                                            <div class="row mt-2">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Passport Number *</label>
+                                                    <input class="form-control" formControlName="PassportNumber" />
+                                                    <div class="text-danger small"
+                                                        *ngIf="(form.get('PassportNumber')?.touched || isSubmitted) && form.get('PassportNumber')?.invalid">
+                                                        Required</div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Issue Date *</label>
+                                                    <input type="date" class="form-control"
+                                                        formControlName="PassportIssueDate" />
+                                                    <div class="text-danger small"
+                                                        *ngIf="(form.get('PassportIssueDate')?.touched || isSubmitted) && form.get('PassportIssueDate')?.invalid">
+                                                        Required</div>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Valid Upto *</label>
+                                                    <input type="date" class="form-control"
+                                                        formControlName="PassportValidUpto" />
+                                                    <div class="text-danger small"
+                                                        *ngIf="(form.get('PassportValidUpto')?.touched || isSubmitted) && form.get('PassportValidUpto')?.invalid">
+                                                        Required</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                            <div class="card section">
+                                <div class="card-header">Previous Visa</div>
+                                <div class="card-body">
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Any Visa Rejection? *</label>
+                                            <select class="form-select" formControlName="IsVisaRejected">
+                                                <option value="">Select</option>
+                                                <option value="No">No</option>
+                                                <option value="Yes">Yes</option>
+                                            </select>
+                                            <div class="text-danger small"
+                                                *ngIf="(form.get('IsVisaRejected')?.touched || isSubmitted) && form.get('IsVisaRejected')?.invalid">
+                                                Required</div>
+                                        </div>
+                                        <div *ngIf="form.get('IsVisaRejected')?.value === 'Yes'">
+                                            <div class="row mt-2">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Reason *</label>
+                                                    <input class="form-control" formControlName="VisaRejectedReason" />
+                                                    <div class="text-danger small"
+                                                        *ngIf="(form.get('VisaRejectedReason')?.touched || isSubmitted) && form.get('VisaRejectedReason')?.invalid">
+                                                        Required</div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Country *</label>
+                                                    <select class="form-select" formControlName="VisaRejectedCountry">
+                                                        <option value="">Select country</option>
+                                                        <option *ngFor="let c of countries" [value]="c.name">{{ c.name
+                                                            }}
+                                                        </option>
+                                                    </select>
+                                                    <div class="text-danger small"
+                                                        *ngIf="(form.get('VisaRejectedCountry')?.touched || isSubmitted) && form.get('VisaRejectedCountry')?.invalid">
+                                                        Required</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                            <div class="card section">
+                                <div class="card-header">English Proficiency</div>
+                                <div class="card-body">
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">English Test *</label>
+                                            <select class="form-select" formControlName="EnglishTestType">
+                                                <option *ngFor="let option of englishOptions" [value]="option.value">
+                                                    {{ option.label }}
+                                                </option>
+                                            </select>
+                                            <div class="text-danger small"
+                                                *ngIf="(form.get('EnglishTestType')?.touched || isSubmitted) && form.get('EnglishTestType')?.invalid">
+                                                Required</div>
+                                        </div>
+
+                                        <div *ngIf="form.get('EnglishTestType')?.value === 'Appeared'">
+                                            <div class="row mt-2">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Test Name *</label>
+                                                    <select class="form-select" formControlName="TestName">
+                                                        <option value="">Select Test</option>
+                                                        <option *ngFor="let test of englishTestNames" [value]="test">{{
+                                                            test }}
+                                                        </option>
+                                                        <option value="Other">Other</option>
+                                                    </select>
+                                                    <div class="text-danger small"
+                                                        *ngIf="(form.get('TestName')?.touched || isSubmitted) && form.get('TestName')?.invalid">
+                                                        Required</div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Test Date *</label>
+                                                    <input type="date" class="form-control"
+                                                        formControlName="TestDate" />
+                                                    <div class="text-danger small"
+                                                        *ngIf="(form.get('TestDate')?.touched || isSubmitted) && form.get('TestDate')?.invalid">
+                                                        Required</div>{{form.get('TestDate')?.value}} **{{PresentDate}}
+                                                </div>
+                                            </div>
+                                            <div *ngIf="englishTestNames.includes(form.get('TestName')?.value)">
+                                            </div>
+
+                                            <div
+                                                *ngIf="form.get('EnglishTestType')?.value === 'Appeared' && form.get('TestDate')?.value < PresentDate">
+                                                <label class="form-label">English Test Score Card </label>
+                                                <div class="row mt-2">
+                                                    <div class="col-md-4">
+                                                        <label class="form-label">Listening Score</label>
+                                                        <input class="form-control" formControlName="ListeningScore" />
+                                                        <div class="text-danger small"
+                                                            *ngIf="(form.get('ListeningScore')?.touched || isSubmitted) && form.get('ListeningScore')?.invalid">
+                                                            Required</div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="form-label">Speaking Score</label>
+                                                        <input class="form-control" formControlName="SpeakingScore" />
+                                                        <div class="text-danger small"
+                                                            *ngIf="(form.get('SpeakingScore')?.touched || isSubmitted) && form.get('SpeakingScore')?.invalid">
+                                                            Required</div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="form-label">Reading Score</label>
+                                                        <input class="form-control" formControlName="ReadingScore" />
+                                                        <div class="text-danger small"
+                                                            *ngIf="(form.get('ReadingScore')?.touched || isSubmitted) && form.get('ReadingScore')?.invalid">
+                                                            Required</div>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-2">
+                                                    <div class="col-md-4">
+                                                        <label class="form-label">Writing Score</label>
+                                                        <input class="form-control" formControlName="WritingScore" />
+                                                        <div class="text-danger small"
+                                                            *ngIf="(form.get('WritingScore')?.touched || isSubmitted) && form.get('WritingScore')?.invalid">
+                                                            Required</div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="form-label">Overall Score</label>
+                                                        <input class="form-control" formControlName="OverallScore" />
+                                                        <div class="text-danger small"
+                                                            *ngIf="(form.get('OverallScore')?.touched || isSubmitted) && form.get('OverallScore')?.invalid">
+                                                            Required</div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
+                        <button type="button" class="btn btn-primary" (click)="nextStep()"
+                            [disabled]="!canProceedToNext(currentStep)">Next</button>
+                    </div>
+                </section>
+
+
+                <section *ngIf="currentStep === 3" class="step-section">
+                    <div class="row g-3">
+                        <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                            <div class="card section">
+                                <div class="card-header">Sponsor Details</div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Sponsor Type *</label>
+                                            <select class="form-select" formControlName="SponsorType">
+                                                <option value="">Select Sponsor Type</option>
+                                                <option value="Parents">Parents</option>
+                                                <option value="Relative">Relative</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                            <div class="text-danger small"
+                                                *ngIf="(form.get('SponsorType')?.touched || isSubmitted) && form.get('SponsorType')?.invalid">
+                                                Required
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Available Funds *</label>
+                                            <select class="form-select" formControlName="AvailableFunds">
+                                                <option *ngFor="let option of availableFundsOptions"
+                                                    [value]="option.value">
+                                                    {{ option.label }}</option>
+                                            </select>
+                                            <div class="text-danger small"
+                                                *ngIf="(form.get('AvailableFunds')?.touched || isSubmitted) && form.get('AvailableFunds')?.invalid">
+                                                Required
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        *ngIf="form.get('SponsorType')?.value === 'Other' || form.get('SponsorType')?.value=='Relative'">
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Sponsor Name *</label>
+                                                <input class="form-control" formControlName="SponsorName" />
+                                                <div class="text-danger small"
+                                                    *ngIf="(form.get('SponsorName')?.touched || isSubmitted) && form.get('SponsorName')?.invalid">
+                                                    Required
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Sponsor Relation *</label>
+                                                <input class="form-control" formControlName="SponsorRelation" />
+                                                <div class="text-danger small"
+                                                    *ngIf="(form.get('SponsorRelation')?.touched || isSubmitted) && form.get('SponsorRelation')?.invalid">
+                                                    Required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                            <div class="card section">
+                                <div class="card-header">Declaration</div>
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" formControlName="AcceptPolicy"
+                                            id="acceptPolicy" />
+                                        <label class="form-check-label" for="acceptPolicy">
+                                            I Accept the <a href="#" (click)="togglePolicy($event)">Terms and Conditions
+                                                *</a>
+                                        </label>
+                                    </div>
+                                    <div class="text-danger small"
+                                        *ngIf="(form.get('AcceptPolicy')?.touched || isSubmitted) && form.get('AcceptPolicy')?.invalid">
+                                        You must accept the terms and conditions.
+                                    </div>
+                                    <div *ngIf="showPolicy" class="mt-3 p-3 border rounded bg-light">
+                                        <p>I do hereby declare that all the above said information provided by me is
+                                            true &
+                                            correct to
+                                            the best of my knowledge and belief. All formalities and expenses relating
+                                            to
+                                            visa, travel
+                                            accommodation and food would be borne by me. My parents/guardian/relatives
+                                            have
+                                            given their
+                                            consent for the same. Any kind of fees levied by Partner University or Home
+                                            University would
+                                            be acceptable to me and would be borne by me. Lovely Professional University
+                                            would not be
+                                            liable in case the visa application is rejected, and the student cannot make
+                                            any
+                                            claims for
+                                            reimbursement of the expense incurred in the above process.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-3">
+                        <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
+                        <button type="button" class="btn btn-primary" (click)="nextStep()"
+                            [disabled]="!canProceedToNext(currentStep)">Next</button>
+                    </div>
+                </section>
+
+                <section *ngIf="currentStep === 4" class="step-section">
+                    <div class="row g-3">
+                        <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                            <div class="card section">
+                                <div class="card-header">Document Uploads (PDF, JPEG, PNG only)</div>
+                                <div class="card-body">
+                                    <hr>
+                                    <div class="row mb-3 mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Consent Letter </label>
+                                            <input type="file" class="form-control"
+                                                (change)="onConsentLetterFileSelected($event)"
+                                                accept=".pdf,.jpg,.jpeg,.png" />
+                                            <!-- <input type="file" class="form-control" (change)="onFileSelected($event, 'consent', 'ConsentDocumentPath')" accept=".pdf,.jpg,.jpeg,.png" /> -->
+                                            <div class="small mt-1" *ngIf="ConsentLetterFileName">Uploaded: <strong>{{
+                                                    ConsentLetterFileName }}</strong></div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Consent Letter
+                                                <span> <br /> Kindly fill this form and get it signed from Parents ,
+                                                    upload in PDF format.
+                                                    <br />
+                                                    <!-- <a href="https://files.lpu.in/umsweb/DIA/SemesterExchangedocuments/Consent_Letter.pdf" download
+                                                                                                                                                        target="_blank"  >
+                                                                                                                                                        Download Format
+                                                                                                                                                    </a> -->
+                                                    <a (click)="DownloadFormat()" href="" download
+                                                        target="_blank">Download Format</a>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="mb-3">
+                                        <label class="form-label">Resume / CV <span class="text-danger">*</span></label>
+                                        <input type="file" class="form-control" (change)="onResumeFileSelected($event)"
+                                            accept=".pdf,.jpg,.jpeg,.png" />
+                                        <div class="text-danger small"
+                                            *ngIf="(form.get('ResumeDocumentPath')?.touched || isSubmitted) && this.UploadedResume==false">
+                                            Resume is mandatory.
+                                        </div>
+                                        <div class="small mt-1" *ngIf="uploadedResumeName">Uploaded: <strong>{{
+                                                uploadedResumeName }}</strong></div>
+                                    </div>
+
+                                    <hr>
+                                    <div class="mb-3">
+                                        <label class="form-label">Passport Copy
+                                            <span *ngIf="form.get('PassportStatus')?.value === 'Yes'"
+                                                class="text-danger">*</span>
+                                        </label>
+                                        <!-- <input type="file" class="form-control" (change)="onFileSelected($event, 'passport', 'PassportDocumentPath')" accept=".pdf,.jpg,.jpeg,.png" /> -->
+                                        <input type="file" class="form-control"
+                                            (change)="onPassportFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png" />
+                                        <div class="text-danger small"
+                                            *ngIf="(form.get('PassportDocumentPath')?.touched || isSubmitted) && form.get('PassportDocumentPath')?.invalid">
+                                            Passport is required as you confirmed having passport details.
+                                        </div>
+                                        <div class="small mt-1" *ngIf="PassportFileName">Uploaded: <strong>{{
+                                                PassportFileName }}</strong></div>
+                                    </div>
+
+                                    <hr>
+                                    <div class="mb-3">
+                                        <label class="form-label">English Test Score Card </label>
+                                        <input type="file" class="form-control" (change)="onEnglishFileSelected($event)"
+                                            accept=".pdf,.jpg,.jpeg,.png" />
+                                        <!-- <input type="file" class="form-control" (change)="onFileSelected($event, 'english', 'EnglishDocumentPath')" accept=".pdf,.jpg,.jpeg,.png" /> -->
+
+                                        <div class="text-danger small"
+                                            *ngIf="(form.get('EnglishDocumentPath')?.touched || isSubmitted) && form.get('EnglishDocumentPath')?.invalid">
+                                            English Test document is required as you confirmed taking a test.
+                                        </div>
+                                        <div class="small mt-1" *ngIf="EnglishProofFileName">Uploaded: <strong>{{
+                                                EnglishProofFileName }}</strong></div>
+                                    </div>
+                                    <hr>
+                                    <div class="mb-3">
+                                        <label class="form-label">Fees Receipt (Optional)</label>
+                                        <!-- <input type="file" class="form-control" (change)="onFileSelected($event, 'fees', 'FeesDocumentPath')" accept=".pdf,.jpg,.jpeg,.png" /> -->
+                                        <input type="file" class="form-control" (change)="onFeesFileSelected($event)"
+                                            accept=".pdf,.jpg,.jpeg,.png" />
+                                        <div class="small mt-1" *ngIf="FeesProofFileName">Uploaded: <strong>{{
+                                                FeesProofFileName }}</strong></div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-3">
+                        <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
+                        <button type="button" class="btn btn-primary" (click)="nextStep()"
+                            [disabled]="!canProceedToNext(currentStep)">Next</button>
+                    </div>
+                </section>
+
+                <section *ngIf="currentStep === 5" class="step-section">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title text-primary">Step 5: Review & Submit</h4>
+
+
+                            <div class="row g-3">
+                                <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                                    <div class="card section">
+                                        <div class="card-header">Review Application Summary</div>
+                                        <div class="card-body">
+                                            <p class="text-info">Please review your data before final submission.</p>
+
+                                            <h5 class="mt-4 text-primary">I. All Submitted Form Data with Values</h5>
+                                            <p class="text-muted small">This table shows the raw key and value for every
+                                                field
+                                                submitted.</p>
+                                            <table class="table table-sm table-striped table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="w-50">Form Element(s) </th>
+                                                        <th>Data Submitted </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <ng-container *ngFor="let item of form.value | keyvalue">
+                                                        <tr>
+                                                            <td class="fw-bold">{{ item.key }}</td>
+                                                            <td>{{ item.value ||'NA'}}</td>
+                                                        </tr>
+                                                    </ng-container>
+                                                </tbody>
+                                            </table>
+
+                                            <h5 class="mt-4 text-danger">II. Document Summary (Uploaded Files)</h5>
+
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Passport Document:</label>
+                                                    <span class="text-success ms-2">{{PassportFileName || 'Not
+                                                        Uploaded'}}</span>
+                                                    <button type="button" class="btn btn-sm btn-info ms-3"
+                                                        (click)="viewFile(PassportFileData, PassportFileName)"
+                                                        [disabled]="!PassportFileData">
+                                                        View File
+                                                    </button>
+                                                </div>
+
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">English Proof Document:</label>
+                                                    <span class="text-success ms-2">{{EnglishProofFileName || 'Not
+                                                        Uploaded'}}</span>
+                                                    <button type="button" class="btn btn-sm btn-info ms-3"
+                                                        (click)="viewFile(EnglishProofData, EnglishProofFileName)"
+                                                        [disabled]="!EnglishProofData">
+                                                        View File
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Resume / CV:</label>
+                                                    <span class="text-success ms-2">{{ResumeFileName || 'Not
+                                                        Uploaded'}}</span>
+                                                    <button type="button" class="btn btn-sm btn-info ms-3"
+                                                        (click)="viewFile(ResumeFileData, ResumeFileName)"
+                                                        [disabled]="!ResumeFileData">
+                                                        View File
+                                                    </button>
+                                                </div>
+
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Fees Payment Proof:</label>
+                                                    <span class="text-success ms-2">{{FeesProofFileName || 'Not
+                                                        Uploaded'}}</span>
+                                                    <button type="button" class="btn btn-sm btn-info ms-3"
+                                                        (click)="viewFile(FeesProofData, FeesProofFileName)"
+                                                        [disabled]="!FeesProofData">
+                                                        View File
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Consent Letter:</label>
+                                                    <span class="text-success ms-2">{{ConsentLetterFileName || 'Not
+                                                        Uploaded'}}</span>
+                                                    <button type="button" class="btn btn-sm btn-info ms-3"
+                                                        (click)="viewFile(ConsentLetterData, ConsentLetterFileName)"
+                                                        [disabled]="!ConsentLetterData">
+                                                        View File
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
+                                <button type="submit" class="btn btn-success"
+                                    [disabled]="form.invalid || isLoading">Create Application</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </form>
+        </ng-container>
+
+        <ng-template #EligibilityCheckSection>
+            <div class="row mt-5">
+                <div class="col-md-12 offset-md-0 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+
+                            <!--  <div class="row m-3">
+                                    <div *ngIf="studentTermsMarksDataX && studentTermsMarksDataX.length > 0">
+                                        <table class="text-center table table-bordered table-striped">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th *ngFor="let key of getTableHeaders(studentTermsMarksDataX[0])">
+                                                        {{ key }}
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let row of studentTermsMarksDataX">
+                                                    <td *ngFor="let key of getTableHeaders(studentTermsMarksDataX[0])">
+                                                        {{ row[key] || 'N/A' }}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                            
+                                </div>
+                                <div class="row m-3">
+                                    <div *ngIf="studentAcademicDetailX && studentAcademicDetailX.length > 0">
+                                        <table class="text-center table table-bordered table-striped">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th *ngFor="let key of getTableHeaders(studentAcademicDetailX[0])">
+                                                        {{ key }}
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let row of studentAcademicDetailX">
+                                                    <td *ngFor="let key of getTableHeaders(studentAcademicDetailX[0])">
+                                                        {{ row[key] || 'N/A' }}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                            
+                                </div>-->
+
+                            <div class="row mt-2 mb-4">
+                                <div class="col-md-6 grid-margin stretch-card">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row d-flex justify-content-start">
+                                                <label class="col-md-5 form-label ">Name</label>
+                                                <label class="col-md-7 form-label text-dark  ">{{studentName}}</label>
+                                            </div>
+                                            <div class="row d-flex justify-content-start">
+                                                <label class="col-md-5 form-label ">Registration Number</label>
+                                                <label class="col-md-7 form-label text-dark ">{{RegistrationNo}}
+                                                </label>
+                                            </div>
+                                            <div class="row d-flex justify-content-start">
+                                                <label class="col-md-5 form-label ">Program Name</label>
+                                                <label class="col-md-7 form-label text-dark">{{courseName}}</label>
+                                            </div>
+                                            <div class="row d-flex justify-content-start">
+                                                <label class="col-md-5 form-label ">Cuurent Year</label>
+                                                <label class="col-md-7 form-label text-dark">{{CurrentYear}}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 grid-margin stretch-card">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row d-flex justify-content-center">
+                                                <label class="col-md-4 form-label ">Overall Score</label>
+                                                <label
+                                                    class="col-md-7 form-label text-danger fs-4">{{this.cgpa>0?this.cgpa:'NA'}}
+                                                </label>
+                                            </div>
+                                            <div class="row d-flex justify-content-center">
+                                                <label class="col-md-4 form-label ">Program </label>
+                                                <label class="col-md-7 form-label text-dark">{{this.ProgramCode}}
+                                                </label>
+                                            </div>
+                                            <div class="row d-flex justify-content-center">
+                                                <label class="col-md-4 form-label ">Section</label>
+                                                <label class="col-md-7 form-label text-dark">{{this.SectionCode}}
+                                                </label>
+                                            </div>
+                                            <div class="row d-flex justify-content-center">
+                                                <label class="col-md-4 form-label ">Cuurnet Term</label>
+                                                <label class="col-md-7 form-label text-dark">{{this.CurrentTerm}}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--
+                                <form [formGroup]="eligibilityForm" (ngSubmit)="checkEligibility()">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email ID <span
+                                            class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="email" formControlName="email"
+                                        placeholder="Enter your registered email ID">
+                                    <div *ngIf="eligibilityForm.get('email')?.invalid && (eligibilityForm.get('email')?.dirty || eligibilityForm.get('email')?.touched)"
+                                        class="text-danger small mt-1">
+                                        <div *ngIf="eligibilityForm.get('email')?.errors?.['required']">Email is
+                                            required.</div>
+                                        <div *ngIf="eligibilityForm.get('email')?.errors?.['email']">Enter a valid email
+                                            address.</div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="contactNumber" class="form-label">Contact Number <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="contactNumber"
+                                        formControlName="contactNumber"
+                                        placeholder="Enter your registered contact number">
+                                    <div *ngIf="eligibilityForm.get('contactNumber')?.invalid && (eligibilityForm.get('contactNumber')?.dirty || eligibilityForm.get('contactNumber')?.touched)"
+                                        class="text-danger small mt-1">
+                                        <div *ngIf="eligibilityForm.get('contactNumber')?.errors?.['required']">Contact
+                                            Number is required.</div>
+                                        <div *ngIf="eligibilityForm.get('contactNumber')?.errors?.['pattern']">Invalid
+                                            contact number format (10-15 digits).</div>
+                                    </div>
+                                </div>
+                                <div class="d-grid gap-2 mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg"
+                                        [disabled]="eligibilityForm.invalid || isLoading">Check Eligibility</button>
+                                </div>
+                            </form> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4 text-center">
+                <div class="col-md-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="text-info fs-2">
+                                Dear <span class="text-danger">{{studentName}}</span>, <br />Your are <span
+                                    class="text-danger">not
+                                    eligible for Semester Exchange program </span> for more details<br />
+                                Kindly Contact Division of international Affairs Block 32 Room No 310, <br />
+                                Or Email us at <span class="text-danger">{{"study.abroard@lpu.co.in"}}</span>
+                            </h3>
+                            <div *ngIf="GradeFcount >= 1" class="text-danger mt-3">
+                                You have {{GradeFcount}} 'F' grade(s)
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>                   
+        </ng-template>
+
+    </div>
+
+
+</div>
+<ng-template #ErrorApplication>
+    <div class="text-center" *ngIf="loginFailed">
+        <h3 class="text-center fs-2 m-5 text-danger pt-5"> Error in User Login. </h3>
+        <div class="row mt-4 mb-4">
+            <div class="col-sm-12 text-center">
+                <div class="mb-3 p-4">
+                    <Label class="form-label fs-4 text-danger">Unauthorised Access.</Label>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

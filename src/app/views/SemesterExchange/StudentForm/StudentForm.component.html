@@ -256,8 +256,8 @@
                         <select class="form-select" id="ApplyingOption" formControlName="ApplyingOption"
                             [ngClass]="{'is-invalid': form1['ApplyingOption'].invalid && (form1['ApplyingOption'].touched || isForm1Submitted)}">
                             <option value="">Select</option>
-                            <option value="Spring">Spring (Jan to May Intake)</option>
-                            <option value="Fall">Fall (Aug to Dec Intake)</option>
+                            <option value="Spring (Jan to May Intake)">Spring (Jan to May Intake)</option>
+                            <option value="Fall (Aug to Dec Intake)">Fall (Aug to Dec Intake)</option>
                         </select>
                         <div *ngIf="form1['ApplyingOption'].invalid && (form1['ApplyingOption'].touched || isForm1Submitted)"
                             class="text-danger">
@@ -677,7 +677,8 @@
                     </div>
 
                     <div class="col-md-3">
-                        <label class="form-label">Upload CV / Resume</label>
+                        <label class="form-label">Upload CV / Resume</label><span
+                                class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-3">
                         <input type="file" name="ResumeDocumentPath" id="ResumeDocumentPath" class="form-control"

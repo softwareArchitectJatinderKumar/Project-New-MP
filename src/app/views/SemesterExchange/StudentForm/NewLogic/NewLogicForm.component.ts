@@ -25,6 +25,20 @@ import { finalize } from 'rxjs';
   styleUrls: ['./NewLogicForm.component.scss']
 })
 export class NewLogicFormComponent implements OnInit {
+
+
+  // added on 1-oct-25
+  DownloadFormat(): void {
+    const fileUrl = `assets/SemesterExchange/SE-Consent-Letter.pdf`;
+    const link = document.createElement('a');
+    
+    link.href = fileUrl;
+    link.download = fileUrl;
+    link.click();
+  }
+
+
+
   // wizard
   currentStep = 0;
   // #2: Documents moved to a separate step (now 5 steps)
@@ -68,9 +82,10 @@ export class NewLogicFormComponent implements OnInit {
   
   englishOptions = [
     { value: '', label: 'Select' },
+    { value: 'Applied', label: 'Applied' },
     { value: 'NotRequired', label: 'Not required' },
     { value: 'NotGiven', label: 'Not Given' },
-    { value: 'Appeared', label: 'Appeared / Given' }
+    { value: 'Appeared', label: 'Appeared / Given' },
   ];
   englishTestNames = ['PTE', 'IELTS', 'TOEFL', 'DULINGO'];
 
@@ -111,11 +126,15 @@ export class NewLogicFormComponent implements OnInit {
   ) {}
 
    formatDate(date: Date): string {
-    const DateX = new Date(date).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+    //   const today = new Date();
+    // this.currentDate = today.toISOString().split('T')[0];
+    // const DateX = new Date(date).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+    const DateX =  date.toISOString().split('T')[0];
     return DateX;
   }
   ngOnInit(): void {
     this.PresentDate= this.formatDate(new Date()) ;   
+    alert(this.PresentDate);
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML = 'Semester <span class="text-info">Exchange </span>Registration';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
     this.title.setTitle("**Semester Exchange Registration**");
@@ -216,6 +235,7 @@ export class NewLogicFormComponent implements OnInit {
         // Contact Information
         // ... (Contact/University fields)
         CountryName: ['', Validators.required],
+        EmailId: ['', Validators.required],
         WhatsAppNo: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
         PhoneNumber: ['', [Validators.pattern(/^[0-9]{10}$/)]],
         ParentContact: ['', [Validators.pattern(/^[0-9]{10}$/)]],
@@ -325,6 +345,64 @@ export class NewLogicFormComponent implements OnInit {
       }
     });
   }
+
+
+          
+   getApplicationDetails(regId: string): void {
+           this.ServicesSM.getApplicationDetailsBYId(regId).subscribe((response) => {
+             if (response.item1.length > 0) {
+               this.stuApplication = response.item1[0];
+               if (this.stuApplication.applicationId > 0 && this.stuApplication.isRejected == null) {
+                 this.ApplicationStatus = true;
+               } else if (this.stuApplication.applicationId > 0 && this.stuApplication.isRejected === true) {
+                 this.ApplicationStatus = false;
+               }
+       
+               this.CountryCode = this.stuApplication.countryCode;
+               this.stuWhatsNo = this.stuApplication.whatsAppNo;
+               this.EmailId = this.stuApplication.emailId;
+               this.ApplicationId = this.stuApplication.applicationId;
+               this.UniversityOption1 = this.stuApplication.universityOption1;
+               this.UniversityOption2 = this.stuApplication.universityOption2;
+               this.UniversityOption3 = this.stuApplication.universityOption3;
+       
+             }
+             else {
+               this.stuApplication = null;
+               this.ApplicationStatus = null;
+             }
+   
+           // --- MOVED CODE START: This executes AFTER the API call completes ---
+             if (this.ApplicationId > 0) {
+               Swal.fire({
+                 title: 'Application already Exists',
+                 text: '..',
+                 icon: 'success',
+                 showConfirmButton: false, 
+                 timer: 5000  
+               }).then(() => {
+                 this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
+               });
+               
+             } else { // ** FIX 2: Only check student status/marks if no application exists **
+                if(+(this.cgpa)<7) { this.eligible=false;   return ;}
+                else if (this.studentStatus === 'A' || this.studentStatus === 'ACT' ) {
+                 // Added on 13-Oct-25
+                 if (this.CurrentTerm > 1)
+                   this.GetStudentMarksDetails(this.RegistrationNo);
+                 else if (this.CurrentTerm == 1)
+                   this.GetStudentAllPreviousMarks(this.RegistrationNo);   
+                  
+                 this.getUniversityDetails();
+               }
+               else {
+                 this.eligible = false;
+               }
+             }
+             // --- MOVED CODE END ---
+           });
+     }
+
       SectionCode: any;         SchoolId: any;        allProgramCode:any; StudentDetailsWithMarks:any; GradeFcount:any;
       StudentPreviousMarks:any;
       getAllProgramcode(): void {
@@ -351,10 +429,12 @@ export class NewLogicFormComponent implements OnInit {
                   this.GradeFcount++;
                 }
               }
-
+              // alert("F grade count "+this.GradeFcount)
               // ** FIX 1: Set eligibility based on GradeFcount **
               // If GradeFcount is 0, the student is eligible to proceed.
-              this.eligible = (this.GradeFcount === 0);
+              if(this.GradeFcount>1)
+              this.eligible = false;//
+               else if(this.GradeFcount==0) this.eligible=true;
               this.getUniversityDetails(); // Call after eligibility is determined
     
             } else {
@@ -382,9 +462,11 @@ export class NewLogicFormComponent implements OnInit {
               
                 
                 this.GradeFcount = 0; // Reset count
-                
+                alert(this.MarksPlus2+ ''+this.Percetnages)
                 // Set eligibility after GradeFcount is determined
-                this.eligible = (this.MarksPlus2 ==='10+2') && (this.Percetnages >90 );
+                 if(this.MarksPlus2 =='10+2' && this.Percetnages >70 )this.eligible =true;
+                 else this.eligible =false;
+                // this.eligible = (this.MarksPlus2 ==='10+2') && (this.Percetnages >90 );
                  this.GetStudentMarksDetails(this.RegistrationNo);
                
                 // alert(this.eligible)
@@ -407,72 +489,7 @@ export class NewLogicFormComponent implements OnInit {
           this.university = this.uniData;
         });
       }
-         
-   getApplicationDetails(regId: string): void {
-           this.ServicesSM.getApplicationDetailsBYId(regId).subscribe((response) => {
-             if (response.item1.length > 0) {
-               this.stuApplication = response.item1[0];
-               if (this.stuApplication.applicationId > 0 && this.stuApplication.isRejected == null) {
-                 this.ApplicationStatus = true;
-               } else if (this.stuApplication.applicationId > 0 && this.stuApplication.isRejected === true) {
-                 this.ApplicationStatus = false;
-               }
-       
-               this.CountryCode = this.stuApplication.countryCode;
-               this.stuWhatsNo = this.stuApplication.whatsAppNo;
-               this.EmailId = this.stuApplication.emailId;
-               this.ApplicationId = this.stuApplication.applicationId;
-               this.UniversityOption1 = this.stuApplication.universityOption1;
-               this.UniversityOption2 = this.stuApplication.universityOption2;
-               this.UniversityOption3 = this.stuApplication.universityOption3;
-       
-               // Swal.fire({
-               //   title: 'Application already Exists',
-               //   text: '..',
-               //   icon: 'success',
-               //   showConfirmButton: false, // Hide the OK button
-               //   timer: 5000  
-               // }).then(() => {
-               //   this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
-               // });
-               
-              
-       
-             }
-             else {
-               this.stuApplication = null;
-               this.ApplicationStatus = null;
-             }
-   
-           // --- MOVED CODE START: This executes AFTER the API call completes ---
-             if (this.ApplicationId > 0) {
-               Swal.fire({
-                 title: 'Application already Exists',
-                 text: '..',
-                 icon: 'success',
-                 showConfirmButton: false, 
-                 timer: 5000  
-               }).then(() => {
-                 this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
-               });
-               
-             } else { // ** FIX 2: Only check student status/marks if no application exists **
-               if (this.studentStatus === 'A' || this.studentStatus === 'ACT') {
-                 // Added on 13-Oct-25
-                 if (this.CurrentTerm > 1)
-                   this.GetStudentMarksDetails(this.RegistrationNo);
-                 else if (this.CurrentTerm == 1)
-                   this.GetStudentAllPreviousMarks(this.RegistrationNo);   
-                  
-                 this.getUniversityDetails();
-               }
-               else {
-                 this.eligible = false;
-               }
-             }
-             // --- MOVED CODE END ---
-           });
-     }
+ 
   private distinctPhoneNumbersValidator(): ValidatorFn {
       return (group: AbstractControl): ValidationErrors | null => {
         const wa = group.get('WhatsAppNo')?.value?.trim() || '';
