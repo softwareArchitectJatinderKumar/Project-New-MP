@@ -134,7 +134,7 @@ export class DynamicDashboardComponent implements OnInit {
       imgLogoElement.style.width = '164px';
     }
 
-    this.title.setTitle(this.pageTitle);
+    // this.title.setTitle(this.pageTitle);
 
     this.initializeForms(); 
     this.getToken(this.LoginName);
@@ -180,7 +180,7 @@ export class DynamicDashboardComponent implements OnInit {
           this.isLoginFailed = true;
           this.LoginFailed('Token Expired or Invalid Login');
         } else {
-          this.isLoginFailed = false;
+          this.isLoginFailed = false;          
           this.GetEmployeeDetails();     
           this.getAllAuthorityRemarks(); 
         }
@@ -231,7 +231,7 @@ export class DynamicDashboardComponent implements OnInit {
       }
     });
   }
- 
+
   private getSEAllApplications(): void {
     this.loadingIndicator = true;
     const startTime = Date.now();
@@ -311,7 +311,7 @@ export class DynamicDashboardComponent implements OnInit {
     if (this.isHOD) roles.push('Head of Department');
     if (this.isHoW) roles.push('Head of Wing');
 
-    this.pageTitle = roles.length ? `${roles.join(' & ')} Dashboard` : 'Dashboard';
+    this.pageTitle = roles.length ? `** ${roles.join(' & ')} Dashboard**` : 'Dashboard **';
     this.title.setTitle(this.pageTitle);
   }
 

@@ -7,6 +7,7 @@ import { AuthService } from 'src/app/_services/auth.service';
 import { SemesterExchangeStuDetailsService } from 'src/app/_services/semester-exchange-stu-details.service';
 import { StorageService } from 'src/app/_services/storage.service';
 import { forkJoin } from 'rxjs'; 
+import { relative } from 'path';
 
 @Component({
   selector: 'app-StudentApplicationDetails',
@@ -50,7 +51,7 @@ export class StudentApplicationDetailsComponent implements OnInit {
     { label: 'Visa Details', keys: ['isVisaRejected', 'visaRejectedReason', 'visaRejectedCountry'] },
     { label: 'English Test Details', keys: ['englishTestType', 'speakingScore', 'listeningScore', 'readingScore', 'writingScore', 'overallScore', 'englishTestYear'] },
     { label: 'Sponsor Details', keys: ['isSelfFunded', 'sponsorName', 'sponsorRelation', 'sponsorContact', 'sponsorEmail'] },
-    { label: 'Financial & Declaration', keys: ['availableFunds', 'acceptPolicy'] }    
+    { label: 'Financial & Declaration', keys: ['availableFunds']}//, 'acceptPolicy'] }    
   ];
   
   // Document links for display
@@ -79,7 +80,7 @@ export class StudentApplicationDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.LoginName = this.route.snapshot.params['LoginName'];
     this.RegistrationNo = this.route.snapshot.params['RegistrationNo'];
-    this.title.setTitle('Semester Exchange Student Dashboard');
+    // this.title.setTitle('Semester Exchange Student Dashboard');
     
     this.folderUrl = this.ServicesSM.getFolderUrl();
     this.serverUrl = 'https://files.lpu.in/umsweb/DIA/SemesterExchangedocuments/';
@@ -92,6 +93,12 @@ export class StudentApplicationDetailsComponent implements OnInit {
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
   }
 
+   DashboardVisit() {
+    this.router.navigateByUrl('FacultyDashboard' + '/' + this.LoginName);
+  }
+  Visit(): void{
+    this.router.navigateByUrl('FacultyDashboard')
+  }
   // --- Core Data Loading Logic ---
 get isReadyForPrint(): boolean {
     return !this.loadingIndicator && !this.imageLoading;
@@ -121,10 +128,11 @@ get isReadyForPrint(): boolean {
               // 2. Process Application Details
               if (appResponse.item1.length > 0) {
                   this.stuApplication = appResponse.item1[0];
+                  // console.log(JSON.stringify(this.stuApplication) + ' Application Details ')
                   this.studentForm.patchValue({
                       ...this.stuApplication,
                       // Ensure boolean conversion is correct for display
-                      acceptPolicy: this.stuApplication.acceptPolicy === 'true' || this.stuApplication.acceptPolicy === true, 
+                      acceptPolicy: this.stuApplication.acceptPolicy === 'Yes' || this.stuApplication.acceptPolicy === true || this.stuApplication.acceptPolicy === 'yes', 
                       passportIssueDate: this.formatDateForInput(this.stuApplication.passportIssueDate),
                       passportValidUpto: this.formatDateForInput(this.stuApplication.passportValidUpto),
                   });
@@ -137,6 +145,7 @@ get isReadyForPrint(): boolean {
               
               // 4. Start image loading asynchronously
               this.getStuDetailsWithImage(this.RegistrationNo);
+              this.FindGradeFCount(this.RegistrationNo);
               
           }, (error) => {
               this.LoginFailed("Error fetching core application data.");
@@ -160,6 +169,7 @@ get isReadyForPrint(): boolean {
       next: (response) => {
         if (response.item1.length > 0) {
           this.studentDetailsWithImage = response.item1[0];
+          // console.log(JSON.stringify(this.studentDetailsWithImage)+ 'image and student details ')
           this.StudentImage = this.convertImageData(this.studentDetailsWithImage.imageData);
         }
         this.imageLoading = false;
@@ -170,6 +180,41 @@ get isReadyForPrint(): boolean {
     });
   }
 
+   ProgramCode:any; SectionCode:any; SchoolId: any; GradeFcount: any; studentDetailsWithMarks:any;
+    FindGradeFCount(regdNo:any):void{
+      this.studentService.getStudentDetailsWithMarks(regdNo).pipe()
+      .subscribe({
+        next: response => {
+          if (response.item1.length > 0) {            
+            this.studentDetailsWithMarks = response.item1;
+            this.ProgramCode =  this.studentDetailsWithMarks[0].officialCode;
+            this.SectionCode =  this.studentDetailsWithMarks[0].section;
+            this.SchoolId = this.studentDetailsWithMarks[0].schoolId;
+  
+            this.GradeFcount = 0; // Reset count
+                for (const item of this.studentDetailsWithMarks) {
+                  const gradeStr = item.grade?.toUpperCase();
+                  const gradeNum = parseInt(item.gradeNum, 10);
+      
+                  // If grade is F or gradeNum ≤ 6
+                  if (gradeStr === 'F' || (!isNaN(gradeNum) && gradeNum <= 6)) {
+                    this.GradeFcount++;
+                  }
+                }
+          
+            let gradeFcount = 0; 
+            for (const item of  this.studentDetailsWithMarks) {
+              const gradeStr = item.grade?.toUpperCase();
+              const gradeNum = parseInt(item.gradeNum, 10);
+              if (gradeStr === 'F' || (!isNaN(gradeNum) && gradeNum <= 6)) {
+                gradeFcount++;
+              }
+            }
+          }  
+        },
+        error: err => this.LoginFailed(err)
+      });
+    }
   // --- Reusable Utility Methods ---
 
   /**
@@ -180,6 +225,9 @@ get isReadyForPrint(): boolean {
     const fundingType = this.studentForm?.get('isSelfFunded')?.value; 
     const visaRejected = this.studentForm?.get('isVisaRejected')?.value;
     const englishTestType = this.studentForm?.get('englishTestType')?.value;
+    const relativeName = this.studentForm?.get('relativeName')?.value;
+    const passportStatus = this.studentForm?.get('passportStatus')?.value;
+    const isSelfFunded = this.studentForm?.get('isSelfFunded')?.value;
 
     return this.formSections.map(section => {
         // 1. Sponsor Details: Hide contact fields if funded by Self/Parent
@@ -208,6 +256,33 @@ get isReadyForPrint(): boolean {
             if (isScoresNotApplicable) {
                 // Keep only 'englishTestType'
                 const filteredKeys = section.keys.filter(key => key === 'englishTestType');
+                return { ...section, keys: filteredKeys };
+            }
+        }
+        // 4. Relative at Abroad: Hide Relative details if No Relative is not  'relativeName', 'relativeRelation', 'relativeCountry'
+        if (section.label === 'Relative at Abroad') {
+            const isScoresNotApplicable = relativeName == null || relativeName=='';//.includes(relativeName);
+            if (isScoresNotApplicable) {
+                // Keep only 'englishTestType'
+                const filteredKeys = section.keys.filter(key => key === 'relativeName');
+                return { ...section, keys: filteredKeys };
+            }
+        }
+        //5. Relative at Abroad: Hide Passport Details if Passport status is null or no  
+        if (section.label === 'Passport Details') {
+            const ispassportStatus = passportStatus == 'No' || passportStatus== null;//.includes(relativeName);
+            if (ispassportStatus) {
+                // Keep only 'passportStatus'
+                const filteredKeys = section.keys.filter(key => key === 'passportStatus');
+                return { ...section, keys: filteredKeys };
+            }
+        }
+        //6. Relative at Abroad: Hide Sponsor Details if No Sponsor Details is found
+        if (section.label === 'Sponsor Details') {
+            const isSelfFundedStatus = isSelfFunded == 'NA' || isSelfFunded== null || isSelfFunded.length == 2;//.includes(relativeName);
+            if (isSelfFundedStatus) {
+                // Keep only 'passportStatus'
+                const filteredKeys = section.keys.filter(key => key === 'isSelfFunded');
                 return { ...section, keys: filteredKeys };
             }
         }
