@@ -1,66 +1,70 @@
 
- import { NgModule } from '@angular/core';
- import { CommonModule } from '@angular/common';
- import { Routes, RouterModule } from '@angular/router';
- import { FormsModule } from '@angular/forms';
- 
- import { FeatherIconModule } from 'src/app/core/feather-icon/feather-icon.module';
- import { NgbDropdownModule, NgbDatepickerModule, NgbTooltipModule, NgbNavModule, NgbCollapseModule,NgbModule, NgbRatingConfig } from '@ng-bootstrap/ng-bootstrap';
- // Ng-ApexCharts
- import { NgApexchartsModule } from "ng-apexcharts";
- import { ReactiveFormsModule } from '@angular/forms';
- import { NgxDatatableModule } from '@swimlane/ngx-datatable';
- import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
- import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
- import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
- // Ng-select
- import { NgSelectModule } from '@ng-select/ng-select';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Routes, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+
+import { FeatherIconModule } from 'src/app/core/feather-icon/feather-icon.module';
+import { NgbDropdownModule, NgbDatepickerModule, NgbTooltipModule, NgbNavModule, NgbCollapseModule, NgbModule, NgbRatingConfig } from '@ng-bootstrap/ng-bootstrap';
+// Ng-ApexCharts
+import { NgApexchartsModule } from "ng-apexcharts";
+import { ReactiveFormsModule } from '@angular/forms';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
+import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
+// Ng-select
+import { NgSelectModule } from '@ng-select/ng-select';
 
 
 import { ArchwizardModule } from 'angular-archwizard';
-import { OBPMetricBinding} from './HeadMappingWithAssistant.component';
+import { OBPMetricBinding } from './HeadMappingWithAssistant.component';
 import { DataGridModule } from '../../DynamicDataGrid/Dynamic-Datagrid-Component.module';
 const routes: Routes = [
   {
     path: '',
-    component: OBPMetricBinding, 
+    component: OBPMetricBinding,
   }
 ]
- const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
-   suppressScrollX: true
- };
+const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
+  suppressScrollX: true
+};
 @NgModule({
   imports: [
 
     DataGridModule, // This gives you access to the <app-data-grid> selector
-         CommonModule,
-        RouterModule.forChild(routes),
-        NgxDatatableModule,
-        NgbNavModule,
-        FormsModule,
-        ArchwizardModule,
-        ReactiveFormsModule,
-
     CommonModule,
     RouterModule.forChild(routes),
     NgxDatatableModule,
     NgbNavModule,
     FormsModule,
     ArchwizardModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+
+    NgbDropdownModule,
+    NgbDatepickerModule,
+    NgApexchartsModule,
+    NgxDatatableModule,
+    NgbNavModule,
+    NgbCollapseModule,
+    PerfectScrollbarModule,
+    NgbModule,
+    NgSelectModule,
+
+
   ],
   declarations: [OBPMetricBinding],
   providers: [
-     NgbRatingConfig,
-     {
-       provide: PERFECT_SCROLLBAR_CONFIG,
-       useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
-     }
-   ]
+    NgbRatingConfig,
+    {
+      provide: PERFECT_SCROLLBAR_CONFIG,
+      useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
+    }
+  ]
 })
 export class OBPMetricBindingModule { }
- 
- 
+
+
 
 
 

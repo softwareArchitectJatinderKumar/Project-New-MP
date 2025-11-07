@@ -119,6 +119,18 @@
                             <div class="card section">
                                 <div class="card-header">Contact Information</div>
                                 <div class="card-body">
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Email Id *</label>
+                                            <input class="form-control" formControlName="EmailId" />
+                                            <div class="text-danger small"
+                                                *ngIf="(form.get('EmailId')?.touched || isSubmitted) && form.get('EmailId')?.invalid">
+                                                Required / invalid</div>
+                                        </div>
+                                        <div class="col-md-6">
+
+                                        </div>
+                                    </div>
                                     <div class="row">
                                         <div class="col-md-6">
                                             <label class="form-label">Country *</label>
@@ -158,20 +170,9 @@
                                     </div>
                                     <div *ngIf=" form.errors?.numbersMustBeDistinct && form.get('WhatsAppNo')?.valid && form.get('PhoneNumber')?.valid && form.get('ParentContact')?.valid "
                                         class="text-danger small mt-2">
-                                        WhatsApp, Phone, and Parent Contact numbers must all be different.
+                                         Parent Contact numbers must be different.
                                     </div>
-                                    <div class="row mt-2">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Email Id *</label>
-                                            <input class="form-control" formControlName="EmailId" />
-                                            <div class="text-danger small"
-                                                *ngIf="(form.get('EmailId')?.touched || isSubmitted) && form.get('EmailId')?.invalid">
-                                                Required / invalid</div>
-                                        </div>
-                                        <div class="col-md-6">
-
-                                        </div>
-                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -264,25 +265,28 @@
                                     <div class="row mt-2">
                                         <div class="col-md-4">
                                             <label class="form-label">Preference 1 *</label>
-                                            <select class="form-select" id="UniversityOption1"
-                                                formControlName="UniversityOption1">
+                                            <select class="form-select" id="UniversityOption1" formControlName="UniversityOption1" [ngModel]="UniversityOption1"
+                                                (ngModelChange)="UniversityOption1 = $event" >
                                                 <option value="">Select University</option>
-                                                <option *ngFor="let university of uniData"
-                                                    [value]="university.universityName">
+                                                <option *ngFor="let university of uniData" [value]="university.universityName">
                                                     {{ university.universityName }}
                                                 </option>
                                             </select>
-                                            <div class="text-danger small"
+                                             <div class="text-danger small"
                                                 *ngIf="(form.get('UniversityOption1')?.touched || isSubmitted) && form.get('UniversityOption1')?.invalid">
                                                 Required
-                                            </div>
+                                            </div> 
+                                            
                                         </div>
                                         <div class="col-md-4">
                                             <label class="form-label">Preference 2 *</label>
-                                            <select class="form-select" id="UniversityOption2"
+                                            <select class="form-select" id="UniversityOption2" [ngModel]="UniversityOption2" (ngModelChange)="UniversityOption2 = $event"
+                            [disabled]="!UniversityOption1" 
                                                 formControlName="UniversityOption2">
                                                 <option value="">Select University</option>
                                                 <ng-container *ngFor="let university of uniData">
+
+                       
                                                     <option *ngIf="university.universityName !== UniversityOption1"
                                                         [value]="university.universityName">
                                                         {{ university.universityName }}
@@ -296,7 +300,8 @@
                                         </div>
                                         <div class="col-md-4">
                                             <label class="form-label">Preference 3 *</label>
-                                            <select class="form-select" id="UniversityOption3"
+                                            <select class="form-select" id="UniversityOption3" [ngModel]="UniversityOption3" (ngModelChange)="UniversityOption3 = $event"
+                            [disabled]="!UniversityOption1 || !UniversityOption2" 
                                                 formControlName="UniversityOption3">
                                                 <option value="">Select University</option>
                                                 <ng-container *ngFor="let university of uniData">

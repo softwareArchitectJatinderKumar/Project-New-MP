@@ -439,7 +439,7 @@ export class DynamicDashboardComponent implements OnInit {
         const formData = new FormData();
         formData.append('RegistrationNo', application.registrationNo);
         formData.append('HODUID', result.value); // This parameter name might need to be generic (e.g., 'TargetUID')
-        formData.append('User Action', userAction); // 'Hod' or 'How'
+        formData.append('UserAction', userAction); // 'Hod' or 'How'
         this.sendForwardRequest(formData);
       }
     });
@@ -469,7 +469,7 @@ export class DynamicDashboardComponent implements OnInit {
         const formData = new FormData();
         formData.append('RegistrationNo', application.registrationNo);
         formData.append('FacultyUID', result.value); // Assuming API expects 'FacultyUID'
-        formData.append('User Action', 'Faculty'); // Indicate action is for Faculty
+        formData.append('UserAction', 'Faculty'); // Indicate action is for Faculty
         this.sendForwardRequest(formData);
       }
     });

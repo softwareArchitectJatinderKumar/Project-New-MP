@@ -129,7 +129,8 @@ export class RegisterFormcomponent implements OnInit {
       {
         // Contact Information
         CountryName: ['', Validators.required],
-        EmailId: [this.eligibilityForm.get('email')?.value, Validators.required],
+        EmailId: ['', Validators.required],
+        // EmailId: [this.eligibilityForm.get('email')?.value, Validators.required],
         WhatsAppNo: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
         PhoneNumber: ['', [Validators.pattern(/^[0-9]{10}$/)]],
         ParentContact: ['', [Validators.pattern(/^[0-9]{10}$/)]],
@@ -303,7 +304,7 @@ ContactNo:any;
 
         // --- Core Eligibility Checks (CGPA & Status) ---
         if (+(this.cgpa) < 7 || (this.studentStatus !== 'A' && this.studentStatus !== 'ACT')) {
-           this.GetStudentAllPreviousMarks(regId);
+           this.GetStudentAllPreviousMarks(this.RegistrationNo);
             this.isEligible = false;
             // Swal.fire({ title: 'Not Eligible', text: 'Low CGPA or Inactive status.', icon: 'warning' });
             return;
@@ -407,85 +408,151 @@ FindGradeFCount(regdNo:any):void{
       error: err => this.LoginFailed(err)
     });
   }
-  
-  GetStudentAllPreviousMarks(Regdno: any): void {
+  // Add this variable definition to your class if it doesn't exist
+ private setEligible(): void {
+    this.isEligible = true;
+    this.currentStep = 1; // Start wizard
+    Swal.fire({ title: 'Eligibility Confirmed', icon: 'success', timer: 1500 });
+  }
+
+  /**
+   * Sets the state to ineligible and displays an error message.
+   */
+  private setIneligible(reason: string): void {
+    this.isEligible = false;
+    Swal.fire({ title: 'Not Eligible', text: reason, icon: 'warning' });
+  }
+
+// Refactored GetStudentAllPreviousMarks function
+GetStudentAllPreviousMarks(Regdno: any): void {
   this.isLoading = true;
 
   this.servicesSM.GetStudentAllPreviousMarks(Regdno)
     .pipe(finalize(() => this.isLoading = false))
     .subscribe({
       next: response => {
-        if (response && response.item1?.length > 0) {
-
-          // --------------- Previous Marks (10th / 10+2) ----------------
-          this.studentPreviousMarksData = response.item1;
-          console.log('Previous Marks:', JSON.stringify(this.studentPreviousMarksData));
-          this.FindGradeFCount(Regdno);
-          // Find 10+2 record if available
-          const plus2Record = this.studentPreviousMarksData.find((r: any) => r.ExamDescription === '10+2');
-          const percentage = plus2Record ? parseFloat(plus2Record.Perecentage) : 0;
-
-          // --------------- Term Marks ----------------
-          this.studentTermsMarksData = response.item2?.[0] || {};
-          this.studentTermsMarksDataX = response.item2 || {};
-          console.log('Term Marks:', JSON.stringify(this.studentTermsMarksDataX));
-
-          // --------------- Grade Details ----------------
-          this.studentGradeMarksData = response.item3?.[0] || {};
-          this.studentGradeMarksDataX = response.item3 || {};
-          console.log('Grade Marks:', JSON.stringify(this.studentGradeMarksDataX));
-
-          const grade = this.studentGradeMarksData.Grade || '';
-          const gradeCount = Number(this.studentGradeMarksData.RecordCount || 0);
-
-          // --------------- Academic Details ----------------
-          this.studentAcademicDetail = response.item4?.[0] || {};
-          this.studentAcademicDetailX = response.item4 || {};
-          // console.log('Academic Details:', JSON.stringify(this.studentAcademicDetail));
-          this.SectionCode= this.studentAcademicDetail.Section;
-          const parts = this.studentAcademicDetail.PName.split(':');
-          this.ProgramCode = parts[0].trim(); // "P13C"
-          
-          // --------------- Eligibility Logic ----------------
-          const currentTerm = Number(this.studentAcademicDetail.Term || this.CurrentTerm || 0);
-          const failCount = Number(this.studentAcademicDetail.FailCount || 0);
-
-          if (currentTerm === 1 && percentage > 70) {
-            // First term students: based on +2 marks
-            this.isEligible = true;
-          } 
-          else if (currentTerm > 1 && grade !== 'F' && failCount === 0 && gradeCount > 0) {
-            // Senior terms: based on grade record and fail count
-            this.isEligible = true;
-          } 
-          else {
-            
-            this.isEligible = false;
-            Swal.fire({
-              title: 'Not Eligible',
-              text: 'Eligibility criteria not met. Please check your marks or grade records.',
-              icon: 'warning'
-            });
-            this.FindGradeFCount(Regdno);
-          }
-
-          // --------------- Post Check Actions ----------------
-          if (this.isEligible) {
-            this.getUniversityDetails();
-          }
-
-        } else {
-          this.isEligible = false;
-          Swal.fire({
-            title: 'Not Eligible',
-            text: 'No previous mark records found.',
-            icon: 'warning'
-          });
+        
+        // 1. Basic check for data existence
+        if (!response || !response.item1?.length) {
+          this.setIneligible('No previous mark records found.');
+          return;
         }
+
+        // 2. Fetch Academic Details (Needed for ProgramCode, Section, etc., if other functions rely on it)
+        this.studentAcademicDetail = response.item4?.[0] || {};
+        this.ProgramCode = this.studentAcademicDetail.PName ? this.studentAcademicDetail.PName.split(':')[0].trim() : this.ProgramCode;
+        this.SectionCode = this.studentAcademicDetail.Section;
+
+        // 3. Find 10+2 record and percentage
+        const studentPreviousMarksData = response.item1;
+        const plus2Record = studentPreviousMarksData.find((r: any) => r.ExamDescription === '10+2');
+        const percentage = plus2Record ? parseFloat(plus2Record.Perecentage) : NaN;
+        
+        // 4. Perform Term 1 eligibility check: 10+2 marks > 69.5%
+        if (percentage > 69.5) {
+          // Set CGPA placeholder to the percentage (as requested in original logic)
+          this.cgpa = percentage;
+          this.setEligible(); 
+        } else {
+          // Set CGPA placeholder even if ineligible
+          this.cgpa = percentage;
+          this.setIneligible('10+2 percentage criterion not met (required > 69.5%).');
+        }
+
+        // 5. Post Check Action: Always attempt to fetch university details if data exists
+        this.getUniversityDetails();
+
+        // NOTE: The separate FindGradeFCount() call is removed here as its logic 
+        // should be entirely contained within GetStudentMarksDetails() which handles CurrentTerm > 1.
       },
       error: err => this.LoginFailed(err)
     });
 }
+//   GetStudentAllPreviousMarks(Regdno: any): void {
+//   this.isLoading = true;
+
+//   this.servicesSM.GetStudentAllPreviousMarks(Regdno)
+//     .pipe(finalize(() => this.isLoading = false))
+//     .subscribe({
+//       next: response => {
+//         if (response && response.item1?.length > 0) {
+
+//           // --------------- Previous Marks (10th / 10+2) ----------------
+//           this.studentPreviousMarksData = response.item1;
+//           console.log('Previous Marks:', JSON.stringify(this.studentPreviousMarksData));
+//           // Find 10+2 record if available
+//           const plus2Record = this.studentPreviousMarksData.find((r: any) => r.ExamDescription === '10+2');
+//           const percentage = plus2Record ? parseFloat(plus2Record.Perecentage) : 0;
+          
+//           // --------------- Term Marks ----------------
+//           this.studentTermsMarksData = response.item2?.[0] || {};
+//           this.studentTermsMarksDataX = response.item2 || {};
+//           console.log('Term Marks:', JSON.stringify(this.studentTermsMarksDataX));
+//           console.log('Term Marks:', JSON.stringify(this.studentTermsMarksData));
+          
+//           // --------------- Grade Details ----------------
+//           this.studentGradeMarksData = response.item3?.[0] || {};
+//           this.studentGradeMarksDataX = response.item3 || {};
+//           console.log('Grade Marks:', JSON.stringify(this.studentGradeMarksDataX));
+//           console.log('Grade Marks:', JSON.stringify(this.studentGradeMarksData));
+          
+//           const grade = this.studentGradeMarksData.Grade || '';
+//           const gradeCount = Number(this.studentGradeMarksData.RecordCount || 0);
+          
+//           // --------------- Academic Details ----------------
+//           this.studentAcademicDetail = response.item4?.[0] || {};
+//           this.studentAcademicDetailX = response.item4 || {};
+//           console.log('Academic Details:', JSON.stringify(this.studentAcademicDetail));
+//           console.log('Academic Details:', JSON.stringify(this.studentAcademicDetailX));
+//           this.SectionCode= this.studentAcademicDetail.Section;
+//           const parts = this.studentAcademicDetail.PName.split(':');
+//           this.ProgramCode = parts[0].trim(); // "P13C"
+          
+          
+//           // --------------- Eligibility Logic ----------------
+//           const currentTerm = Number(this.studentAcademicDetail.Term || this.CurrentTerm || 0);
+//           const failCount = Number(this.studentAcademicDetail.FailCount || 0);
+
+//           if (currentTerm === 1 && percentage > 69.5) {
+//             // First term students: based on +2 marks
+//             this.cgpa=percentage;
+//             this.isEligible = true;
+//           } 
+//           else if (currentTerm > 1 && grade !== 'F' && failCount === 0 && gradeCount > 0) {
+//             // Senior terms: based on grade record and fail count
+//             this.cgpa=percentage;
+//             this.isEligible = true;
+//           } 
+//           else {
+//             // alert(grade+'Grade'+percentage +''+ this.cgpa + ' GC'+ gradeCount + 'Cuurent Term'+currentTerm)
+//             this.cgpa=percentage;
+//             this.isEligible = false;
+//             Swal.fire({
+//               title: 'Not Eligible',
+//               text: 'Eligibility criteria not met. Please check your marks or grade records.',
+//               icon: 'warning'
+//             });
+//             this.FindGradeFCount(Regdno);
+//           }
+
+//           // --------------- Post Check Actions ----------------
+//           if (this.isEligible) {
+//             this.getUniversityDetails();
+//           }
+
+//         } else {
+//           this.isEligible = false;
+//           Swal.fire({
+//             title: 'Not Eligible',
+//             text: 'No previous mark records found.',
+//             icon: 'warning'
+//           });
+//         }
+//         this.FindGradeFCount(Regdno);
+//       },
+//       error: err => this.LoginFailed(err)
+//     });
+// }
 
   studentPreviousMarksData: any;
   studentTermsMarksData: any;
@@ -550,7 +617,7 @@ FindGradeFCount(regdNo:any):void{
   // --- Wizard Navigation and Submission ---
 
   nextStep(): void {
-    if (this.currentStep === this.stepLabels.length - 1) return; 
+    if (this.currentStep === this.stepLabels.length) return; 
     if (this.canProceedToNext(this.currentStep)) {
       this.currentStep++;
       this.isSubmitted = false;
@@ -575,111 +642,111 @@ FindGradeFCount(regdNo:any):void{
 
     this.isLoading = true;
     // const formData = this.form.value; 
- const formValue = this.form.getRawValue();
+    const formValue = this.form.getRawValue();
 
     const formData = new FormData();
 
-     // Append regular form fields with checks for 'NA'
-        formData.append("SchoolId", this.SchoolId);
-        formData.append("SectionCode", this.SectionCode);
-        formData.append("RegistrationNo", this.RegistrationNo );
-        formData.append("EmailId", formValue.EmailId );
-        formData.append("CountryName", formValue.CountryName );
-        formData.append("WhatsAppNo", formValue.WhatsAppNo );
-        formData.append("PhoneNumber", formValue.PhoneNumber );
-        formData.append("ParentContact", formValue.ParentContact);
-        formData.append("ApplyingOption", formValue.ApplyingOption );
-        formData.append("UniversityOption1", formValue.UniversityOption1 );
-        formData.append("UniversityOption2", formValue.UniversityOption2 );
-        formData.append("UniversityOption3", formValue.UniversityOption3 );
-        formData.append("PassportStatus", formValue.PassportStatus );
-    
-        if (formValue.PassportStatus === 'Yes') {
-          formData.append("PassportNumber", formValue.PassportNumber);
-          formData.append("PassportIssueDate", formValue.PassportIssueDate );
-          formData.append("PassportValidUpto", formValue.PassportValidUpto );
-          formData.append("PassportDocumentPath", this.PassportDocumentPath ); // Use this.PassportFileName
-        } else {
-          formData.append("PassportNumber", 'NA');
-          // formData.append("PassportIssueDate", 'NA');
-          // formData.append("PassportValidUpto", 'NA');
-          // formData.append("PassportDocumentPath", 'NA');
-        }
-    
-        formData.append("IsVisaRejected", formValue.IsVisaRejected || 'NA');
-        if (formValue.IsVisaRejected === 'Yes') {
-          formData.append("VisaRejectedReason", formValue.VisaRejectedReason || 'NA');
-          formData.append("VisaRejectedCountry", formValue.VisaRejectedCountry || 'NA');
-        } else {
-          formData.append("VisaRejectedReason", 'NA');
-          formData.append("VisaRejectedCountry", 'NA');
-        }
-    
-        formData.append("EnglishTestType", formValue.EnglishTestType || 'NA');
-        if (['PTE','DULINGO', 'IELTS', 'TOFEL'].includes(formValue.EnglishTestType)) {
-          formData.append("SpeakingScore", formValue.SpeakingScore || 'NA');
-          formData.append("ListeningScore", formValue.ListeningScore || 'NA');
-          formData.append("ReadingScore", formValue.ReadingScore || 'NA');
-          formData.append("WritingScore", formValue.WritingScore || 'NA');
-          formData.append("OverallScore", formValue.OverallScore || 'NA');
-          formData.append("EnglishTestYear", formValue.EnglishTestYear  );
-        } else if (formValue.EnglishTestType === 'Applied') {
-          formData.append("testDate", formValue.testDate);
-          formData.append("SpeakingScore", 'NA');
-          formData.append("ListeningScore", 'NA');
-          formData.append("ReadingScore", 'NA');
-          formData.append("WritingScore", 'NA');
-          formData.append("OverallScore", 'NA');
-          formData.append("EnglishTestYear", 'NA');
-        }
-        else {
-          formData.append("SpeakingScore", 'NA');
-          formData.append("ListeningScore", 'NA');
-          formData.append("ReadingScore", 'NA');
-          formData.append("WritingScore", 'NA');
-          formData.append("OverallScore", 'NA');
-          formData.append("EnglishTestYear", 'NA');
-          // formData.append("testDate", 'NA');
-        }
-    
-        formData.append("IsSelfFunded", formValue.IsSelfFunded || 'NA');
-        formData.append("SponsorEmail", 'NA'); // This field is not in the form, so default to 'NA'
-        formData.append("AvailableFunds", formValue.AvailableFunds || 'NA');
-        formData.append("TotalCountGradeF", this.GradeFcount.toString() || 'NA'); // Convert number to string
-    
-        if (formValue.IsSelfFunded === 'Other') {
-          formData.append("SponsorName", formValue.SponsorName || 'NA');
-          formData.append("SponsorRelation", formValue.SponsorRelation || 'NA');
-          formData.append("SponsorContact", formValue.SponsorContact || 'NA'); // This field is not in the form, so default to 'NA'
-          formData.append("SponsorEmail", formValue.SponsorEmail || 'NA'); // This field is not in the form, so default to 'NA'
-        } else {
-          formData.append("SponsorName", 'NA');
-          formData.append("SponsorRelation", 'NA');
-          formData.append("SponsorContact", 'NA');
-          formData.append("SponsorEmail", 'NA');
-        }
-    
-        formData.append("AcceptPolicy", formValue.AcceptPolicy ? 'Yes' : 'No');
-        formData.append("ResumeFileName", this.ResumeFileName );
-        formData.append("ResumeFileData", this.ResumeFileData);
-        formData.append("ConsentLetterFileName", this.ConsentLetterFileName );
-        formData.append("ConsentLetterData", this.ConsentLetterData );
-        formData.append("FeesProofData", this.FeesProofData );
-        formData.append("FeesProofFileName", this.FeesProofFileName );
-        formData.append("PassportFileData", this.PassportFileData );
-        formData.append("PassportFileName", this.PassportFileName );
-        formData.append("EnglishProofData", this.EnglishProofData );
-        formData.append("EnglishProofFileName", this.EnglishProofFileName );
-    
-        formData.append("RelativeCountryName", formValue.RelativeCountryName || 'NA');
-        formData.append("RelativeName", formValue.RelativeName || 'NA');
-        formData.append("RelativeRelation", formValue.RelativeRelation || 'NA'); // Added RelativeRelation
-        formData.append("HasRelativeDetails", formValue.HasRelativeDetails || 'NA'); // Added HasRelativeDetails
-    
-        formData.forEach((value, key) => {
-          console.log(`${key}: ${value}`);
-        });
-    this.servicesSM.SemesterExchangeNewRegistrationForm(formData) 
+    // Append regular form fields with checks for 'NA'
+    formData.append("SchoolId", this.SchoolId);
+    formData.append("SectionCode", this.SectionCode);
+    formData.append("RegistrationNo", this.RegistrationNo);
+    formData.append("EmailId", formValue.EmailId);
+    formData.append("CountryName", formValue.CountryName);
+    formData.append("WhatsAppNo", formValue.WhatsAppNo);
+    formData.append("PhoneNumber", formValue.PhoneNumber);
+    formData.append("ParentContact", formValue.ParentContact);
+    formData.append("ApplyingOption", formValue.ApplyingOption);
+    formData.append("UniversityOption1", formValue.UniversityOption1);
+    formData.append("UniversityOption2", formValue.UniversityOption2);
+    formData.append("UniversityOption3", formValue.UniversityOption3);
+    formData.append("PassportStatus", formValue.PassportStatus);
+
+    if (formValue.PassportStatus === 'Yes') {
+      formData.append("PassportNumber", formValue.PassportNumber);
+      formData.append("PassportIssueDate", formValue.PassportIssueDate);
+      formData.append("PassportValidUpto", formValue.PassportValidUpto);
+      formData.append("PassportDocumentPath", this.PassportDocumentPath); // Use this.PassportFileName
+    } else {
+      formData.append("PassportNumber", 'NA');
+      // formData.append("PassportIssueDate", 'NA');
+      // formData.append("PassportValidUpto", 'NA');
+      // formData.append("PassportDocumentPath", 'NA');
+    }
+
+    formData.append("IsVisaRejected", formValue.IsVisaRejected || 'NA');
+    if (formValue.IsVisaRejected === 'Yes') {
+      formData.append("VisaRejectedReason", formValue.VisaRejectedReason || 'NA');
+      formData.append("VisaRejectedCountry", formValue.VisaRejectedCountry || 'NA');
+    } else {
+      formData.append("VisaRejectedReason", 'NA');
+      formData.append("VisaRejectedCountry", 'NA');
+    }
+
+    formData.append("EnglishTestType", formValue.EnglishTestType || 'NA');
+    if (['PTE', 'DULINGO', 'IELTS', 'TOFEL'].includes(formValue.EnglishTestType)) {
+      formData.append("SpeakingScore", formValue.SpeakingScore || 'NA');
+      formData.append("ListeningScore", formValue.ListeningScore || 'NA');
+      formData.append("ReadingScore", formValue.ReadingScore || 'NA');
+      formData.append("WritingScore", formValue.WritingScore || 'NA');
+      formData.append("OverallScore", formValue.OverallScore || 'NA');
+      formData.append("EnglishTestYear", formValue.EnglishTestYear);
+    } else if (formValue.EnglishTestType === 'Applied') {
+      formData.append("testDate", formValue.testDate);
+      formData.append("SpeakingScore", 'NA');
+      formData.append("ListeningScore", 'NA');
+      formData.append("ReadingScore", 'NA');
+      formData.append("WritingScore", 'NA');
+      formData.append("OverallScore", 'NA');
+      formData.append("EnglishTestYear", 'NA');
+    }
+    else {
+      formData.append("SpeakingScore", 'NA');
+      formData.append("ListeningScore", 'NA');
+      formData.append("ReadingScore", 'NA');
+      formData.append("WritingScore", 'NA');
+      formData.append("OverallScore", 'NA');
+      formData.append("EnglishTestYear", 'NA');
+      // formData.append("testDate", 'NA');
+    }
+
+    formData.append("IsSelfFunded", formValue.IsSelfFunded || 'NA');
+    formData.append("SponsorEmail", 'NA'); // This field is not in the form, so default to 'NA'
+    formData.append("AvailableFunds", formValue.AvailableFunds || 'NA');
+    formData.append("TotalCountGradeF", this.GradeFcount?.toString() || 'NA'); // Convert number to string
+
+    if (formValue.IsSelfFunded === 'Other') {
+      formData.append("SponsorName", formValue.SponsorName || 'NA');
+      formData.append("SponsorRelation", formValue.SponsorRelation || 'NA');
+      formData.append("SponsorContact", formValue.SponsorContact || 'NA'); // This field is not in the form, so default to 'NA'
+      formData.append("SponsorEmail", formValue.SponsorEmail || 'NA'); // This field is not in the form, so default to 'NA'
+    } else {
+      formData.append("SponsorName", 'NA');
+      formData.append("SponsorRelation", 'NA');
+      formData.append("SponsorContact", 'NA');
+      formData.append("SponsorEmail", 'NA');
+    }
+
+    formData.append("AcceptPolicy", formValue.AcceptPolicy ? 'Yes' : 'No');
+    formData.append("ResumeFileName", this.ResumeFileName);
+    formData.append("ResumeFileData", this.ResumeFileData);
+    formData.append("ConsentLetterFileName", this.ConsentLetterFileName);
+    formData.append("ConsentLetterData", this.ConsentLetterData);
+    formData.append("FeesProofData", this.FeesProofData);
+    formData.append("FeesProofFileName", this.FeesProofFileName);
+    formData.append("PassportFileData", this.PassportFileData);
+    formData.append("PassportFileName", this.PassportFileName);
+    formData.append("EnglishProofData", this.EnglishProofData);
+    formData.append("EnglishProofFileName", this.EnglishProofFileName);
+
+    formData.append("RelativeCountryName", formValue.RelativeCountryName || 'NA');
+    formData.append("RelativeName", formValue.RelativeName || 'NA');
+    formData.append("RelativeRelation", formValue.RelativeRelation || 'NA'); // Added RelativeRelation
+    formData.append("HasRelativeDetails", formValue.HasRelativeDetails || 'NA'); // Added HasRelativeDetails
+
+    formData.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
+    this.servicesSM.SemesterExchangeNewRegistrationForm(formData)
       .pipe(
         finalize(() => this.isLoading = false)
       )
@@ -706,7 +773,7 @@ FindGradeFCount(regdNo:any):void{
         }
       });
   }
-  
+
   // --- Helper Functions and Validators ---
 
   LoginFailed(_NewError: any): void {
@@ -738,7 +805,7 @@ FindGradeFCount(regdNo:any):void{
         const allValid = /^[0-9]{10}$/.test(wa) && /^[0-9]{10}$/.test(ph) && /^[0-9]{10}$/.test(parent);
         if (!allValid) return null;
 
-        if (wa === ph || wa === parent || ph === parent) {
+        if (wa === parent || ph === parent) {
           return { numbersMustBeDistinct: true };
         }
         return null;
@@ -903,6 +970,8 @@ CountryCode: string; UniversityOption1: string = ''; UniversityOption2: string =
        this.PassportDocumentPath = validFileName;
        this.PassportFileName = validFileName;
        this.form.get('PassportDocumentPath')!.setValue(validFileName); // <-- CRITICAL FIX
+       this.form.get('PassportDocumentPath')!.markAsDirty();
+this.form.get('PassportDocumentPath')!.updateValueAndValidity();
        this.PassportFileStatus = true;
  
        reader.readAsDataURL(modifiedFile);
@@ -927,6 +996,9 @@ CountryCode: string; UniversityOption1: string = ''; UniversityOption2: string =
          this.PassportDocumentPath = file.name;
          this.PassportFileName = file.name;
          this.form.get('PassportDocumentPath')!.setValue(file.name); // <-- CRITICAL FIX
+this.form.get('PassportDocumentPath')!.markAsDirty();
+this.form.get('PassportDocumentPath')!.updateValueAndValidity();
+
          this.UploadedPassport = true;
        };
      }

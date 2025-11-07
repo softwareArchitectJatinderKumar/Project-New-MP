@@ -37,14 +37,26 @@
               required.</div>
           </div>
 
-          <div class="col-md-6">
+          <div class="col-md-4">
             <label for="metricId" class="form-label">Metric ID <span class="text-danger">*</span></label>
             <input type="number" formControlName="MetricId" class="form-control"
               [class.is-invalid]="mappingForm.get('MetricId')?.invalid && mappingForm.get('MetricId')?.touched">
             <div class="invalid-feedback" *ngIf="mappingForm.get('MetricId')?.errors?.['required']">Metric ID is
               required.</div>
           </div>
-          <div class="col-md-6" *ngIf="isUpdateMode">
+          <div class="col-md-6">
+            <label for="metricId" class="form-label">Select School Involved <span class="text-danger">*</span></label>
+              <ng-select [items]="allSchoolDivisions" #ngSelectComponentStream [multiple]="true" bindLabel="schoolDivision"
+                [clearable]="true" [virtualScroll]="true" placeholder="Select" (change)="changeResponsiblePlanned($event)"
+                bindValue="id" [hideSelected]="true" [(ngModel)]="selectedSchoolDivisions" class="col-12">
+              </ng-select>
+              <div *ngIf="hasSelectionError" class="themeClr">One school division is Required</div>
+              <!-- <div class="invalid-feedback" *ngIf="mappingForm.get('MetricId')?.errors?.['required']">Metric ID is
+                          required.</div> -->
+                          {{this.selectedDivisions}}
+            </div>
+
+          <div class="col-md-2" *ngIf="isUpdateMode">
             <label class="form-label d-block">Is Active <span class="text-danger">*</span></label>
             <div class="btn-group" role="group" aria-label="Is Active options">
               <ng-container *ngFor="let option of isActiveOptions">

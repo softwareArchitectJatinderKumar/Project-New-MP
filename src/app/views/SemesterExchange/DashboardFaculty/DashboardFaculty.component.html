@@ -30,8 +30,8 @@
     <ngx-datatable-column name="Counselling Status" prop="counsellingStatus" [width]="80">
       <ng-template let-row="row" ngx-datatable-cell-template>
         <span class="badge"
-          [ngClass]="{'bg-success': row.counsellingStatus === '1', 'bg-danger': row.counsellingStatus === '0'}">
-          {{ row.counsellingStatus === '1' ? 'Verified' : 'Rejected' }}
+          [ngClass]="{'bg-success': row.counsellingStatus === '1', 'bg-warn': row.counsellingStatus === '0'}">
+          {{ row.counsellingStatus === '1' ? 'Verified' : 'Pending' }}
         </span>
       </ng-template>
     </ngx-datatable-column>

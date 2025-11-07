@@ -108,7 +108,7 @@ export class StudentDashboardwithTabs implements OnInit {
 
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML = 'Semester <span class="text-info">Exchange </span> Student Dashboard';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
-    this.title.setTitle('Student Dashboard');
+    // this.title.setTitle('Student Dashboard');
     // Create at least an empty form to avoid template errors
     this.initializeEmptyForm();
 
@@ -176,19 +176,33 @@ export class StudentDashboardwithTabs implements OnInit {
       }
     });
   }
+  // StudentDashboardwithTabs.component.ts
 
-  getApplicationDetails(regId: string): void {
+// ... (existing code up to getApplicationDetails) ...
+
+getApplicationDetails(regId: string): void {
     this.isLoading = true;
     const startTime = new Date().getTime();
     this.studentService.getStudentDetailsBYId(regId).subscribe({
       next: (response: any) => {
         if (response?.item1?.length > 0) {
           this.stuApplication = response.item1[0];
-          // console.log(JSON.stringify(this.stuApplication))
+          console.log(JSON.stringify(this.stuApplication))
           this.ApplicationId = this.stuApplication.applicationId;
+          
+          // ✅ FIX: Explicitly assign component properties for document display in the UI
+          // These properties hold the existing file names fetched from the API response
+          this.FeesProofFileName = this.stuApplication.feesProofFileName || '';
+          this.ResumeFileName = this.stuApplication.resumeFileName || '';
+          this.ConsentLetterFileName = this.stuApplication.consentLetterFileName || '';
+          this.PassportFileName = this.stuApplication.passportFileName || '';
+          // Assuming a similar pattern for English Proof if a specific field exists in the UI/API
+          // this.EnglishProofFileName = this.stuApplication.englishTestDocumentPath || ''; 
+
+
           this.detectOtherDocs();
           this.buildApplicationForm();     // re-build form with real values
-          this.populateForms();            // patch values
+          this.populateForms();            // patch values (includes date formatting)
           this.initializeCourseRowsFromData();
           this.getStuDetailsWithImage(this.stuApplication.registrationNo); // load photo
         } else {
@@ -206,7 +220,38 @@ export class StudentDashboardwithTabs implements OnInit {
         this.loginFailed(err);
       }
     });
-  }
+}
+
+  // getApplicationDetails(regId: string): void {
+  //   this.isLoading = true;
+  //   const startTime = new Date().getTime();
+  //   this.studentService.getStudentDetailsBYId(regId).subscribe({
+  //     next: (response: any) => {
+  //       if (response?.item1?.length > 0) {
+  //         this.stuApplication = response.item1[0];
+  //         // console.log(JSON.stringify(this.stuApplication))
+  //         this.ApplicationId = this.stuApplication.applicationId;
+  //         this.detectOtherDocs();
+  //         this.buildApplicationForm();     // re-build form with real values
+  //         this.populateForms();            // patch values
+  //         this.initializeCourseRowsFromData();
+  //         this.getStuDetailsWithImage(this.stuApplication.registrationNo); // load photo
+  //       } else {
+  //         this.loginFailed('No application data');
+  //       }
+  //       const elapsed = new Date().getTime() - startTime;
+  //       const remainingDelay = Math.max(2500 - elapsed, 0); // wait at least 5s
+
+  //       setTimeout(() => {
+  //         this.isLoading = false;
+  //       }, remainingDelay);
+  //     },
+  //     error: (err) => {
+  //       this.isLoading = false;
+  //       this.loginFailed(err);
+  //     }
+  //   });
+  // }
 
   detectOtherDocs(): void {
     if (!this.stuApplication) return;
@@ -215,51 +260,177 @@ export class StudentDashboardwithTabs implements OnInit {
   }
 
   // ---------------- FORM BUILD ----------------
-  private buildApplicationForm(): void {
+  // private buildApplicationForm(): void {
+  //   // Build fresh form with controls and validators using stuApplication values
+  //   const cfg: any = {
+  //     applicationId: [{ value: this.stuApplication?.applicationId || '', disabled: true }],
+  //     registrationNo: [{ value: this.stuApplication?.registrationNo || '', disabled: this.alwaysDisabledKeys.includes('registrationNo') }],
+  //     emailId: [{ value: this.stuApplication?.emailId || '', disabled: this.alwaysDisabledKeys.includes('emailId') }],
+  //     countryName: [this.stuApplication?.countryName || '', Validators.required],
+  //     whatsAppNo: [this.stuApplication?.whatsAppNo || '', Validators.required],
+  //     phoneNumber: [this.stuApplication?.phoneNumber || '', Validators.required],
+  //     parentContact: [this.stuApplication?.parentContact || '', Validators.required],
+  //     applyingOption: [this.stuApplication?.applyingOption || '', Validators.required],
+  //     universityOption1: [this.stuApplication?.universityOption1 || '', Validators.required],
+  //     universityOption2: [this.stuApplication?.universityOption2 || '', Validators.required],
+  //     universityOption3: [this.stuApplication?.universityOption3 || '', Validators.required],
+  //     passportStatus: [this.stuApplication?.passportStatus || '', Validators.required],
+  //     passportNumber: [this.stuApplication?.passportNumber || '', Validators.required],
+  //     passportIssueDate: [this.formatDateForInput(this.stuApplication?.passportIssueDate) || '', Validators.required],
+  //     passportValidUpto: [this.formatDateForInput(this.stuApplication?.passportValidUpto) || '', Validators.required],
+  //     isVisaRejected: [this.stuApplication?.isVisaRejected || '', Validators.required],
+  //     visaRejectedReason: [this.stuApplication?.visaRejectedReason || ''],
+  //     visaRejectedCountry: [this.stuApplication?.visaRejectedCountry || ''],
+  //     englishTestType: [this.stuApplication?.englishTestType || '', Validators.required],
+  //     speakingScore: [this.stuApplication?.speakingScore || ''],
+  //     listeningScore: [this.stuApplication?.listeningScore || ''],
+  //     readingScore: [this.stuApplication?.readingScore || ''],
+  //     writingScore: [this.stuApplication?.writingScore || ''],
+  //     overallScore: [this.stuApplication?.overallScore || ''],
+  //     englishTestYear: [this.stuApplication?.englishTestYear || ''],
+  //     isSelfFunded: [this.stuApplication?.isSelfFunded || '', Validators.required],
+  //     sponsorName: [this.stuApplication?.sponsorName || ''],
+  //     sponsorRelation: [this.stuApplication?.sponsorRelation || ''],
+  //     sponsorContact: [this.stuApplication?.sponsorContact || ''],
+  //     sponsorEmail: [this.stuApplication?.sponsorEmail || ''],
+  //     availableFunds: [this.stuApplication?.availableFunds || '', Validators.required],
+  //     acceptPolicy: [this.stuApplication?.acceptPolicy === 'true' || false, Validators.requiredTrue],
+  //     // totalCountGradeF: [this.stuApplication?.totalCountGradeF || '', Validators.required]
+  //     relativeName: [this.stuApplication?.relativeName || ''],
+  //     relativeRelation: [this.stuApplication?.relativeRelation || ''],
+  //     relativeCountry: [this.stuApplication?.relativeCountry || ''],
+  //   };
+
+  //   this.applicationForm = this.fb.group(cfg);
+  //   this.applicationForm.disable();
+  // }
+
+
+
+
+  // StudentDashboardwithTabs.component.ts
+
+// ... inside the StudentDashboardwithTabs class ...
+
+// ---------------- CONDITIONAL DISPLAY HELPERS (from previous step - no change) ----------------
+
+get showEnglishScores(): boolean {
+    const englishTestType = this.applicationForm?.get('englishTestType')?.value;
+    return englishTestType && englishTestType.toUpperCase() !== 'APPLIED' && englishTestType.toUpperCase() !== 'NA';
+}
+
+get showPassportDetails(): boolean {
+    return this.applicationForm?.get('passportStatus')?.value === 'Yes';
+}
+
+get showRelativeDetails(): boolean {
+    const relativeName = this.applicationForm?.get('relativeName')?.value;
+    return !!relativeName && relativeName.toUpperCase() !== 'NA';
+}
+get showSponsorDetails(): boolean {
+    const relativeName = this.applicationForm?.get('isSelfFunded')?.value;
+    return !!relativeName && relativeName.toUpperCase() !== 'NA' || relativeName=='Parent';
+}
+// ---------------- FORM BUILD ----------------
+private buildApplicationForm(): void {
     // Build fresh form with controls and validators using stuApplication values
     const cfg: any = {
-      applicationId: [{ value: this.stuApplication?.applicationId || '', disabled: true }],
-      registrationNo: [{ value: this.stuApplication?.registrationNo || '', disabled: this.alwaysDisabledKeys.includes('registrationNo') }],
-      emailId: [{ value: this.stuApplication?.emailId || '', disabled: this.alwaysDisabledKeys.includes('emailId') }],
-      countryName: [this.stuApplication?.countryName || '', Validators.required],
-      whatsAppNo: [this.stuApplication?.whatsAppNo || '', Validators.required],
-      phoneNumber: [this.stuApplication?.phoneNumber || '', Validators.required],
-      parentContact: [this.stuApplication?.parentContact || '', Validators.required],
-      applyingOption: [this.stuApplication?.applyingOption || '', Validators.required],
-      universityOption1: [this.stuApplication?.universityOption1 || '', Validators.required],
-      universityOption2: [this.stuApplication?.universityOption2 || '', Validators.required],
-      universityOption3: [this.stuApplication?.universityOption3 || '', Validators.required],
-      passportStatus: [this.stuApplication?.passportStatus || '', Validators.required],
-      passportNumber: [this.stuApplication?.passportNumber || '', Validators.required],
-      passportIssueDate: [this.formatDateForInput(this.stuApplication?.passportIssueDate) || '', Validators.required],
-      passportValidUpto: [this.formatDateForInput(this.stuApplication?.passportValidUpto) || '', Validators.required],
-      isVisaRejected: [this.stuApplication?.isVisaRejected || '', Validators.required],
-      visaRejectedReason: [this.stuApplication?.visaRejectedReason || ''],
-      visaRejectedCountry: [this.stuApplication?.visaRejectedCountry || ''],
-      englishTestType: [this.stuApplication?.englishTestType || '', Validators.required],
-      speakingScore: [this.stuApplication?.speakingScore || ''],
-      listeningScore: [this.stuApplication?.listeningScore || ''],
-      readingScore: [this.stuApplication?.readingScore || ''],
-      writingScore: [this.stuApplication?.writingScore || ''],
-      overallScore: [this.stuApplication?.overallScore || ''],
-      englishTestYear: [this.stuApplication?.englishTestYear || ''],
-      isSelfFunded: [this.stuApplication?.isSelfFunded || '', Validators.required],
-      sponsorName: [this.stuApplication?.sponsorName || ''],
-      sponsorRelation: [this.stuApplication?.sponsorRelation || ''],
-      sponsorContact: [this.stuApplication?.sponsorContact || ''],
-      sponsorEmail: [this.stuApplication?.sponsorEmail || ''],
-      availableFunds: [this.stuApplication?.availableFunds || '', Validators.required],
-      acceptPolicy: [this.stuApplication?.acceptPolicy === 'true' || false, Validators.requiredTrue],
-      // totalCountGradeF: [this.stuApplication?.totalCountGradeF || '', Validators.required]
-      relativeName: [this.stuApplication?.relativeName || ''],
-      relativeRelation: [this.stuApplication?.relativeRelation || ''],
-      relativeCountry: [this.stuApplication?.relativeCountry || ''],
+        applicationId: [{ value: this.stuApplication?.applicationId || '', disabled: true }],
+        registrationNo: [{ value: this.stuApplication?.registrationNo || '', disabled: this.alwaysDisabledKeys.includes('registrationNo') }],
+        emailId: [{ value: this.stuApplication?.emailId || '', disabled: this.alwaysDisabledKeys.includes('emailId') }],
+        countryName: [this.stuApplication?.countryName || '', Validators.required],
+        whatsAppNo: [this.stuApplication?.whatsAppNo || '', Validators.required],
+        phoneNumber: [this.stuApplication?.phoneNumber || '', Validators.required],
+        parentContact: [this.stuApplication?.parentContact || '', Validators.required],
+        applyingOption: [this.stuApplication?.applyingOption || '', Validators.required],
+        universityOption1: [this.stuApplication?.universityOption1 || '', Validators.required],
+        universityOption2: [this.stuApplication?.universityOption2 || '', Validators.required],
+        universityOption3: [this.stuApplication?.universityOption3 || '', Validators.required],
+        passportStatus: [this.stuApplication?.passportStatus || '', Validators.required],
+
+        // Passport details are conditionally required
+        passportNumber: [this.stuApplication?.passportNumber || ''],
+        passportIssueDate: [this.formatDateForInput(this.stuApplication?.passportIssueDate) || ''],
+        passportValidUpto: [this.formatDateForInput(this.stuApplication?.passportValidUpto) || ''],
+
+        isVisaRejected: [this.stuApplication?.isVisaRejected || '', Validators.required],
+        visaRejectedReason: [this.stuApplication?.visaRejectedReason || ''],
+        visaRejectedCountry: [this.stuApplication?.visaRejectedCountry || ''],
+        englishTestType: [this.stuApplication?.englishTestType || '', Validators.required],
+
+        // English scores are conditionally required
+        speakingScore: [this.stuApplication?.speakingScore || ''],
+        listeningScore: [this.stuApplication?.listeningScore || ''],
+        readingScore: [this.stuApplication?.readingScore || ''],
+        writingScore: [this.stuApplication?.writingScore || ''],
+        overallScore: [this.stuApplication?.overallScore || ''],
+        englishTestYear: [this.stuApplication?.englishTestYear || ''],
+
+        // Sponsor details are NOT required (as per #4)
+        isSelfFunded: [this.stuApplication?.isSelfFunded || '', Validators.required],
+        sponsorName: [this.stuApplication?.sponsorName || ''],
+        sponsorRelation: [this.stuApplication?.sponsorRelation || ''],
+        sponsorContact: [this.stuApplication?.sponsorContact || ''],
+        sponsorEmail: [this.stuApplication?.sponsorEmail || ''],
+        availableFunds: [this.stuApplication?.availableFunds || '', Validators.required],
+        acceptPolicy: [this.stuApplication?.acceptPolicy === 'true' || false, Validators.requiredTrue],
+
+        // Relative details are conditionally required
+        relativeName: [this.stuApplication?.relativeName || ''],
+        relativeRelation: [this.stuApplication?.relativeRelation || ''],
+        relativeCountry: [this.stuApplication?.relativeCountry || ''],
     };
 
     this.applicationForm = this.fb.group(cfg);
     this.applicationForm.disable();
-  }
+    
+    // Setup listeners for conditional validation
+    this.setupConditionalValidators(); // CALL NEW METHOD
+}
 
+private setupConditionalValidators(): void {
+    // Helper to apply/remove required validator
+    const toggleRequired = (controlName: string, required: boolean) => {
+        const control = this.applicationForm.get(controlName)!;
+        required ? control.setValidators([Validators.required]) : control.clearValidators();
+        control.updateValueAndValidity();
+    };
+
+    // 1. Passport Details (#2)
+    this.applicationForm.get('passportStatus')!.valueChanges.subscribe(val => {
+        const isRequired = val === 'Yes';
+        ['passportNumber', 'passportIssueDate', 'passportValidUpto'].forEach(c => {
+            toggleRequired(c, isRequired);
+        });
+    });
+
+    // 2. English Scores (#1)
+    this.applicationForm.get('englishTestType')!.valueChanges.subscribe(val => {
+        const isRequired = val && val.toUpperCase() !== 'APPLIED' && val.toUpperCase() !== 'NA';
+        ['speakingScore', 'listeningScore', 'readingScore', 'writingScore', 'overallScore', 'englishTestYear'].forEach(c => {
+            toggleRequired(c, isRequired);
+        });
+    });
+
+    // 3. Relative Details (#3)
+    // NOTE: This logic assumes if a relative name is entered, relation and country become mandatory.
+    // We check against the current value when the form is enabled/loaded, and then subscribe to changes.
+    const relativeNameControl = this.applicationForm.get('relativeName')!;
+    const applyRelativeValidation = (nameVal: string) => {
+        const isRequired = !!nameVal && nameVal.toUpperCase() !== 'NA' && nameVal.trim().length > 0;
+        ['relativeRelation', 'relativeCountry'].forEach(c => {
+            toggleRequired(c, isRequired);
+        });
+    };
+
+    // Initial check (for when data is loaded via patchValue)
+    applyRelativeValidation(relativeNameControl.value);
+    
+    // Subscribe to runtime changes
+    relativeNameControl.valueChanges.subscribe(nameVal => {
+        applyRelativeValidation(nameVal);
+    });
+}
   populateForms(): void {
     if (!this.applicationForm) return;
     this.applicationForm.patchValue({
@@ -270,7 +441,8 @@ export class StudentDashboardwithTabs implements OnInit {
       relativeName: this.stuApplication?.relativeName,
       relativeRelation: this.stuApplication?.relativeRelation,
       relativeCountry: this.stuApplication?.relativeCountry,
-      policyAccepted: this.stuApplication?.policyAccepted,
+      policyAccepted: this.stuApplication?.policyAccepted==='true',
+      availableFunds:this.stuApplication?.availableFunds
     });
   }
 
@@ -320,7 +492,7 @@ export class StudentDashboardwithTabs implements OnInit {
       "ReadingScore", "WritingScore", "OverallScore", "EnglishTestYear",
       "IsSelfFunded", "SponsorName", "SponsorRelation", "SponsorContact", "SponsorEmail",
       "AvailableFunds", //, "TotalCountGradeF"
-      "RelativeName", "RelativeRelation", //"RelativeCountry"
+      "RelativeName", "RelativeRelation", "RelativeCountry"
     ];
 
     fieldsToAppend.forEach(k => {

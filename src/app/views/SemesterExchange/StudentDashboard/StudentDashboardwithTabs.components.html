@@ -96,6 +96,7 @@
                 Relative Name is required.
               </div>
             </div>
+            <ng-container *ngIf="showRelativeDetails">
             <div class="col-md-4 mb-3">
               <label for="relativeRelation" class="form-label fw-semibold">Relative Relation</label>
               <input class="form-control" id="relativeRelation" formControlName="relativeRelation"
@@ -115,6 +116,7 @@
                 Relative Country is required.
               </div>
             </div>
+            </ng-container>
           </div>
           <!-- END NEW: Relative Details Section -->
 
@@ -133,6 +135,7 @@
                 Sponsor Type is required.
               </div>
             </div>
+            <ng-container *ngIf="showSponsorDetails">
             <div class="col-md-4 mb-3" *ngIf="isFieldInvalidApplication('isSelfFunded')">
               <label for="sponsorName" class="form-label fw-semibold">Sponsor Name</label>
               <input class="form-control" id="sponsorName" formControlName="sponsorName" [readonly]="!isSection1Edit"
@@ -149,6 +152,7 @@
                 Sponsor Relation is required.
               </div>
             </div>
+            </ng-container>
           </div>  
  
           <h5 class="mt-4 mb-3 text-info">Visa Details</h5>
@@ -201,6 +205,7 @@
                 Passport Status is required.
               </div>
             </div>
+            <ng-container *ngIf="showPassportDetails">
             <div class="col-md-4 mb-3">
               <label for="passportNumber" class="form-label fw-semibold">Passport Number</label>
               <input class="form-control" id="passportNumber" formControlName="passportNumber"
@@ -227,6 +232,7 @@
                 Passport Valid Upto is required.
               </div>
             </div>
+            </ng-container>
           </div>
 
           <h5 class="mt-4 mb-3 text-info">English Test Details</h5>
@@ -249,7 +255,7 @@
                 English Test Type is required.
               </div>
             </div>
-
+            <ng-container *ngIf="showEnglishScores">
             <div class="col-md-4 mb-3">
               <label for="speakingScore" class="form-label fw-semibold">Speaking Score</label>
               <input class="form-control" id="speakingScore" formControlName="speakingScore"
@@ -298,6 +304,7 @@
                 Year of Test is required.
               </div>
             </div>
+            </ng-container>
           </div>
 
           <h5 class="mt-4 mb-3 text-info">Financial & Declaration</h5>
@@ -307,9 +314,9 @@
               <select class="form-select" id="availableFunds" formControlName="availableFunds"
                 [class.is-invalid]="isFieldInvalidApplication('availableFunds')">
                 <option value="" disabled>Select</option>
-                <option value="2to4Lakhs">2 to 4 Lakhs</option>
-                <option value="4to6Lakhs">4 to 6 Lakhs</option>
-                <option value="6to8Lakhs">6 to 8 Lakhs</option>
+                <option value="2 to 4 Lakhs">2 to 4 Lakhs</option>
+                <option value="4 to 6 Lakhs">4 to 6 Lakhs</option>
+                <option value="6 to 8 Lakhs">6 to 8 Lakhs</option>
               </select>
               <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('availableFunds')">
                 Available Funds is required.

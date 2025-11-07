@@ -1,5 +1,11 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { PlacementService } from 'src/app/_services/placement.service';
+
+import { Component, ElementRef, HostListener, OnInit, ViewChild,ChangeDetectorRef } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { NgbDateStruct, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ActivatedRoute } from '@angular/router';
+import { MatTableDataSource } from '@angular/material/table';
+
 
 import { _MatPaginatorBase } from '@angular/material/paginator';
 import { AuthService } from 'src/app/_services/auth.service';
@@ -7,14 +13,19 @@ import { StorageService } from 'src/app/_services/storage.service';
 import * as XLSX from 'xlsx';
 import { UntypedFormBuilder } from '@angular/forms';
 import swal from 'sweetalert2';
-import { ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, BehaviorSubject, combineLatest, of } from 'rxjs';
 import { map, tap, catchError, take } from 'rxjs/operators';
 import { HeadMapping, MetricMapping } from '../Services/HeadMapping.service';
 import { PlanningrankingService } from 'src/app/_services/planningranking.service';
+import { LpuPlannerServiceService } from 'src/app/_services/lpu-planner-service.service';
+
+interface SchoolDivision {
+  id: number;
+  schoolDivision: string;
+}
+
 
 @Component({
     selector: 'app-metric-mapping',
@@ -22,6 +33,89 @@ import { PlanningrankingService } from 'src/app/_services/planningranking.servic
     styleUrls: ['./HeadMappingWithAssistant.scss']
 })
 export class OBPMetricBinding implements OnInit {
+
+    
+  SchoolIndex: number = 0;
+  DepartmentIndex: number = 0;
+  SchoolInvolved: any;
+  selectedId: number;
+  selectedSchoolDivisions: any[] = [];
+  allSchoolDivisions: SchoolDivision[] = [];
+  selectedDivisions: number[] = [];
+ allDepartmentName:any;
+
+  
+
+  hasSelectionError = true;
+
+  changeResponsiblePlanned(event: any) {
+    for (let i = 0; i < event.length; i++) {
+      this.selectedDivisions.push(event[i].id);
+    }
+    this.hasSelectionError = this.selectedDivisions.length === 0;
+  }
+
+  onDivisionSelected(event: any, id: number): void {
+    if (event.target.checked) {
+      this.selectedDivisions.push(id);
+    } else {
+      this.selectedDivisions = this.selectedDivisions.filter(divId => divId !== id);
+    }
+  }
+  getSelectedDivisionsText(): string {
+    return this.selectedDivisions.map(id => this.getDivisionNameById(id)).join(', ');
+  }
+  getDivisionNameById(id: number): string {
+    const idStr = id.toString();
+    let division: SchoolDivision | undefined;
+    for (const school of this.allSchoolDivisions) {
+      if (+school.id === +idStr) {
+        division = school;
+        break;
+      }
+    }
+    return division ? division.schoolDivision : `ID ${idStr} not found`;
+  }
+
+   getDivisionNamesByIds(ids: number[]): string {
+    return ids.map(id => this.getDivisionNameById(id)).join(', ');
+  }
+  
+  GetAllActivities(): void {
+    this.lpuPlannerServiceService.GetSchoolDivisions().subscribe((response) => {
+      if (response.item1.length > 0) {
+        this.allSchoolDivisions = response.item1;
+      } else {
+        this.allSchoolDivisions = [];
+      }
+    });
+  }
+
+  getAllDivisions(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedValue = selectElement.value;
+    const SchoolIndex = Array.from(selectElement.options).findIndex(option => option.value === selectedValue);
+
+    if (SchoolIndex !== -1) {
+      selectElement.selectedIndex = SchoolIndex;
+
+      this.selectedId = parseInt(selectedValue, 10);
+
+      this.GetDepartmentforSchoolId(this.selectedId);
+    }
+
+  }
+
+  GetDepartmentforSchoolId(Id: any) {
+    this.lpuPlannerServiceService.GetSchoolDivisionsDepartment(Id).subscribe((response) => {
+      if (response.item1.length > 0) {
+        this.allDepartmentName = response.item1;
+      } else {
+        this.allDepartmentName = [];
+      }
+    });
+  }
+
     isLoginFailed: boolean = false;
     // Data table source
     public mappingData$!: Observable<MetricMapping[]>;
@@ -53,7 +147,7 @@ export class OBPMetricBinding implements OnInit {
 
     constructor(
         private cdRef: ChangeDetectorRef,
-
+        private lpuPlannerServiceService: LpuPlannerServiceService,
         private placementService: PlacementService,
         private fb: FormBuilder,
         private HeadMapping: HeadMapping, private PlanningrankingService: PlanningrankingService,
@@ -81,7 +175,7 @@ export class OBPMetricBinding implements OnInit {
                     this.LoginFailed('Token Expired');
                 }
                 this.GetAllEventsData();
-
+                this.GetAllActivities();
                 const stMainElement = document.getElementById('stMain');
                 if (stMainElement) {
                     stMainElement.innerHTML = 'OBP Head<span class="themeClr"> Metric Mapping</span>';
