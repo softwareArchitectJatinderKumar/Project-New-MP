@@ -51,7 +51,7 @@ const routes: Routes = [
         loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule),
       },
       {
-        path: 'Registeration-Form/:LoginName',
+        path: 'MyNew-Application/:LoginName',//MyNew-Application/803522b010abd289e4ef8e3ab1d0b56aee6ee9100f998ded69a8ba78abc1926f5a3d33ca6de3bbad9a6fa7975c763f96
         loadChildren: () => import('./views/SemesterExchange/StudentForm/Register-Form/RegisterForm.module').then(m => m.RegisterFormModule),
         // loadChildren: () => import('./views/SemesterExchange/StudentForm/NewLogic/NewLogicForm.module').then(m => m.NewLogicFormModule),
       },
@@ -68,7 +68,8 @@ const routes: Routes = [
       {
         path: 'StudentDashboard/:LoginName/:RegistrationNo',
         // loadChildren: () => import('./views/SemesterExchange/StudentDashboard/StudentDashboard.module').then(m => m.StudentDashboardModule),
-        loadChildren: () => import('./views/SemesterExchange/StudentDashboard/StudentDashboardwithTabs.module').then(m => m.StudentDashboardwithTabsModule),
+        // loadChildren: () => import('./views/SemesterExchange/StudentDashboard/StudentDashboardwithTabs.module').then(m => m.StudentDashboardwithTabsModule),
+        loadChildren: () => import('./views/SemesterExchange/StudentDashboard/Edit-Application/StudentForm.module').then(m => m.EditApplicationModule),
       },
 
       // {

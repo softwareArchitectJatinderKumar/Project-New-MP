@@ -20,7 +20,12 @@ import { map, tap, catchError, take } from 'rxjs/operators';
 import { HeadMapping, MetricMapping } from '../Services/HeadMapping.service';
 import { PlanningrankingService } from 'src/app/_services/planningranking.service';
 import { LpuPlannerServiceService } from 'src/app/_services/lpu-planner-service.service';
+import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
 
+interface Employee {
+  employeeName: string;
+  employeeCode: string;
+}
 interface SchoolDivision {
   id: number;
   schoolDivision: string;
@@ -35,6 +40,96 @@ interface SchoolDivision {
 export class OBPMetricBinding implements OnInit {
 
     
+
+    //  Start Logic for 7-Nov-25
+ResponsiblePerson: any = ''; AssignedToUid: any; IdX :any; uploadEnabled: boolean=false;
+
+  employeeControl = new FormControl();
+  employees: Employee[] = [];
+  filteredEmployees: Employee[] = [];
+  showSuggestions = false;
+  activeSuggestionIndex: number = -1;
+  EmployeeData: Employee[] = [];
+  filteredEmployeesData: Employee[] = [];
+
+    checkFormValidity(): void {
+    this.uploadEnabled =  
+       this.AssignedToUid.length > 4
+       ;
+  }
+
+    selectEmployee(employee: Employee) {
+    this.ResponsiblePerson = employee.employeeCode;
+    this.AssignedToUid = employee.employeeCode;//this.filteredEmployeesData.map(employee => employee.employeeCode);
+    this.employeeControl.setValue(`${employee.employeeName} (${employee.employeeCode})`);
+
+    // console.log("UID"+this.AssignedToUid)  ;
+    this.filteredEmployeesData = [];
+    this.showSuggestions = false;
+    this.checkUIDValidity();
+  }
+
+  hideSuggestions() {
+    setTimeout(() => this.showSuggestions = false, 200); // Delay to allow click event to register
+  }
+
+    checkUIDValidity(): void {
+    this.uploadEnabled = this.IdX !== '' && this.AssignedToUid != '';
+  }
+
+
+  
+  onInput() {
+    const inputValue = this.employeeControl.value.toLowerCase();
+    if (inputValue) {
+      this.filteredEmployeesData = this.EmployeeData.filter(employee =>
+        employee.employeeName.toLowerCase().includes(inputValue) || employee.employeeCode.toLowerCase().includes(inputValue)
+      ).slice(0, 10);
+    } else {
+      this.filteredEmployeesData = [];
+    }
+    this.showSuggestions = true;
+    this.activeSuggestionIndex = -1;
+  }
+
+  onKeydown(event: KeyboardEvent) {
+    if (this.filteredEmployeesData.length > 0) {
+      if (event.key === 'ArrowDown') {
+        this.activeSuggestionIndex = (this.activeSuggestionIndex + 1) % this.filteredEmployeesData.length;
+      } else if (event.key === 'ArrowUp') {
+        this.activeSuggestionIndex = (this.activeSuggestionIndex - 1 + this.filteredEmployeesData.length) % this.filteredEmployeesData.length;
+      } else if (event.key === 'Enter') {
+        if (this.activeSuggestionIndex >= 0 && this.activeSuggestionIndex < this.filteredEmployeesData.length) {
+          this.selectEmployee(this.filteredEmployeesData[this.activeSuggestionIndex]);
+        }
+      }
+    }
+  }
+
+  // Mouse event handlers
+  onMouseEnter(index: number) {
+    this.activeSuggestionIndex = index;
+  }
+
+  onMouseClick(employee: any) {
+    this.selectEmployee(employee);
+  }
+ GetEmployeeData(): void {
+    this.mouDocumentsService.GetEmployeeData().subscribe({
+      next: response => {
+        if (response.item1.length > 0) {
+          this.EmployeeData = response.item1;
+        } else {
+          this.EmployeeData = [];
+        }
+      },
+      error: err => {
+        console.error(err);
+      }
+    });
+  }
+
+
   SchoolIndex: number = 0;
   DepartmentIndex: number = 0;
   SchoolInvolved: any;
@@ -52,7 +147,7 @@ export class OBPMetricBinding implements OnInit {
     for (let i = 0; i < event.length; i++) {
       this.selectedDivisions.push(event[i].id);
     }
-    this.hasSelectionError = this.selectedDivisions.length === 0;
+   // this.hasSelectionError = this.selectedDivisions.length === 0;
   }
 
   onDivisionSelected(event: any, id: number): void {
@@ -116,6 +211,8 @@ export class OBPMetricBinding implements OnInit {
     });
   }
 
+
+//   Ended Logic on 7-Nov-25 
     isLoginFailed: boolean = false;
     // Data table source
     public mappingData$!: Observable<MetricMapping[]>;
@@ -152,7 +249,7 @@ export class OBPMetricBinding implements OnInit {
         private fb: FormBuilder,
         private HeadMapping: HeadMapping, private PlanningrankingService: PlanningrankingService,
         public formBuilder: UntypedFormBuilder, private route: ActivatedRoute,
-        private authService: AuthService, private storageService: StorageService,
+        private authService: AuthService, private storageService: StorageService,private mouDocumentsService: MouDocumentsService,
         private title: Title
     ) { }
 
@@ -174,6 +271,7 @@ export class OBPMetricBinding implements OnInit {
                 if (!this.storageService.isLoggedIn() || authToken === 'Token Expired') {
                     this.LoginFailed('Token Expired');
                 }
+                this.GetEmployeeData();
                 this.GetAllEventsData();
                 this.GetAllActivities();
                 const stMainElement = document.getElementById('stMain');

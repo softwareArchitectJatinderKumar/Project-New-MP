@@ -14,9 +14,9 @@ import { map, tap, catchError, take, finalize } from 'rxjs/operators';
 
 import { Component, OnInit } from '@angular/core';
 import { DataTableColumn } from '../../views/DynamicDataGrid/Dynamic-Datagrid-Component';
+import { FieldConfig } from './Field-config';
 
-
-type ActiveTab = 'metric' | 'criteria' | 'indicator';
+type ActiveTab = 'metric' | 'criteria' | 'indicator' | 'session';
 
 @Component({
   selector: 'app-master-details-page',
@@ -120,7 +120,6 @@ export class MasterDetailsPageComponent implements OnInit {
     this.loadingIndicator = true;
     switch (tab) {
       case 'metric':
-
         this.isMetricLoading = true;
         apiCall = this.dataService.apiCallgetMetricMasterDetails();
         this.metricRecords = apiCall;
@@ -132,10 +131,12 @@ export class MasterDetailsPageComponent implements OnInit {
         this.criteriaRecords = apiCall;
         break;
       case 'indicator':
-
         this.isIndicatorLoading = true;
         apiCall = this.dataService.getKeyIndicatorMasterDetails();
         this.indicatorRecords = apiCall;
+        break;
+      case 'session':
+        this.isIndicatorLoading = false; 
         break;
     }
 
@@ -144,11 +145,11 @@ export class MasterDetailsPageComponent implements OnInit {
         if (tab === 'metric') this.isMetricLoading = false;
         if (tab === 'criteria') this.isCriteriaLoading = false;
         if (tab === 'indicator') this.isIndicatorLoading = false;
+        if (tab === 'session') this.isIndicatorLoading = false;
         this.loadingIndicator = false;
       })
     ).subscribe({
       next: (response: any) => {
-
         const dataArray: any[] = response && response.item1 ? response.item1 : [];
 
         if (dataArray && dataArray.length > 0) {
@@ -164,6 +165,8 @@ export class MasterDetailsPageComponent implements OnInit {
           } else if (tab === 'indicator') {
             this.indicatorRecords = dataArray;
             this.indicatorColumns = columns;
+          } else if (tab === 'session') {
+             
           }
         } else {
           console.warn(`API call succeeded for ${tab}, but data array is empty.`);
@@ -196,4 +199,52 @@ export class MasterDetailsPageComponent implements OnInit {
   private getMockMetricData(count: number): any[] { /* ... */ return Array.from({ length: count }, (_, i) => ({ metricId: `M${100 + i}`, metricName: `Metric Title ${i + 1}`, /* ... */ })); }
   private getMockCriteriaData(count: number): any[] { /* ... */ return Array.from({ length: count }, (_, i) => ({ criteriaId: `CRI${500 + i}`, description: `Evaluation details for item ${i + 1}.`, /* ... */ })); }
   private getMockIndicatorData(count: number): any[] { /* ... */ return Array.from({ length: count }, (_, i) => ({ indicatorCode: `KI${700 + i}`, title: `Key Performance Indicator ${i + 1}`, /* ... */ })); }
+
+
+
+
+
+  public formFields: FieldConfig[] = [
+    {
+      name: 'projectName',
+      label: 'Project Name',
+      type: 'text',
+    },
+    {
+      name: 'startDate',
+      label: 'Start Date',
+      type: 'date',
+    },
+    {
+      name: 'isApproved',
+      label: 'Approved?',
+      type: 'radio',
+      options: [
+        { label: 'Yes', value: true },
+        { label: 'No', value: false },
+      ],
+      value: false, // Default selection
+    },
+    {
+      name: 'remarks',
+      label: 'Remarks/Notes',
+      type: 'textarea',
+    },
+    {
+      name: 'clientName',
+      label: 'Client Name',
+      type: 'text',
+    },
+    // Add N number of fields here
+  ];
+
+  onFormSubmit(formValue: any) {
+    console.log('Form Submitted!', formValue);
+    // Logic to save the data goes here (e.g., API call)
+  }
+
+  onFormCancel() {
+    console.log('Form Cancelled.');
+    // Logic to navigate away or reset goes here
+  }
 }

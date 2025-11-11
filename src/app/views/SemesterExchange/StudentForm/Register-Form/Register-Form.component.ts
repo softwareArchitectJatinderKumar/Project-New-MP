@@ -317,7 +317,7 @@ ContactNo:any;
             this.GetStudentAllPreviousMarks(this.RegistrationNo);
         // } else {
         //      this.isEligible = true;
-             this.getUniversityDetails();
+            //  this.getUniversityDetails();
         // }
     });
   }
@@ -461,7 +461,7 @@ GetStudentAllPreviousMarks(Regdno: any): void {
 
         // 5. Post Check Action: Always attempt to fetch university details if data exists
         this.getUniversityDetails();
-
+        this.FindGradeFCount(this.RegistrationNo);
         // NOTE: The separate FindGradeFCount() call is removed here as its logic 
         // should be entirely contained within GetStudentMarksDetails() which handles CurrentTerm > 1.
       },
@@ -606,7 +606,7 @@ GetStudentAllPreviousMarks(Regdno: any): void {
 
   getUniversityDetails(): void {
     if (!this.ProgramCode) return;
-    this.servicesSM.getUniversityLists(this.ProgramCode).subscribe((response) => {
+    this.servicesSM.getUniversityLists('').subscribe((response) => {
       this.uniData = response.item1;
     });
   }

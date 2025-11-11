@@ -213,7 +213,7 @@ export class DashboardFacultyComponent implements OnInit {
   }
 
 
-    LoginFailed(error: any): void {
+  LoginFailed(error: any): void {
     this.IsLoginFailed = true;
     Swal.fire({
       title: 'Login Failed',

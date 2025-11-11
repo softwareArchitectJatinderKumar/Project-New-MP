@@ -18,7 +18,7 @@
     <div class="card-body">
       <form [formGroup]="mappingForm" (ngSubmit)="onSubmit()">
         <div class="row g-3">
-
+      
           <div class="col-md-6">
             <label for="headUid" class="form-label">Head UID <span class="text-danger">*</span></label>
             <input type="number" formControlName="HeadUID" class="form-control"
@@ -28,15 +28,32 @@
             <div class="invalid-feedback" *ngIf="mappingForm.get('HeadUID')?.errors?.['pattern']">Must be a number.
             </div>
           </div>
-
+      
           <div class="col-md-6">
             <label for="assistantUid" class="form-label">Assistant UID <span class="text-danger">*</span></label>
-            <input type="number" formControlName="AssistantUID" class="form-control"
-              [class.is-invalid]="mappingForm.get('AssistantUID')?.invalid && mappingForm.get('AssistantUID')?.touched">
-            <div class="invalid-feedback" *ngIf="mappingForm.get('AssistantUID')?.errors?.['required']">Assistant UID is
-              required.</div>
+            <!-- <input type="number" formControlName="AssistantUID" class="form-control"
+                    [class.is-invalid]="mappingForm.get('AssistantUID')?.invalid && mappingForm.get('AssistantUID')?.touched">
+                  <div class="invalid-feedback" *ngIf="mappingForm.get('AssistantUID')?.errors?.['required']">Assistant UID is
+                    required.</div> -->
+      
+            <input type="text" required name="responsiblePerson" id="responsiblePerson" class="form-control"
+              [(ngModel)]="ResponsiblePerson" [formControl]="employeeControl" (input)="onInput()"
+              (keydown)="onKeydown($event)" placeholder="Employee Name or Code" (focus)="showSuggestions = true"
+              (blur)="hideSuggestions()" />
+            <div *ngIf="AssignedToUid > 0" class="form-text text-success">
+              Assistant UID : {{ AssignedToUid }}
+            </div>
+            <div class="suggestions border rounded mt-1" *ngIf="showSuggestions && filteredEmployeesData.length > 0">
+              <div *ngFor="let employee of filteredEmployeesData; let i = index" [class.active]="i === activeSuggestionIndex"
+                (mousedown)="selectEmployee(employee)" class="p-2 cursor-pointer">
+                {{ employee.employeeName }} ({{ employee.employeeCode }})
+              </div>
+            </div>
+            <div *ngIf="employeeControl.invalid && employeeControl.touched" class="text-danger mt-1">
+              Assistant UID is required.
+            </div>
           </div>
-
+      
           <div class="col-md-4">
             <label for="metricId" class="form-label">Metric ID <span class="text-danger">*</span></label>
             <input type="number" formControlName="MetricId" class="form-control"
@@ -45,23 +62,20 @@
               required.</div>
           </div>
           <div class="col-md-6">
-            <label for="metricId" class="form-label">Select School Involved <span class="text-danger">*</span></label>
-              <ng-select [items]="allSchoolDivisions" #ngSelectComponentStream [multiple]="true" bindLabel="schoolDivision"
-                [clearable]="true" [virtualScroll]="true" placeholder="Select" (change)="changeResponsiblePlanned($event)"
-                bindValue="id" [hideSelected]="true" [(ngModel)]="selectedSchoolDivisions" class="col-12">
-              </ng-select>
-              <div *ngIf="hasSelectionError" class="themeClr">One school division is Required</div>
-              <!-- <div class="invalid-feedback" *ngIf="mappingForm.get('MetricId')?.errors?.['required']">Metric ID is
-                          required.</div> -->
-                          {{this.selectedDivisions}}
-            </div>
-
+            <label for="metricId" class="form-label">Select School Involved </label>
+            <ng-select [items]="allSchoolDivisions" #ngSelectComponentStream [multiple]="true" bindLabel="schoolDivision"
+              [clearable]="true" [virtualScroll]="true" placeholder="Select" (change)="changeResponsiblePlanned($event)"
+              bindValue="id" [hideSelected]="true" [(ngModel)]="selectedSchoolDivisions" class="col-12">
+            </ng-select>
+      
+          </div>
+      
           <div class="col-md-2" *ngIf="isUpdateMode">
             <label class="form-label d-block">Is Active <span class="text-danger">*</span></label>
             <div class="btn-group" role="group" aria-label="Is Active options">
               <ng-container *ngFor="let option of isActiveOptions">
-                <input type="radio" class="btn-check" [id]="'active-' + option.value" name="IsActive"
-                  [value]="option.value" formControlName="IsActive">
+                <input type="radio" class="btn-check" [id]="'active-' + option.value" name="IsActive" [value]="option.value"
+                  formControlName="IsActive">
                 <label class="btn btn-outline-secondary" [for]="'active-' + option.value">{{ option.label }}</label>
               </ng-container>
             </div>
@@ -69,13 +83,13 @@
               *ngIf="mappingForm.get('IsActive')?.invalid && mappingForm.get('IsActive')?.touched">Please select an
               option.</div>
           </div>
-
+      
           <div class="col-md-12" *ngIf="isUpdateMode">
             <label for="remarks" class="form-label">Remarks <span class="text-danger">*</span></label>
             <textarea id="remarks" formControlName="Remarks" class="form-control" rows="3"
               [class.is-invalid]="mappingForm.get('Remarks')?.invalid && mappingForm.get('Remarks')?.touched"></textarea>
-            <div class="invalid-feedback"
-              *ngIf="mappingForm.get('Remarks')?.invalid && mappingForm.get('Remarks')?.touched">Remarks are required
+            <div class="invalid-feedback" *ngIf="mappingForm.get('Remarks')?.invalid && mappingForm.get('Remarks')?.touched">
+              Remarks are required
               for updates.</div>
           </div>
           <div class="row g-3">
@@ -92,20 +106,19 @@
                 *ngIf="mappingForm.get('Type')?.invalid && mappingForm.get('Type')?.touched">
                 Please select a type.</div>
             </div>
-
-
+      
+      
             <div class=" col-md-4 mt-5">
               <button type="submit" class="btn btn-lg w-30"
-                [ngClass]="{'btn-primary': !isUpdateMode, 'btn-info': isUpdateMode}"
-                [disabled]="mappingForm.invalid">
+                [ngClass]="{'btn-primary': !isUpdateMode, 'btn-info': isUpdateMode}" [disabled]="mappingForm.invalid">
                 <i class="bi bi-cloud-arrow-up"></i> {{ isUpdateMode ? 'Update Record' : 'Submit Record' }}
               </button>
             </div>
             <div class=" col-md-4 mt-5">
               <!-- <button type="button" class="btn btn-outline-secondary w-30 mt-2" *ngIf="isUpdateMode"
-                (click)="isUpdateMode=false; mappingForm.reset({ IsActive: 1, Type: 'PA' })">
-                Cancel Update
-              </button> -->
+                      (click)="isUpdateMode=false; mappingForm.reset({ IsActive: 1, Type: 'PA' })">
+                      Cancel Update
+                    </button> -->
               <button type="button" class="btn btn-secondary w-30 mt-2" *ngIf="isUpdateMode" (click)="onCancelUpdate()">
                 Cancel Update
               </button>

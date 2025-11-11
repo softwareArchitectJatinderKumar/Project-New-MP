@@ -30,6 +30,12 @@
                 Indicator Master Details
             </button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="activeTab === 'session'" [class.disabled]="isIndicatorLoading"
+                (click)="selectTab('session')" type="button">
+                session Details
+            </button>
+        </li>
     </ul>
     <div class="tab-content" id="OBPDashbaoardData">
         <div class="tab-pane fade" [class.show]="activeTab === 'metric'" [class.active]="activeTab === 'metric'">
@@ -61,6 +67,10 @@
                     [columns]="indicatorColumns"> </app-data-grid>
             </div>
         </div>
+
+        <div class="tab-pane fade" [class.show]="activeTab === 'session'" [class.active]="activeTab === 'session'">
+            <app-dynamic-form [fields]="formFields" (submitted)="onFormSubmit($event)" cancelled)="onFormCancel()" ></app-dynamic-form>
+        </div>
         <ng-template #NoData>
             <div class="card shadow-sm">
                 <div class="card-body text-center py-5">
@@ -71,54 +81,7 @@
         </ng-template>
     </div>
 
-
-    <!-- 
-    <div class="tab-content">
-        <div class="tab-pane fade" 
-             [class.show]="activeTab === 'metric'" 
-             [class.active]="activeTab === 'metric'">
-
-            <div *ngIf="isMetricLoading" class="text-center p-5">
-                <div class="spinner-border text-primary" role="status"></div>
-                <p class="mt-2">Loading Metric Master Details...</p>
-            </div>
-            
-            <app-data-grid *ngIf="!isMetricLoading"
-                [componentTitle]="'Metric Details List'"
-                [records]="metricRecords"
-                [columns]="metricColumns"> </app-data-grid>
-        </div>
-
-        <div class="tab-pane fade" 
-             [class.show]="activeTab === 'criteria'" 
-             [class.active]="activeTab === 'criteria'">
-            
-            <div *ngIf="isCriteriaLoading" class="text-center p-5">
-                <div class="spinner-border text-primary" role="status"></div>
-                <p class="mt-2">Loading Criteria Master Details...</p>
-            </div>
-
-            <app-data-grid *ngIf="!isCriteriaLoading"
-                [componentTitle]="'Criterai MasterDetails List'"
-                [records]="criteriaRecords"
-                [columns]="criteriaColumns"> </app-data-grid>
-        </div>
-
-        <div class="tab-pane fade" 
-             [class.show]="activeTab === 'indicator'" 
-             [class.active]="activeTab === 'indicator'">
-
-            <div *ngIf="isIndicatorLoading" class="text-center p-5">
-                <div class="spinner-border text-primary" role="status"></div>
-                <p class="mt-2">Loading Key Indicator Master Details...</p>
-            </div>
-
-            <app-data-grid *ngIf="!isIndicatorLoading"
-                [componentTitle]="'KeyIndicator Details List'"
-                [records]="indicatorRecords"
-                [columns]="indicatorColumns"> </app-data-grid>
-        </div>
-    </div> -->
+ 
 </div>
 
 <ng-template #loginFailed>

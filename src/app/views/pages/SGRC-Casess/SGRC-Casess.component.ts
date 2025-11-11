@@ -389,19 +389,26 @@ export class SGRCComponenent implements OnInit {
   }
 
   exportToExcel(): void {
-    const fileName = 'SGRC-Cases-Details.xlsx';
+    const fileName = 'SGRC-Cases-DetailsAll.xlsx';
     const exportedData = this.studentLists.map(item => ({
       studentName: item.name,
       email: item.email,
       phone: item.phone,
       description: item.description,
       TicketNo: item.ticketNumber,
+      createdOn: item.createdOn,
       subject: item.subject,
       Nature: item.nature,
-      createdOn: item.createdOn,
+      Status: item.status,
+      RemarksDetails: item.remarksDetails,
     }));
 
+
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
+
+    const wscols = Array(18).fill({ wpx: 340 }); // Simplified column width assignment
+    ws['!cols'] = wscols;
+
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
     const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
@@ -414,17 +421,24 @@ export class SGRCComponenent implements OnInit {
     exportToExcelClosedCases(): void {
     const fileName = 'SGRC-Closed-Cases-Details.xlsx';
     const exportedData = this.studentListsClosedCases.map(item => ({
-      studentName: item.name,
+       studentName: item.name,
       email: item.email,
       phone: item.phone,
       description: item.description,
       TicketNo: item.ticketNumber,
+      createdOn: item.createdOn,
       subject: item.subject,
       Nature: item.nature,
-      createdOn: item.createdOn,
+      Status: item.status,
+      RemarksDetails: item.remarksDetails,
     }));
 
+
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
+
+    const wscols = Array(18).fill({ wpx: 340 }); // Simplified column width assignment
+    ws['!cols'] = wscols;
+
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
     const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
@@ -442,12 +456,19 @@ export class SGRCComponenent implements OnInit {
       phone: item.phone,
       description: item.description,
       TicketNo: item.ticketNumber,
+      createdOn: item.createdOn,
       subject: item.subject,
       Nature: item.nature,
-      createdOn: item.createdOn,
+      Status: item.status,
+      RemarksDetails: item.remarksDetails,
     }));
 
+
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
+
+    const wscols = Array(18).fill({ wpx: 340 }); // Simplified column width assignment
+    ws['!cols'] = wscols;
+
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
     const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
