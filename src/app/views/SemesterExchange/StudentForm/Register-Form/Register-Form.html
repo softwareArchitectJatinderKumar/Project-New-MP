@@ -68,7 +68,7 @@
                         <div class="d-flex align-items-center justify-content-center flex-wrap gap-3">
                             <ng-container *ngFor="let label of stepLabels; let i = index">
                                 <div class="step" [class.active]="i === currentStep" [class.past]="i < currentStep">
-                                    <span class="badge rounded-pill step-badge" [ngClass]="{
+                                    <span class="badge rounded-pill step-badge fs-5" [ngClass]="{
                                     'bg-primary': i === currentStep,
                                     'bg-success': i < currentStep,
                                     'bg-secondary': i > currentStep

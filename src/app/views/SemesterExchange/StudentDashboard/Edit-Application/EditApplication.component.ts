@@ -4,8 +4,6 @@ import Swal from 'sweetalert2';
 import { finalize } from 'rxjs/operators';
 import { SemesterExchangeStuDetailsService } from 'src/app/_services/semester-exchange-stu-details.service';
 import { ActivatedRoute } from '@angular/router';
-
-// keep the same service imports as your project
 import { AuthService } from 'src/app/_services/auth.service';
 import { StorageService } from 'src/app/_services/storage.service';
 import { countries } from '../../countries-list'; // Assuming countries-list.ts exists and exports 'countries'
@@ -14,7 +12,6 @@ interface DocumentField {
   key: string;
   label: string;
   fileName: string;
-  // FIX: Allow fileData to be string (URL) or null
   fileData: string | null; 
 }
 
@@ -27,16 +24,14 @@ export class EditApplicationComponent implements OnInit {
   form!: FormGroup;
   isLoading = false;
   isSubmitted = false;
-  currentStep = 1;
+  currentStep = 0;
 
   RegistrationNo: string | null = null;
   ApplicationId: string | null = null;
   stuApplication: any = null;
 
-  // New property to manage editing state for each step (Academic Summary is step 0, Contact is 1, Prefs is 2, Passport/Sponsor is 3)
   isEditingStep: boolean[] = [false, false, false, false, false]; 
 
-  // relaxed types to satisfy strict mode
   pickedFiles: {
     [key: string]: { file: File | null; base64?: string | null; fileName?: string | null };
   } = {
@@ -49,8 +44,6 @@ export class EditApplicationComponent implements OnInit {
 
  setActiveTab(tabKey: any): void {
   this.currentStep = tabKey;
-
-  // Map the tab key back to the step index (if needed)
   const tabToStepMap: { [key: string]: number } = {
     'application': 0,
     'documents': 1,
@@ -59,6 +52,27 @@ export class EditApplicationComponent implements OnInit {
   this.currentStep = tabToStepMap[tabKey] || 0;
 }
 
+  // student image
+  studentDetailsWithImage: any;
+  StudentImage: string | null = null;
+
+  convertImageData(imageData: string): string {
+    return imageData ? `data:image/jpeg;base64,${imageData}` : '';
+  }
+
+  getStuDetailsWithImage(Regno: any): void {
+    if (!Regno) return;
+    this.ServicesSM.GetStuDetailsWithImage(Regno).subscribe((response: any) => {
+      if (response?.item1?.length > 0) {
+        this.studentDetailsWithImage = response.item1[0];
+        this.StudentImage = this.convertImageData(this.studentDetailsWithImage.imageData);
+      } else {
+        this.StudentImage = null;
+      }
+    }, () => {
+      this.StudentImage = null;
+    });
+  }
 
 /**
  * Moves to a specific step index and updates the active tab accordingly.
@@ -73,8 +87,6 @@ goToStep(stepIndex: number): void {
     this.setActiveTab(stepToTabMap[stepIndex]); 
   }
 }
-  // document table entries (for UI)
-// FIX: Explicitly type documentFields using the new interface
   documentFields: DocumentField[] = [
     { key: 'consent', label: 'Consent Letter', fileName: '', fileData: null },
     { key: 'resume', label: 'Resume / CV', fileName: '', fileData: null },
@@ -82,15 +94,6 @@ goToStep(stepIndex: number): void {
     { key: 'english', label: 'English Test Score Card', fileName: '', fileData: null },
     { key: 'fees', label: 'Fees Receipt (Optional)', fileName: '', fileData: null }
   ];  
-  // documentFields = [
-  //   { key: 'consent', label: 'Consent Letter', fileName: '', fileData: null },
-  //   { key: 'resume', label: 'Resume / CV', fileName: '', fileData: null },
-  //   { key: 'passport', label: 'Passport Copy', fileName: '', fileData: null },
-  //   { key: 'english', label: 'English Test Score Card', fileName: '', fileData: null },
-  //   { key: 'fees', label: 'Fees Receipt (Optional)', fileName: '', fileData: null }
-  // ];
-
-  // UI data that existed in registration form
   countries= countries; // populate if needed
   uniData: any[] = []; // populate if needed
 
@@ -103,10 +106,6 @@ goToStep(stepIndex: number): void {
   ];
   englishTestNames = ['PTE', 'IELTS', 'TOEFL', 'DULINGO'];
 
-  
-
-  // englishTestNames = ['IELTS', 'TOEFL', 'PTE', 'Duolingo'];
-  // englishOptions = [{ label: 'Appeared', value: 'Appeared' }, { label: 'Applied / Not Appeared', value: 'Applied' }];
   availableFundsOptions = [
     { value: '', label: 'Select' },
     { value: '2 to 4 Lakhs', label:  '2 to 4 Lakhs' },
@@ -409,7 +408,7 @@ updateStep(step: number) {
     // Build FormGroup with all controls from Register-Form.html
     this.form = this.fb.group({
       // Contact Information
-      EmailId: ['', [Validators.required, Validators.email]],
+      EmailId: [this.EmailId, Validators.required],
       CountryName: ['', Validators.required],
       WhatsAppNo: ['', Validators.required],
       PhoneNumber: ['', Validators.required],
@@ -456,7 +455,7 @@ updateStep(step: number) {
     });
     this.form.disable(); // Disable form fields initially
   }
-
+EmailId:any;
   /** ------------------- Load existing application ------------------- */
   getApplicationDetails(regNo: string): void {
     this.isLoading = true;
@@ -467,9 +466,10 @@ updateStep(step: number) {
           
             this.stuApplication = response.item1[0];
             this.ApplicationId = this.stuApplication.applicationId || null;
+            this.EmailId =  this.stuApplication.emailId || '';
             // Patch fields into reactive form (map backend keys to form keys)
             this.form.patchValue({
-              EmailId: this.stuApplication.emailId || '',
+              EmailId: this.stuApplication?.emailId || '',
               CountryName: this.stuApplication.countryName || '',
               WhatsAppNo: this.stuApplication.whatsAppNo || '',
               PhoneNumber: this.stuApplication.phoneNumber || '',
@@ -516,7 +516,7 @@ updateStep(step: number) {
               this.form.enable();
             }
 
-
+            
             // populate documentFields from backend paths/names
             this.populateDocumentFieldsFromApp();
            
@@ -535,7 +535,6 @@ updateStep(step: number) {
   }
 /** ------------------- Document Logic Refactoring ------------------- */
   SERVER_BASE_URL:any='https://files.lpu.in/umsweb/DIA/SemesterExchangedocuments/';
-  // *** FIX 2: Refactor to map API fields to fileName and construct URL for fileData ***
   private populateDocumentFieldsFromApp(): void {
     if (!this.stuApplication) return;
 
@@ -599,78 +598,13 @@ updateStep(step: number) {
     window.open(df.fileData, '_blank');
   }
 
-
-
-  // private populateDocumentFieldsFromApp(): void {
-  //   if (!this.stuApplication) return;
-
-  //   // map all known fields used in your register form / dashboard
-  //   this.documentFields.forEach(df => {
-  //     switch (df.key) {
-  //       case 'consent':
-  //         // FIX: Use ConsentLetterFileName for filename
-  //         df.fileName = this.stuApplication.ConsentLetterFileName || ''; 
-  //         // df.fileData = this.stuApplication.ConsentLetterData || this.stuApplication.consentLetterDocumentPath || null;
-  //         break;
-  //       case 'resume':
-  //         // FIX: Use ResumeFileName for filename
-  //         df.fileName = this.stuApplication.ResumeFileName || '';
-  //         df.fileData = this.stuApplication.ResumeFileData || this.stuApplication.resumeDocumentPath || null;
-  //         break;
-  //       case 'passport':
-  //         // The API provides the path/data as PassportDocumentPath, but the display name might be a generic filename field.
-  //         // We use PassportDocumentPath for the fileData/URL and assume PassportFileName is still the name for robustness.
-  //         df.fileName = this.stuApplication.PassportFileName || ''; 
-  //         // FIX: Use PassportDocumentPath for the viewable file data/path
-  //         df.fileData = this.stuApplication.PassportDocumentPath || null;
-  //         break;
-  //       case 'english':
-  //         // FIX: Use EnglishTestFileName for filename
-  //         df.fileName = this.stuApplication.EnglishTestFileName || '';
-  //         df.fileData = this.stuApplication.EnglishProofData || this.stuApplication.englishTestDocumentPath || null;
-  //         break;
-  //       case 'fees':
-  //         // FIX: Use FeesProofFileName for filename
-  //         df.fileName = this.stuApplication.FeesProofFileName || '';
-  //         df.fileData = this.stuApplication.FeesProofData || this.stuApplication.feesProofDocumentPath || null;
-  //         break;
-  //     }
-  //   });
-  // }
-  // private populateDocumentFieldsFromApp(): void {
-  //   if (!this.stuApplication) return;
-
-  //   // map all known fields used in your register form / dashboard
-  //   this.documentFields.forEach(df => {
-  //     switch (df.key) {
-  //       case 'consent':
-  //         df.fileName = this.stuApplication.ConsentLetterFileName || this.stuApplication.consentLetterFileName || '';
-  //         df.fileData = this.stuApplication.ConsentLetterData || this.stuApplication.consentLetterDocumentPath || null;
-  //         break;
-  //       case 'resume':
-  //         df.fileName = this.stuApplication.ResumeFileName || this.stuApplication.resumeFileName || '';
-  //         df.fileData = this.stuApplication.ResumeFileData || this.stuApplication.resumeDocumentPath || null;
-  //         break;
-  //       case 'passport':
-  //         df.fileName = this.stuApplication.PassportFileName || this.stuApplication.passportFileName || '';
-  //         df.fileData = this.stuApplication.PassportFileData || this.stuApplication.passportDocumentPath || null;
-  //         break;
-  //       case 'english':
-  //         df.fileName = this.stuApplication.EnglishProofFileName || this.stuApplication.englishProofFileName || '';
-  //         df.fileData = this.stuApplication.EnglishProofData || this.stuApplication.englishTestDocumentPath || null;
-  //         break;
-  //       case 'fees':
-  //         df.fileName = this.stuApplication.FeesProofFileName || this.stuApplication.feesProofFileName || '';
-  //         df.fileData = this.stuApplication.FeesProofData || this.stuApplication.feesProofDocumentPath || null;
-  //         break;
-  //     }
-  //   });
-  // }
-
+ 
   /** ------------------- Step navigation ------------------- */
   
   // nextStep is now purely for navigation without saving or validation (as requested)
   nextStep() {
+     this.isLoading = true;
+    const start = Date.now();
     // If the user is in edit mode, force them to Update/Cancel first
     if (this.isEditingStep[this.currentStep]) {
         Swal.fire('Please Update or Cancel', 'You are currently in edit mode. Please click "Update" to save your changes or "Cancel" to discard them before proceeding to the next step.', 'warning');
@@ -685,9 +619,14 @@ updateStep(step: number) {
     this.form.disable();
     // Re-load data for the new step in case changes were made (though recommended to use Update)
     // if (this.RegistrationNo) this.getApplicationDetails(this.RegistrationNo);
+     const elapsed = Date.now() - start;
+        const remaining = Math.max(800 - elapsed, 0);
+        setTimeout(() => { this.isLoading = false; }, remaining);
   }
 
   prevStep() {
+     this.isLoading = true;
+    const start = Date.now();
     // If the user is in edit mode, force them to Update/Cancel first
     if (this.isEditingStep[this.currentStep]) {
         Swal.fire('Please Update or Cancel', 'You are currently in edit mode. Please click "Update" to save your changes or "Cancel" to discard them before moving back.', 'warning');
@@ -696,6 +635,9 @@ updateStep(step: number) {
     
     if (this.currentStep >=1) this.currentStep--;
     this.form.disable(); // Ensure form is disabled on navigation
+      const elapsed = Date.now() - start;
+        const remaining = Math.max(800 - elapsed, 0);
+        setTimeout(() => { this.isLoading = false; }, remaining);
   }
 
   /** ------------------- File handling & UpdateDocuments ------------------- */
@@ -775,39 +717,8 @@ updateStep(step: number) {
         }
       });
   }
+ 
 
-  // viewDocument(df: any) {
-  //   if (!df.fileData) {
-  //     Swal.fire('No file available to view', '', 'info');
-  //     return;
-  //   }
-
-  //   // if backend provided a path/URL, open it; else treat as base64
-  //   if (typeof df.fileData === 'string' && (df.fileData.startsWith('http') || df.fileData.startsWith('/'))) {
-  //     window.open(df.fileData, '_blank');
-  //     return;
-  //   }
-
-  //   try {
-  //     const byteArray = new Uint8Array(atob(df.fileData).split('').map(c => c.charCodeAt(0)));
-  //     const blob = new Blob([byteArray], { type: 'application/pdf' });
-  //     const url = window.URL.createObjectURL(blob);
-  //     window.open(url, '_blank');
-  //   } catch (e) {
-  //     // fallback try open as path
-  //     if (typeof df.fileData === 'string') {
-  //       window.open(df.fileData, '_blank');
-  //     } else {
-  //       Swal.fire('Cannot preview file', '', 'error');
-  //     }
-  //   }
-  // }
-
-  /** optional: fetch student image for header */
-  getStuDetailsWithImage(Regno: any): void {
-    if (!Regno) return;
-    this.studentService.GetStuDetailsWithImage(Regno).subscribe(() => { /* ignore for now */ });
-  }
 
   /** ------------------- Helpers ------------------- */
   formatDateForInput(dateStr: any): string | null {
@@ -827,15 +738,7 @@ updateStep(step: number) {
   toCamelCase(key: string): string {
     return key.charAt(0).toLowerCase() + key.slice(1);
   }
-
-
-
-
-
-
-
-
-  
+ 
     // // File data and status
     PassportFileData: any = ''; PassportFileStatus: boolean = false; PassportFileName: any = '';
     ResumeFileData: any = ''; ResumeFileStatus: boolean = false; ResumeFileName: any = '';
@@ -1174,1041 +1077,3 @@ updateStep(step: number) {
     }
   }
 }
-// import { Component, OnInit } from '@angular/core';
-// import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-// import Swal from 'sweetalert2';
-// import { finalize } from 'rxjs/operators';
-// import { SemesterExchangeStuDetailsService } from 'src/app/_services/semester-exchange-stu-details.service';
-// import { ActivatedRoute } from '@angular/router';
-
-// // keep the same service imports as your project
-// import { AuthService } from 'src/app/_services/auth.service';
-// import { StorageService } from 'src/app/_services/storage.service';
-// import { countries } from '../../countries-list'; // Assuming countries-list.ts exists and exports 'countries'
-
-// @Component({
-//   selector: 'app-edit-application',
-//   templateUrl: './edit-application.html',
-//   styleUrls: ['./edit-application.component.scss']
-// })
-// export class EditApplicationComponent implements OnInit {
-//   form!: FormGroup;
-//   isLoading = false;
-//   isSubmitted = false;
-//   currentStep = 1;
-
-//   RegistrationNo: string | null = null;
-//   ApplicationId: string | null = null;
-//   stuApplication: any = null;
-
-//   // relaxed types to satisfy strict mode
-//   pickedFiles: {
-//     [key: string]: { file: File | null; base64?: string | null; fileName?: string | null };
-//   } = {
-//     consent: { file: null, base64: null, fileName: null },
-//     resume: { file: null, base64: null, fileName: null },
-//     passport: { file: null, base64: null, fileName: null },
-//     english: { file: null, base64: null, fileName: null },
-//     fees: { file: null, base64: null, fileName: null }
-//   };
-
-//   // document table entries (for UI)
-//   documentFields = [
-//     { key: 'consent', label: 'Consent Letter', fileName: '', fileData: null },
-//     { key: 'resume', label: 'Resume / CV', fileName: '', fileData: null },
-//     { key: 'passport', label: 'Passport Copy', fileName: '', fileData: null },
-//     { key: 'english', label: 'English Test Score Card', fileName: '', fileData: null },
-//     { key: 'fees', label: 'Fees Receipt (Optional)', fileName: '', fileData: null }
-//   ];
-
-//   // UI data that existed in registration form
-//   countries= countries; // populate if needed
-//   uniData: any[] = []; // populate if needed
-//   englishTestNames = ['IELTS', 'TOEFL', 'PTE', 'Duolingo'];
-//   englishOptions = [{ label: 'Appeared', value: 'Appeared' }, { label: 'Applied / Not Appeared', value: 'Applied' }];
-//   availableFundsOptions = [
-//     { label: 'Less than ₹5 lakh', value: 'Less than ₹5 lakh' },
-//     { label: '₹5-10 lakh', value: '₹5-10 lakh' },
-//     { label: 'Above ₹10 lakh', value: 'Above ₹10 lakh' }
-//   ];
-
-//   stepLabels = [
-//     'Academic Summary',        // was step 0 (marks tables)
-//     'Contact Information',     // contact & relative
-//     'University Preferences',  // preferences
-//     'Passport / Visa / English / Sponsor', // personal/legal
-//     'Documents'                // separate card (we will show as step but documents are separate too)
-//   ];
-
-//   constructor(
-//     private fb: FormBuilder,
-//     private studentService: SemesterExchangeStuDetailsService,
-//     private route: ActivatedRoute,
-//     private authService: AuthService,
-//     private storageService: StorageService,
-//     private ServicesSM: SemesterExchangeStuDetailsService,
-//   ) {}
-
-//   // ngOnInit(): void {
-//   //   this.RegistrationNo = this.route.snapshot.params['RegistrationNo'] || null;
-//   //   this.buildForm();
-//   //   if (this.RegistrationNo) {
-//   //     this.getApplicationDetails(this.RegistrationNo);
-//   //     this.getStuDetailsWithImage(this.RegistrationNo);
-//   //   }
-//   // }
-
-
-//   // Add inside class EditApplicationComponent
-// isEditingStep: boolean[] = [false, false, false, false]; // one per step
-
-// startEdit(step: number) {
-//   this.isEditingStep[step] = true;
-// }
-
-// cancelEdit(step: number) {
-//   this.isEditingStep[step] = false;
-//   // reload form data for that step (reset to original)
-//   if (this.RegistrationNo) this.getApplicationDetails(this.RegistrationNo);
-// }
-
-// updateStep(step: number) {
-//   const formData = new FormData();
-//   const raw = this.form.getRawValue();
-
-//   formData.append('RegistrationNo', this.RegistrationNo || 'NA');
-//   if (this.ApplicationId) formData.append('ApplicationId', this.ApplicationId);
-
-//   const fieldsForStep: Record<number, string[]> = {
-//     1: ['EmailId', 'CountryName', 'WhatsAppNo', 'PhoneNumber', 'ParentContact',
-//         'HasRelativeDetails', 'RelativeName', 'RelativeCountryName', 'RelativeRelation',
-//         'RelativeEmail', 'RelativePhone'],
-//     2: ['ApplyingOption', 'UniversityOption1', 'UniversityOption2', 'UniversityOption3'],
-//     3: ['PassportStatus', 'PassportNumber', 'PassportIssueDate', 'PassportValidUpto',
-//         'IsVisaRejected', 'VisaRejectedReason', 'VisaRejectedCountry',
-//         'EnglishTestType', 'TestName', 'TestDate', 'ListeningScore', 'SpeakingScore',
-//         'ReadingScore', 'WritingScore', 'OverallScore',
-//         'SponsorType', 'AvailableFunds', 'SponsorName', 'SponsorRelation', 'AcceptPolicy']
-//   };
-
-//   const fields = fieldsForStep[step] || [];
-//   fields.forEach(k => formData.append(k, raw[k] ?? ''));
-
-//   this.isLoading = true;
-//   this.studentService.updateApplicationDetails(formData).subscribe({
-//     next: (resp: any) => {
-//       const msg = resp?.[0]?.msg || resp?.item1?.[0]?.msg;
-//       if (msg === 'Success') {
-//         Swal.fire('Updated', 'Details updated successfully', 'success');
-//         this.isEditingStep[step] = false;
-//         if (this.RegistrationNo) this.getApplicationDetails(this.RegistrationNo);
-//       } else {
-//         Swal.fire('Error', 'Failed to update', 'error');
-//       }
-//       this.isLoading = false;
-//     },
-//     error: () => {
-//       Swal.fire('Error', 'Server error while updating', 'error');
-//       this.isLoading = false;
-//     }
-//   });
-// }
-
-
-
-//   LoginName: any; isLoginFailed: any = false;
-//   ngOnInit(): void {
-//     // registrationNo might be passed in route params (like other file)    
-//     this.LoginName = this.route.snapshot.params['LoginName'];
-//     this.RegistrationNo = this.route.snapshot.params['RegistrationNo'] || null;
-//     if (this.LoginName) {
-//       this.getToken(this.LoginName);
-//       this.getUniversityDetails();
-//     }
-//   }
-
-
-//   getToken(loginName: string): void {
-//     this.authService.loginTemp(loginName).subscribe({
-//       next: data => {
-//         this.storageService.saveUser(data);
-//         const authToken = this.storageService.getUser();
-//         if (!this.storageService.isLoggedIn() || authToken === 'Token Expired') {
-//           this.isLoginFailed = true;
-//           this.loginFailed('Invalid or expired token');
-//         } else  {
-//           // alert(this.RegistrationNo);
-        
-//           this.getStudentDetail();
-         
-//           // 
-         
-//           this.buildForm();
-//         }
-//       },
-//       error: (err: any) => this.loginFailed(err)
-//     });
-
-//     const el = document.getElementById('stMain');
-//     if (el) el.innerHTML = 'Semester Exchange <span class="themeClr">Student Dashboard</span>';
-//   }
-
-//   loginFailed(err: any): void {
-//     this.isLoginFailed = true;
-//     Swal.fire({ title: 'Login Failed', text: 'Login details are invalid!', icon: 'warning' });
-//   }
-
-//   getUniversityDetails(): void {
-//     this.ServicesSM.getUniversityDetails().subscribe({
-//       next: (response: any) => {
-//         const data = response.item1 || [];
-//         // this.universityOptions = data.map((u: any) => ({ universityId: u.universityId, universityName: u.universityName }));
-//           this.uniData = response.item1;
-//       },
-//       error: () => {
-
-//       }
-//     });
-//   }
-//   // Data Properties
-//   studentName: any;
-//   courseName: any;
-//   cgpa: any;
-//   CurrentYear: any;
-//   CurrentTerm: any;
-//   ProgramCode: any;
-//   SectionCode: any;
-//   studentStatus: any;
-
-// ContactNo:any;
-//   getStudentDetail(): void {
-//     this.isLoading = true;
-//     this.ServicesSM.getStudentById().pipe(finalize(() => this.isLoading = false))
-//     .subscribe({
-//       next: response => {
-//         if (response.item1.length > 0) {
-//           const stuData = response.item1[0];
-//           this.studentName = stuData.studentName;
-//           this.ContactNo = stuData.studentMobile;
-//           this.RegistrationNo = stuData.registerationNumber;
-//           this.courseName = stuData.courseName;
-//           this.cgpa = stuData.cgpa;
-//           this.CurrentYear = stuData.currentYear;
-//           this.CurrentTerm = stuData.currentTerm;
-//           this.studentStatus = stuData.studentStatus;
-//           this.ProgramCode=stuData.programCode
-//            // Continue eligibility chain
-//           alert(JSON.stringify(stuData));
-//           alert(this.ProgramCode);
-          
-//           this.getApplicationDetails(this.RegistrationNo === null?'':this.RegistrationNo);
-//           this.getStuDetailsWithImage(this.RegistrationNo);
-            
-//         } else {
-//           this.LoginFailed('Student data not found');
-//         }
-//       },
-//       error: err => this.LoginFailed(err)
-//     });
-//   }
-
-//   LoginFailed(_NewError: any): void {
-//     this.isLoginFailed = true;
-//     Swal.fire({ title: 'Login Failed', text: 'Invalid login or token.', icon: 'warning' });
-//   }
-//   private buildForm() {
-//     // Build FormGroup with all controls from Register-Form.html
-//     this.form = this.fb.group({
-//       // Step 1 (Academic summary not editable here) - we keep form fields that exist in later steps
-//       // Contact Information
-//       EmailId: ['', [Validators.required, Validators.email]],
-//       CountryName: ['', Validators.required],
-//       WhatsAppNo: ['', Validators.required],
-//       PhoneNumber: ['', Validators.required],
-//       ParentContact: ['', Validators.required],
-
-//       // Relative Details
-//       HasRelativeDetails: ['', Validators.required],
-//       RelativeName: [''],
-//       RelativeCountryName: [''],
-//       RelativeRelation: [''],
-//       RelativeEmail: [''],
-//       RelativePhone: [''],
-
-//       // University Preferences
-//       ApplyingOption: ['', Validators.required],
-//       UniversityOption1: ['', Validators.required],
-//       UniversityOption2: ['', Validators.required],
-//       UniversityOption3: ['', Validators.required],
-
-//       // Passport & Visa & English
-//       PassportStatus: ['', Validators.required],
-//       PassportNumber: [''],
-//       PassportIssueDate: [''],
-//       PassportValidUpto: [''],
-//       IsVisaRejected: ['', Validators.required],
-//       VisaRejectedReason: [''],
-//       VisaRejectedCountry: [''],
-
-//       EnglishTestType: ['', Validators.required],
-//       TestName: [''],
-//       TestDate: [''],
-//       ListeningScore: [''],
-//       SpeakingScore: [''],
-//       ReadingScore: [''],
-//       WritingScore: [''],
-//       OverallScore: [''],
-
-//       // Sponsor / Finance / Declaration
-//       SponsorType: ['', Validators.required],
-//       AvailableFunds: ['', Validators.required],
-//       SponsorName: [''],
-//       SponsorRelation: [''],
-//       AcceptPolicy: [false, Validators.requiredTrue]
-//     });
-//   }
-
-//   /** ------------------- Load existing application ------------------- */
-//   getApplicationDetails(regNo: string): void {
-//     this.isLoading = true;
-//     const start = Date.now();
-//     this.studentService.getStudentDetailsBYId(regNo).subscribe({
-//       next: (response: any) => {
-//         try {
-          
-//             this.stuApplication = response.item1[0];
-//             this.ApplicationId = this.stuApplication.applicationId || null;
-
-//             // Patch fields into reactive form (map backend keys to form keys)
-//             this.form.patchValue({
-//               EmailId: this.stuApplication.emailId || '',
-//               CountryName: this.stuApplication.countryName || '',
-//               WhatsAppNo: this.stuApplication.whatsAppNo || '',
-//               PhoneNumber: this.stuApplication.phoneNumber || '',
-//               ParentContact: this.stuApplication.parentContact || '',
-//               HasRelativeDetails: this.stuApplication.relativeName ? 'Yes' : 'No',
-//               RelativeName: this.stuApplication.relativeName || '',
-//               RelativeCountryName: this.stuApplication.relativeCountry || '',
-//               RelativeRelation: this.stuApplication.relativeRelation || '',
-//               RelativeEmail: this.stuApplication.relativeEmail || '',
-//               RelativePhone: this.stuApplication.relativePhone || '',
-//               ApplyingOption: this.stuApplication.applyingOption || '',
-//               UniversityOption1: this.stuApplication.universityOption1 || '',
-//               UniversityOption2: this.stuApplication.universityOption2 || '',
-//               UniversityOption3: this.stuApplication.universityOption3 || '',
-//               PassportStatus: this.stuApplication.passportStatus || '',
-//               PassportNumber: this.stuApplication.passportNumber || '',
-//               PassportIssueDate: this.formatDateForInput(this.stuApplication.passportIssueDate) || '',
-//               PassportValidUpto: this.formatDateForInput(this.stuApplication.passportValidUpto) || '',
-//               IsVisaRejected: this.stuApplication.isVisaRejected || '',
-//               VisaRejectedReason: this.stuApplication.visaRejectedReason || '',
-//               VisaRejectedCountry: this.stuApplication.visaRejectedCountry || '',
-//               EnglishTestType: this.stuApplication.englishTestType || '',
-//               TestName: this.stuApplication.testName || '',
-//               TestDate: this.formatDateForInput(this.stuApplication.testDate) || '',
-//               ListeningScore: this.stuApplication.listeningScore || '',
-//               SpeakingScore: this.stuApplication.speakingScore || '',
-//               ReadingScore: this.stuApplication.readingScore || '',
-//               WritingScore: this.stuApplication.writingScore || '',
-//               OverallScore: this.stuApplication.overallScore || '',
-//               SponsorType: this.stuApplication.sponsorType || '',
-//               AvailableFunds: this.stuApplication.availableFunds || '',
-//               SponsorName: this.stuApplication.sponsorName || '',
-//               SponsorRelation: this.stuApplication.sponsorRelation || '',
-//               AcceptPolicy: this.stuApplication.acceptPolicy === 'true' || this.stuApplication.acceptPolicy === true
-//             });
-
-//             // populate documentFields from backend paths/names
-//             this.populateDocumentFieldsFromApp();
-           
-//         } finally {
-//           const elapsed = Date.now() - start;
-//           const remaining = Math.max(800 - elapsed, 0);
-//           setTimeout(() => { this.isLoading = false; }, remaining);
-//         }
-//       },
-//       error: (err) => {
-//         this.isLoading = false;
-//         console.error(err);
-//         Swal.fire('Error', 'Failed to load application data', 'error');
-//       }
-//     });
-//   }
-
-//   private populateDocumentFieldsFromApp(): void {
-//     if (!this.stuApplication) return;
-
-//     // backend uses names like ConsentLetterFileName, ConsentLetterData or consentLetterDocumentPath etc.
-//     // map all known fields used in your register form / dashboard
-//     this.documentFields.forEach(df => {
-//       switch (df.key) {
-//         case 'consent':
-//           df.fileName = this.stuApplication.ConsentLetterFileName || this.stuApplication.consentLetterFileName || '';
-//           df.fileData = this.stuApplication.ConsentLetterData || this.stuApplication.consentLetterDocumentPath || null;
-//           break;
-//         case 'resume':
-//           df.fileName = this.stuApplication.ResumeFileName || this.stuApplication.resumeFileName || '';
-//           df.fileData = this.stuApplication.ResumeFileData || this.stuApplication.resumeDocumentPath || null;
-//           break;
-//         case 'passport':
-//           df.fileName = this.stuApplication.PassportFileName || this.stuApplication.passportFileName || '';
-//           df.fileData = this.stuApplication.PassportFileData || this.stuApplication.passportDocumentPath || null;
-//           break;
-//         case 'english':
-//           df.fileName = this.stuApplication.EnglishProofFileName || this.stuApplication.englishProofFileName || '';
-//           df.fileData = this.stuApplication.EnglishProofData || this.stuApplication.englishTestDocumentPath || null;
-//           break;
-//         case 'fees':
-//           df.fileName = this.stuApplication.FeesProofFileName || this.stuApplication.feesProofFileName || '';
-//           df.fileData = this.stuApplication.FeesProofData || this.stuApplication.feesProofDocumentPath || null;
-//           break;
-//       }
-//     });
-//   }
-
-//   /** ------------------- Step navigation & save ------------------- */
-//   canProceedToNext(step: number): boolean {
-//     if (step === 0) {
-//       // academic summary view - allow next
-//       return true;
-//     }
-//     if (step === 1) {
-//       return !!this.form.get('EmailId')?.valid && !!this.form.get('CountryName')?.valid;
-//     }
-//     if (step === 2) {
-//       return !!this.form.get('UniversityOption1')?.valid && !!this.form.get('UniversityOption2')?.valid && !!this.form.get('UniversityOption3')?.valid;
-//     }
-//     if (step === 3) {
-//       return !!this.form.get('PassportStatus')?.valid && !!this.form.get('SponsorType')?.valid;
-//     }
-//     return true;
-//   }
-
-//   nextStep() {
-//     this.isSubmitted = true;
-//     if (!this.canProceedToNext(this.currentStep)) {
-//       Swal.fire('Validation', 'Please fill required fields before continuing', 'warning');
-//       return;
-//     }
-
-//     // Build FormData exactly like dashboard updateApplicationSection used to
-//     const formData = new FormData();
-//     const raw = this.form.getRawValue();
-
-//     formData.append('RegistrationNo', this.RegistrationNo || 'NA');
-//     if (this.ApplicationId) { formData.append('ApplicationId', this.ApplicationId); }
-
-//     // Append specific keys used by backend (matching casing used in dashboard)
-//     const fieldsToAppend = [
-//       "EmailId", "CountryName", "WhatsAppNo", "PhoneNumber", "ParentContact",
-//       "ApplyingOption", "UniversityOption1", "UniversityOption2", "UniversityOption3",
-//       "PassportStatus", "PassportNumber", "PassportIssueDate", "PassportValidUpto",
-//       "IsVisaRejected", "VisaRejectedReason", "VisaRejectedCountry",
-//       "EnglishTestType", "SpeakingScore", "ListeningScore", "ReadingScore", "WritingScore", "OverallScore",
-//       "SponsorType", "AvailableFunds", "SponsorName", "SponsorRelation",
-//       "RelativeName", "RelativeRelation", "RelativeCountryName", "RelativeEmail", "RelativePhone",
-//       "AcceptPolicy"
-//     ];
-
-//     fieldsToAppend.forEach(k => {
-//       // use raw value; if undefined, use 'NA' to match backend expectations
-//       let v: any = raw[k] ?? raw[this.toCamelCase(k)] ?? '';
-//       if (v === null || v === undefined) v = '';
-//       formData.append(k, String(v));
-//     });
-
-//     this.isLoading = true;
-//     const start = Date.now();
-//     this.studentService.updateApplicationDetails(formData)
-//       .pipe(finalize(() => {
-//         const elapsed = Date.now() - start;
-//         const remaining = Math.max(800 - elapsed, 0);
-//         setTimeout(() => { this.isLoading = false; }, remaining);
-//       }))
-//       .subscribe({
-//         next: (resp: any) => {
-//           const msg = resp?.[0]?.msg || resp?.item1?.[0]?.msg;
-//           if (msg === 'Success') {
-//             this.currentStep = Math.min(this.currentStep + 1, this.stepLabels.length - 1);
-//             this.isSubmitted = false;
-//             if (this.RegistrationNo) this.getApplicationDetails(this.RegistrationNo);
-//             Swal.fire('Saved', 'Stage saved successfully', 'success');
-//           } else {
-//             Swal.fire('Error', 'Failed to save data', 'error');
-//           }
-//         },
-//         error: (err) => {
-//           console.error(err);
-//           Swal.fire('Error', 'Server error while saving stage', 'error');
-//         }
-//       });
-//   }
-
-//   prevStep() {
-//     if (this.currentStep > 0) this.currentStep--;
-//   }
-
-//   /** ------------------- File handling & UpdateDocuments ------------------- */
-//   onFilePicked(event: any, key: string): void {
-//     const target = event.target as HTMLInputElement;
-//     const file = (target.files as FileList)[0] || null;
-//     if (!file) return;
-
-//     if (file.size > 3148576) {
-//       Swal.fire({ title: 'File size exceeds 3MB', icon: 'warning' });
-//       target.value = '';
-//       return;
-//     }
-
-//     const safeName = this.makeSafeFileName(file.name);
-//     const f = safeName === file.name ? file : new File([file], safeName, { type: file.type });
-
-//     const reader = new FileReader();
-//     reader.onload = () => {
-//       const base64 = (reader.result as string).split(',')[1];
-//       this.pickedFiles[key] = { file: f, base64, fileName: f.name };
-
-//       const df = this.documentFields.find(d => d.key === key);
-//       if (df) {
-//         df.fileName = f.name;
-//         // df.fileData = base64;
-//       }
-
-//       // Upload immediately using UpdateDocuments API (matches dashboard behavior)
-//       this.uploadDocumentImmediate(key, base64, f.name);
-//     };
-//     reader.readAsDataURL(f);
-//   }
-
-//   private uploadDocumentImmediate(key: string, base64: string | null | undefined, fileName: string) {
-//     const formData = new FormData();
-//     formData.append('RegistrationNo', this.RegistrationNo || 'NA');
-//     if (this.ApplicationId) formData.append('ApplicationId', this.ApplicationId);
-
-//     // map keys to backend UpdateDocuments expected names
-//     const map: any = {
-//       consent: { fileField: 'ConsentLetterData', nameField: 'ConsentLetterFileName' },
-//       resume: { fileField: 'ResumeFileData', nameField: 'ResumeFileName' },
-//       passport: { fileField: 'PassportFileData', nameField: 'PassportFileName' },
-//       english: { fileField: 'EnglishProofData', nameField: 'EnglishProofFileName' },
-//       fees: { fileField: 'FeesProofData', nameField: 'FeesProofFileName' }
-//     };
-
-//     const d = map[key];
-//     if (!d) return;
-
-//     formData.append(d.nameField, fileName || 'NA');
-//     formData.append(d.fileField, base64 || '');
-
-//     this.isLoading = true;
-//     const start = Date.now();
-//     this.studentService.UpdateDocuments(formData)
-//       .pipe(finalize(() => {
-//         const elapsed = Date.now() - start;
-//         const remaining = Math.max(800 - elapsed, 0);
-//         setTimeout(() => { this.isLoading = false; }, remaining);
-//       }))
-//       .subscribe({
-//         next: (resp: any) => {
-//           const msg = resp?.[0]?.msg || resp?.item1?.[0]?.msg;
-//           if (msg === 'Success') {
-//             Swal.fire('Uploaded', `${fileName} uploaded successfully`, 'success').then(() => {
-//               if (this.RegistrationNo) this.getApplicationDetails(this.RegistrationNo);
-//             });
-//           } else {
-//             Swal.fire('Error', 'Failed to upload document', 'error');
-//           }
-//         },
-//         error: (err) => {
-//           console.error(err);
-//           Swal.fire('Error', 'Server error while uploading document', 'error');
-//         }
-//       });
-//   }
-
-//   viewDocument(df: any) {
-//     if (!df.fileData) {
-//       Swal.fire('No file available to view', '', 'info');
-//       return;
-//     }
-
-//     // if backend provided a path/URL, open it; else treat as base64
-//     if (typeof df.fileData === 'string' && (df.fileData.startsWith('http') || df.fileData.startsWith('/'))) {
-//       window.open(df.fileData, '_blank');
-//       return;
-//     }
-
-//     try {
-//       const byteArray = new Uint8Array(atob(df.fileData).split('').map(c => c.charCodeAt(0)));
-//       const blob = new Blob([byteArray], { type: 'application/pdf' });
-//       const url = window.URL.createObjectURL(blob);
-//       window.open(url, '_blank');
-//     } catch (e) {
-//       // fallback try open as path
-//       if (typeof df.fileData === 'string') {
-//         window.open(df.fileData, '_blank');
-//       } else {
-//         Swal.fire('Cannot preview file', '', 'error');
-//       }
-//     }
-//   }
-
-//   /** optional: fetch student image for header */
-//   getStuDetailsWithImage(Regno: any): void {
-//     if (!Regno) return;
-//     this.studentService.GetStuDetailsWithImage(Regno).subscribe(() => { /* ignore for now */ });
-//   }
-
-//   /** ------------------- Helpers ------------------- */
-//   formatDateForInput(dateStr: any): string | null {
-//     if (!dateStr) return null;
-//     const d = new Date(dateStr);
-//     if (isNaN(d.getTime())) return null;
-//     const yyyy = d.getFullYear();
-//     const mm = (d.getMonth() + 1).toString().padStart(2, '0');
-//     const dd = d.getDate().toString().padStart(2, '0');
-//     return `${yyyy}-${mm}-${dd}`;
-//   }
-
-//   makeSafeFileName(name: string): string {
-//     return name.replace(/[^a-zA-Z0-9._-]/g, '_');
-//   }
-
-//   toCamelCase(key: string): string {
-//     return key.charAt(0).toLowerCase() + key.slice(1);
-//   }
-// }
-
-
-// import { Component, OnInit } from '@angular/core';
-// import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-// import Swal from 'sweetalert2';
-// import { finalize } from 'rxjs/operators';
-// import { SemesterExchangeStuDetailsService } from 'src/app/_services/semester-exchange-stu-details.service';
-// import { ActivatedRoute } from '@angular/router';
-
-// // keep the same service imports as your project
-// import { AuthService } from 'src/app/_services/auth.service';
-// import { StorageService } from 'src/app/_services/storage.service';
-// import { countries } from '../../countries-list'; // Assuming countries-list.ts exists and exports 'countries'
-
-
-// @Component({
-//   selector: 'app-edit-application',
-//   templateUrl: './edit-application.html',
-//   styleUrls: ['./edit-application.component.scss']
-// })
-// export class EditApplicationComponent implements OnInit {
-//   form!: FormGroup;
-//   isLoading = false;
-//   isSubmitted = false;
-//   currentStep = 0;
-
-//   RegistrationNo: string | null = null;
-//   ApplicationId: string | null = null;
-//   stuApplication: any = null;
-
-//   // ✅ relaxed types for strict mode
-//   pickedFiles: {
-//     [key: string]: {
-//       file: File | null;
-//       base64?: string | null;
-//       fileName?: string | null;
-//     };
-//   } = {
-//       feesProof: { file: null, base64: null, fileName: null },
-//       resume: { file: null, base64: null, fileName: null },
-//       consent: { file: null, base64: null, fileName: null },
-//       passport: { file: null, base64: null, fileName: null },
-//     };
-
-//   documentFields = [
-//     { key: 'feesProof', label: 'Fees Proof Document', fileName: '', fileData: null },
-//     { key: 'resume', label: 'Resume / CV', fileName: '', fileData: null },
-//     { key: 'consent', label: 'Consent Letter', fileName: '', fileData: null },
-//     { key: 'passport', label: 'Passport Document', fileName: '', fileData: null },
-//   ];
-
-//   countries: any = countries;
-//   uniData: any[] = [];
-//   stepLabels = [
-//     'Contact Information',
-//     'University Preferences',
-//     'Passport & Sponsor Info',
-//     'Documents'
-//   ];
-//   universityOptions: any;
-
-//   constructor(
-//     private fb: FormBuilder,
-//     private studentService: SemesterExchangeStuDetailsService,
-//     private route: ActivatedRoute,
-//     private authService: AuthService,
-//     private storageService: StorageService,
-//     private ServicesSM: SemesterExchangeStuDetailsService,
-//   ) { }
-
-  // ngOnInit(): void {
-  //  
-
-  //   this.buildForm();
-  //   if (this.RegistrationNo) {
-  //     this.getApplicationDetails(this.RegistrationNo);
-  //     this.getStuDetailsWithImage(this.RegistrationNo);
-  //   }
-  // }
-
-//   LoginName: any; isLoginFailed: any = false;
-//   ngOnInit(): void {
-//     // registrationNo might be passed in route params (like other file)    
-//     this.LoginName = this.route.snapshot.params['LoginName'];
-//     this.RegistrationNo = this.route.snapshot.params['RegistrationNo'] || null;
-//     if (this.LoginName) {
-//       this.getToken(this.LoginName);
-//       this.getUniversityDetails();
-//     }
-//   }
-
-
-//   getToken(loginName: string): void {
-//     this.authService.loginTemp(loginName).subscribe({
-//       next: data => {
-//         this.storageService.saveUser(data);
-//         const authToken = this.storageService.getUser();
-//         if (!this.storageService.isLoggedIn() || authToken === 'Token Expired') {
-//           this.isLoginFailed = true;
-//           this.loginFailed('Invalid or expired token');
-//         } else if (this.RegistrationNo) {
-//           alert(this.RegistrationNo);
-//           this.getApplicationDetails(this.RegistrationNo);
-//           // 
-         
-//           this.buildForm();
-//         }
-//       },
-//       error: (err: any) => this.loginFailed(err)
-//     });
-
-//     const el = document.getElementById('stMain');
-//     if (el) el.innerHTML = 'Semester Exchange <span class="themeClr">Student Dashboard</span>';
-//   }
-
-//   loginFailed(err: any): void {
-//     this.isLoginFailed = true;
-//     Swal.fire({ title: 'Login Failed', text: 'Login details are invalid!', icon: 'warning' });
-//   }
-
-//   getUniversityDetails(): void {
-//     this.ServicesSM.getUniversityDetails().subscribe({
-//       next: (response: any) => {
-//         const data = response.item1 || [];
-//         // this.universityOptions = data.map((u: any) => ({ universityId: u.universityId, universityName: u.universityName }));
-//           this.uniData = response.item1;
-//       },
-//       error: () => {
-
-//       }
-//     });
-//   }
-//   private buildForm() {
-//     this.form = this.fb.group({
-//       EmailId: ['', [Validators.required, Validators.email]],
-//       CountryName: ['', Validators.required],
-//       WhatsAppNo: ['', Validators.required],
-//       PhoneNumber: ['', Validators.required],
-//       ParentContact: ['', Validators.required],
-//       HasRelativeDetails: [''],
-//       RelativeName: [''],
-//       RelativeCountryName: [''],
-//       RelativeRelation: [''],
-//       RelativeEmail: [''],
-//       RelativePhone: [''],
-//       ApplyingOption: ['', Validators.required],
-//       UniversityOption1: ['', Validators.required],
-//       UniversityOption2: ['', Validators.required],
-//       UniversityOption3: ['', Validators.required],
-//       PassportStatus: ['', Validators.required],
-//       PassportNumber: [''],
-//       PassportIssueDate: [''],
-//       PassportValidUpto: [''],
-//       IsVisaRejected: [''],
-//       VisaRejectedReason: [''],
-//       VisaRejectedCountry: [''],
-//       EnglishTestType: [''],
-//       TestName: [''],
-//       TestDate: [''],
-//       ListeningScore: [''],
-//       SpeakingScore: [''],
-//       ReadingScore: [''],
-//       WritingScore: [''],
-//       OverallScore: [''],
-//       SponsorType: [''],
-//       AvailableFunds: [''],
-//       SponsorName: [''],
-//       SponsorRelation: [''],
-//     });
-//   }
-
-//   /** ------------------ API: Load existing details ------------------ **/
-//   getApplicationDetails(regNo: string): void {
-//     this.isLoading = true;
-
-//     this.studentService.getStudentDetailsBYId(regNo).subscribe({
-//       next: (response: any) => {
-
-//         this.stuApplication = response.item1[0];
-//         this.ApplicationId = this.stuApplication.applicationId || null;
-//         this.getStuDetailsWithImage(this.RegistrationNo);
-
-//         this.form.patchValue({
-//           EmailId: this.stuApplication.emailId || '',
-//           CountryName: this.stuApplication.countryName || '',
-//           WhatsAppNo: this.stuApplication.whatsAppNo || '',
-//           PhoneNumber: this.stuApplication.phoneNumber || '',
-//           ParentContact: this.stuApplication.parentContact || '',
-//           ApplyingOption: this.stuApplication.applyingOption || '',
-//           UniversityOption1: this.stuApplication.universityOption1 || '',
-//           UniversityOption2: this.stuApplication.universityOption2 || '',
-//           UniversityOption3: this.stuApplication.universityOption3 || '',
-//           PassportStatus: this.stuApplication.passportStatus || '',
-//           PassportNumber: this.stuApplication.passportNumber || '',
-//           PassportIssueDate: this.formatDateForInput(this.stuApplication.passportIssueDate) || '',
-//           PassportValidUpto: this.formatDateForInput(this.stuApplication.passportValidUpto) || '',
-//           IsVisaRejected: this.stuApplication.isVisaRejected || '',
-//           VisaRejectedReason: this.stuApplication.visaRejectedReason || '',
-//           VisaRejectedCountry: this.stuApplication.visaRejectedCountry || '',
-//           EnglishTestType: this.stuApplication.englishTestType || '',
-//           SpeakingScore: this.stuApplication.speakingScore || '',
-//           ListeningScore: this.stuApplication.listeningScore || '',
-//           ReadingScore: this.stuApplication.readingScore || '',
-//           WritingScore: this.stuApplication.writingScore || '',
-//           OverallScore: this.stuApplication.overallScore || '',
-//           SponsorType: this.stuApplication.sponsorType || '',
-//           AvailableFunds: this.stuApplication.availableFunds || '',
-//           SponsorName: this.stuApplication.sponsorName || '',
-//           SponsorRelation: this.stuApplication.sponsorRelation || '',
-//           HasRelativeDetails: this.stuApplication.relativeName ? 'Yes' : 'No',
-//           RelativeName: this.stuApplication.relativeName || '',
-//           RelativeCountryName: this.stuApplication.relativeCountry || '',
-//           RelativeRelation: this.stuApplication.relativeRelation || '',
-//           RelativeEmail: this.stuApplication.relativeEmail || '',
-//           RelativePhone: this.stuApplication.relativePhone || '',
-//         });
-
-//         this.populateDocumentFieldsFromApp();
-//         // } else {
-//         //   Swal.fire('No application data', '', 'warning');
-//         // }
-//         this.isLoading = false;
-//       },
-//       error: () => {
-//         this.isLoading = false;
-//         Swal.fire('Error', 'Failed to load application data', 'error');
-//       }
-//     });
-//   }
-
-//   private populateDocumentFieldsFromApp() {
-//     if (!this.stuApplication) return;
-//     this.documentFields.forEach(df => {
-//       switch (df.key) {
-//         case 'feesProof':
-//           df.fileName = this.stuApplication.feesProofFileName || '';
-//           df.fileData = this.stuApplication.feesProofDocumentPath || null;
-//           break;
-//         case 'resume':
-//           df.fileName = this.stuApplication.resumeFileName || '';
-//           df.fileData = this.stuApplication.resumeDocumentPath || null;
-//           break;
-//         case 'consent':
-//           df.fileName = this.stuApplication.consentLetterFileName || '';
-//           df.fileData = this.stuApplication.consentLetterDocumentPath || null;
-//           break;
-//         case 'passport':
-//           df.fileName = this.stuApplication.passportFileName || '';
-//           df.fileData = this.stuApplication.passportDocumentPath || null;
-//           break;
-//       }
-//     });
-//   }
-
-//   /** ------------------ Step navigation ------------------ **/
-//   canProceedToNext(step: number): boolean {
-//     if (step === 0) {
-//       return !!this.form.get('EmailId')?.valid && !!this.form.get('CountryName')?.valid;
-//     }
-//     if (step === 1) {
-//       return (
-//         !!this.form.get('UniversityOption1')?.valid &&
-//         !!this.form.get('UniversityOption2')?.valid &&
-//         !!this.form.get('UniversityOption3')?.valid
-//       );
-//     }
-//     if (step === 2) {
-//       return !!this.form.get('PassportStatus')?.valid;
-//     }
-//     return true;
-//   }
-
-//   nextStep() {
-//     this.isSubmitted = true;
-//     if (!this.canProceedToNext(this.currentStep)) {
-//       Swal.fire('Validation', 'Please fill required fields before continuing', 'warning');
-//       return;
-//     }
-
-//     const formData = new FormData();
-//     const raw = this.form.getRawValue();
-
-//     formData.append('RegistrationNo', this.RegistrationNo || 'NA');
-//     if (this.ApplicationId) formData.append('ApplicationId', this.ApplicationId);
-
-//     const keys = Object.keys(raw);
-//     keys.forEach(k => formData.append(k, raw[k] ?? ''));
-
-//     this.isLoading = true;
-//     this.studentService.updateApplicationDetails(formData)
-//       .pipe(finalize(() => (this.isLoading = false)))
-//       .subscribe({
-//         next: (resp: any) => {
-//           const msg = resp?.[0]?.msg || resp?.item1?.[0]?.msg;
-//           if (msg === 'Success') {
-//             this.currentStep = Math.min(this.currentStep + 1, this.stepLabels.length - 1);
-//             this.isSubmitted = false;
-//             if (this.RegistrationNo) this.getApplicationDetails(this.RegistrationNo);
-//             Swal.fire('Saved', 'Stage saved successfully', 'success');
-//           } else {
-//             Swal.fire('Error', 'Failed to save data', 'error');
-//           }
-//         },
-//         error: () => Swal.fire('Error', 'Server error while saving stage', 'error'),
-//       });
-//   }
-
-//   prevStep() {
-//     if (this.currentStep > 0) this.currentStep--;
-//   }
-
-//   /** ------------------ File handling ------------------ **/
-//   onFilePicked(event: any, key: string): void {
-//     const target = event.target as HTMLInputElement;
-//     const file = (target.files as FileList)[0] || null;
-//     if (!file) return;
-
-//     if (file.size > 3148576) {
-//       Swal.fire({ title: 'File size exceeds 3MB', icon: 'warning' });
-//       target.value = '';
-//       return;
-//     }
-
-//     const safeName = this.makeSafeFileName(file.name);
-//     const f = safeName === file.name ? file : new File([file], safeName, { type: file.type });
-
-//     const reader = new FileReader();
-//     reader.onload = () => {
-//       const base64 = (reader.result as string).split(',')[1];
-//       this.pickedFiles[key] = { file: f, base64, fileName: f.name };
-
-//       const df = this.documentFields.find(d => d.key === key);
-//       if (df) {
-//         df.fileName = f.name;
-//         // df.fileData = base64;
-//       }
-
-//       this.uploadDocumentImmediate(key, base64, f.name);
-//     };
-//     reader.readAsDataURL(f);
-//   }
-
-//   private uploadDocumentImmediate(key: string, base64: string | null | undefined, fileName: string) {
-//     const formData = new FormData();
-//     formData.append('RegistrationNo', this.RegistrationNo || 'NA');
-//     if (this.ApplicationId) formData.append('ApplicationId', this.ApplicationId);
-
-//     const map: any = {
-//       feesProof: { fileField: 'FeesProofData', nameField: 'FeesProofFileName' },
-//       resume: { fileField: 'ResumeFileData', nameField: 'ResumeFileName' },
-//       consent: { fileField: 'ConsentLetterData', nameField: 'ConsentLetterFileName' },
-//       passport: { fileField: 'PassportFileData', nameField: 'PassportFileName' },
-//     };
-
-//     const d = map[key];
-//     if (!d) return;
-
-//     formData.append(d.nameField, fileName || 'NA');
-//     formData.append(d.fileField, base64 || '');
-
-//     this.isLoading = true;
-//     this.studentService.UpdateDocuments(formData)
-//       .pipe(finalize(() => (this.isLoading = false)))
-//       .subscribe({
-//         next: (resp: any) => {
-//           const msg = resp?.[0]?.msg || resp?.item1?.[0]?.msg;
-//           if (msg === 'Success') {
-//             Swal.fire('Uploaded', `${fileName} uploaded successfully`, 'success').then(() => {
-//               if (this.RegistrationNo) this.getApplicationDetails(this.RegistrationNo);
-//             });
-//           } else {
-//             Swal.fire('Error', 'Failed to upload document', 'error');
-//           }
-//         },
-//         error: () => Swal.fire('Error', 'Server error while uploading document', 'error'),
-//       });
-//   }
-
-//   viewDocument(df: any) {
-//     if (!df.fileData) {
-//       Swal.fire('No file available to view', '', 'info');
-//       return;
-//     }
-//     if (typeof df.fileData === 'string' && df.fileData.startsWith('http')) {
-//       window.open(df.fileData, '_blank');
-//       return;
-//     }
-
-//     try {
-//       const byteArray = new Uint8Array(atob(df.fileData).split('').map(c => c.charCodeAt(0)));
-//       const blob = new Blob([byteArray], { type: 'application/pdf' });
-//       const url = window.URL.createObjectURL(blob);
-//       window.open(url, '_blank');
-//     } catch {
-//       Swal.fire('Cannot preview file', '', 'error');
-//     }
-//   }
-//   studentDetailsWithImage: any;
-//   StudentImage: string | null = null;
-//   /** ------------------ Optional: fetch student image ------------------ **/
-//   getStuDetailsWithImage(Regno: any): void {
-//     if (!Regno) return;
-//     this.ServicesSM.GetStuDetailsWithImage(Regno).subscribe((response: any) => {
-//       // if (response?.item1?.length > 0) {
-//         this.studentDetailsWithImage = response.item1[0];
-//         this.StudentImage = this.convertImageData(this.studentDetailsWithImage.imageData);
-//          this.getUniversityDetails();
-//       // } else {
-//       //   this.StudentImage = null;
-//       // }
-//     }, () => {
-//       this.StudentImage = null;
-//     });
-//   }
-
-//   convertImageData(imageData: string): string {
-//     return imageData ? `data:image/jpeg;base64,${imageData}` : '';
-//   }
-
-//   /** ------------------ Helpers ------------------ **/
-//   formatDateForInput(dateStr: any): string | null {
-//     if (!dateStr) return null;
-//     const d = new Date(dateStr);
-//     if (isNaN(d.getTime())) return null;
-//     return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d
-//       .getDate()
-//       .toString()
-//       .padStart(2, '0')}`;
-//   }
-
-//   makeSafeFileName(name: string): string {
-//     return name.replace(/[^a-zA-Z0-9._-]/g, '_');
-//   }
-// }

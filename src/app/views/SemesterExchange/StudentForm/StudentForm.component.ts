@@ -21,7 +21,6 @@ import { SemesterExchangeFormComponent } from '../../pages/SemesterExchangeForm/
 @Component({
   selector: 'StudentForm',
   templateUrl: './NewStudentForm.component.html',
-  // templateUrl: './StudentForm.component.html',
   styleUrls: ['./StudentForm.component.scss'],
 })
 export class StudentFormComponent implements OnInit {

@@ -9,8 +9,36 @@
 
 <div class="container-fluid mt-4" id="StudentDashboard" *ngIf="!isLoginFailed ;  else ErrorApplication">
     <div class="student-registration container-fluid py-4">
-
-        <div class="row mt-2 mb-4" *ngIf="stuApplication">
+    <!-- Header -->
+    <div class="col-md-12 grid-margin stretch-card mb-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content- align-items-center mb-3">
+                    <div class="col-md-4 ms-4">
+                        <h2 class="text-primary m-0">My Dashboard</h2>
+                    </div>
+                    <div class="col-md-6 me-3 text-end">
+                        <span class="text-end fs-4 me-3"> Hi! </span> <span [ngClass]="'fs-4 badge'"
+                            style=" background-color: #FD6C04 !important; "> {{studentDetailsWithImage?.studentName}}
+                        </span>
+                    </div>
+                    <div class="col-md-2 text-center">
+            
+                        <div *ngIf="StudentImage else placeholderImg">
+                            <img alt="Student Image" class="img-fluid rounded-circle border border-3 border-primary"
+                                [src]="StudentImage" style="width: 80px; height: 80px; object-fit: cover;">
+                        </div>
+                        <ng-template #placeholderImg>
+                            <img src="https://placehold.co/150x150" alt="No Image" class="img-thumbnail"
+                                style="max-width:150px; max-height:150px; object-fit:cover;" />
+                        </ng-template>
+                    </div>
+            
+                </div>
+            </div>
+        </div>
+    </div>
+        <!-- <div class="row mt-2 mb-4" *ngIf="stuApplication">
             <div class="col-md-6 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
@@ -56,23 +84,12 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="col-md-12 grid-margin stretch-card mb-3">
             <div class="card">
                 <div class="card-body">
-                    <!-- <div class="d-flex align-items-center justify-content-center flex-wrap gap-3">
-                        <ng-container *ngFor="let label of stepLabels; let i = index">
-                            <div class="step" [class.active]="i === currentStep" [class.past]="i < currentStep" (click)="goToStep(i)"
-                                style="cursor: pointer;">
-                                <span class="badge rounded-pill step-badge"
-                                    [ngClass]="{ 'bg-primary': i === currentStep, 'bg-success': i < currentStep, 'bg-secondary': i > currentStep }">
-                                    {{ label }}
-                                </span>
-                            </div>
-                            <div *ngIf="i < stepLabels.length - 1" class="divider"></div>
-                        </ng-container>
-                    </div> -->
+                 
                     <div class="d-flex align-items-center justify-content-center flex-wrap gap-3">
                         <ng-container *ngFor="let label of stepLabels; let i = index">
                             <div class="step" [class.active]="i === currentStep" [class.past]="i < currentStep">
@@ -88,15 +105,73 @@
             </div>
         </div>
 
+        <div class="col-md-12 grid-margin stretch-card mb-3">
+            <div class="card">
+                <div class="card-body">        
+                    <section *ngIf="currentStep === 0" class="step-section">
+                        <div class="row g-3">
+                            <div class="d-flex justify-content-center "> 
+                                <button type="button" class="btn btn-primary m-3"   (click)="nextStep()" >Next</button>
+                                
+                            </div>
+                            <div class="col-md-6 col-lg-10 mx-auto mb-3">
+                                <div class="card section">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span>Academic Information</span>
+                                    </div>
+                                    <div class="card-body" >
+                                        <div class="row mt-2">
+                                            <div class="col-md-6 ">
+                                                <label class="form-label">Student Name</label>
+                                                <input type="text" class="form-control" [value]="studentName" readonly [disabled]="true" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Registration Number</label>                         
+                                                 <input type="text" class="form-control" [value]="RegistrationNo" readonly [disabled]="true" /> 
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Program </label>                         
+                                                 <input type="text" class="form-control" [value]="courseName" readonly [disabled]="true" /> 
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Current Year </label>                         
+                                                 <input type="text" class="form-control" [value]="CurrentYear" readonly [disabled]="true" /> 
+                                            </div>
+                                        </div>
+        
+                                        <div class="row mt-2">
+                                            <div class="col-md-6 ">
+                                                <label class="form-label">Overall Score</label>
+                                                <input type="text" class="form-control" [value]="cgpa" readonly [disabled]="true" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Program</label>                         
+                                                 <input type="text" class="form-control" [value]="ProgramCode" readonly [disabled]="true" /> 
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Section </label>                         
+                                                 <input type="text" class="form-control" [value]="SectionCode" readonly [disabled]="true" /> 
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Current Term</label>                         
+                                                 <input type="text" class="form-control" [value]="CurrentTerm" readonly [disabled]="true" /> 
+                                            </div>
+                                        </div>    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
         <form [formGroup]="form" (ngSubmit)="$event.preventDefault()">
             <section *ngIf="currentStep === 1" class="step-section">
                 <div class="row g-3">
                     <div class="d-flex justify-content-center ">
+                        <button type="button" class="btn btn-secondary m-3" (click)="prevStep()">Back</button>
                         <button type="button" class="btn btn-sm btn-danger m-3" *ngIf="!isEditingStep[1]"
                             (click)="startEdit(1)">Edit</button>
-                    <!-- </div>
-                    <div class="d-flex justify-content-center m-3"> -->
-                        
                         <button type="button" class="btn btn-danger m-3" *ngIf="isEditingStep[1]"
                             (click)="cancelEdit(1)">Cancel</button>
                         <button type="button" class="btn btn-success m-3" *ngIf="isEditingStep[1]" (click)="updateStep(1)"
@@ -108,19 +183,17 @@
                         <div class="card section">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <span>Contact Information</span>
-                                <!-- <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[1]" (click)="startEdit(1)">Edit</button> -->
                             </div>
                             <div class="card-body" [class.disabled-form]="!isEditingStep[1]">
                                 <div class="row mt-2">
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 ">
                                         <label class="form-label">Email Id *</label>
-                                        <input class="form-control" formControlName="EmailId" [readonly]="!isEditingStep[1]" />
-                                        <div class="text-danger small"
-                                            *ngIf="(form.get('EmailId')?.touched || isSubmitted) && form.get('EmailId')?.invalid">
-                                            Required / invalid
-                                        </div>
+                                         <input type="text"class="form-control" [value]="form.get('EmailId')?.value" readonly [disabled]="true" />
                                     </div>
-                                    <div class="col-md-6"></div>
+                                    <div class="col-md-6">
+                                         <!-- <label class="form-label">Email Id *</label>
+                                        <input class="col-md-4 form-control" formControlName="EmailId" />  -->
+                                    </div>
                                 </div>
             
                                 <div class="row mt-2">
@@ -251,8 +324,6 @@
                 <div class="row g-3">
                     <div class="d-flex justify-content-center mt-4">
                         <button type="button" class="btn btn-sm btn-danger m-3" *ngIf="!isEditingStep[2]" (click)="startEdit(2)">Edit</button>
-                    <!-- </div>
-                    <div class="d-flex justify-content-center m-3"> -->
                         <button type="button" class="btn btn-secondary m-3" (click)="prevStep()">Back</button>
                         <button type="button" class="btn btn-danger m-3" *ngIf="isEditingStep[2]" (click)="cancelEdit(2)">Cancel</button>
                         <button type="button" class="btn btn-success m-3" *ngIf="isEditingStep[2]" (click)="updateStep(2)"
@@ -312,38 +383,13 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="d-flex justify-content-between mt-3">
-                    <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
-                    <button type="button" class="btn btn-danger" *ngIf="isEditingStep[2]"
-                        (click)="cancelEdit(2)">Cancel</button>
-                    <button type="button" class="btn btn-success" *ngIf="isEditingStep[2]" (click)="updateStep(2)"
-                        [disabled]="!isCurrentStepValid(2)">Update</button>
-                    <button type="button" class="btn btn-primary" *ngIf="!isEditingStep[2]" (click)="nextStep()"
-                        [disabled]="isEditingStep[2]">Next</button>
-                </div>
-            </section>
-
-            <section *ngIf="currentStep === 3" class="step-section">
-                <div class="row g-3">
-                    <div class="d-flex justify-content-center mt-4">
-                        <button type="button" class="btn btn-lg btn-danger" *ngIf="!isEditingStep[3]" (click)="startEdit(3)">Edit</button>
-                    </div>
-                    <div class="d-flex justify-content-center m-4">
-                        <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
-                        <button type="button" class="btn btn-danger" *ngIf="isEditingStep[3]" (click)="cancelEdit(3)">Cancel</button>
-                        <button type="button" class="btn btn-success" *ngIf="isEditingStep[3]" (click)="updateStep(3)"
-                            [disabled]="!isCurrentStepValid(3)">Update</button>
-                        <button type="button" class="btn btn-primary" *ngIf="!isEditingStep[3]" (click)="nextStep()"
-                            [disabled]="isEditingStep[3]">Next</button>
-                    </div>
-                    <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                        <div class="col-md-12 col-lg-10 mx-auto mb-3">
                         <div class="card section">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <span>Passport Details</span>
                             </div>
-                            <div class="card-body" [class.disabled-form]="!isEditingStep[3]">
+                            <div class="card-body" [class.disabled-form]="!isEditingStep[2]">
                                 <div class="row mt-2">
                                     <div class="col-md-6">
                                         <label class="form-label">Passport Status *</label>
@@ -361,18 +407,18 @@
                                             <div class="col-md-6">
                                                 <label class="form-label">Passport Number *</label>
                                                 <input class="form-control" formControlName="PassportNumber"
-                                                    [readonly]="!isEditingStep[3]" />
+                                                    [readonly]="!isEditingStep[2]" />
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label">Issue Date *</label>
-                                                <input type="date" class="form-control" [readonly]="!isEditingStep[3]"
+                                                <input type="date" class="form-control" [readonly]="!isEditingStep[2]"
                                                     formControlName="PassportIssueDate" />
                                             </div>
                                         </div>
                                         <div class="row mt-2">
                                             <div class="col-md-6">
                                                 <label class="form-label">Valid Upto *</label>
-                                                <input type="date" class="form-control" [readonly]="!isEditingStep[3]"
+                                                <input type="date" class="form-control" [readonly]="!isEditingStep[2]"
                                                     formControlName="PassportValidUpto" />
                                             </div>
                                         </div>
@@ -381,6 +427,31 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-3">
+                    <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
+                    <button type="button" class="btn btn-danger" *ngIf="isEditingStep[2]"
+                        (click)="cancelEdit(2)">Cancel</button>
+                    <button type="button" class="btn btn-success" *ngIf="isEditingStep[2]" (click)="updateStep(2)"
+                        [disabled]="!isCurrentStepValid(2)">Update</button>
+                    <button type="button" class="btn btn-primary" *ngIf="!isEditingStep[2]" (click)="nextStep()"
+                        [disabled]="isEditingStep[2]">Next</button>
+                </div>
+            </section>
+
+            <section *ngIf="currentStep === 3" class="step-section">
+                <div class="row g-3">
+                    <div class="d-flex justify-content-center m-4">
+                        <button type="button" class="btn btn-lg btn-danger  m-3" *ngIf="!isEditingStep[3]" (click)="startEdit(3)">Edit</button>
+                  
+                        <button type="button" class="btn btn-secondary m-3" (click)="prevStep()">Back</button>
+                        <button type="button" class="btn btn-danger m-3" *ngIf="isEditingStep[3]" (click)="cancelEdit(3)">Cancel</button>
+                        <button type="button" class="btn btn-success m-3" *ngIf="isEditingStep[3]" (click)="updateStep(3)"
+                            [disabled]="!isCurrentStepValid(3)">Update</button>
+                        <button type="button" class="btn btn-primary m-3" *ngIf="!isEditingStep[3]" (click)="nextStep()"
+                            [disabled]="isEditingStep[3]">Next</button>
                     </div>
 
                     <div class="col-md-12 col-lg-10 mx-auto mb-3">
@@ -570,61 +641,58 @@
             </section>
 
             <section *ngIf="currentStep === 4 " class="step-section">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="card-header d-flex justify-content-center align-items-center">
-                            <button type="button" class="btn btn-lg btn-danger" *ngIf="!isEditingStep[4]" (click)="startEdit(4)">Edit</button>
-                        </div>
-                        <div class="d-flex justify-content-center m-4">
-                            <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
-                            <button type="button" class="btn btn-success" *ngIf="isEditingStep[4]" (click)="Onsubmit()"
-                                [disabled]="!isCurrentStepValid(4)">Update</button>
-                        </div>
-                        <div class="col-md-12 col-lg-10 mx-auto mb-3">       
-                            <div class="row g-3">
-                                 
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
+                <div class="row g-3">
+                    <div class="d-flex justify-content-center m-4">
+                        <button type="button" class="btn btn-lg btn-danger m-3" *ngIf="!isEditingStep[4]" (click)="startEdit(4)">Edit</button>
+                             <button type="button" class="btn btn-danger m-3" *ngIf="isEditingStep[4]" (click)="cancelEdit(4)">Cancel</button>
+                        <button type="button" class="btn btn-secondary m-3" (click)="prevStep()">Back</button>
+                        <button type="button" class="btn btn-success m-3" *ngIf="isEditingStep[4]" (click)="Onsubmit()"
+                            [disabled]="!isCurrentStepValid(4)">Update</button>
+                    </div>
+                
+                    <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                        <div class="card section">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span>Document(s) -I  </span>
+                            </div>
+                            <div class="card-body" [class.disabled-form]="!isEditingStep[4]">
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
                                         <label class="form-label fw-semibold">Fees Proof Document</label>
-                                        <div class="d-flex align-items-center gap-2"
-                                            *ngIf="stuApplication?.feesProofFileName.length>0; ">
+                                        <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.feesProofFileName.length>0; ">
                                             <a class="btn icon-btn"
                                                 [attr.href]="stuApplication?.feesProofFileName ? (serverUrl + stuApplication.feesProofFileName) : null"
                                                 [class.disabled]="!stuApplication?.feesProofFileName"
                                                 [attr.target]="stuApplication?.feesProofFileName ? '_blank' : null"
-                                                title="View Resume Document"
-                                                [attr.aria-disabled]="!stuApplication?.feesProofFileName"
+                                                title="View Resume Document" [attr.aria-disabled]="!stuApplication?.feesProofFileName"
                                                 tabindex="{{stuApplication?.feesProofFileName ? 0 : -1}}">
                                                 <span class="material-icons md-18">description</span> View Uploaded
                                             </a>
                                         </div>
                                         <div>
-                                            <input type="file" (change)="onFileSelectedFeesProof($event)"
-                                                [disabled]="!isEditingStep[4]" class="form-control" required />
+                                            <input type="file" (change)="onFileSelectedFeesProof($event)" [disabled]="!isEditingStep[4]"
+                                                class="form-control" required />
                                             <br />
                                         </div>
                                     </div>
-
                                     <div class="col-md-4 mb-3">
                                         <label class="form-label fw-semibold">Resume Document</label>
-                                        <div class="d-flex align-items-center gap-2"
-                                            *ngIf="stuApplication?.resumeFileName.length>0; ">
+                                        <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.resumeFileName.length>0; ">
                                             <a class="btn icon-btn"
                                                 [attr.href]="stuApplication?.resumeFileName ? (serverUrl + stuApplication.resumeFileName) : null"
                                                 [class.disabled]="!stuApplication?.resumeFileName"
                                                 [attr.target]="stuApplication?.resumeFileName ? '_blank' : null"
-                                                title="View Resume Document"
-                                                [attr.aria-disabled]="!stuApplication?.resumeFileName"
+                                                title="View Resume Document" [attr.aria-disabled]="!stuApplication?.resumeFileName"
                                                 tabindex="{{stuApplication?.resumeFileName ? 0 : -1}}">
                                                 <span class="material-icons md-18">description</span>View Uploaded
                                             </a>
                                         </div>
                                         <div>
-                                            <input type="file" (change)="onFileSelectedResumeFile($event)"
-                                                [disabled]="!isEditingStep[4]" class="form-control" required /><br />
+                                            <input type="file" (change)="onFileSelectedResumeFile($event)" [disabled]="!isEditingStep[4]"
+                                                class="form-control" required /><br />
                                         </div>
                                     </div>
-
+                    
                                     <div class="col-md-4 mb-3">
                                         <label class="form-label fw-semibold">Consent Letter</label>
                                         <div class="d-flex align-items-center gap-2"
@@ -633,36 +701,43 @@
                                                 [attr.href]="stuApplication?.consentLetterFileName ? (serverUrl + stuApplication.consentLetterFileName) : null"
                                                 [class.disabled]="!stuApplication?.consentLetterFileName"
                                                 [attr.target]="stuApplication?.consentLetterFileName ? '_blank' : null"
-                                                title="View Resume Document"
-                                                [attr.aria-disabled]="!stuApplication?.consentLetterFileName"
+                                                title="View Resume Document" [attr.aria-disabled]="!stuApplication?.consentLetterFileName"
                                                 tabindex="{{stuApplication?.consentLetterFileName ? 0 : -1}}">
                                                 <span class="material-icons md-18">description</span>View Uploaded
                                             </a>
                                         </div>
                                         <div>
-                                            <input type="file" (change)="onFileSelectedConsentLetter($event)"
-                                                [disabled]="!isEditingStep[4]" class="form-control" required /><br />
+                                            <input type="file" (change)="onFileSelectedConsentLetter($event)" [disabled]="!isEditingStep[4]"
+                                                class="form-control" required /><br />
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                        <div class="card section">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span>Document(s) - II  </span>
+                            </div>
+                            <div class="card-body" [class.disabled-form]="!isEditingStep[4]">
+                                <div class="row mt-2">
+
                                     <div class="col-md-4 mb-3">
                                         <label class="form-label fw-semibold">Passport File</label>
-                                        <div class="d-flex align-items-center gap-2"
-                                            *ngIf="stuApplication?.passportFileName.length>0;">
+                                        <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.passportFileName.length>0;">
                                             <a class="btn icon-btn"
                                                 [attr.href]="stuApplication?.passportFileName ? (serverUrl + stuApplication.passportFileName) : null"
                                                 [class.disabled]="!stuApplication?.passportFileName"
                                                 [attr.target]="stuApplication?.passportFileName ? '_blank' : null"
-                                                title="View Resume Document"
-                                                [attr.aria-disabled]="!stuApplication?.passportFileName"
+                                                title="View Resume Document" [attr.aria-disabled]="!stuApplication?.passportFileName"
                                                 tabindex="{{stuApplication?.passportFileName ? 0 : -1}}">
                                                 <span class="material-icons md-18">description</span>View Uploaded
                                             </a>
                                         </div>
                                         <div>
-                                            <input type="file" (change)="onFileSelectedPassportFile($event)"
-                                                [disabled]="!isEditingStep[4]" class="form-control" required /><br />
+                                            <input type="file" (change)="onFileSelectedPassportFile($event)" [disabled]="!isEditingStep[4]"
+                                                class="form-control" required /><br />
                                         </div>
                                     </div>
                                     <div class="col-md-4 mb-3">
@@ -673,34 +748,26 @@
                                                 [attr.href]="stuApplication?.englishProofFileName ? (serverUrl + stuApplication.englishProofFileName) : null"
                                                 [class.disabled]="!stuApplication?.englishProofFileName"
                                                 [attr.target]="stuApplication?.englishProofFileName ? '_blank' : null"
-                                                title="View Resume Document"
-                                                [attr.aria-disabled]="!stuApplication?.englishProofFileName"
+                                                title="View Resume Document" [attr.aria-disabled]="!stuApplication?.englishProofFileName"
                                                 tabindex="{{stuApplication?.englishProofFileName ? 0 : -1}}">
                                                 <span class="material-icons md-18">description</span>View Uploaded
                                             </a>
                                         </div>
                                         <div>
-                                            <input type="file" (change)="onFileSelectedEnglishProof($event)"
-                                                [disabled]="!isEditingStep[4]" class="form-control" required /><br />
+                                            <input type="file" (change)="onFileSelectedEnglishProof($event)" [disabled]="!isEditingStep[4]"
+                                                class="form-control" required /><br />
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- <div class="d-flex justify-content-center mt-3">
-                            <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
-                            <button type="button" class="btn btn-danger" *ngIf="isEditingStep[4]" (click)="cancelEdit(4)">Cancel</button>
-                            <button type="button" class="btn btn-success" *ngIf="isEditingStep[3]" (click)="updateStep(4)"
-                                [disabled]="!isCurrentStepValid(4)">Update</button>
-                        
-                        </div> -->
-                        <div class="d-flex justify-content-between mt-4">
-                            <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
-                            <button type="button" class="btn btn-success" *ngIf="isEditingStep[4]"
-                                (click)="Onsubmit()" [disabled]="!isCurrentStepValid(4)">Update</button>
-                        </div>
                     </div>
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
+                        <button type="button" class="btn btn-success" *ngIf="isEditingStep[4]" (click)="Onsubmit()"
+                            [disabled]="!isCurrentStepValid(4)">Update</button>
+                    </div>
+                
                 </div>
             </section>
 
