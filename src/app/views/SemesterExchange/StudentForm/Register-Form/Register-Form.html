@@ -55,7 +55,7 @@
                             </div>
                             <div class="row d-flex justify-content-center">
                                 <label class="col-md-4 form-label text-danger">Cuurnet Term</label>
-                                <label class="col-md-7 form-label text-dark">{{this.CurrentTerm}}
+                                <label class="col-md-7 form-label text-dark">{{this.CurrentTerm}} 
                                 </label>
                             </div>
                         </div>
@@ -546,7 +546,6 @@
                                             <select class="form-select" formControlName="SponsorType">
                                                 <option value="">Select Sponsor Type</option>
                                                 <option value="Parents">Parents</option>
-                                                <option value="Relative">Relative</option>
                                                 <option value="Other">Other</option>
                                             </select>
                                             <div class="text-danger small"
@@ -569,7 +568,7 @@
                                     </div>
 
                                     <div
-                                        *ngIf="form.get('SponsorType')?.value === 'Other' || form.get('SponsorType')?.value=='Relative'">
+                                        *ngIf="form.get('SponsorType')?.value === 'Other'">
                                         <div class="row mt-2">
                                             <div class="col-md-6">
                                                 <label class="form-label">Sponsor Name *</label>
@@ -586,6 +585,17 @@
                                                     *ngIf="(form.get('SponsorRelation')?.touched || isSubmitted) && form.get('SponsorRelation')?.invalid">
                                                     Required
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Sponsor Email (Optional)</label>
+                                                <input class="form-control" formControlName="SponsorEmail" />
+                                                 
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Sponsor Contact (Optional)</label>
+                                               <input class="form-control" formControlName="SponsorContact" />
                                             </div>
                                         </div>
                                     </div>

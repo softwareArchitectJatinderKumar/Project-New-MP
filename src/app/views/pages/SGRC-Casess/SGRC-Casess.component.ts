@@ -214,7 +214,6 @@ export class SGRCComponenent implements OnInit {
     this.isInputDisabled = true;
     if (this.sgrcStatus === '') {
       swal.fire(
-
         { title: 'SGRC', text: 'Please select status !', icon: 'error' }
 
       );
@@ -399,16 +398,21 @@ export class SGRCComponenent implements OnInit {
       subject: item.subject,
       Nature: item.nature,
       createdOn: item.createdOn,
+      Status: item.status=='O' ? 'Open':item.status=='C'?'Closed':'-',
+      Remarks: item.remarksDetails =='' || item.remarksDetails ==null  ? 'NA' : item.remarksDetails ,
     }));
 
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-    const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(new Blob([blobData], { type: 'application/octet-stream' }));
-    link.download = fileName;
-    link.click();
+        const wscols = Array(17).fill({ wpx: 250 }); // Set uniform column widths
+        ws['!cols'] = wscols;
+      
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([blobData], { type: 'application/octet-stream' }));
+        link.download = fileName;
+        link.click();
   }
 
     exportToExcelClosedCases(): void {
@@ -422,22 +426,27 @@ export class SGRCComponenent implements OnInit {
       subject: item.subject,
       Nature: item.nature,
       createdOn: item.createdOn,
+      Status: item.status=='O' ? 'Open':item.status=='C'?'Closed':'-',
+      Remarks: item.remarksDetails =='' || item.remarksDetails ==null  ? 'NA' : item.remarksDetails ,
     }));
 
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-    const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(new Blob([blobData], { type: 'application/octet-stream' }));
-    link.download = fileName;
-    link.click();
+        const wscols = Array(17).fill({ wpx: 250 }); // Set uniform column widths
+        ws['!cols'] = wscols;
+      
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([blobData], { type: 'application/octet-stream' }));
+        link.download = fileName;
+        link.click();
   }
 
     exportToExcelOpenCases(): void {
     const fileName = 'SGRC-Open-Cases-Details.xlsx';
     const exportedData = this.studentListsOpenCases.map(item => ({
-      studentName: item.name,
+       studentName: item.name,
       email: item.email,
       phone: item.phone,
       description: item.description,
@@ -445,16 +454,21 @@ export class SGRCComponenent implements OnInit {
       subject: item.subject,
       Nature: item.nature,
       createdOn: item.createdOn,
+      Status: item.status=='O' ? 'Open':item.status=='C'?'Closed':'-',
+      Remarks: item.remarksDetails =='' || item.remarksDetails ==null  ? 'NA' : item.remarksDetails ,
     }));
 
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-    const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(new Blob([blobData], { type: 'application/octet-stream' }));
-    link.download = fileName;
-    link.click();
+        const wscols = Array(17).fill({ wpx: 250 }); // Set uniform column widths
+        ws['!cols'] = wscols;
+      
+        const wb: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([blobData], { type: 'application/octet-stream' }));
+        link.download = fileName;
+        link.click();
   }
 
   onSelectClosedcases(a: any) {

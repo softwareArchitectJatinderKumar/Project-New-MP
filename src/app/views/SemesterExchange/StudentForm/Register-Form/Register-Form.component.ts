@@ -162,9 +162,11 @@ export class RegisterFormcomponent implements OnInit {
         // Sponsor & Declaration
         SponsorType: ['', Validators.required],
         AvailableFunds: ['', Validators.required],
-        SponsorName: [''], SponsorRelation: [''],
-        AcceptPolicy: [false, Validators.requiredTrue],
-
+        SponsorName: [''], 
+        SponsorRelation: [''],
+        AcceptPolicy: [true, Validators.requiredTrue],
+        SponsorContact:[''],
+        SponsorEmail:[''],
         // Document paths 
         PassportDocumentPath: [''],
         EnglishDocumentPath: [''],
@@ -214,37 +216,6 @@ export class RegisterFormcomponent implements OnInit {
         }
       });
   }
-  // checkEligibility(): void {
-  //   if (this.eligibilityForm.invalid) {
-  //     this.eligibilityForm.markAllAsTouched();
-  //     return;
-  //   }
-
-  //   this.isLoading = true;
-  //   const { email, contactNumber } = this.eligibilityForm.value;
-
-  //   // Assuming a new endpoint is used to get LoginName based on contact details
-  //   this.servicesSM.checkBasicEligibility(email, contactNumber) 
-  //     .pipe(
-  //       finalize(() => this.isLoading = false)
-  //     )
-  //     .subscribe({
-  //       next: (response: any) => {
-  //         const studentInfo = response.item1?.[0];
-
-  //         if (studentInfo && studentInfo.loginName) {
-  //           this.LoginName = studentInfo.loginName;
-  //           this.RegistrationNo = studentInfo.registrationNo;
-  //           this.getToken(this.LoginName); // Start the detailed eligibility check using original API flow
-  //         } else {
-  //           Swal.fire({ title: 'Not Eligible', text: 'Email/Contact did not match any record.', icon: 'warning' });
-  //         }
-  //       },
-  //       error: () => {
-  //         Swal.fire({ title: 'Error', text: 'Failed to verify details. Try again.', icon: 'error' });
-  //       }
-  //     });
-  // }
 
   // --- Core API Flow (Maintaining Original Endpoints) ---
 
@@ -374,6 +345,14 @@ export class RegisterFormcomponent implements OnInit {
   //         Swal.fire({ title: 'Not Eligible', text: 'Could not fetch marks data.', icon: 'warning' });
   //       }
   //     },
+  // this.ServicesSM.getStudentDetailsWithMarks(Regdno).subscribe({
+  //         next: response => {
+  //         if (response.item1.length > 0) {            
+  //             this.StudentDetailsWithMarks = response.item1;
+  //             this.ProgramCode = this.StudentDetailsWithMarks[0].officialCode;
+  //             this.SectionCode = this.StudentDetailsWithMarks[0].section;
+  //             this.SchoolId = this.StudentDetailsWithMarks[0].schoolId;
+              
   //     error: err => this.LoginFailed(err)
   //   });
   // }
@@ -465,7 +444,7 @@ export class RegisterFormcomponent implements OnInit {
 
           // 5. Post Check Action: Always attempt to fetch university details if data exists
           this.getUniversityDetails();
-          
+          this.FindGradeFCount(this.RegistrationNo);
           // NOTE: The separate FindGradeFCount() call is removed here as its logic 
           // should be entirely contained within GetStudentMarksDetails() which handles CurrentTerm > 1.
         },
@@ -609,10 +588,18 @@ export class RegisterFormcomponent implements OnInit {
   // }
 
   getUniversityDetails(): void {
-    if (!this.ProgramCode) return;
+    if (!this.ProgramCode) 
+    {
+       this.servicesSM.getUniversityLists('').subscribe((response) => {
+      this.uniData = response.item1;
+    });
+    }
+    else
+    {
     this.servicesSM.getUniversityLists(this.ProgramCode).subscribe((response) => {
       this.uniData = response.item1;
     });
+  }
   }
   togglePolicy(event: MouseEvent): void {
     event.preventDefault(); // prevent page scroll
@@ -688,46 +675,56 @@ export class RegisterFormcomponent implements OnInit {
 
     formData.append("EnglishTestType", formValue.EnglishTestType || 'NA');
     if (['PTE', 'DULINGO', 'IELTS', 'TOFEL'].includes(formValue.EnglishTestType)) {
+      formData.append("EnglishTestName", formValue.TestName || 'NA');
       formData.append("SpeakingScore", formValue.SpeakingScore || 'NA');
       formData.append("ListeningScore", formValue.ListeningScore || 'NA');
       formData.append("ReadingScore", formValue.ReadingScore || 'NA');
       formData.append("WritingScore", formValue.WritingScore || 'NA');
       formData.append("OverallScore", formValue.OverallScore || 'NA');
       formData.append("EnglishTestYear", formValue.EnglishTestYear);
-    } else if (formValue.EnglishTestType === 'Applied') {
-      formData.append("testDate", formValue.testDate);
-      formData.append("SpeakingScore", 'NA');
-      formData.append("ListeningScore", 'NA');
-      formData.append("ReadingScore", 'NA');
-      formData.append("WritingScore", 'NA');
-      formData.append("OverallScore", 'NA');
-      formData.append("EnglishTestYear", 'NA');
+      formData.append("TestDate", formValue.TestDate);
+    } 
+    if (formValue.EnglishTestType === 'Appeared') {
+      formData.append("EnglishTestName", formValue.TestName || 'NA');
+      formData.append("SpeakingScore", formValue.SpeakingScore || 'NA');
+      formData.append("ListeningScore", formValue.ListeningScore || 'NA');
+      formData.append("ReadingScore", formValue.ReadingScore || 'NA');
+      formData.append("WritingScore", formValue.WritingScore || 'NA');
+      formData.append("OverallScore", formValue.OverallScore || 'NA');
+      formData.append("EnglishTestYear", formValue.TestDate);
+      formData.append("TestDate", formValue.TestDate);
     }
     else {
-      formData.append("SpeakingScore", 'NA');
+      formData.append("EnglishTestName",  'NA');
+      formData.append("SpeakingScore",  'NA');
       formData.append("ListeningScore", 'NA');
-      formData.append("ReadingScore", 'NA');
-      formData.append("WritingScore", 'NA');
-      formData.append("OverallScore", 'NA');
+      formData.append("ReadingScore",  'NA');
+      formData.append("WritingScore",  'NA');
+      formData.append("OverallScore",  'NA');
       formData.append("EnglishTestYear", 'NA');
-      // formData.append("testDate", 'NA');
+      formData.append("TestDate", 'NA');
+      
     }
 
-    formData.append("IsSelfFunded", formValue.IsSelfFunded || 'NA');
-    formData.append("SponsorEmail", 'NA'); // This field is not in the form, so default to 'NA'
-    formData.append("AvailableFunds", formValue.AvailableFunds || 'NA');
-    formData.append("TotalCountGradeF", this.GradeFcount?.toString() || 'NA'); // Convert number to string
+  
+    // formData.append("SponsorEmail", 'NA'); // This field is not in the form, so default to 'NA'
+    formData.append("AvailableFunds", formValue.AvailableFunds );
+    formData.append("TotalCountGradeF", this.GradeFcount?.toString()); // Convert number to string
 
-    if (formValue.IsSelfFunded === 'Other') {
+    if (formValue.SponsorType === 'Other') {
+      formData.append("IsSelfFunded", 'False' );
+      formData.append("SponsorType", 'Other');
       formData.append("SponsorName", formValue.SponsorName || 'NA');
       formData.append("SponsorRelation", formValue.SponsorRelation || 'NA');
       formData.append("SponsorContact", formValue.SponsorContact || 'NA'); // This field is not in the form, so default to 'NA'
-      formData.append("SponsorEmail", formValue.SponsorEmail || 'NA'); // This field is not in the form, so default to 'NA'
+      formData.append("SponsorEmail", formValue.SponsorEmail ); // This field is not in the form, so default to 'NA'
     } else {
-      formData.append("SponsorName", 'NA');
-      formData.append("SponsorRelation", 'NA');
-      formData.append("SponsorContact", 'NA');
-      formData.append("SponsorEmail", 'NA');
+      formData.append("IsSelfFunded", 'True' );
+      formData.append("SponsorType", 'Parent');
+      formData.append("SponsorName", 'Parent');
+      formData.append("SponsorRelation", 'Parent');
+      formData.append("SponsorContact",  formValue.ParentContact);
+      formData.append("SponsorEmail", 'Parent');
     }
 
     formData.append("AcceptPolicy", formValue.AcceptPolicy ? 'Yes' : 'No');
@@ -744,6 +741,8 @@ export class RegisterFormcomponent implements OnInit {
 
     formData.append("RelativeCountryName", formValue.RelativeCountryName || 'NA');
     formData.append("RelativeName", formValue.RelativeName || 'NA');
+    formData.append("RelativeEmail", formValue.RelativeEmail || 'NA');
+    formData.append("RelativePhone", formValue.RelativePhone || 'NA');
     formData.append("RelativeRelation", formValue.RelativeRelation || 'NA'); // Added RelativeRelation
     formData.append("HasRelativeDetails", formValue.HasRelativeDetails || 'NA'); // Added HasRelativeDetails
 

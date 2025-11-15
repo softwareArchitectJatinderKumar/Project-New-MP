@@ -150,6 +150,7 @@ goToStep(stepIndex: number): void {
     }
   }
 
+
 updateStep(step: number) {
     this.isSubmitted = true;
     
@@ -162,12 +163,13 @@ updateStep(step: number) {
     const formData = new FormData();
     const raw = this.form.getRawValue();
 
+    // 1. RegistrationNo and ApplicationId (2 fields)
     formData.append('RegistrationNo', this.RegistrationNo || 'NA');
     if (this.ApplicationId) formData.append('ApplicationId', this.ApplicationId);
 
-    // List all fields relevant for the update API call (using FORM CONTROL names)
-    // NOTE: 'RelativeCountryName', 'EnglishTestYear', and 'TestName' are EXCLUDED here for custom mapping below
-    // to ensure they are explicitly sent as non-null strings to the respective API parameters.
+    // 2. Core data fields (33 fields)
+    // REMOVED: "AcceptPolicy" (not in SP)
+    // ADDED: "IsSelfFunded" (required by SP)
     const fieldsToAppend = [
       "EmailId", "CountryName", "WhatsAppNo", "PhoneNumber", "ParentContact",
       "ApplyingOption", "UniversityOption1", "UniversityOption2", "UniversityOption3",
@@ -175,9 +177,9 @@ updateStep(step: number) {
       "IsVisaRejected", "VisaRejectedReason", "VisaRejectedCountry",
       "EnglishTestType", 
       "SpeakingScore", "ListeningScore", "ReadingScore", "WritingScore", "OverallScore",
-      "SponsorType", "AvailableFunds", "SponsorName", "SponsorRelation",
+      "SponsorType", "AvailableFunds", "SponsorName", "SponsorRelation", 'SponsorEmail','SponsorContact',
       "RelativeName", "RelativeRelation", "RelativeEmail", "RelativePhone", 
-      "AcceptPolicy"
+      // "IsSelfFunded" // <--- CRITICAL: ADDED MISSING SP PARAMETER
     ];
 
     fieldsToAppend.forEach(k => {
@@ -187,6 +189,7 @@ updateStep(step: number) {
       formData.append(k, String(v));
     });
 
+    // 3. Custom Mapped Fields (3 fields)
     // FIX 1: Map Angular Form Control 'RelativeCountryName' to API parameter 'RelativeCountry'
     let relativeCountryValue: any = raw['RelativeCountryName'] ?? '';
     if (relativeCountryValue === null || relativeCountryValue === undefined) relativeCountryValue = '';
@@ -200,9 +203,27 @@ updateStep(step: number) {
     // FIX 3: Map Angular Form Control 'TestName' to API parameter 'EnglishTestName' (PascalCase)
     let englishTestNameValue: any = raw['TestName'] ?? '';
     if (englishTestNameValue === null || englishTestNameValue === undefined) englishTestNameValue = '';
-    formData.append('EnglishTestName', String(englishTestNameValue)); // <-- FIX APPLIED HERE
-    // END FIXES
+    formData.append('EnglishTestName', String(englishTestNameValue)); 
+    
+    let IsSelfFunded: any = raw['SponsorType'] ?? '';
+    if (IsSelfFunded === 'Parents' || IsSelfFunded ==='Parent') IsSelfFunded = 'True';
+    else if (IsSelfFunded === 'Other' || IsSelfFunded ==='other') IsSelfFunded = 'False';
+    formData.append('IsSelfFunded', IsSelfFunded); 
 
+
+    formData.append('ResumeFileName', this.ResumeFileName || ''); 
+    formData.append('ResumeFileData', this.ResumeFileData || ''); 
+    formData.append('ConsentLetterFileName', this.ConsentLetterFileName || ''); 
+    formData.append('ConsentLetterData', this.ConsentLetterData || ''); 
+    formData.append('FeesProofFileName', this.FeesProofFileName || ''); 
+    formData.append('FeesProofData', this.FeesProofData || ''); 
+    formData.append('PassportFileName', this.PassportFileName || ''); 
+    formData.append('PassportFileData', this.PassportFileData || ''); 
+    // Total fields appended: 2 (ID) + 33 (core) + 3 (custom) + 8 (files) = 46 fields.
+
+    formData.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
     this.isLoading = true;
     const start = Date.now();
     this.studentService.updateApplicationDetails(formData).subscribe({
@@ -225,7 +246,7 @@ updateStep(step: number) {
         this.isLoading = false;
       }
     });
-  }
+}
   /** ------------------- Validation Helper (NEW) ------------------- */
   // Checks only the required fields relevant to the current step's data.
   // This bypasses the global 'form.invalid' issue.
@@ -448,9 +469,11 @@ updateStep(step: number) {
 
       // Sponsor / Finance / Declaration
       SponsorType: ['', Validators.required],
-      AvailableFunds: ['', Validators.required],
-      SponsorName: [''],
+      SponsorName: [''], 
       SponsorRelation: [''],
+      SponsorContact:[''],
+      SponsorEmail:[''],
+      AvailableFunds: ['', Validators.required],
       AcceptPolicy: [false, Validators.requiredTrue]
     });
     this.form.disable(); // Disable form fields initially
@@ -493,7 +516,7 @@ EmailId:any;
               VisaRejectedReason: this.stuApplication.visaRejectedReason || '',
               VisaRejectedCountry: this.stuApplication.visaRejectedCountry || '',
               EnglishTestType: this.stuApplication.englishTestType || 'Applied', // Default to 'Applied' if null/blank
-              EnglishTestName: this.stuApplication.englishTestName || '',
+              TestName: this.stuApplication.englishTestName ,
               TestDate: this.formatDateForInput(this.stuApplication.englishTestYear) || '',
               EnglishTestYear: this.stuApplication.englishTestYear ||  '',
               ListeningScore: this.stuApplication.listeningScore || '',
@@ -502,10 +525,12 @@ EmailId:any;
               WritingScore: this.stuApplication.writingScore || '',
               OverallScore: this.stuApplication.overallScore || '',
               // SponsorType: (this.stuApplication.isSelfFunded=='true' || this.stuApplication.isSelfFunded=='True'|| this.stuApplication.isSelfFunded=='Yes')? 'Parents':'',
-              SponsorType: this.stuApplication.sponsorRelation||'',
+              SponsorType: this.stuApplication.sponsorRelation !='Parent' ||this.stuApplication.sponsorRelation !='Parents'? 'Other':'Parents' ,
               AvailableFunds: this.stuApplication.availableFunds || '',
               SponsorName: this.stuApplication.sponsorName || '',
               SponsorRelation: this.stuApplication.sponsorRelation || '',
+              SponsorEmail: this.stuApplication.sponsorEmail || '',
+              SponsorContact: this.stuApplication.sponsorContact || '',
               AcceptPolicy: this.stuApplication.acceptPolicy === 'true' || this.stuApplication.acceptPolicy === true || this.stuApplication.acceptPolicy === 'Yes' || this.stuApplication.acceptPolicy === 'yes'
             });
             

@@ -539,7 +539,7 @@
                                             </div>
                                         </div>
 
-                                        <div *ngIf="form.get('TestDate')?.value" class="col-md-12">
+                                        <div *ngIf="form.get('EnglishTestYear')?.value" class="col-md-12">
                                             <div class="row mt-2">
                                                 <div class="col-md-4">
                                                     <label class="form-label">Listening Score</label>
@@ -592,7 +592,6 @@
                                             [disabled]="!isEditingStep[3]">
                                             <option value="">Select Sponsor Type</option>
                                             <option value="Parents">Parents</option>
-                                            <option value="Relative">Relative</option>
                                             <option value="Other">Other</option>
                                         </select>
                                     </div>
@@ -607,7 +606,7 @@
                                     </div>
                                 </div>
 
-                                <div *ngIf="form.get('SponsorType')?.value === 'Other' || form.get('SponsorType')?.value === 'Relative'"
+                                <div *ngIf="form.get('SponsorType')?.value != 'Parent' || form.get('SponsorType')?.value != 'Parents' || form.get('SponsorType')?.value == 'NA'  "
                                     class="col-md-12">
                                     <div class="row mt-2">
                                         <div class="col-md-6">
@@ -618,6 +617,18 @@
                                         <div class="col-md-6">
                                             <label class="form-label">Sponsor Relation *</label>
                                             <input class="form-control" formControlName="SponsorRelation"
+                                                [readonly]="!isEditingStep[3]" />
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Sponsor Email </label>
+                                            <input class="form-control" formControlName="SponsorEmail"
+                                                [readonly]="!isEditingStep[3]" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Sponsor Contact </label>
+                                            <input class="form-control" formControlName="SponsorContact"
                                                 [readonly]="!isEditingStep[3]" />
                                         </div>
                                     </div>
