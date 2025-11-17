@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { finalize } from 'rxjs/operators';
 import { SemesterExchangeStuDetailsService } from 'src/app/_services/semester-exchange-stu-details.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/_services/auth.service';
 import { StorageService } from 'src/app/_services/storage.service';
 import { countries } from '../../countries-list'; // Assuming countries-list.ts exists and exports 'countries'
@@ -125,6 +125,7 @@ goToStep(stepIndex: number): void {
     private fb: FormBuilder,
     private studentService: SemesterExchangeStuDetailsService,
     private route: ActivatedRoute,
+    private router: Router,
     private authService: AuthService,
     private storageService: StorageService,
     private ServicesSM: SemesterExchangeStuDetailsService,
@@ -365,6 +366,7 @@ updateStep(step: number) {
       if (element) {
         element.hidden = true;
       }
+      this.router.navigate(['stuPotal', this.LoginName]);
   }
 
 
@@ -487,9 +489,17 @@ EmailId:any;
       next: (response: any) => {
         try {
           
+
+          const applicationData = response?.item1?.[0];
+
+          if (!applicationData) {
+           this.LoginFailed('Not Valid Application')
+            return; // Stop further execution in this path
+          }
             this.stuApplication = response.item1[0];
             this.ApplicationId = this.stuApplication.applicationId || null;
             this.EmailId =  this.stuApplication.emailId || '';
+            this.SectionCode = this.stuApplication.sectionCode;
             // Patch fields into reactive form (map backend keys to form keys)
             this.form.patchValue({
               EmailId: this.stuApplication?.emailId || '',
