@@ -3,9 +3,11 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { StorageService } from './storage.service';
 
-const AUTH_API = 'https://projectsapi.lpu.in/';//'https://projectsapi.lpu.in/';
-const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
+// const AUTH_API = 'https://projectsapi.lpu.in/';//'https://projectsapi.lpu.in/';
+// const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
 
+const AUTH_API = 'https://localhost:7125/'; //'https://projectsapi.lpu.in/';
+const AUTH_API_LOCAL = 'https://localhost:7125/'; //'https://localhost:7125/';
 @Injectable({
   providedIn: 'root'
 })
@@ -136,6 +138,21 @@ export class PlanningrankingService {
        {headers}
       );
     }
+
+
+  FetchObpMetricDetails(MetricId: any): Observable<any> {
+   var authToken = this.storageService.getUser();
+    const httpOptions = {
+      headers: new HttpHeaders({
+        // 'Authorization': `Bearer ${authToken}`
+        'Authorization': `Bearer ${authToken}`
+      })
+    };
+    return this.http.get<any>(AUTH_API + 'api/Planning/GetObpMetricDetails?MetricId=' + MetricId, httpOptions);
+      //https://localhost:7125/api/LpuObpAutomation/GetObpMetricDetails?MetricId=990
+    
+  }
+
 }
 
 

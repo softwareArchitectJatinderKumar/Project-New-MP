@@ -19,15 +19,16 @@ export interface MetricMapping {
   Type: 'PA' | 'AO' | 'DE' | null;
   HeadName?: string;      // Included for completeness but not used in form
   AssistantName?: string; // Included for completeness but not used in form
+  UpdatedOn?: string; // Included for completeness but not used in form
 }
 
 const INITIAL_DATA: MetricMapping[] = [
   // Mock data based on the structure of your CSV file
-  { Id: 816, HeadUID: 11278, AssistantUID: 34196, IsActive: 1, MetricId: 3478, Type: 'PA' },
-  { Id: 817, HeadUID: 11278, AssistantUID: 34196, IsActive: 1, MetricId: 3787, Type: 'DE' },
-  { Id: 3478, HeadUID: 11918, AssistantUID: 33509, IsActive: 0, MetricId: 410, Type: 'AO' },
-  { Id: 3484, HeadUID: 11918, AssistantUID: 33509, IsActive: 1, MetricId: 411, Type: 'AO' },
-  { Id: 3485, HeadUID: 25708, AssistantUID: 34168, IsActive: 0, MetricId: 412, Type: 'PA' },
+  // { Id: 816, HeadUID: 11278, AssistantUID: 34196, IsActive: 1, MetricId: 3478, Type: 'PA' },
+  // { Id: 817, HeadUID: 11278, AssistantUID: 34196, IsActive: 1, MetricId: 3787, Type: 'DE' },
+  // { Id: 3478, HeadUID: 11918, AssistantUID: 33509, IsActive: 0, MetricId: 410, Type: 'AO' },
+  // { Id: 3484, HeadUID: 11918, AssistantUID: 33509, IsActive: 1, MetricId: 411, Type: 'AO' },
+  // { Id: 3485, HeadUID: 25708, AssistantUID: 34168, IsActive: 0, MetricId: 412, Type: 'PA' },
 ];
 
 @Injectable({

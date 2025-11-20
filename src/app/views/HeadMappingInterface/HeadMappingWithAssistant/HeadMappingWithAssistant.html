@@ -1,10 +1,9 @@
 <div *ngIf="loadingIndicator" class="fullscreen-loader">
-    <div class="custom-spinner-overlay" *ngIf="loadingIndicator">
-        <div class="custom-spinner-content text-center">
-            <img src="assets/images/spinner.gif" alt="Loading..." />
-            <!-- <p>Loading...</p>-->
-        </div>
+  <div class="custom-spinner-overlay" *ngIf="loadingIndicator">
+    <div class="custom-spinner-content text-center">
+      <img src="assets/images/spinner.gif" alt="Loading..." />
     </div>
+  </div>
 </div>
 
 <div class="container-fluid py-4" id="OBPHeadMapping" *ngIf="isLoginFailed==false; else loginFailed">
@@ -21,41 +20,99 @@
 
           <div class="col-md-6">
             <label for="headUid" class="form-label">Head UID <span class="text-danger">*</span></label>
-            <input type="number" formControlName="HeadUID" class="form-control"
-              [class.is-invalid]="mappingForm.get('HeadUID')?.invalid && mappingForm.get('HeadUID')?.touched">
-            <div class="invalid-feedback" *ngIf="mappingForm.get('HeadUID')?.errors?.['required']">Head UID is required.
+            <div class="position-relative">
+              <input type="text" id="HeadUID" name="HeadUID" required class="form-control" [formControl]="headControl"
+                placeholder="Search by name or code" (input)="onHeadInput()" (focus)="showHeadSuggestions = true"
+                (blur)="hideHeadSuggestions()" />
+              <div class="text-danger mt-1 small"
+                *ngIf="mappingForm.get('HeadUID')?.invalid && mappingForm.get('HeadUID')?.touched">
+                Head UID is required.
+              </div>
+
+              <div *ngIf="showHeadSuggestions && filteredHeadsData.length"
+                class="list-group position-absolute w-100 shadow-sm z-3">
+                <button type="button" class="list-group-item list-group-item-action"
+                  *ngFor="let employee of filteredHeadsData; let i = index"
+                  [class.active]="i === activeHeadSuggestionIndex" (mousedown)="selectHead(employee)"> {{
+                  employee.employeeName }} ({{ employee.employeeCode }})
+                </button>
+              </div>
             </div>
-            <div class="invalid-feedback" *ngIf="mappingForm.get('HeadUID')?.errors?.['pattern']">Must be a number.
+            <div *ngIf="AssignedToUid > 0" class="text-primary mt-2 small">
+              Selected Head Id: <strong>{{ AssignedToUid }}</strong>
             </div>
+
+
           </div>
 
           <div class="col-md-6">
             <label for="assistantUid" class="form-label">Assistant UID <span class="text-danger">*</span></label>
-            <input type="number" formControlName="AssistantUID" class="form-control"
-              [class.is-invalid]="mappingForm.get('AssistantUID')?.invalid && mappingForm.get('AssistantUID')?.touched">
-            <div class="invalid-feedback" *ngIf="mappingForm.get('AssistantUID')?.errors?.['required']">Assistant UID is
-              required.</div>
-          </div>
 
+            <div class="position-relative">
+              <input type="text" id="AssistantUID" name="AssistantUID" required class="form-control"
+                [formControl]="assistantControl" placeholder="Search by name or code" (input)="onAssistantInput()"
+                (focus)="showAssistantSuggestions = true" (blur)="hideAssistantSuggestions()" />
+              <div class="text-danger mt-1 small"
+                *ngIf="mappingForm.get('AssistantUID')?.invalid && mappingForm.get('AssistantUID')?.touched">
+                Assistant UID is required.
+              </div>
+
+              <div *ngIf="showAssistantSuggestions && filteredAssistantsData.length"
+                class="list-group position-absolute w-100 shadow-sm z-3">
+                <button type="button" class="list-group-item list-group-item-action"
+                  *ngFor="let employee of filteredAssistantsData; let i = index"
+                  [class.active]="i === activeAssistantSuggestionIndex" (mousedown)="selectAssistant(employee)"> {{
+                  employee.employeeName }} ({{ employee.employeeCode }})
+                </button>
+              </div>
+            </div>
+            <div *ngIf="AssistantUid > 0" class="text-primary mt-2 small">
+              Selected Assistant UId: <strong>{{ AssistantUid }}</strong>
+            </div>
+          </div>
           <div class="col-md-4">
             <label for="metricId" class="form-label">Metric ID <span class="text-danger">*</span></label>
-            <input type="number" formControlName="MetricId" class="form-control"
-              [class.is-invalid]="mappingForm.get('MetricId')?.invalid && mappingForm.get('MetricId')?.touched">
-            <div class="invalid-feedback" *ngIf="mappingForm.get('MetricId')?.errors?.['required']">Metric ID is
-              required.</div>
+            <div class="position-relative">
+              <input type="text" id="AssignToMetricId" name="AssignToMetricId" required class="form-control"
+                [formControl]="metricControl" placeholder="Search by description or ID" (input)="onMetricInput()"
+                (focus)="showMetricSuggestions = true" (blur)="hideMetricSuggestions()"
+                (keydown)="onKeydown($event, 'metric')" />
+
+              <div class="text-danger mt-1 small"
+                *ngIf="mappingForm.get('MetricId')?.invalid && mappingForm.get('MetricId')?.touched">
+                Metric Id is required.
+              </div>
+
+              <div *ngIf="showMetricSuggestions && filteredMetricData.length"
+                class="list-group position-absolute w-100 shadow-sm z-3">
+                <button type="button" class="list-group-item list-group-item-action"
+                  *ngFor="let metric of filteredMetricData; let i = index"
+                  [class.active]="i === activeMetricSuggestionIndex" (mousedown)="selectMetric(metric)">
+                  {{ metric.description }} ({{ metric.id }})
+                </button>
+              </div>
+            </div>
+            <div *ngIf="AssignToMetricId" class="text-primary mt-2 small"> Selected Metric Id: <strong>{{
+                AssignToMetricId }}</strong>
+            </div>
           </div>
           <div class="col-md-6">
-            <label for="metricId" class="form-label">Select School Involved <span class="text-danger">*</span></label>
-              <ng-select [items]="allSchoolDivisions" #ngSelectComponentStream [multiple]="true" bindLabel="schoolDivision"
-                [clearable]="true" [virtualScroll]="true" placeholder="Select" (change)="changeResponsiblePlanned($event)"
-                bindValue="id" [hideSelected]="true" [(ngModel)]="selectedSchoolDivisions" class="col-12">
-              </ng-select>
-              <div *ngIf="hasSelectionError" class="themeClr">One school division is Required</div>
-              <!-- <div class="invalid-feedback" *ngIf="mappingForm.get('MetricId')?.errors?.['required']">Metric ID is
-                          required.</div> -->
-                          {{this.selectedDivisions}}
+            <label for="schoolDivisionNgSelect" class="form-label">School Division (Optional)</label>
+
+            <ng-select id="schoolDivisionNgSelect" [items]="allSchoolDivisions" bindLabel="schoolDivision"
+              bindValue="id" [multiple]="true" placeholder="Select one or more divisions"
+              [(ngModel)]="selectedDivisions" [ngModelOptions]="{standalone: true}">
+            </ng-select>
+ 
+            <div class="mt-2 small text-primary" *ngIf="selectedDivisions.length > 0">
+              Selected IDs: <strong>{{ selectedDivisions.join(', ') }}</strong>
+            </div>
+            <div class="mt-2 small text-muted" *ngIf="selectedDivisions.length === 0">
+              No divisions selected.
             </div>
 
+            <input type="hidden" formControlName="SchoolId" />
+          </div>
           <div class="col-md-2" *ngIf="isUpdateMode">
             <label class="form-label d-block">Is Active <span class="text-danger">*</span></label>
             <div class="btn-group" role="group" aria-label="Is Active options">
@@ -96,16 +153,11 @@
 
             <div class=" col-md-4 mt-5">
               <button type="submit" class="btn btn-lg w-30"
-                [ngClass]="{'btn-primary': !isUpdateMode, 'btn-info': isUpdateMode}"
-                [disabled]="mappingForm.invalid">
+                [ngClass]="{'btn-primary': !isUpdateMode, 'btn-info': isUpdateMode}" [disabled]="mappingForm.invalid">
                 <i class="bi bi-cloud-arrow-up"></i> {{ isUpdateMode ? 'Update Record' : 'Submit Record' }}
               </button>
             </div>
             <div class=" col-md-4 mt-5">
-              <!-- <button type="button" class="btn btn-outline-secondary w-30 mt-2" *ngIf="isUpdateMode"
-                (click)="isUpdateMode=false; mappingForm.reset({ IsActive: 1, Type: 'PA' })">
-                Cancel Update
-              </button> -->
               <button type="button" class="btn btn-secondary w-30 mt-2" *ngIf="isUpdateMode" (click)="onCancelUpdate()">
                 Cancel Update
               </button>
@@ -131,7 +183,7 @@
             <option *ngFor="let s of pageSizes" [value]="s" [selected]="s === pageSize">{{ s }}</option>
           </select>
           <button class="btn btn-secondary ms-3" (click)="exportToExcel()">
-             Export to Excel
+            Export to Excel
           </button>
         </div>
         <div class="text-muted">Total: {{ totalRecords }}</div>
@@ -144,19 +196,16 @@
               <th *ngFor="let col of tableColumns"> <span class="text-dark">{{ col }}</span></th>
             </tr>
           </thead>
-          <tbody>
+          <!-- <tbody>
             <tr *ngFor="let record of displayedData$ | async">
               <td *ngFor="let col of tableColumns">
                 <ng-container [ngSwitch]="col">
                   <ng-container *ngSwitchCase="'Actions'">
                     <button type="button" class="btn btn-sm btn-info me-2" (click)="onEdit(record)">
-                        <i class="mdi mdi-pencil"></i>
+                      <i class="mdi mdi-pencil"></i>
                     </button>
                   </ng-container>
                   <ng-container *ngSwitchCase="'isActive'">
-                    <!-- <span [ngClass]="{'text-success': record.IsActive === 1, 'text-danger': record.IsActive === 0}">
-                                        {{ isActiveDisplay(record.IsActive) }}**
-                                      </span> -->
                     <button type="button" class="btn btn-sm btn-info me-2 btn-circle" (click)="onDelete(record)">
                       <i class="mdi mdi-pencil"></i>
                     </button>
@@ -164,8 +213,56 @@
                   <ng-container *ngSwitchDefault>
                     {{ $any(record)[col] }}
                   </ng-container>
+                </ng-container>
+              </td>
+            </tr>
+          </tbody> -->
+          
+          <tbody>
+            <tr *ngFor="let record of displayedData$ | async">
+              <td *ngFor="let col of tableColumns">
+                <ng-container [ngSwitch]="col">
+                  
+                  <ng-container *ngSwitchCase="'UpdatedOn'">
+                    {{ $any(record)['UpdatedOn'] | date:'medium' }}
                   </ng-container>
-                  </td>
+                  
+                  <ng-container *ngSwitchCase="'HeadUID'">
+                    {{ getEmployeeDisplay($any(record)['HeadUID']) }}
+                  </ng-container>
+                  
+                  <ng-container *ngSwitchCase="'AssistantUID'">
+                    {{ getEmployeeDisplay($any(record)['AssistantUID']) }}
+                  </ng-container>
+                  
+                  <ng-container *ngSwitchCase="'MetricId'">
+                    {{ getMetricDescriptionDisplay($any(record)['MetricId']) }}
+                  </ng-container>
+                  
+                  <ng-container *ngSwitchCase="'SchoolID'">
+                    {{ getSchoolNamesDisplay($any(record)['SchoolID']) }}
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'SchoolDivisionIDs'">
+                    {{ getSchoolNamesDisplay($any(record)['SchoolDivisionIDs']) }}
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'SchoolIds'">
+                    {{ getSchoolNamesDisplay($any(record)['SchoolIds']) }}
+                  </ng-container>
+
+                  <ng-container *ngSwitchCase="'Actions'">
+                    <button type="button" class="btn btn-sm btn-info me-2" (click)="onEdit(record)">
+                      <i class="mdi mdi-pencil"></i>
+                    </button>
+                  </ng-container>
+                  
+                  <ng-container *ngSwitchCase="'isActive'">
+                    {{ isActiveDisplay($any(record)['isActive']) }}
+                  </ng-container>
+                  <ng-container *ngSwitchDefault>
+                    {{ $any(record)[col] }}
+                  </ng-container>
+                </ng-container>
+              </td>
             </tr>
           </tbody>
           <tfoot *ngIf="(displayedData$ | async)?.length === 0">
