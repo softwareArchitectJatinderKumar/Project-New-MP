@@ -58,7 +58,7 @@ export class MouActivityActionPlanComponent implements OnInit {
   filteredMouActivityAssigned: any[] = [];
   MouActivityAssigned: any[] = [];
   searchQueryx: any;
-
+searchQueryxx:any;
 
 
   clearFields(): void {
@@ -178,7 +178,7 @@ export class MouActivityActionPlanComponent implements OnInit {
           this.EmployeeDetails = response.item1;
           // console.log(JSON.stringify(this.EmployeeDetails))
           this.EmployeeName = response.item1[0].employeeName;
-          this.EmployeeCode = response.item1[0].employeeCode;
+          this.EmployeeCode ='11840';// response.item1[0].employeeCode;
           this.ContactNoX = response.item1[0].contactNo;
           this.Department = response.item1[0].department;
           this.DepartmentName = response.item1[0].departmentName;
@@ -190,6 +190,7 @@ export class MouActivityActionPlanComponent implements OnInit {
           // {
           this.GetAllMouDocumentsForApprovals(this.EmployeeCode);
           this.GetAllActivtiesAssigned(this.EmployeeCode, this.selectedPlannerSession);
+         
         } else {
           this.EmployeeDetails = [];
           this.showNoDataFoundMessage = true;
@@ -228,6 +229,7 @@ export class MouActivityActionPlanComponent implements OnInit {
           this.dataSource.data = this.MouActivityDocuments = [];
           this.showNoDataFoundMessage = true;
         }
+         this.GetOthersActivtiesAssigned('0', this.selectedPlannerSession);
       },
       error: err => {
         this.LoginFailed(err);
@@ -284,7 +286,209 @@ export class MouActivityActionPlanComponent implements OnInit {
     });
   }
 
-  
+  filteredOthersMouActivityAssigned: any[] = [];
+MouActivityAssigneds:any[]=[];
+  //  GetOthersActivtiesAssigned(IdCode: any, sessionId: any): void {
+  //   // Show loader before request starts
+  //   this.loadingIndicator = true;
+  //   this.showNoDataFoundMessage = false;
+
+  //   this.mouDocumentsService.GetAllActivitiesAssignedwithSession('0', sessionId).subscribe({
+  //     next: response => {
+  //       if (response.item1 && response.item1.length > 0) {
+  //         this.filteredOthersMouActivityAssigned = this.MouActivityAssigneds = response.item1;
+  //         this.dataSource.data = this.MouActivityAssigneds;
+  //         alert(JSON.stringify(this.MouActivityAssigneds.length))
+  //         // this.MouActivityDocuments.sort((a, b) => b.id - a.id);
+  //         this.filteredOthersMouActivityAssigned = [...this.MouActivityAssigneds];
+
+  //         // Setup columns
+  //         this.columnsAssigned = [];
+  //         this.headHtmlData = this.MouActivityAssigneds[0];
+  //         this.columnsAssigned = Object.keys(this.headHtmlData);
+  //         this.columnsAssigned = this.columnsAssigned.filter((item: string) =>
+  //           ![
+  //             'filePath', 'activityDetails', 'mouStartDate', 'mouEndDate', 'mouStatus', 'newMouId',
+  //             'mouTitle', 'actionAssignedBy*', 'uid*', 'createdBy', 'createdOn', 'mouId', 'id', 'sessionAcademicYear'
+  //           ].includes(item)
+  //         );
+
+  //         this.showNoDataFoundMessage = false;
+  //       } else {
+  //         this.dataSource.data = this.MouActivityDocuments = this.filteredOthersMouActivityAssigned = this.MouActivityAssigneds = [];
+  //         this.showNoDataFoundMessage = true;
+  //       }
+
+  //       // Delay hiding the loader for 2.5 seconds
+  //       setTimeout(() => {
+  //         this.loadingIndicator = false;
+  //       }, 2500);
+  //     },
+  //     error: err => {
+  //       this.dataSource.data = this.MouActivityDocuments = this.filteredOthersMouActivityAssigned = this.MouActivityAssigned = [];
+  //       this.showNoDataFoundMessage = true;
+  //       setTimeout(() => {
+  //         this.loadingIndicator = false;
+  //         this.showNoDataFoundMessage = true;
+  //       }, 2500);
+
+  //       this.LoginFailed(err);
+  //     }
+  //   });
+  // }
+
+
+   // =========================================================================
+  // FIXED SEARCH LOGIC FOR 'OthersAllAssignActivities' TAB
+  // =========================================================================
+
+  /**
+   * Filters the assigned activities based on the text search query.
+   * FIX: Added logic to reset the filtered list when the search query is empty.
+   */
+  searchxxxy(): void {
+    const query = this.searchQueryxx.trim().toLowerCase();
+
+    // FIX 1: If the search query is empty, reset the filtered list to the full master list.
+    if (query === '') {
+      this.filteredOthersMouActivityAssigned = [...this.MouActivityAssigneds];
+      return;
+    }
+
+    this.filteredOthersMouActivityAssigned = this.MouActivityAssigneds.filter(item => {
+      return Object.entries(item).some(([key, val]) => {
+        if (val !== null && val !== undefined) {
+          let valueString = String(val).toLowerCase();
+
+          // Special handling for 'mouId' (Old MOU Id)
+          if (key === 'mouId') {
+            const numericId = Number(val); // Convert mouid to a number
+
+            // Check if mouId number or "mou/<number>" matches the query
+            if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
+              return true;
+            }
+          }
+
+          // General search for all other fields (newMouId, uid, activityDetails, etc.)
+          return valueString.includes(query);
+        }
+        return false;
+      });
+    });
+  }
+
+  /**
+   * Fetches assigned activities data for the selected session.
+   * FIX: Re-applies the current search query after new data is loaded (if a query exists).
+   */
+  GetOthersActivtiesAssigned(IdCode: any, sessionId: any): void {
+    this.loadingIndicator = true;
+    this.showNoDataFoundMessage = false;
+
+    this.mouDocumentsService.GetAllActivitiesAssignedwithSession('0', sessionId).subscribe({
+      next: response => {
+        if (response.item1 && response.item1.length > 0) {
+          // Update the master list
+          this.MouActivityAssigneds = response.item1;
+          
+          // FIX 2: Check if there's an existing search query and re-run the filter
+          if (this.searchQueryxx.trim().length > 0) {
+            this.searchxxxy();
+          } else {
+            // If no search query, the filtered list is the full list
+            this.filteredOthersMouActivityAssigned = [...this.MouActivityAssigneds];
+          }
+
+          this.dataSource.data = this.MouActivityAssigneds;
+          // alert(JSON.stringify(this.MouActivityAssigneds.length)) // Removed alert as per best practices
+
+          this.MouActivityDocuments.sort((a, b) => b.id - a.id);
+
+          // Setup columns
+          this.columnsAssigned = [];
+          this.headHtmlData = this.MouActivityAssigneds[0];
+          this.columnsAssigned = Object.keys(this.headHtmlData);
+          this.columnsAssigned = this.columnsAssigned.filter((item: string) =>
+            ![
+              'filePath', 'activityDetails', 'mouStartDate', 'mouEndDate', 'mouStatus', 'newMouId',
+              'mouTitle', 'actionAssignedBy*', 'uid*', 'createdBy', 'createdOn', 'mouId', 'id', 'sessionAcademicYear'
+            ].includes(item)
+          );
+
+          this.showNoDataFoundMessage = false;
+        } else {
+          this.dataSource.data = this.MouActivityDocuments = this.filteredOthersMouActivityAssigned = this.MouActivityAssigneds = [];
+          this.showNoDataFoundMessage = true;
+        }
+
+        // Delay hiding the loader for 2.5 seconds
+        setTimeout(() => {
+          this.loadingIndicator = false;
+        }, 2500);
+      },
+      error: err => {
+        this.dataSource.data = this.MouActivityDocuments = this.filteredOthersMouActivityAssigned = this.MouActivityAssigneds = [];
+        this.showNoDataFoundMessage = true;
+        setTimeout(() => {
+          this.loadingIndicator = false;
+          this.showNoDataFoundMessage = true;
+        }, 2500);
+
+        this.LoginFailed(err);
+      }
+    });
+  }
+
+  // =========================================================================
+  // EXPORT TO EXCEL LOGIC (Updated to use filtered data for consistency)
+  // =========================================================================
+
+  exportToExcelsothers(): void {
+    const fileName = 'Mou_Document_report.xlsx';
+    
+    // Use the filtered list for export
+    const exportedData = this.filteredOthersMouActivityAssigned.map(item => ({ 
+      NewMOUId: item.newMouId ?? 'N/A', //1
+      OldMOUId: "MOU/" + item.mouId, //1
+      'Name of Mou Organisation': item.mouTitle, //2
+      'MOU Activity Assigned to Faculty UID': item.uid, //3 4
+      'Activity Start Date assigned By HOS': item.startDate, //5
+      'Activity End Date assigned By HOS': item.endDate, //6
+      'Remarks Given By HOS For Activity': item.remarks, //7
+      'Details of Allocated MOU Activity': this.removeNumberPrefix(item.activityDetails), //8 
+      'Date of MOU Activity Assigned By HOS': item.createdOn, //9
+    }));
+    
+    const header = [
+      'New MOU Id',
+      'Old MOU Id',
+      'Name of Mou Organisation',
+      'MOU Activity Assigned to Faculty UID',
+      'Activity Start Date assigned By HOS',
+      'Activity End Date assigned By HOS',
+      'Remarks Given By HOS For Activity',
+      'Details of Allocated MOU Activity',
+      'Date of MOU Activity Assigned By HOS'
+    ];
+    
+    const ws_data = [header, ...exportedData.map(item => Object.values(item))];
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(ws_data);
+    
+    const wscols = [
+      { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }
+    ];
+    ws['!cols'] = wscols;
+    
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([blobData], { type: 'application/octet-stream' }));
+    link.download = fileName;
+    link.click();
+  }
+
   GetAllActivities(): void {
     this.lpuPlannerServiceService.GetSchoolDivisions().subscribe((response) => {
       if (response.item1.length > 0) {
@@ -553,6 +757,67 @@ export class MouActivityActionPlanComponent implements OnInit {
       });
     });
   }
+  // searchxxxy() {
+  //   const query = this.searchQueryxx.trim().toLowerCase();
+  //   this.filteredOthersMouActivityAssigned = this.MouActivityAssigneds.filter(item => {
+  //     return Object.entries(item).some(([key, val]) => {
+  //       if (val !== null && val !== undefined) {
+  //         let valueString = String(val).toLowerCase();
+
+  //         if (key === 'mouId') {
+  //           const numericId = Number(val); // Convert mouid to a number
+
+  //           if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
+  //             return true;
+  //           }
+  //         }
+
+  //         // General search for all other fields
+  //         return valueString.includes(query);
+  //       }
+  //       return false;
+  //     });
+  //   });
+  // }
+
+//   searchxxxy() {
+//   const query = (this.searchQueryxx || '').trim().toLowerCase();
+
+//   // If search box is empty → restore original data
+//   if (!query) {
+//     this.filteredOthersMouActivityAssigned = [...this.MouActivityAssigneds];
+//     return;
+//   }
+
+//   this.filteredOthersMouActivityAssigned = this.MouActivityAssigneds.filter((item: any) => {
+
+//     return Object.entries(item).some(([key, val]) => {
+
+//       if (val === null || val === undefined) return false;
+
+//       let valueString = String(val).trim().toLowerCase();
+
+//       // 🔍 SPECIAL SEARCH FOR MOU ID
+//       if (key === 'mouId') {
+//         const numericId = Number(val);
+
+//         if (!isNaN(numericId)) {
+//           if (
+//             numericId.toString().includes(query) ||
+//             `mou/${numericId}`.toLowerCase().includes(query)
+//           ) {
+//             return true;
+//           }
+//         }
+//       }
+
+//       // 🔍 GENERAL SEARCH FOR ALL OTHER FIELDS
+//       return valueString.includes(query);
+//     });
+
+//   });
+// }
+
   MouActivityExcelDocuments: any[] = [];
   GetAllDataForExportToExcelData(ICode: any) {
     this.mouDocumentsService.GetAllMouActivitiesForExportToExcel(ICode).subscribe({
@@ -679,6 +944,52 @@ export class MouActivityActionPlanComponent implements OnInit {
     link.download = fileName;
     link.click();
   }
+  // exportToExcelsothers(): void {
+  //   const fileName = 'Mou_Document_report.xlsx';
+  //   const exportedData = this.MouActivityAssigneds.map(item => ({
+  //     NewMOUId:  item.newMouId ?? 'N/A',//1
+  //     OldMOUId: "MOU/" + item.mouId,//1
+  //     'Name of Mou Organisation': item.mouTitle,//2
+  //     'MOU Activity Assigned to Faculty UID': item.uid,//3 4
+  //     'Activity Start Date assigned By HOS': item.startDate,//5
+  //     'Activity End Date assigned By HOS': item.endDate,//6
+  //     'Remarks Given By HOS For Activity': item.remarks, //7
+  //     'Details of Allocated MOU Activity': this.removeNumberPrefix(item.activityDetails), //8 
+  //     'Date of MOU Activity Assigned By HOS': item.createdOn,//9
+  //   }));
+  //   const header = [
+  //     'New MOU Id',
+  //     'Old MOU Id',
+  //     'Name of Mou Organisation',
+  //     'MOU Activity Assigned to Faculty UID',
+  //     'Activity Start Date assigned By HOS',
+  //     'Activity End Date assigned By HOS',
+  //     'Remarks Given By HOS For Activity',
+  //     'Details of Allocated MOU Activity',
+  //     'Date of MOU Activity Assigned By HOS'
+
+  //   ];
+  //   const ws_data = [header, ...exportedData.map(item => Object.values(item))];
+  //   const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(ws_data);
+  //   // for (let i = 1; i < ws_data.length; i++) { // Start from 1 to skip the header row
+  //   //   const cellAddress = XLSX.utils.encode_cell({ r: i, c: 7 }); // Column 7 is DocumentUrl
+  //   //   const cell = ws[cellAddress];
+  //   //   if (cell && cell.v) {
+  //   //     cell.f = `HYPERLINK("${cell.v}", "Download Attachement")`;
+  //   //   }
+  //   // }
+  //   const wscols = [
+  //     { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }
+  //   ];
+  //   ws['!cols'] = wscols;
+  //   const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+  //   const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  //   const link = document.createElement('a');
+  //   link.href = URL.createObjectURL(new Blob([blobData], { type: 'application/octet-stream' }));
+  //   link.download = fileName;
+  //   link.click();
+  // }
 
   exportToExcel(): void {
     this.GetAllMouDocumentsForApprovals(this.EmployeeCode);

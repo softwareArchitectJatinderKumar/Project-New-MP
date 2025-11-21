@@ -247,17 +247,24 @@
                   </ng-container>
                   <ng-container *ngSwitchCase="'SchoolIds'">
                     {{ getSchoolNamesDisplay($any(record)['SchoolIds']) }}
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'isActive'">
+                      <!-- <span [ngClass]="{'text-success': record.IsActive === 1, 'text-danger': record.IsActive === 0}">
+                                                            {{ isActiveDisplay(record.IsActive) }}**
+                                                          </span> -->
+                      <button type="button" class="btn btn-sm btn-info me-2 btn-circle" (click)="onDelete(record)">
+                        <i class="mdi mdi-pencil"></i>
+                      </button>
                   </ng-container>
-
                   <ng-container *ngSwitchCase="'Actions'">
                     <button type="button" class="btn btn-sm btn-info me-2" (click)="onEdit(record)">
                       <i class="mdi mdi-pencil"></i>
                     </button>
                   </ng-container>
                   
-                  <ng-container *ngSwitchCase="'isActive'">
+                  <!-- <ng-container *ngSwitchCase="'isActive'">
                     {{ isActiveDisplay($any(record)['isActive']) }}
-                  </ng-container>
+                  </ng-container> -->
                   <ng-container *ngSwitchDefault>
                     {{ $any(record)[col] }}
                   </ng-container>
