@@ -32,20 +32,52 @@
         <div class="card ">
             <div class="card-body ">
                 <div class="container-fluid">
-                    <form #myForm="ngForm" (ngSubmit)="UploadDocument()">                 
-                        <!-- <div class="row mb-4 mt-4">
-                            <div class="col-3 text-start"><label class="form-label "> Contact
-                                    Number <span class='fs-6 '>(For Lpu Faculty) </span></label></div>
-                            <div class="col-3">
-                                <input type="number" class="form-control" [style]="{ width: '89%' }" name="ContactNo" autocomplete="off"
-                                    placeholder="Provide contact No (Lpu Faculty)" required ngModel #contactNo="ngModel"
-                                    [(ngModel)]="ContactNo" />
-                                <div *ngIf="contactNo.invalid && contactNo.touched" class="themeClr">
-                                    <div *ngIf="contactNo.errors?.required">Contact Number is required.</div>
-                                </div>
+                    <form #myForm="ngForm" (ngSubmit)="UploadDocument()">     
                         
-                            </div>
-                        </div> -->
+                        
+                <div class="row mb-4 mt-4">
+                    <div class="col-3">
+                        <label class="form-label">LPU SPOC Name</label>
+                    </div>
+                    <div class="col-3">
+                        <input type="text" id="responsiblePerson" name="responsiblePerson" required class="form-control col-3"
+                            [(ngModel)]="ResponsiblePerson" [formControl]="employeeControl" placeholder="Search by name or code"
+                            (input)="onInput()" (keydown)="onKeydown($event)" (change)="checkUIDValidity()"
+                            (focus)="showSuggestions = true" (blur)="hideSuggestions()" />
+                        <div class="text-danger mt-1 small" *ngIf="employeeControl.invalid && employeeControl.touched">
+                            LPU SPOC Name is required.
+                        </div>
+                
+                        <div *ngIf="showSuggestions && filteredEmployeesData.length"
+                            class="list-group position-absolute w-100 shadow-sm z-3">
+                            <button type="button" class="list-group-item list-group-item-action"
+                                *ngFor="let employee of filteredEmployeesData; let i = index"
+                                [class.active]="i === activeSuggestionIndex" (mousedown)="selectEmployee(employee)">
+                                {{ employee.employeeName }} ({{ employee.employeeCode }})
+                            </button>
+                        </div>
+                    </div>
+                    <div *ngIf="AssignedToUid > 0" class="text-primary mt-2 small">
+                        Applying to UID: <strong>{{ AssignedToUid }} {{AssignedToUidName}}</strong>
+                    </div>
+                    <div class="col-3">
+                        <label class="form-label">LPU SPOC EmailId</label>
+                    </div>
+                    <div class="col-3">
+                        <!-- <input type="text" id="lpuSpocEmail" name="lpuSpocEmail" required class="form-control col-3"
+                            [(ngModel)]="LPUSpocEmail" placeholder="lpu Spoc Email" /> -->
+                        <input type="email" class="form-control" [style]="{ width: '89%' }" name="LPUSpocEmail" id="LPUSpocEmail"
+                            autocomplete="off" placeholder="Provide SOPC Email Id" required
+                            pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" ngModel [(ngModel)]="LPUSpocEmail"
+                            #lpusopcEmail="ngModel" />
+                        <div *ngIf="lpusopcEmail.invalid && lpusopcEmail.touched" class="themeClr">
+                            <div *ngIf="lpusopcEmail.errors?.required">LPU SOPC Email Id is required.</div>
+                            <div *ngIf="lpusopcEmail.errors?.pattern">Invalid Email Id must be properly formatted and end with .com or
+                                .org.</div>
+                        </div>
+                    </div>
+                </div>
+ 
                         <div class="row mb-4 mt-4">
                             <div class="col-3 "><label class=" form-label"> MOU Partner
                                     Organisation Name </label></div>
@@ -71,36 +103,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="row mb-4 mt-4">
-                            <div class="col-3 "><label class=" form-label"> MOU Start Date </label></div>
-                            <div class="col-3">                               
-                                <input type="text" class="form-control w-10 text-dark" name="MouStartDate"
-                                    [style]="{ width: '89%' }" autocomplete="off" placeholder="Provide Mou Start Date"
-                                    required ngModel #mouStartDate="ngModel" [(ngModel)]="MouStartDate" />
-                                <div *ngIf="mouStartDate.invalid && mouStartDate.touched" class="themeClr">
-                                    MouStart Date is required.
-                                </div>
-                            </div>
-
-                            <div class="col-3">
-                                <label class="form-label">Mou End Date</label> <br/>
-                                <input type="checkbox" id="IndefiniteMou" [checked]="0" (onChange)="DisabledEndDate()" />
-                                <label class="form-label"> Indefinite Mou </label>
-                            </div>
-                            <div class="col-3">                            
-                                <input type="text" class="form-control" [style]="{ width: '89%' }" name="MouEndDate" [(ngClass)]=""
-                                    autocomplete="off" placeholder="Provide Mou End Date" required ngModel [(ngModel)]="MouEndDate"
-                                    #mouEndDate="ngModel" />
-                                <div *ngIf="mouEndDate.invalid && mouEndDate.touched" class="themeClr">
-                                    MouEnd Date is required.
-                                </div>
-                            </div>
-                          
-                            <div class="col-3 ">                            
-                                 
-                            </div>
-                        </div>
-                         -->
+                    
                         <div class="row mb-4 mt-4">
                             <div class="col-3">
                                 <label class="form-label">MOU Start Date</label>
@@ -142,9 +145,7 @@
                                 <label class="form-label">SPOC Person Email Id <br />(MOU Partner Organisation)</label>
                             </div>
                             <div class="col-3 ">                             
-                            <!-- <input type="email" class="form-control" [style]="{ width: '89%' }" name="SOPCEmail" autocomplete="off"
-                                placeholder="Provide SOPC Email Id" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|org|net|edu|gov|mil|co|info|biz|io|in)$" ngModel
-                                [(ngModel)]="SOPCEmail" #sopcEmail="ngModel" /> -->
+                          
                                 <input 
                                 type="email" 
                                 class="form-control" 
@@ -197,7 +198,6 @@
                                 bindValue="id"
                                 [hideSelected]="true"
                                 [(ngModel)]="selectedSchoolDivisions">
-                                <!-- (blur)="validateSelect()"> -->
                               </ng-select>
                               <div *ngIf="hasSelectionError" class="themeClr">One school division is Required</div>
                                

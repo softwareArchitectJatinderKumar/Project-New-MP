@@ -9,7 +9,10 @@ interface SchoolDivision {
   id: number;
   schoolDivision: string;
 }
-
+interface Employee {
+  employeeName: string;
+  employeeCode: string;
+}
 import { MatPaginator, _MatPaginatorBase } from '@angular/material/paginator';
 import { AuthService } from 'src/app/_services/auth.service';
 import { StorageService } from 'src/app/_services/storage.service';
@@ -24,6 +27,83 @@ import { LpuPlannerServiceService } from 'src/app/_services/lpu-planner-service.
   styleUrls: ['./mou-documents-uploads.component.scss']
 })
 export class MouDocumentsUploadsComponent implements OnInit {
+
+
+  // Logic added start on 24-Nov-25
+  IdX:any;
+  LPUSpocEmail:any='';
+    employeeControl = new FormControl();
+   EmployeeData: Employee[] = [];
+  filteredEmployeesData: Employee[] = [];
+  showSuggestions = false;
+  activeSuggestionIndex: number = -1;
+  ResponsiblePerson: any = '';
+  AssignedToUid: any = '';
+  AssignedToUidName: any = '';
+    GetEmployeeData(): void {
+    this.mouDocumentsService.GetEmployeeData().subscribe({
+      next: response => {
+        this.EmployeeData = response.item1.length > 0 ? response.item1 : [];
+      },
+      error: err => console.error(err)
+    });
+  }
+
+
+
+    onInput() {
+    const inputValue = (this.employeeControl.value || '').toLowerCase();
+    if (inputValue) {
+      this.filteredEmployeesData = this.EmployeeData.filter(employee =>
+        employee.employeeName.toLowerCase().includes(inputValue) || 
+        employee.employeeCode.toLowerCase().includes(inputValue)
+      ).slice(0, 10);
+    } else {
+      this.filteredEmployeesData = [];
+    }
+    this.showSuggestions = true;
+    this.activeSuggestionIndex = -1;
+  }
+
+  selectEmployee(employee: Employee) {
+    this.ResponsiblePerson = employee.employeeCode;
+    this.AssignedToUid = employee.employeeCode;
+    this.AssignedToUidName = employee.employeeName;
+    this.employeeControl.setValue(`${employee.employeeName} (${employee.employeeCode})`);
+    this.filteredEmployeesData = [];
+    this.showSuggestions = false;
+    this.checkUIDValidity();
+  }
+
+  
+  onKeydown(event: KeyboardEvent) {
+    if (this.filteredEmployeesData.length > 0) {
+      if (event.key === 'ArrowDown') {
+        this.activeSuggestionIndex = (this.activeSuggestionIndex + 1) % this.filteredEmployeesData.length;
+      } else if (event.key === 'ArrowUp') {
+        this.activeSuggestionIndex = (this.activeSuggestionIndex - 1 + this.filteredEmployeesData.length) % this.filteredEmployeesData.length;
+      } else if (event.key === 'Enter') {
+        if (this.activeSuggestionIndex >= 0 && this.activeSuggestionIndex < this.filteredEmployeesData.length) {
+          this.selectEmployee(this.filteredEmployeesData[this.activeSuggestionIndex]);
+        }
+      }
+    }
+  }
+
+  hideSuggestions() {
+    setTimeout(() => this.showSuggestions = false, 200);
+  }
+
+ 
+  checkUIDValidity(): void {
+    this.uploadEnabled = this.IdX !== '' && this.AssignedToUid != '';
+  }
+
+ 
+
+
+
+  // Logic End on 24-Nov-25
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
   @ViewChild('fileInput') fileInput!: ElementRef;
   isLogin: boolean = false;
@@ -138,6 +218,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
         this.storageService.saveUser(data);
         this.GetEmployeeDetails();
         this.GetAllActivities();
+        this.GetEmployeeData();
       },
       error: err => {
         this.LoginFailed(err);
@@ -383,6 +464,13 @@ export class MouDocumentsUploadsComponent implements OnInit {
     formData.append('SPOCName', this.SOPCName);
     formData.append('SPOCEmail', this.SOPCEmail);
     formData.append('SPOCContact', this.SOPCNumber);
+    formData.append('LPUSpocName', this.AssignedToUidName);
+    formData.append('LPUSpocUID', this.AssignedToUid);
+    formData.append('LPUSpocEmail', this.LPUSpocEmail);
+
+    formData.forEach((value, key) => {
+    console.log(`${key}: ${value}`);
+    });
     this.mouDocumentsService.MouDocumentUpload(formData).subscribe({
       next: (data: any) => {
         const result = data.item1[0]['msg'];

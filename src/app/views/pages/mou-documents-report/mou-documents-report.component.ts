@@ -148,6 +148,7 @@ export class MouDocumentsReportComponent implements OnInit {
           this.showNoDataFoundMessage = false;
           this.dataSource.data = this.MouDocumentDetails;
           this.filteredMouDocumentDetails = this.MouDocumentDetails;
+          console.log(JSON.stringify(this.filteredMouDocumentDetails))
           this.columns = []; this.headHtmlData = [];
           this.headHtmlData = this.MouDocumentDetails[0];
           this.columns = Object.keys(this.MouDocumentDetails[0]);

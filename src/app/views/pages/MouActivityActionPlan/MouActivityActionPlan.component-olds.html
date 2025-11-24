@@ -1,0 +1,1258 @@
+<div class="container-fluid " id="ActivityPage" *ngIf="isLoginFailed==false; else loginFailed">
+    <div class="row ">
+        <div class="col-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row d-flex justify-content-around">
+                        <label class="col-6 form-label text-danger" style="font-weight: 700;">Employee Name / UID
+                        </label>
+                        <label class="col-6 form-label text-dark  "
+                            style="text-align: right; font-weight: 700;">{{EmployeeName}} /
+                            {{this.EmployeeCode}}</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+        <div class="col-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row d-flex justify-content-around">
+                        <label class="col-5 form-label text-danger " style="font-weight: 700;">Department
+                            Name</label>
+                        <label class="col-7 form-label text-dark " style="text-align: right;font-weight: 700;">
+                            {{this.DepartmentName}} 
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+  
+    <nav>
+        <div class="nav nav-tabs nav nav-tabs d-flex justify-content-center active" id="nav-tab" role="tablist">
+            <button class="btn me-5 active" id="AssignActivities-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
+                data-bs-target="#AssignActivities" type="button" role="tab" aria-controls="AssignActivities"
+                aria-selected="true">Assign Activity</button>
+
+            <button class=" btn btn-lg ms-5" id="MyAllAssignActivities-tab" data-bs-toggle="tab"
+                style="padding: .95rem 8rem;" data-bs-target="#MyAllAssignActivities" type="button" role="tab"
+                aria-controls="MyAllAssignActivities" aria-selected="false">Activities Assigned (by Me)</button>
+            <button class=" btn btn-lg ms-5" id="OthersAllAssignActivities-tab" data-bs-toggle="tab"
+                style="padding: .95rem 8rem;" data-bs-target="#OthersAllAssignActivities" type="button" role="tab"
+                aria-controls="OthersAllAssignActivities" aria-selected="false">Activities Assigned (by Others)</button>
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <!-- Tab one contents -->
+        <div class="tab-pane fade active show" id="AssignActivities" role="tabpanel"
+            aria-labelledby="AssignActivities-tab">
+            <div class="row vh-100">
+                <div class="col-12 stretch-card">
+                    <div class="card ">
+                        <div class="card-body">
+                            <div class="row d-flex justify-content-center p-3 mx-5 ">
+                                <div class="col-sm-3">
+                                    <div class="mb-3">
+                                        <button (click)="exportToExcel()" class="btn btn-dark "
+                                            [disabled]="this.filteredMouActivityDocuments.length==0">Export to
+                                            Excel</button>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-3">
+                                    <div class="mb-3">
+                                        <input [(ngModel)]="searchQuery" (keyup)="search()" id="search" type="text"
+                                            style=" width: 21rem;" class="form-control" placeholder="Search"
+                                            aria-label="Search" aria-describedby="basic-addon1" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive"
+                                *ngIf="this.filteredMouActivityDocuments.length > 0; else DataRecords">
+                                <ngx-datatable class="bootstrap table table-striped material"
+                                    [rows]="filteredMouActivityDocuments" [loadingIndicator]="loadingIndicator"
+                                    [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10" [headerHeight]="80"
+                                    rowHeight="auto">
+
+                                    <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <ng-container *ngIf="row.newMouId != null">
+                                                <span
+                                                    style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.newMouId}}</span>
+                                            </ng-container>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <ng-container *ngIf="row.mouId != null">
+                                                <span
+                                                    style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">MOU/{{row.mouId}}</span>
+                                            </ng-container>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="MOU Status" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <ng-container *ngIf="row.mouStatus != null; else NoFound">
+                                                <span
+                                                    style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.mouStatus}}</span>
+                                            </ng-container>
+                                            <ng-template #NoFound>
+                                                <span
+                                                    style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px; color: red;">NA</span>
+                                            </ng-template>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="MOU Start Date" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <ng-container *ngIf="row.mouStartDate != null; else NoFound">
+                                                <span
+                                                    style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.mouStartDate}}</span>
+                                            </ng-container>
+                                            <ng-template #NoFound>
+                                                <span
+                                                    style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px; color: red;">NA</span>
+                                            </ng-template>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="MOU End Date" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <ng-container *ngIf="row.mouEndDate != null;else NoFound">
+                                                <span
+                                                    style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.mouEndDate}}</span>
+                                            </ng-container>
+                                            <ng-template #NoFound>
+                                                <span *ngIf="row.mouEndDate == null && row.mouStartDate != null; "
+                                                    style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px; color: red;">Indefinite
+                                                </span>
+                                                <span *ngIf="row.mouEndDate == null && row.mouStartDate == null; "> NA
+                                                </span>
+                                            </ng-template>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    <ngx-datatable-column name="Activities" [sortable]="false">
+                                        <ng-template let-row="row" ngx-datatable-cell-template>
+                                            <button class="btn btn-sm btn-dark" (click)="openActivityModal(row)">
+                                                View Activities
+                                            </button>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    <ngx-datatable-column name="Action Details" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                                          <button class="btn btn-danger" (click)="ViewAllActionTaken(row)">
+                                            View Details
+                                          </button>
+                                        </ng-template>
+                                      </ngx-datatable-column>
+                                    <!-- <ngx-datatable-column name="Activity Performed" [sortable]="false" prop="Id">
+                                            <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                                ngx-datatable-cell-template>
+                                                <ng-container *ngIf="row.activityPerformed != null;else NoFound">
+                                                    <span style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px; color: red;">{{row.activityPerformed}}</span>
+                                                </ng-container>
+                                                <ng-template #NoFound>
+                                                        <span *ngIf="row.activityPerformed == null" style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px; color: red;"> NA </span>
+                                                </ng-template>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+                                        <ngx-datatable-column name="Activity Assigned" [sortable]="false" prop="Id">
+                                            <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                                ngx-datatable-cell-template>
+                                                <ng-container *ngIf="row.activityDetails != null;else NoFound">
+                                                    <span style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px; color: Blue;">
+                                                        {{ removeNumberPrefix(row.activityDetails) }}
+                                                    </span>
+                                                </ng-container>
+                                                <ng-template #NoFound>
+                                                        <span *ngIf="row.activityDetails == null" style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px; color: red;"> NA </span>
+                                                </ng-template>
+                                            </ng-template>
+                                        </ngx-datatable-column> -->
+
+                                    <ngx-datatable-column *ngFor="let col of columns"
+                                        [prop]="col"></ngx-datatable-column>
+
+                                    <ngx-datatable-column name="MOU Docuement Link" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <ng-container *ngIf="row.filePath != null">
+                                                <button class="btn btn-dark" (click)="onSelectFile(row)"> View </button>
+                                            </ng-container>
+                                            <ng-container *ngIf="row.filePath == null">
+                                                <span
+                                                    style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">No
+                                                    FIle</span>
+                                            </ng-container>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Actions" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <button class="btn btn-dark" (click)="onSelect(row)">
+                                                <!-- Edit{{rowIndex + 1}} -->
+                                                Assign Activity
+                                            </button>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                </ngx-datatable>
+                            </div>
+                            <ng-template #DataRecords>
+                                <div class="col-12 stretch-card">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h1 class="text-center text-danger">No MOU for Action.</h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Tab two contents -->
+        <div class="tab-pane fade" id="MyAllAssignActivities" role="tabpanel" aria-labelledby="MyAllAssignActivities-tab">
+            <div class="row vh-100">
+                <div class="col-12 stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+              
+                      <!-- Controls Row -->
+                      <div class="row d-flex justify-content-center p-3 mx-5">
+                        <div class="col-sm-3">
+                          <div class="mb-3">
+                            <button (click)="exportToExcels()" class="btn btn-dark"
+                              [disabled]="filteredMouActivityAssigned.length === 0">
+                              Export to Excel
+                            </button>
+                          </div>
+                        </div>
+              
+                        <div class="col-sm-3">
+                          <div class="mb-3">
+                            <input [(ngModel)]="searchQueryx" (keyup)="searchx()" id="searchx" type="text"
+                              style="width: auto;" class="form-control" placeholder="Type Search Text"
+                              aria-label="Search" />
+                          </div>
+                        </div>
+              
+                        <div class="col-sm-3">
+                          <label class="fs-5">Select Session:</label>
+                        </div>
+              
+                        <div class="col-sm-3">
+                          <select class="form-select fs-5 text-danger" id="SessionId" name="PlannerSession"
+                            [(ngModel)]="selectedPlannerSession" (change)="setSessionId($event)">
+                            <option value="0" selected>All</option>
+                            <option *ngFor="let session of allPlannerSessions" [value]="session.id">
+                              {{ session.session }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+              
+                      <!-- Conditional Section -->
+                      <ng-container *ngIf="loadingIndicator; else dataLoadedBlock">
+                        <!-- Loader Template -->
+                        <div class="text-center">
+                            <div class="text-center">
+                                <span class="text-danger fs-3">Loading </span><br />
+                                <div class="spinner-grow text-danger text-center" style="width: 14rem; height: 14rem;"
+                                    role="status">
+                                </div>
+                            </div>
+                        </div>
+                      </ng-container>
+              
+                      
+                      <!-- Data Loaded Block -->
+                      <ng-template #dataLoadedBlock>
+                        <ng-container *ngIf="filteredMouActivityAssigned.length > 0; else noDataBlock">
+                          <!-- Data Table -->
+                          <div class="table-responsive">
+                            <ngx-datatable class="bootstrap table table-striped material"
+                              [rows]="filteredMouActivityAssigned" [loadingIndicator]="loadingIndicator"
+                              [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10" [headerHeight]="80"
+                              rowHeight="auto">
+                            
+                              <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="Id">
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                  <ng-container *ngIf="row.mouId != null">
+                                    <span class="fw-bold ps-2">{{ row.newMouId }}</span>
+                                  </ng-container>
+                                </ng-template>
+                              </ngx-datatable-column>
+
+                              <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id">
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                  <ng-container *ngIf="row.mouId != null">
+                                    <span class="fw-bold ps-2">MOU/{{ row.mouId }}</span>
+                                  </ng-container>
+                                </ng-template>
+                              </ngx-datatable-column>
+              
+                              <ngx-datatable-column name="Assigned To" [sortable]="false" prop="Id">
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                  <ng-container *ngIf="row.uid != null && row.uid !== 'undefined'; else noFaculty">
+                                    <span class="fw-bold ps-2">{{ row.uid }}</span>
+                                  </ng-container>
+                                  <ng-template #noFaculty>
+                                    <span class="text-danger fw-bold ps-2">No Faculty Assigned</span> <br/>
+                                    <button class="btn btn-danger" (click)="AssignUid(row)">
+                                       Assign UID
+                                      </button>
+                                  </ng-template>
+                                </ng-template>
+                              </ngx-datatable-column>
+              
+                              <ngx-datatable-column name="Assigned By" [sortable]="false" prop="Id">
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                  <ng-container *ngIf="row.actionAssignedBy != null">
+                                    <span class="fw-bold ps-2">{{ row.actionAssignedBy }}</span>
+                                  </ng-container>
+                                </ng-template>
+                              </ngx-datatable-column>
+              
+                              <ngx-datatable-column name="Assigned Date" [sortable]="false" prop="Id">
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                  <ng-container *ngIf="row.createdOn != null">
+                                    <span class="fw-bold ps-2">{{ row.createdOn }}</span>
+                                  </ng-container>
+                                </ng-template>
+                              </ngx-datatable-column>
+
+                              <ngx-datatable-column name="Activity Details" [sortable]="false" prop="activityDetails">
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                  <span class="fw-bold ps-2">
+                                    {{ removeNumberPrefix(row.activityDetails) }}
+                                  </span>
+                                </ng-template>
+                              </ngx-datatable-column>
+                              
+                              <ngx-datatable-column name="Session Year" [sortable]="false" prop="Id">
+                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                                    <ng-container *ngIf="row.sessionAcademicYear != null; else NotFilled">
+                                        <span
+                                            style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.sessionAcademicYear}}</span>
+                                    </ng-container>
+                                    <ng-template #NotFilled>
+                                        <span
+                                            style="margin: auto;float: left; padding: 10px 10px 10px 10px; font-weight: bold; color: red">NA</span>
+                                    </ng-template>
+                                </ng-template>
+                            </ngx-datatable-column>
+                            
+                              <ngx-datatable-column *ngFor="let col of columnsAssigned" [prop]="col">
+                              </ngx-datatable-column>
+              
+                            </ngx-datatable>
+                          </div>
+                        </ng-container>
+                      </ng-template>
+              
+                      <!-- No Data Template -->
+                      <ng-template #noDataBlock>
+                        <div class="text-center vh-100">
+                          <div class="row card mt-4 mb-4">
+                            <h3 class="text-center mt-5">No Data</h3>
+                            <div class="col-sm-12 text-center">
+                              <div class="mb-3 p-4">
+                                <label class="form-label fs-4 badge bg-info">
+                                  No MOU to activities Assigned.
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </ng-template>
+              
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+            <!-- <div class="row vh-100">
+                <div class="col-12 stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row d-flex justify-content-center p-3 mx-5 ">
+                                <div class="col-sm-3">
+                                    <div class="mb-3">
+                                        <button (click)="exportToExcels()" class="btn btn-dark "
+                                            [disabled]="this.filteredMouActivityAssigned.length==0">Export to
+                                            Excel</button>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-3">
+                                    <div class="mb-3">
+                                        <input [(ngModel)]="searchQueryx" (keyup)="searchx()" id="searchx" type="text"
+                                            style=" width: 21rem;" class="form-control" placeholder="Type Search Text "
+                                            aria-label="Search" aria-describedby="basic-addon1" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label class="fs-4">Session:</label>
+                                </div>
+                                <div class="col-sm-3">
+                                    <select class="form-select fs-5 text-danger" id="SessionId" name="PlannerSession" required
+                                        [(ngModel)]="selectedPlannerSession" (change)="setSessionId($event)">
+                                        <option value="0" selected>All</option>
+                                        <option *ngFor="let session of allPlannerSessions" [value]="session.id">
+                                            {{ session.session }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="table-responsive" *ngIf="this.filteredMouActivityAssigned.length > 0; else DataRecords">
+                                <ngx-datatable class="bootstrap table table-striped material"
+                                    [rows]="filteredMouActivityAssigned" [loadingIndicator]="loadingIndicator"
+                                    [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10" [headerHeight]="80"
+                                    rowHeight="auto">
+
+                                    <ngx-datatable-column name="MOU Id" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <ng-container *ngIf="row.mouId != null">
+                                                <span
+                                                    style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">MOU/{{row.mouId}}</span>
+                                            </ng-container>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    <ngx-datatable-column name="Assigned To" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <ng-container *ngIf="row.uid != null && row.uid !='undefined'; else Data">
+                                                <span
+                                                    style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.uid}}</span>
+                                            </ng-container>
+                                            <ng-template #Data>
+                                                <span
+                                                    style="margin: auto;float: left; color:'red'; font-weight: bold;padding: 10px 10px 10px 10px;">No Faculty Assigned</span>
+                                            </ng-template>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    <ngx-datatable-column name="Assigned By" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <ng-container *ngIf="row.actionAssignedBy != null">
+                                                <span
+                                                    style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.actionAssignedBy}}</span>
+                                            </ng-container>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    <ngx-datatable-column name="Assigned Date" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                            ngx-datatable-cell-template>
+                                            <ng-container *ngIf="row.createdOn != null">
+                                                <span
+                                                    style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.createdOn}}</span>
+                                            </ng-container>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    <ngx-datatable-column name="Activity Details" [sortable]="false"
+                                        prop="activityDetails">
+                                        <ng-template let-row="row" ngx-datatable-cell-template>
+                                            <span style="margin: auto; float: left; font-weight: bold;">
+                                                {{ removeNumberPrefix(row.activityDetails) }}
+                                            </span>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    <ngx-datatable-column *ngFor="let col of columnsAssigned"
+                                        [prop]="col"></ngx-datatable-column>
+
+                                </ngx-datatable>
+                            </div>
+                            <ng-template #DataRecords>
+                                <div class="text-center vh-100">
+                                    <div class="row  card mt-4 mb-4">
+                                        <h3 class="text-center mt-5 "> No Data </h3>
+                                        <div class="col-sm-12 text-center">
+                                            <div class="mb-3 p-4">
+                                                <Label class="form-label fs-4 badge bg-info">No MOU to plan
+                                                    action.</Label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+
+          <!-- Tab three contents -->
+        <div class="tab-pane fade" id="OthersAllAssignActivities" role="tabpanel"
+          aria-labelledby="OthersAllAssignActivities-tab">
+          <div class="row vh-100">
+            <div class="col-12 stretch-card">
+              <div class="card">
+                <div class="card-body">
+        
+                  <div class="row d-flex justify-content-center p-3 mx-5">
+                    <div class="col-sm-3">
+                      <div class="mb-3">
+                        <button (click)="exportToExcelsothers()" class="btn btn-dark"
+                          [disabled]="filteredOthersMouActivityAssigned.length === 0">
+                          Export to Excel
+                        </button>
+                      </div>
+                    </div>
+        
+                    <div class="col-sm-3">
+                      <div class="mb-3">
+                        <input [(ngModel)]="searchQueryxx" (keyup)="searchxxxy()" type="text" class="form-control" placeholder="Type Search Text" />
+                        
+                      </div>
+                    </div>
+        
+                    <div class="col-sm-3">
+                      <label class="fs-5">Select Session:</label>
+                    </div>
+        
+                    <div class="col-sm-3">
+                      <select class="form-select fs-5 text-danger" id="SessionId" name="PlannerSession"
+                        [(ngModel)]="selectedPlannerSession" (change)="setSessionId($event)">
+                        <option value="0" selected>All</option>
+                        <option *ngFor="let session of allPlannerSessions" [value]="session.id">
+                          {{ session.session }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+        
+                  <ng-container *ngIf="loadingIndicator; else dataLoadedBlock">
+                    <div class="text-center">
+                      <div class="text-center">
+                        <span class="text-danger fs-3">Loading </span><br />
+                        <div class="spinner-grow text-danger text-center" style="width: 14rem; height: 14rem;" role="status">
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+        
+        
+                  <ng-template #dataLoadedBlock>
+                    <ng-container *ngIf="filteredOthersMouActivityAssigned.length > 0; else noDataBlock">
+                      <div class="table-responsive">
+                        <ngx-datatable class="bootstrap table table-striped material" [rows]="filteredOthersMouActivityAssigned"
+                          [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
+                          [headerHeight]="80" rowHeight="auto">
+        
+                          <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="Id">
+                            <ng-template let-row="row" ngx-datatable-cell-template>
+                              <ng-container *ngIf="row.mouId != null">
+                                <span class="fw-bold ps-2">{{ row.newMouId }}</span>
+                              </ng-container>
+                            </ng-template>
+                          </ngx-datatable-column>
+        
+                          <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id">
+                            <ng-template let-row="row" ngx-datatable-cell-template>
+                              <ng-container *ngIf="row.mouId != null">
+                                <span class="fw-bold ps-2">MOU/{{ row.mouId }}</span>
+                              </ng-container>
+                            </ng-template>
+                          </ngx-datatable-column>
+        
+                          <ngx-datatable-column name="Assigned To" [sortable]="false" prop="Id">
+                            <ng-template let-row="row" ngx-datatable-cell-template>
+                              <ng-container *ngIf="row.uid != null && row.uid !== 'undefined'; else noFaculty">
+                                <span class="fw-bold ps-2">{{ row.uid }}</span>
+                              </ng-container>
+                              <ng-template #noFaculty>
+                                <span class="text-danger fw-bold ps-2">No Faculty Assigned</span> <br />
+                                <button class="btn btn-danger" (click)="AssignUid(row)">
+                                  Assign UID
+                                </button>
+                              </ng-template>
+                            </ng-template>
+                          </ngx-datatable-column>
+        
+                          <ngx-datatable-column name="Assigned By" [sortable]="false" prop="Id">
+                            <ng-template let-row="row" ngx-datatable-cell-template>
+                              <ng-container *ngIf="row.actionAssignedBy != null">
+                                <span class="fw-bold ps-2">{{ row.actionAssignedBy }}</span>
+                              </ng-container>
+                            </ng-template>
+                          </ngx-datatable-column>
+        
+                          <ngx-datatable-column name="Assigned Date" [sortable]="false" prop="Id">
+                            <ng-template let-row="row" ngx-datatable-cell-template>
+                              <ng-container *ngIf="row.createdOn != null">
+                                <span class="fw-bold ps-2">{{ row.createdOn }}</span>
+                              </ng-container>
+                            </ng-template>
+                          </ngx-datatable-column>
+        
+                          <ngx-datatable-column name="Activity Details" [sortable]="false" prop="activityDetails">
+                            <ng-template let-row="row" ngx-datatable-cell-template>
+                              <span class="fw-bold ps-2">
+                                {{ removeNumberPrefix(row.activityDetails) }}
+                              </span>
+                            </ng-template>
+                          </ngx-datatable-column>
+        
+                          <ngx-datatable-column name="Session Year" [sortable]="false" prop="Id">
+                            <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                              <ng-container *ngIf="row.sessionAcademicYear != null; else NotFilled">
+                                <span
+                                  style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.sessionAcademicYear}}</span>
+                              </ng-container>
+                              <ng-template #NotFilled>
+                                <span
+                                  style="margin: auto;float: left; padding: 10px 10px 10px 10px; font-weight: bold; color: red">NA</span>
+                              </ng-template>
+                            </ng-template>
+                          </ngx-datatable-column>
+        
+                          <ngx-datatable-column *ngFor="let col of columnsAssigned" [prop]="col">
+                          </ngx-datatable-column>
+        
+                        </ngx-datatable>
+                      </div>
+                    </ng-container>
+                  </ng-template>
+        
+                  <!-- No Data Template -->
+                  <ng-template #noDataBlock>
+                    <div class="text-center vh-100">
+                      <div class="row card mt-4 mb-4">
+                        <h3 class="text-center mt-5">No Data</h3>
+                        <div class="col-sm-12 text-center">
+                          <div class="mb-3 p-4">
+                            <label class="form-label fs-4 badge bg-info">
+                              No MOU to activities Assigned.
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+        
+                </div>
+              </div>
+            </div>
+          </div>
+        
+        </div>
+    </div>
+    <!-- </ng-template> -->
+</div>
+<!-- <ng-template #loginFailed>
+    <div class="text-center " *ngIf="isLoginFailed">
+        <h3 class="text-center fs-2 m-5 text-danger pt-5 "> Error in User Login . </h3>
+        <div class="row mt-4 mb-4">
+            <div class="col-sm-12 text-center">
+                <div class="mb-3 p-4">
+                    <Label class="form-label fs-4 text-danger ">Unauthorise Access.</Label>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template> -->
+<ng-template #loginFailed>
+    <div class="text-center " *ngIf="isLoginFailed">
+        <h3 class="text-center fs-2 m-5 text-warn pt-2 "> Unauthorised Access </h3>
+        <div class="row mt-4 mb-4 d-flex justify-content-center ">
+            <div class="col-3 ">
+                <ul class="list-group  w-20">
+                    <Label class="form-label fs-4 badge bg-white themeClr">Why ? </Label>
+                    <li class="list-group-item">You are trying to access the page not available for you.</li>
+                    <li class="list-group-item">Your current session has expired.</li>
+                </ul>
+            </div>
+            <!-- </div>
+        <div class="row mt-4 mb-4 d-flex justify-content-center "> -->
+            <div class="col-3 ">
+                <ul class="list-group  w-20">
+                    <Label class="form-label fs-4 badge bg-white themeClr">Try Following step(s) :- </Label>
+                    <li class="list-group-item">Logout your current session. </li>
+                    <li class="list-group-item">Try Login again.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #viewDescModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">MOU Action Plan Screen </h5>
+        <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+    </div>
+    <div class="modal-body ">
+        <div class="col-12 grid-margin stretch-card ">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                  <h2 class="text-center mb-4">MOU Action Plan</h2>
+              
+                  <form #PlanAnAction="ngForm" (ngSubmit)="UploadActivity()">
+                    <div class="row mb-4">
+                      <div class="col-md-6">
+                        <label class="form-label fw-bold">MOU ID</label>
+                        <input type="text" class="form-control" [value]="'MOU/' + mouId" disabled />
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label fw-bold">MOU Title</label>
+                        <input type="text" class="form-control" [value]="CurrentMouTitle" disabled />
+                      </div>
+                    </div>
+              
+                    <div class="mb-4">
+                      <label for="responsiblePerson" class="form-label fw-bold">Select Concerned Faculty</label>
+                      <input
+                        type="text"
+                        required
+                        name="responsiblePerson"
+                        id="responsiblePerson"
+                        class="form-control"
+                        [(ngModel)]="ResponsiblePerson"
+                        [formControl]="employeeControl"
+                        (input)="onInput()"
+                        (keydown)="onKeydown($event)"
+                        (change)="checkFormValidity()"
+                        placeholder="Employee Name or Code"
+                        (focus)="showSuggestions = true"
+                        (blur)="hideSuggestions()"
+                      />
+                      <div *ngIf="AssignedToUid > 0" class="form-text text-success">
+                        Applying Action to Uid: {{ AssignedToUid }}
+                      </div>
+                      <div class="suggestions border rounded mt-1" *ngIf="showSuggestions && filteredEmployeesData.length > 0">
+                        <div
+                          *ngFor="let employee of filteredEmployeesData; let i = index"
+                          [class.active]="i === activeSuggestionIndex"
+                          (mousedown)="selectEmployee(employee)"
+                          class="p-2 cursor-pointer"
+                        >
+                          {{ employee.employeeName }} ({{ employee.employeeCode }})
+                        </div>
+                      </div>
+                      <div *ngIf="employeeControl.invalid && employeeControl.touched" class="text-danger mt-1">
+                        Responsible Person is required.
+                      </div>
+                    </div>
+              
+                    <div class="row mb-4">
+                      <div class="col-md-6">
+                        <label for="startDate" class="form-label fw-bold">Activity Start Date</label>
+                        <input
+                          type="date"
+                          required
+                          [(ngModel)]="startDate"
+                          class="form-control"
+                          id="startDate"
+                          name="startDate"
+                          #startDateControl="ngModel"
+                          (change)="checkFormValidity()"
+                        />
+                        <div *ngIf="startDateControl.invalid && startDateControl.touched" class="text-danger mt-1">
+                          Start Date is required.
+                        </div>
+                      </div>
+              
+                      <div class="col-md-6">
+                        <label for="endDateOut" class="form-label fw-bold">Activity End Date</label>
+                        <input
+                          type="date"
+                          required
+                          [(ngModel)]="endDate"
+                          class="form-control"
+                          id="endDateOut"
+                          name="endDateOut"
+                          #endDateControl="ngModel"
+                          (change)="checkFormValidity()"
+                        />
+                        <div *ngIf="endDateControl.invalid && endDateControl.touched" class="text-danger mt-1">
+                          End Date is required.
+                        </div>
+                        <div *ngIf="endDateControl.valid && startDate && endDate && endDate <= startDate" class="text-danger mt-1">
+                          End Date cannot be earlier than Start Date.
+                        </div>
+                      </div>
+                    </div>
+              
+                    <div class="row mb-4">
+                      <div class="col-md-6">
+                        <label for="remarks" class="form-label fw-bold">Remarks</label>
+                        <textarea
+                          required
+                          [(ngModel)]="remarks"
+                          rows="4"
+                          class="form-control"
+                          id="remarks"
+                          name="remarks"
+                          #remarksControl="ngModel"
+                          (change)="checkFormValidity()"
+                        ></textarea>
+                        <div *ngIf="remarksControl.invalid && remarksControl.touched" class="text-danger mt-1">
+                          Remarks are required.
+                        </div>
+                      </div>
+              
+                      <div class="col-md-6">
+                        <label for="mouActivity" class="form-label fw-bold">Select MOU Activity</label>
+                        <select
+                          id="mouActivity"
+                          name="mouActivity"
+                          class="form-select"
+                          required
+                          [(ngModel)]="selectedActivityId"
+                          #mouActivity="ngModel"
+                          (change)="onActivitySelected($event)"
+                        >
+                          <option value="">Select MOU Activity to be Conducted</option>
+                          <option *ngFor="let activity of mouActivities" [value]="activity.id + '-' + activity.description">
+                            {{ activity.description }}
+                          </option>
+                        </select>
+                        <div *ngIf="mouActivity.invalid && mouActivity.touched" class="text-danger mt-1">
+                          MOU Activity is required.
+                        </div>
+                      </div>
+                    </div>
+              
+                    <div class="text-center mt-5">
+                      <button type="submit" [disabled]="!uploadEnabled" class="btn btn-primary px-5">
+                        Apply Action Plan
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              
+            <!-- <div class="card ">
+                <div class="card-body vh-100">
+                    <h2 class="modal-title text-center" id="exampleModalLabel">MOU Action Plan </h2>
+
+                    <form #PlanAnAction="ngForm" (ngSubmit)="UploadActivity()">
+                        <div class="row mb-4 mt-5 p-3">
+                            <div class="col-2">
+                                <label for="mouId" class="fw-bold"> MOU/{{this.mouId}} </label>
+                            </div>
+                            <div class="col-3">
+                                <label for="mouActivity" class="fw-bold">{{this.CurrentMouTitle}}</label>
+                            </div>
+                            <div class="col-2">
+                                <label for="mouActivity" class="fw-bold">Select Concerned Faculty</label>
+                            </div>
+                            <div class="col-5">
+                                <div class="autocomplete-container">
+                                    <input type="text" required name="responsiblePerson" id="responsiblePerson"
+                                        class="form-control w-37" [(ngModel)]="ResponsiblePerson"
+                                        [formControl]="employeeControl" (input)="onInput()"
+                                        (keydown)="onKeydown($event)" (change)="checkFormValidity()"
+                                        placeholder="Employee Name or Code" (focus)="showSuggestions = true"
+                                        (blur)="hideSuggestions()" />
+
+                                    <label class="text-danger mt-2 " *ngIf="AssignedToUid>0"> <br /> Applying Action to
+                                        Uid: {{this.AssignedToUid}}</label>
+                                    <div class="suggestions"
+                                        *ngIf="showSuggestions && filteredEmployeesData.length > 0">
+                                        <div *ngFor="let employee of filteredEmployeesData; let i = index"
+                                            [class.active]="i === activeSuggestionIndex"
+                                            (mousedown)="selectEmployee(employee)">
+                                            {{ employee.employeeName }} ({{ employee.employeeCode }})
+                                        </div>
+                                    </div>
+                                    <div *ngIf="employeeControl.invalid && employeeControl.touched" class="text-danger">
+                                        <div *ngIf="employeeControl.errors?.required">Responsible Person is required.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-4 mt-5 p-3">
+                            <div class="col-2">
+                                <label for="startDate" class="fw-bold">Activity Start Date:</label>
+                            </div>
+                            <div class="col-3">
+                                <input type="date" required [(ngModel)]="startDate" class="form-control" id="startDate"
+                                    name="startDate" #startDateControl="ngModel" (change)="checkFormValidity()"
+                                    autocomplete="off" />
+                                <div *ngIf="startDateControl.invalid && startDateControl.touched" class="text-danger">
+                                    <div *ngIf="startDateControl.errors?.required">Start Date is required.</div>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <label for="endDateOut" class="fw-bold"> Activity End Date:</label>
+                            </div>
+                            <div class="col-3">
+                                <input type="date" required [(ngModel)]="endDate" class="form-control" id="endDateOut"
+                                    name="endDateOut" #endDateControl="ngModel" (change)="checkFormValidity()"
+                                    autocomplete="off" />
+                                <div *ngIf="endDateControl.invalid && endDateControl.touched" class="text-danger">
+                                    <div *ngIf="endDateControl.errors?.required">End Date is required.</div>
+                                </div>
+                                <div *ngIf="endDateControl.valid && startDate && endDate && endDate <= startDate"
+                                    class="text-danger">
+                                    End Date cannot be earlier than Start Date.
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row mb-4 mt-5 p-3">
+                            <div class="col-2">
+                                <label class="fw-bold"> Remarks :</label>
+                            </div>
+                            <div class="col-3">
+                                <textarea required [(ngModel)]="remarks" rows="5" cols="20" class="form-control"
+                                    id="remarks" name="remarks" #remarksControl="ngModel" (change)="checkFormValidity()"
+                                    autocomplete="off"></textarea>
+                                <div *ngIf="remarksControl.invalid && remarksControl.touched" class="text-danger">
+                                    <div *ngIf="remarksControl.errors?.required">Remarks required.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 ">
+                                <label for="mouActivity" class="fw-bolder ">Select MOU Activity</label>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="mouActivity" name="mouActivity" (change)="onActivitySelected($event)"
+                                    class="col-md-12 form-control" required [(ngModel)]="selectedActivityId"
+                                    #mouActivity="ngModel">
+                                    <option value="">Select MOU Activity to be Conducted</option>
+                                    <option *ngFor="let activity of mouActivities" class="  "
+                                        [value]="activity.id +'-' + activity.description">
+                                        {{ activity.description }}
+                                    </option>
+                                </select>
+                                <div *ngIf="mouActivity.invalid && mouActivity.touched" class="text-danger">
+                                    <div *ngIf="mouActivity.errors?.required">mou Activity required.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row d-flex justify-content-around mb-4 mt-5">
+                            <div class="col-12 text-center">
+                                <button type="submit" [disabled]="!uploadEnabled"
+                                    class="btn btn-primary me-2 col-5">Apply ActionPlan</button>
+                            </div>
+                            <div class="col-3">
+                                <label class="form-label fs-5 text-danger"></label>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div> -->
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #viewActivityActionTakenModalAll let-modal>
+    <div class="container-fluid">
+        <div class="modal-header">
+            <h5 class="modal-title" id="ActivityActionTakenModalModalLabel"> Activity Action Taken Grid </h5>
+            <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body ">
+                        <h2 class="modal-title text-center fs-2 fw-bold  " id="exampleModalLabel">MOU Activity Action
+                            Taken </h2>
+                        <div class="table-responsive">
+                            <ngx-datatable class="bootstrap table table-striped material"
+                                [rows]="filteredMouActionTakenDocuments" [loadingIndicator]="loadingIndicator"
+                                [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="5" [headerHeight]="80"
+                                rowHeight="auto">
+                                <ngx-datatable-column *ngFor="let col of columns" [prop]="col"></ngx-datatable-column>
+                                <ngx-datatable-column name="Download File" [sortable]="false" prop="Id">
+                                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                        ngx-datatable-cell-template>
+                                        <ng-container *ngIf="row.filePath != null">
+                                            <button class="btn btn-dark" (click)="onSelectFileX(row)"> Download
+                                            </button>
+                                        </ng-container>
+                                        <ng-container *ngIf="row.filePath == null">
+                                            <span
+                                                style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">No
+                                                FIle</span>
+                                        </ng-container>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <ngx-datatable-column name="Approvals Action" [sortable]="false" prop="Id">
+                                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                        ngx-datatable-cell-template>
+                                        <button class="btn btn-success me-2" (click)="ApproveAction(row)">
+                                            <i class="mdi mdi-check"></i>
+                                        </button>
+                                        <button class="btn btn-danger" (click)="DisapproveStatus(row)">
+                                            <i class="mdi mdi-window-close"></i>
+                                        </button>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                            </ngx-datatable>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<!-- Activity Modal -->
+
+<ng-template #activityModal let-modal>
+    <div class="container-fluid">
+        <div class="modal-header">
+            <h5 class="modal-title" id="activityModalLabel"> Activity Details </h5>
+            <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body ">
+                        <h2 class="modal-title text-start fs-3 fw-bold  " id="exampleModalLabel">MOU/{{selectedRow?.mouId}}</h2>
+                        <div class="row d-flex justify-content-center">
+                            <div class="col-3">
+                                <p><strong>Approved By:</strong></p>
+                                <p class="text-primary fw-bold">{{ selectedRow?.approvedBy  }}</p>
+                            </div>
+                            <div class="col-3">
+                                <p><strong>Activity Assigned:</strong></p>
+                                <p class="text-primary fw-bold">{{ removeNumberPrefix(selectedRow?.activityDetails ||
+                                    'Not Assigned Yet')
+                                    }}</p>
+                            </div>
+                            <div class="col-3">
+                                <p><strong>Assigned To:</strong></p>
+                                <p class="text-danger fw-bold">{{ selectedRow?.uid }}</p>
+                            </div>
+                            
+                            <div class="col-3">
+                                <p><strong>Activity Performed:</strong></p>
+                                <p class="text-danger fw-bold">{{ selectedRow?.activityPerformed || 'Not Performed Yet' }}</p>
+                            </div>
+                          
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<!--  Activity Details against Mouid -->
+
+<ng-template #viewMouActivityActionTakenModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title" id="viewMouActivityActionTakenModal"> View Activity Action Taken /{{this.MouidX}} </h5>
+      <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+    </div>
+    <div class="modal-body vh-50">
+      <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body ">
+            <h2 class="modal-title text-center" id="exampleModalLabel">Action Taken Details</h2>
+            <div class="table-responsive" id="dataTableMouReport" *ngIf="allMouActionTakenDetails?.length > 0; else DataRecords">
+              <ngx-datatable 
+                class="bootstrap table table-striped material" 
+                [rows]="allMouActionTakenDetails"
+                [loadingIndicator]="loadingIndicator" 
+                [columnMode]="ColumnMode.force" 
+                [footerHeight]="50"
+                [headerHeight]="80" 
+                [rowHeight]="'auto'" 
+                [scrollbarH]="true" 
+                [limit]="10">
+            
+ 
+                <ngx-datatable-column name="Assigned To" [sortable]="false" prop="Id">
+                  <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.uid != null">
+                      <span
+                        style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.uid}}</span>
+                    </ng-container>
+                  </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Proof Details" [sortable]="false" prop="Id">
+                  <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.remarks != null">
+                      <span
+                        style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.remarks}}</span>
+                    </ng-container>
+                  </ng-template>
+                </ngx-datatable-column>
+                
+                <ngx-datatable-column name="Activity StartDate" [sortable]="false" prop="Id">
+                  <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.activityStartDate != null">
+                      <span
+                        style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.activityStartDate}}</span>
+                    </ng-container>
+                  </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Activity EndDate" [sortable]="false" prop="Id">
+                  <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.activityEndDate != null">
+                      <span
+                        style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.activityEndDate}}</span>
+                    </ng-container>
+                  </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Participants Count" [sortable]="false" prop="Id">
+                  <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.participantsCount != null">
+                      <span
+                      style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.participantsCount}}</span>
+                  </ng-container>
+                    <ng-container *ngIf="row.participantsCount == null">
+                      <span style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">No Data</span>
+                    </ng-container>
+                  </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Uploaded Document" [sortable]="false" prop="actionTakenDocument">
+                  <ng-template let-row="row" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.actionTakenDocument; else noFile">
+                      <button class="btn btn-dark" (click)="onSelectActivityDocument(row)">View</button>
+                    </ng-container>
+                    <ng-template #noFile>
+                      <span class="font-weight-bold p-2">No File</span>
+                    </ng-template>
+                  </ng-template>
+                </ngx-datatable-column>
+            
+          
+                
+                <!-- <ngx-datatable-column *ngFor="let col of columns" [name]="col" [prop]="col"></ngx-datatable-column> -->
+            
+              </ngx-datatable>
+            </div>
+  
+            
+          <ng-template #DataRecords>
+            <div class="col-12 stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h1 class="text-center text-danger">No Data Found.</h1>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+
+
+
+  
+<ng-template #AssignNewUIDModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">MOU Action Plan Assign UID Screen </h5>
+        <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+    </div>
+    <div class="modal-body ">
+        <div class="col-12 grid-margin stretch-card ">
+            <div class="card ">
+                <div class="card-body vh-100">
+                    <h2 class="modal-title text-center" id="exampleModalLabel">MOU Action Plan Assign UID </h2>
+                    <form #UpdateUIDForm="ngForm" (ngSubmit)="UploadUID()" class="p-4 bg-white rounded shadow-sm">
+                        
+                        <div class="row g-3 mb-3">
+                          <div class="col-md-6">
+                            <label class="form-label fw-bold">MOU ID</label>
+                            <div class="form-control bg-light">{{ 'MOU/' + MouidX }} </div>
+                          </div>
+                          <div class="col-md-6">
+                            <label class="form-label fw-bold">MOU Title</label>
+                            <div class="form-control bg-light">{{ MouTitleX }}</div>
+                          </div>
+                        </div>
+                      
+                        
+                        <div class="mb-3">
+                          <label for="responsiblePerson" class="form-label fw-bold">Concerned Faculty</label>
+                          <div class="position-relative">
+                            <input
+                              type="text"
+                              id="responsiblePerson"
+                              name="responsiblePerson"
+                              required
+                              class="form-control"
+                              [(ngModel)]="ResponsiblePerson"
+                              [formControl]="employeeControl"
+                              placeholder="Search by name or code"
+                              (input)="onInput()"
+                              (keydown)="onKeydown($event)"
+                              (change)="checkUIDValidity()"
+                              (focus)="showSuggestions = true"
+                              (blur)="hideSuggestions()"
+                            />
+                            <div class="text-danger mt-1 small" *ngIf="employeeControl.invalid && employeeControl.touched">
+                              Faculty is required.
+                            </div>
+                      
+                            <!-- Suggestions -->
+                            <div *ngIf="showSuggestions && filteredEmployeesData.length" class="list-group position-absolute w-100 shadow-sm z-3">
+                              <button
+                                type="button"
+                                class="list-group-item list-group-item-action"
+                                *ngFor="let employee of filteredEmployeesData; let i = index"
+                                [class.active]="i === activeSuggestionIndex"
+                                (mousedown)="selectEmployee(employee)"
+                              >
+                                {{ employee.employeeName }} ({{ employee.employeeCode }})
+                              </button>
+                            </div>
+                          </div>
+                          <div *ngIf="AssignedToUid > 0" class="text-primary mt-2 small">
+                            Applying to UID: <strong>{{ AssignedToUid }}</strong>
+                          </div>
+                        </div>
+                      
+                        <!-- Dates & Activity Info in Single Row -->
+                        <div class="row g-3 mb-3">
+                          <div class="col-md-4">
+                            <label class="form-label fw-bold">Start Date</label>
+                            <div class="form-control bg-light">{{ StartDateX }}</div>
+                          </div>
+                          <div class="col-md-4">
+                            <label class="form-label fw-bold">End Date</label>
+                            <div class="form-control bg-light">{{ EndDateX }}</div>
+                          </div>
+                          <div class="col-md-4">
+                            <label class="form-label fw-bold">Activity</label>
+                            <div class="form-control bg-light">{{ ActivityDetailsX }}</div>
+                          </div>
+                        </div>
+                      
+                        <!-- Remarks in One Line -->
+                        <div class="mb-3">
+                          <label class="form-label fw-bold">Remarks</label>
+                          <div class="form-control bg-light">{{ RemarksX }}</div>
+                        </div>
+                      
+                        <!-- Submit Button -->
+                        <div class="text-end mt-4">
+                          <button type="submit" class="btn btn-success px-4" [disabled]="!uploadEnabled">
+                            Update UID
+                          </button>
+                        </div>
+                      </form>
+                      
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
