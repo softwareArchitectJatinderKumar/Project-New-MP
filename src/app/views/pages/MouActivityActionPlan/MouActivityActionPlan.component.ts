@@ -200,6 +200,11 @@ export class MouActivityActionPlanComponent implements OnInit {
     });
   }
 
+  reloadGrid1(){
+  this.selectedPlannerSession= "0"; 
+  this.searchTextTab1="";
+  this.GetAllMouDocumentsForApprovals(this.EmployeeCode);
+}
   // TAB 1 DATA
   GetAllMouDocumentsForApprovals(IdCode: any): void {
     this.mouDocumentsService.GetMouDocumentToAssignActivity(IdCode).subscribe({
@@ -225,6 +230,12 @@ export class MouActivityActionPlanComponent implements OnInit {
       error: err => this.LoginFailed(err)
     });
   }
+
+  reloadGrid2(){
+  this.selectedPlannerSession= "0"; 
+  this.searchTextTab2="";
+  this.GetAllActivtiesAssigned('0', '0');
+}
 
   // TAB 2 DATA
   GetAllActivtiesAssigned(IdCode: any, sessionId: any): void {
@@ -253,6 +264,12 @@ export class MouActivityActionPlanComponent implements OnInit {
     });
   }
 
+
+reloadGrid(){
+  this.selectedPlannerSession= "0"; 
+  this.searchTextTab3="";
+  this.GetOthersActivtiesAssigned('0', '0');
+}
   // TAB 3 DATA
   GetOthersActivtiesAssigned(IdCode: any, sessionId: any): void {
     this.loadingIndicator = true;
@@ -260,7 +277,7 @@ export class MouActivityActionPlanComponent implements OnInit {
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.MouActivityAssignedOthersMaster = response.item1;
-          console.log(JSON.stringify(this.MouActivityAssignedOthersMaster))
+          // console.log(JSON.stringify(this.MouActivityAssignedOthersMaster))
           // FIX: Re-apply filter if search text exists, otherwise show all
           this.filterTab3(); 
 

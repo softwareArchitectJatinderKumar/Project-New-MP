@@ -24,13 +24,13 @@
 
   <nav>
     <div class="nav nav-tabs d-flex justify-content-center active" id="nav-tab" role="tablist">
-      <button class="btn me-5 active" id="AssignActivities-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
+      <button class="btn me-5 active" id="AssignActivities-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;" (click)="reloadGrid1()"
         data-bs-target="#AssignActivities" type="button" role="tab">Assign Activity</button>
 
-      <button class="btn btn-lg ms-5" id="MyAllAssignActivities-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
+      <button class="btn btn-lg ms-5" id="MyAllAssignActivities-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;" (click)="reloadGrid2()"
         data-bs-target="#MyAllAssignActivities" type="button" role="tab">Activities Assigned (by Me)</button>
       
-      <button class="btn btn-lg ms-5" id="OthersAllAssignActivities-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
+      <button class="btn btn-lg ms-5" id="OthersAllAssignActivities-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;" (click)="reloadGrid()"
         data-bs-target="#OthersAllAssignActivities" type="button" role="tab">Activities Assigned (by Others)</button>
     </div>
   </nav>
@@ -232,7 +232,7 @@
         </div>
       </div>
     </div>
-
+<!-- // Grid -2  -->
     <div class="tab-pane fade" id="MyAllAssignActivities" role="tabpanel">
       <div class="row vh-100">
         <div class="col-12 stretch-card">
@@ -392,7 +392,7 @@
         </div>
       </div>
     </div>
-
+<!-- Grid or Tab - 3  -->
     <div class="tab-pane fade" id="OthersAllAssignActivities" role="tabpanel">
       <div class="row vh-100">
         <div class="col-12 stretch-card">

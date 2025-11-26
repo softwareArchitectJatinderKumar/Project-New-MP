@@ -43,8 +43,8 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-    // return this.http.post( AUTH_API + 'api/Mou/MouDocumentInsert', dataSoft, { headers }
-    return this.http.post( 'https://localhost:7125/api/Mou/MouDocumentInsert', dataSoft, { headers }
+    return this.http.post( AUTH_API + 'api/Mou/MouDocumentInsert', dataSoft, { headers }
+    // return this.http.post( 'https://localhost:7125/api/Mou/MouDocumentInsert', dataSoft, { headers }
     );
   }
 
@@ -54,8 +54,8 @@ export class MouDocumentsService {
    .set('Authorization', 'Bearer ' + authToken)
     //.set('Authorization', 'Bearer ' + this.Localtoken)
     .set('Content-Type', 'application/json');
-    // return this.http.get( AUTH_API_LOCAL + 'api/Mou/GetAllUploadedDocuments', {headers}
-    return this.http.get(  'https://localhost:7125/api/Mou/GetAllUploadedDocuments', {headers}
+    return this.http.get( AUTH_API_LOCAL + 'api/Mou/GetAllUploadedDocuments', {headers}
+    // return this.http.get(  'https://localhost:7125/api/Mou/GetAllUploadedDocuments', {headers}
     );
   }
   ApproveDocument(dataSoft: FormData): Observable<any> {
@@ -92,8 +92,8 @@ export class MouDocumentsService {
    .set('Authorization', 'Bearer ' + authToken)
     //.set('Authorization', 'Bearer ' + this.Localtoken)
     .set('Content-Type', 'application/json');
-    // return this.http.get(AUTH_API + 'api/Mou/GetUIDWiseMouDocumentDetails?Uid=' + Id, {headers});
-    return this.http.get('https://localhost:7125/api/Mou/GetUIDWiseMouDocumentDetails?Uid=' + Id, {headers});
+    return this.http.get(AUTH_API + 'api/Mou/GetUIDWiseMouDocumentDetails?Uid=' + Id, {headers});
+    // return this.http.get('https://localhost:7125/api/Mou/GetUIDWiseMouDocumentDetails?Uid=' + Id, {headers});
     // return this.http.get(
     //   AUTH_API + 'api/Mou/GetUIDWiseMouDocumentDetails?Uid=' + Id,
     //  {headers}
