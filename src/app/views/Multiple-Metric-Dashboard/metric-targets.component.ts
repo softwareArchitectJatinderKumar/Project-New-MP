@@ -22,7 +22,6 @@ import { ObpAutoAssignService } from 'src/app/_services/obpAuto-assign';
 import { Title } from '@angular/platform-browser';
 import { DataTableColumn } from '../DynamicDataGrid/Dynamic-Datagrid-Component';
 import { finalize } from 'rxjs';
-// private dataService: PlanningrankingService
 
 @Component({
   selector: 'app-metric-targets',
@@ -125,8 +124,8 @@ export class MetricTargetsComponent implements OnInit {
               allocatedOn: isPending == true ? 'Pending' : 'Allocated '
             };
           });
-          console.log(JSON.stringify(this.PendencyRecords))
-          console.log(JSON.stringify(this.PendencyColumns))
+          // console.log(JSON.stringify(this.PendencyRecords))
+          // console.log(JSON.stringify(this.PendencyColumns))
 
         } else {
           console.warn(`API call succeeded for   but data array is empty.`);
@@ -165,8 +164,8 @@ export class MetricTargetsComponent implements OnInit {
 
           this.criteriaRecords = dataArray;
           this.criteriaColumns = columns;
-          console.log(JSON.stringify(this.criteriaRecords))
-          console.log(JSON.stringify(this.criteriaColumns))
+          // console.log(JSON.stringify(this.criteriaRecords))
+          // console.log(JSON.stringify(this.criteriaColumns))
 
         } else {
           console.warn(`API call succeeded for   but data array is empty.`);
@@ -188,43 +187,10 @@ export class MetricTargetsComponent implements OnInit {
     }));
   }
 
-//   private generateColumnsFromData(data: any[]): DataTableColumn[] {
-//   if (!data || data.length === 0) return [];
-
-//   // Collect all unique keys across all records (not just first one)
-//   const allKeys = Array.from(
-//     new Set(data.flatMap(obj => Object.keys(obj)))
-//   );
-
-//   // Filter out keys that are null/empty in all rows
-//   const validKeys = allKeys.filter(key =>
-//     data.some(row => {
-//       const val = row[key];
-//       return val !== null && val !== undefined && val !== '';
-//     })
-//   );
-
-//   // Ensure that special columns like 'AllocatedOn' always appear (if desired)
-//   if (allKeys.includes('allocatedOn') && !validKeys.includes('allocatedOn')) {
-//     validKeys.push('AllocationStatus');
-//   }
-
-//   // Return formatted column definitions
-//   return validKeys.map(key => ({
-//     field: key,
-//     header: this.beautifyLabel(key)
-//   }));
-// }
-
   private beautifyLabel(label: string): string {
     if (!label) return label;
     return label.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
   }
-
-
-
-
-
 
   LoginFailed(_NewError: any) {
     this.isLoginFailed = true;
@@ -539,79 +505,7 @@ Upload() {
     // 7. Remove the old setTimeout logic completely
 }
 
-  // Upload() {
-
-  //   this.loadingIndicator = true;
-  //   const startTime = new Date().getTime();
-
-
-  //   var xmlString = '<dataset><data>';
-  //   for (var i = 1; i < this.uploadedDataRaw.length; i++) {
-  //     var element = this.uploadedDataRaw[i];
-  //     var row = "<row>";
-
-  //     row += "<MetricId>" + this.getPropertyByIndex(element, 0) + "</MetricId>";
-  //     row += "<MetricDescription>" + this.getPropertyByIndex(element, 1) + "</MetricDescription>";
-  //     row += "<AssignedToUID>" + this.getPropertyByIndex(element, 2) + "</AssignedToUID>";
-  //     row += "<TotalTargetValue>" + this.getPropertyByIndex(element, 3) + "</TotalTargetValue>";
-  //     row += "<TargetValueType>" + this.getPropertyByIndex(element, 4) + "</TargetValueType>";
-  //     row += "<BaseValue>" + this.getPropertyByIndex(element, 5) + "</BaseValue>";
-  //     row += "<Q1TargetValue>" + this.getPropertyByIndex(element, 6) + "</Q1TargetValue>";
-  //     row += "<Q2TargetValue>" + this.getPropertyByIndex(element, 7) + "</Q2TargetValue>";
-  //     row += "<Q3TargetValue>" + this.getPropertyByIndex(element, 8) + "</Q3TargetValue>";
-  //     row += "<Q4TargetValue>" + this.getPropertyByIndex(element, 9) + "</Q4TargetValue>";
-  //     row += "<AllocatedBy>" + this.getPropertyByIndex(element, 10) + "</AllocatedBy>";
-  //     row += "<Remarks>" + this.getPropertyByIndex(element, 11) + "</Remarks>";
-  //     row += "</row>";
-  //     xmlString += row;
-  //   }
-  //   xmlString += '</data></dataset>';
-
-  //   var obj = {
-  //     LeftTransferDataXml: xmlString,
-  //     EntryBy: this.createdBy
-  //   };
-  //   // 🔹 Added console logging for debugging
-  //   console.log('📦 Upload() triggered');
-  //   console.log('👤 Created By:', this.createdBy);
-  //   console.log('📄 Total Records Prepared:', this.uploadedDataRaw.length - 1);
-  //   console.log('🧾 XML String to be sent to API:\n', xmlString);
-  //   console.log('🚀 Final Payload Object:', obj);
-  //   //CreateLeftTransferDataUsingExcelSheet
- 
-  //   this.ObpAutoAssignService.CreateLeftTransferDataUsingExcelSheet(obj).subscribe((response) => {
-  //     if (response.item1.length > 0) {
-  //       this.responses = response.item1[0];
-  //       if (this.responses.returnData === '-1') {
-  //         Swal.fire(
-  //           { title: 'Something went Wrong ', icon: 'error' }
-  //         ), setTimeout(() => {
-  //           window.location.reload();
-  //         }, 5500);
-  //       } else if (this.responses.returnData === 'success') {
-  //         Swal.fire(
-  //           { title: 'All Details are added: ', text: this.responses.returnData, icon: 'success' }
-  //         ), setTimeout(() => {
-  //           window.location.reload();
-  //         }, 5500);
-  //       } else if (this.responses.returnData === 'Failed') {
-  //         Swal.fire(
-  //           { title: 'All Entries are Duplicate, Not Inserted ', text: this.responses.returnData, icon: 'error' }
-  //         ), setTimeout(() => {
-  //           window.location.reload();
-  //         }, 5500);
-  //       }
-  //     }
-  //   });
-  //    const elapsed = new Date().getTime() - startTime;
-  //       // --- CHANGE 2500 to 25 ---
-  //       const remainingDelay = Math.max(5500 - elapsed, 0); // Changed from 2500 to 25
-
-  //       setTimeout(() => {
-  //           this.loadingIndicator = false;
-  //       }, remainingDelay);
-  // }
-
+   
 
 
 
@@ -763,79 +657,3 @@ Upload() {
   }
 
 }
-
-// import { Component, OnInit } from '@angular/core';
-// import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-
-// @Component({
-//   selector: 'app-metric-targets',
-//   templateUrl: './metric-targets.component.html',
-//   styleUrls: ['./metric-targets.component.scss']
-// })
-// export class MetricTargetsComponent implements OnInit {
-//   metricForm!: FormGroup;
-
-//   constructor(private fb: FormBuilder) {}
-
-//   ngOnInit(): void {
-//     this.metricForm = this.fb.group({
-//       metrics: this.fb.array([this.createMetricRow()])
-//     });
-//   }
-
-//   // Create a single row group
-//   createMetricRow(): FormGroup {
-//     return this.fb.group({
-//       MetricId: ['', Validators.required],
-//       MetricDescription: ['', Validators.required],
-//       AssignedToUID: ['', Validators.required],
-//       EmployeeName: ['', Validators.required],
-//       TotalTargetValue: ['', Validators.required],
-//       TargetValueType: ['', Validators.required],
-//       BaseValue: ['', Validators.required],
-//       Q1TargetValue: ['', Validators.required],
-//       Q2TargetValue: ['', Validators.required],
-//       Q3TargetValue: ['', Validators.required],
-//       Q4TargetValue: ['', Validators.required],
-//     });
-//   }
-
-//   // Getter for metrics array
-//   get metrics(): FormArray {
-//     return this.metricForm.get('metrics') as FormArray;
-//   }
-
-//   // Add new row
-//   addMetricRow(): void {
-//     this.metrics.push(this.createMetricRow());
-//   }
-
-//   // Delete row
-//   deleteMetricRow(index: number): void {
-//     if (this.metrics.length > 1) {
-//       this.metrics.removeAt(index);
-//     }
-//   }
-
-//   // Submit handler
-//   onSubmit(): void {
-//     if (this.metricForm.invalid) {
-//       // Mark all controls as touched to trigger validation
-//       this.metricForm.markAllAsTouched();
-//       console.warn('⚠️ Please fill all required fields before submitting.');
-//       return;
-//     }
-
-//     // Get all data
-//     const formData = this.metricForm.value.metrics;
-
-//     // Log neatly to console
-//     console.log('✅ Metric Targets Submitted Successfully:');
-//     formData.forEach((item: any, index: number) => {
-//       console.log(`Row ${index + 1}:`, item);
-//     });
-
-//     // Optional: Show confirmation
-//     alert('Data submitted successfully! Check console for details.');
-//   }
-// }

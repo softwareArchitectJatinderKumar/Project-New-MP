@@ -179,7 +179,7 @@ export class MouActivityActionPlanComponent implements OnInit {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
-          this.EmployeeCode = '11840'; // Hardcoded as per original
+          this.EmployeeCode = response.item1[0].employeeCode; // '11840';   Hardcoded as per original
           this.ContactNoX = response.item1[0].contactNo;
           this.Department = response.item1[0].department;
           this.DepartmentName = response.item1[0].departmentName;
@@ -246,7 +246,15 @@ export class MouActivityActionPlanComponent implements OnInit {
           this.MouActivityAssignedMeMaster = response.item1;
           this.filteredMouActivityAssignedMe = [...this.MouActivityAssignedMeMaster];
           
-          // Sort
+         
+
+          this.filteredMouActivityAssignedMe = response.item1.filter((activity: any) => {
+            // Assuming 'EmployeeCode' is a property of 'this' (the component/class) 
+            // and 'activity' is an object with an 'actionAssignedBy' property (as shown in your console log).
+            return activity.actionAssignedBy == this.EmployeeCode;
+          });
+
+           // Sort
           this.filteredMouActivityAssignedMe.sort((a, b) => b.id - a.id); // Assuming ID exists, mostly checks createdOn usually
           this.setupColumns(this.MouActivityAssignedMeMaster[0], 'assigned');
           this.showNoDataFoundMessage = false;
@@ -271,18 +279,59 @@ reloadGrid(){
   this.GetOthersActivtiesAssigned('0', '0');
 }
   // TAB 3 DATA
+//   GetOthersActivtiesAssigned(IdCode: any, sessionId: any): void {
+//     this.loadingIndicator = true;
+//     this.mouDocumentsService.GetAllActivitiesAssignedwithSession('0', sessionId).subscribe({
+//       next: response => {
+//         if (response.item1 && response.item1.length > 0) {
+          
+//           // 1. Apply the filter to exclude records where actionAssignedBy matches EmployeeCode
+//           const filteredActivities = response.item1.filter((activity: any) => {
+//             // Assuming 'EmployeeCode' is a property of 'this' (the component/class) 
+//             // and 'activity' is an object with an 'actionAssignedBy' property (as shown in your console log).
+//             return activity.actionAssignedBy !== this.EmployeeCode;
+//           });
+
+//           // 2. Assign the filtered data to the master variable
+//           this.MouActivityAssignedOthersMaster = filteredActivities;
+          
+//           console.log(JSON.stringify(this.MouActivityAssignedOthersMaster))
+          
+//           // FIX: Re-apply filter if search text exists, otherwise show all
+//           this.filterTab3(); 
+
+//           this.setupColumns(this.MouActivityAssignedOthersMaster[0], 'assigned');
+//           this.showNoDataFoundMessage = false;
+//         } else {
+//           this.MouActivityAssignedOthersMaster = [];
+//           this.filteredMouActivityAssignedOthers = [];
+//           this.showNoDataFoundMessage = true;
+//         }
+//         setTimeout(() => { this.loadingIndicator = false; }, 1500);
+//       },
+//       error: err => {
+//         this.loadingIndicator = false;
+//         this.LoginFailed(err);
+//       }
+//     });
+// }
   GetOthersActivtiesAssigned(IdCode: any, sessionId: any): void {
     this.loadingIndicator = true;
     this.mouDocumentsService.GetAllActivitiesAssignedwithSession('0', sessionId).subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.MouActivityAssignedOthersMaster = response.item1;
-          // console.log(JSON.stringify(this.MouActivityAssignedOthersMaster))
-          // FIX: Re-apply filter if search text exists, otherwise show all
-          this.filterTab3(); 
+        
+            this.MouActivityAssignedOthersMaster = response.item1.filter((activity: any) => {
+            return activity.actionAssignedBy !== this.EmployeeCode;
+          });
 
+           // Sort
+          this.MouActivityAssignedOthersMaster.sort((a, b) => a.id - b.id); // Assuming ID exists, mostly checks createdOn usually
           this.setupColumns(this.MouActivityAssignedOthersMaster[0], 'assigned');
           this.showNoDataFoundMessage = false;
+          this.filterTab3(); 
+          console.log(JSON.stringify(this.MouActivityAssignedOthersMaster))
         } else {
           this.MouActivityAssignedOthersMaster = [];
           this.filteredMouActivityAssignedOthers = [];

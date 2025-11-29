@@ -44,21 +44,21 @@
                             [(ngModel)]="ResponsiblePerson" [formControl]="employeeControl" placeholder="Search by name or code"
                             (input)="onInput()" (keydown)="onKeydown($event)" (change)="checkUIDValidity()"
                             (focus)="showSuggestions = true" (blur)="hideSuggestions()" />
-                        <div class="text-danger mt-1 small" *ngIf="employeeControl.invalid && employeeControl.touched">
+                        <div class="themeClr mt-1 small" *ngIf="employeeControl.invalid && employeeControl.touched">
                             LPU SPOC Name is required.
                         </div>
                 
                         <div *ngIf="showSuggestions && filteredEmployeesData.length"
-                            class="list-group position-absolute w-100 shadow-sm z-3">
+                            class="list-group position-absolute w-30 shadow-sm z-3">
                             <button type="button" class="list-group-item list-group-item-action"
                                 *ngFor="let employee of filteredEmployeesData; let i = index"
                                 [class.active]="i === activeSuggestionIndex" (mousedown)="selectEmployee(employee)">
                                 {{ employee.employeeName }} ({{ employee.employeeCode }})
                             </button>
                         </div>
-                    </div>
-                    <div *ngIf="AssignedToUid > 0" class="text-primary mt-2 small">
-                        Applying to UID: <strong>{{ AssignedToUid }} {{AssignedToUidName}}</strong>
+                        <div *ngIf="AssignedToUid > 0" class="text-primary mt-2 small">
+                            Applying to UID: <strong>{{ AssignedToUid }} {{AssignedToUidName}}</strong>
+                        </div>
                     </div>
                     <div class="col-3">
                         <label class="form-label">LPU SPOC EmailId</label>

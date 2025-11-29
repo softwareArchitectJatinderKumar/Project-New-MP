@@ -25,7 +25,7 @@ const routes: Routes = [
   ],
   imports: [
     CommonModule,
-    DataGridModule, // This gives you access to the <app-data-grid> selector
+    DataGridModule,  
      CommonModule,
     RouterModule.forChild(routes),
     NgxDatatableModule,

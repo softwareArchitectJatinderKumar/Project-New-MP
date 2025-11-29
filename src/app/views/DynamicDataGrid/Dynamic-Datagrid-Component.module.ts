@@ -18,14 +18,13 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 @NgModule({
   declarations: [
-    DataGridComponent // Declare the component within this module
+    DataGridComponent  
   ],
   imports: [
-    // Standard Angular Modules
     CommonModule,
     FormsModule,
     NgxDatatableModule,
-    // Material Modules (required for the component's template)
+     
     MatTableModule,
     MatPaginatorModule,
     MatInputModule,
@@ -34,7 +33,7 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
     MatButtonModule,
   ],
   exports: [
-    DataGridComponent // Export the component so other modules can use the <app-data-grid> selector
+    DataGridComponent 
   ]
 })
 export class DataGridModule { }

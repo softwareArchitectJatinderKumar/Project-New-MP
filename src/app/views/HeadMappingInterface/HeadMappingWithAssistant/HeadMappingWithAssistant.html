@@ -182,7 +182,7 @@
           <select class="form-select" style="width: 100px;" (change)="onPageSizeChange($any($event.target).value)">
             <option *ngFor="let s of pageSizes" [value]="s" [selected]="s === pageSize">{{ s }}</option>
           </select>
-          <button class="btn btn-secondary ms-3" (click)="exportToExcel()">
+          <button class="btn btn-secondary ms-3" (click)="exportToExcel()" [disabled]="totalRecords<1">
             Export to Excel
           </button>
         </div>

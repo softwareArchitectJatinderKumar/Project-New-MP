@@ -28,12 +28,12 @@ const routes: Routes = [
         loadChildren: () => import('./views/OBPAdminDashboard/MasterDetailsPage.module').then(m => m.MasterDetailsPageModule),
       },
       {
-        path: 'OBPMetricPABinding/:loginName',
+        path: 'OBPMetricPABindings/:loginName',
         loadChildren: () => import('./views/HeadMappingInterface/HeadMappingWithAssistant/HeadMappingWithAssistant.module').then(m => m.OBPMetricBindingModule),
       },
       {
         path: 'OBPHeadMapping/:loginName',
-        loadChildren: () => import('./views/pages/ManageHeadMappings/Manage-HeadMapping.module').then(m => m.ManageHeadMappingModule),
+         loadChildren: () => import('./views/HeadMappingInterface/HeadMappingWithAssistant/HeadMappingWithAssistant.module').then(m => m.OBPMetricBindingModule),
       },
       // Semester Exchange 
       {
