@@ -279,6 +279,37 @@ reloadGrid(){
   this.GetOthersActivtiesAssigned('0', '0');
 }
   // TAB 3 DATA
+
+  GetOthersActivtiesAssigned(IdCode: any, sessionId: any): void {
+    this.loadingIndicator = true;
+    this.mouDocumentsService.GetAllActivitiesAssignedwithSession('0', sessionId).subscribe({
+      next: response => {
+        if (response.item1 && response.item1.length > 0) {
+          this.MouActivityAssignedOthersMaster = response.item1;
+        
+            this.MouActivityAssignedOthersMaster = response.item1.filter((activity: any) => {
+            return activity.actionAssignedBy !== this.EmployeeCode;
+          });
+
+           // Sort
+          this.MouActivityAssignedOthersMaster.sort((a, b) => a.id - b.id); // Assuming ID exists, mostly checks createdOn usually
+          this.setupColumns(this.MouActivityAssignedOthersMaster[0], 'assigned');
+          this.showNoDataFoundMessage = false;
+          this.filterTab3(); 
+          console.log(JSON.stringify(this.MouActivityAssignedOthersMaster))
+        } else {
+          this.MouActivityAssignedOthersMaster = [];
+          this.filteredMouActivityAssignedOthers = [];
+          this.showNoDataFoundMessage = true;
+        }
+        setTimeout(() => { this.loadingIndicator = false; }, 1500);
+      },
+      error: err => {
+        this.loadingIndicator = false;
+        this.LoginFailed(err);
+      }
+    });
+  }
 //   GetOthersActivtiesAssigned(IdCode: any, sessionId: any): void {
 //     this.loadingIndicator = true;
 //     this.mouDocumentsService.GetAllActivitiesAssignedwithSession('0', sessionId).subscribe({
@@ -315,37 +346,6 @@ reloadGrid(){
 //       }
 //     });
 // }
-  GetOthersActivtiesAssigned(IdCode: any, sessionId: any): void {
-    this.loadingIndicator = true;
-    this.mouDocumentsService.GetAllActivitiesAssignedwithSession('0', sessionId).subscribe({
-      next: response => {
-        if (response.item1 && response.item1.length > 0) {
-          this.MouActivityAssignedOthersMaster = response.item1;
-        
-            this.MouActivityAssignedOthersMaster = response.item1.filter((activity: any) => {
-            return activity.actionAssignedBy !== this.EmployeeCode;
-          });
-
-           // Sort
-          this.MouActivityAssignedOthersMaster.sort((a, b) => a.id - b.id); // Assuming ID exists, mostly checks createdOn usually
-          this.setupColumns(this.MouActivityAssignedOthersMaster[0], 'assigned');
-          this.showNoDataFoundMessage = false;
-          this.filterTab3(); 
-          console.log(JSON.stringify(this.MouActivityAssignedOthersMaster))
-        } else {
-          this.MouActivityAssignedOthersMaster = [];
-          this.filteredMouActivityAssignedOthers = [];
-          this.showNoDataFoundMessage = true;
-        }
-        setTimeout(() => { this.loadingIndicator = false; }, 1500);
-      },
-      error: err => {
-        this.loadingIndicator = false;
-        this.LoginFailed(err);
-      }
-    });
-  }
-
   GetAllActivities(): void {
     this.lpuPlannerServiceService.GetSchoolDivisions().subscribe((response) => {
       this.allSchoolDivisions = response.item1.length > 0 ? response.item1 : [];

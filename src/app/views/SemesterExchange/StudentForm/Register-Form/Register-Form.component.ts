@@ -193,9 +193,7 @@ export class RegisterFormcomponent implements OnInit {
     this.isLoading = true;
     const { email, contactNumber } = this.eligibilityForm.value;
 
-    // Use a placeholder API to get LoginName based on contact/email, as a starting point 
-    // before running the authentication flow. Assuming this is a necessary step.
-    // this.servicesSM.getStudentIdByContact(email, contactNumber) 
+    
     this.servicesSM.getStudentById()
       .pipe(
         finalize(() => this.isLoading = false)
@@ -278,7 +276,7 @@ export class RegisterFormcomponent implements OnInit {
         }
 
         // --- Core Eligibility Checks (CGPA & Status) ---
-        if (+(this.cgpa) < 7 || (this.studentStatus !== 'A' && this.studentStatus !== 'ACT')) {
+        if (+(this.cgpa) < 7 || (this.studentStatus !== 'A' ||this.studentStatus !== 'ACT')) {
           this.GetStudentAllPreviousMarks(this.RegistrationNo);
           this.isEligible = false;
           // Swal.fire({ title: 'Not Eligible', text: 'Low CGPA or Inactive status.', icon: 'warning' });

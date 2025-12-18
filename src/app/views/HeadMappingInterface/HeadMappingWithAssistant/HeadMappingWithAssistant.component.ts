@@ -11,22 +11,19 @@ import * as XLSX from 'xlsx';
 import { UntypedFormBuilder } from '@angular/forms';
 import swal from 'sweetalert2';
 import { Title } from '@angular/platform-browser';
-
 import { Observable, BehaviorSubject, combineLatest, of } from 'rxjs';
 import { map, tap, catchError, take } from 'rxjs/operators';
 import { HeadMapping, MetricMapping } from '../Services/HeadMapping.service';
 import { PlanningrankingService } from 'src/app/_services/planningranking.service';
 import { LpuPlannerServiceService } from 'src/app/_services/lpu-planner-service.service';
 import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
-import { Console } from 'console';
-
 interface SchoolDivision {
     id: number;
     schoolDivision: string;
 }
 interface MetricDetails {
-    id: number;           // Changed from MetricId to id
-    description: string;  // Changed from Description to description
+    id: number;
+    description: string;
 }
 interface Employee {
     employeeName: string;
@@ -37,16 +34,12 @@ interface SchoolDivision {
     schoolDivision: string;
 }
 
-
-
 @Component({
     selector: 'app-metric-mapping',
     templateUrl: './HeadMappingWithAssistant.html',
     styleUrls: ['./HeadMappingWithAssistant.scss']
 })
 export class OBPMetricBinding implements OnInit {
-
-
     SchoolIndex: number = 0;
     DepartmentIndex: number = 0;
     SchoolInvolved: any;
@@ -55,20 +48,14 @@ export class OBPMetricBinding implements OnInit {
     allSchoolDivisions: SchoolDivision[] = [];
     selectedDivisions: any[] = [];
     allDepartmentName: any;
-
-
-
     hasSelectionError: boolean = false;
     SchoolId: FormControl<any>;
-
     // logic start 19-Nov-25
     allMetricDescription: MetricDetails[] = [];
-
     GetAllMetricDetails(): void {
         this.PlanningrankingService.FetchObpMetricDetails(0).subscribe((response) => {
             if (response.item1.length > 0) {
                 this.allMetricDescription = response.item1;
-                // console.log(JSON.stringify(this.allMetricDescription))
             } else {
                 this.allMetricDescription = [];
             }
@@ -83,7 +70,6 @@ export class OBPMetricBinding implements OnInit {
                 break;
             }
         }
-        // FIX: Return metric.description
         return metric ? metric.description : `ID ${idStr} not found`;
     }
 
@@ -157,32 +143,20 @@ export class OBPMetricBinding implements OnInit {
     }
 
     isLoginFailed: boolean = false;
-    // Data table source
     public mappingData$!: Observable<MetricMapping[]>;
 
-    // Reactive Form Group
     public mappingForm!: FormGroup;
 
-    // State variables for the form mode
     public isUpdateMode = false;
     private currentEditId: any | null = null;
-
-    // Radio button options
-    // public isActiveOptions = [{ label: 'Yes', value: 1 }, { label: 'No', value: 0 }];
     public typeOptions = ['PA', 'AO', 'DE'];
-
-    // Table columns (for dynamic display)
     public tableColumns: any[] = ['id', 'headUID', 'assistantUID', 'isActive', 'metricId', 'type', 'Actions'];
-
-    // Pagination & filtering state (reactive)
     public pageSizes: number[] = [5, 10, 25, 50];
     public totalRecords = 0;
 
     private pageSize$ = new BehaviorSubject<number>(10);
     private currentPage$ = new BehaviorSubject<number>(1);
     private searchTerm$ = new BehaviorSubject<string>('');
-
-    // Exposed observable for template display (filtered + paged)
     public displayedData$!: Observable<MetricMapping[]>;
 
     constructor(
@@ -195,14 +169,12 @@ export class OBPMetricBinding implements OnInit {
         private authService: AuthService, private storageService: StorageService,
         private title: Title
     ) { }
-
     ngOnInit(): void {
         this.initForm();
         let loginName = this.route.snapshot.params['loginName'];
         if (loginName != '' && loginName != undefined) {
             this.getToken(loginName);
         }
-
     }
     GetEmployeeData(): void {
         this.mouDocumentsService.GetEmployeeData().subscribe({
@@ -218,8 +190,6 @@ export class OBPMetricBinding implements OnInit {
             }
         });
     }
-
-
     getToken(id: any) {
         this.authService.loginTemp(id).subscribe({
             next: data => {
@@ -249,7 +219,7 @@ export class OBPMetricBinding implements OnInit {
     }
     LoginFailed(_NewError: any) {
         this.isLoginFailed = true;
-           this.loadingIndicator = false;
+        this.loadingIndicator = false;
         swal.fire({
             title: 'Login Failed',
             text: 'Login details are Invalid!',
@@ -269,12 +239,12 @@ export class OBPMetricBinding implements OnInit {
         if (imgLogoElement) {
             imgLogoElement.style.width = '164px';
         }
-     
+
     }
 
     loadingIndicator = false;
-    sessionId: any = 'Select'; // Default empty value
-    items: any[] = []; // Array to store dropdown options 
+    sessionId: any = 'Select';
+    items: any[] = [];
 
     HeadMappingData: any; filteredHeadMappingData: any;
 
@@ -283,39 +253,34 @@ export class OBPMetricBinding implements OnInit {
         const selectedOptions = Array.from(selectElement.options)
             .filter(option => option.selected)
             .map(option => parseInt(option.value, 10))
-            .filter(id => !isNaN(id)); // Filter out any non-numeric values
-
+            .filter(id => !isNaN(id));
         this.selectedDivisions = selectedOptions;
         this.mappingForm.get('SchoolId')?.setValue(this.selectedDivisions.length > 0 ? 'selected' : '');
     }
-
-
     GetAllEventsData(): void {
         this.loadingIndicator = true;
         const startTime = new Date().getTime();
-        // Populate mappingData$ observable from the service so template can use async pipe
+
         this.mappingData$ = this.PlanningrankingService.GetHeadMappings().pipe(
             map((response: any) => response?.item1 ?? []),
             tap((arr: MetricMapping[]) => {
-                // Keep local copies for filtering and other UI usage
+
                 this.HeadMappingData = arr;
                 this.filteredHeadMappingData = arr;
                 this.loadingIndicator = false;
                 this.totalRecords = arr.length;
-                console.log(JSON.stringify(this.HeadMappingData ))
-                // Derive dynamic columns from the first record
+
                 if (arr && arr.length > 0) {
                     const keys = Object.keys(arr[0]);
-                    // Ensure Actions column is last
+
                     this.tableColumns = [...keys.filter(k => k.toLowerCase() !== 'actions'), 'Actions'];
                 } else {
                     this.tableColumns = ['Actions'];
                 }
-
             }),
             catchError(err => {
                 console.error('Failed to load head mappings', err);
-                // Provide an empty array so the template stays stable
+
                 this.HeadMappingData = [];
                 this.filteredHeadMappingData = [];
                 this.loadingIndicator = false;
@@ -325,7 +290,6 @@ export class OBPMetricBinding implements OnInit {
         );
         const elapsed = new Date().getTime() - startTime;
         const remainingDelay = Math.max(1500 - elapsed, 0);
-
         setTimeout(() => {
             this.loadingIndicator = false;
         }, remainingDelay);
@@ -408,10 +372,8 @@ export class OBPMetricBinding implements OnInit {
     }
     public exportToExcel(): void {
         this.loadingIndicator = true;
-        // take current filtered data snapshot
         this.mappingData$.pipe(take(1)).subscribe((arr: MetricMapping[]) => {
             const data = (arr || []).map(r => {
-                // convert to plain object with readable keys
                 const obj: any = {};
                 Object.keys(r).forEach(k => obj[k] = (r as any)[k]);
                 return obj;
@@ -556,7 +518,6 @@ export class OBPMetricBinding implements OnInit {
             });
         } else {
             this.loadingIndicator = true;
-            // Exclude IsActive from payload when inserting new records
             const payload: any = { ...formData };
             if ('IsActive' in payload) delete payload.IsActive;
 
@@ -565,13 +526,7 @@ export class OBPMetricBinding implements OnInit {
             MformData.append('AssistantUID', formData.AssistantUID);
             MformData.append('MetricId', formData.MetricId);
             MformData.append('Type', formData.Type);
-            // FIX 3 (Insert): Update SchoolID to use comma-separated values
             MformData.append('SchoolId', schoolDivisionIDs);
-
-            console.log("Form Data")
-            MformData.forEach((value, key) => {
-                console.log(key, value);
-            });
             this.PlanningrankingService.InsertHeadMapping(MformData).pipe(take(1)).subscribe({
                 next: (res: any) => {
                     swal.fire({
@@ -581,6 +536,7 @@ export class OBPMetricBinding implements OnInit {
                     });
                     this.GetAllEventsData();
                     this.loadingIndicator = false;
+                    window.location.reload();
                 },
                 error: (err: any) => {
                     console.error('InsertHeadMapping failed', err);
@@ -590,6 +546,7 @@ export class OBPMetricBinding implements OnInit {
                         icon: 'error'
                     });
                     this.loadingIndicator = false;
+                    window.location.reload();
                 }
             });
         }
@@ -633,40 +590,59 @@ export class OBPMetricBinding implements OnInit {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+
     public onDelete(record: MetricMapping | any): void {
         this.isUpdateMode = true;
         const get = (k: string) => this.getProp(record, k);
         this.currentEditId = Number(get('Id') ?? get('id') ?? (record as any).Id ?? null);
-        const MformData = new FormData();
-        MformData.append('RecordId', this.currentEditId);
 
-        this.PlanningrankingService.deleteRecord(MformData).pipe(take(1)).subscribe({
-            next: (res: any) => {
-                const sres = res.item1[0];
-                if (sres.msg === '-1') {
-                    swal.fire(
-                        { title: 'Action Failed', icon: 'error' }
-                    ), setTimeout(() => {
-                        window.location.reload();
-                    }, 112200);
-                } else if (sres.msg === '1') {
-                    swal.fire(
-                        { title: 'Action completed : ', text: sres.msg, icon: 'success' }
-                    ), setTimeout(() => {
-                        window.location.reload();
-                    }, 2200);
-                }
+        swal.fire({
+            title: 'Confirm Action',
+            text: 'Are you sure you want to Inactive this record? This action cannot be undone.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Proceed!',
+            cancelButtonText: 'No, Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const get = (k: string) => this.getProp(record, k);
+                this.currentEditId = Number(get('Id') ?? get('id') ?? (record as any).Id ?? null);
+                const MformData = new FormData();
+                MformData.append('RecordId', this.currentEditId);
 
-                this.GetAllEventsData();
-                this.loadingIndicator = false;
-            },
-            error: (err: any) => {
-                console.error('Update failed', err);
-                this.loadingIndicator = false;
+                this.PlanningrankingService.deleteRecord(MformData).pipe(take(1)).subscribe({
+                    next: (res: any) => {
+                        const sres = res.item1[0];
+                        if (sres.msg === '-1') {
+                            swal.fire(
+                                { title: 'Action Failed', icon: 'error' }
+                            ), setTimeout(() => {
+                                window.location.reload();
+                            }, 112200);
+                        } else if (sres.msg === '1') {
+                            swal.fire(
+                                { title: 'Action completed : ', text: sres.msg, icon: 'success' }
+                            ), setTimeout(() => {
+                                window.location.reload();
+                            }, 2200);
+                        }
+
+                        this.GetAllEventsData();
+                        this.loadingIndicator = false;
+                    },
+                    error: (err: any) => {
+                        console.error('Update failed', err);
+                        this.loadingIndicator = false;
+                    }
+                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
             }
         });
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
 
     employeeControl = new FormControl();
     employees: Employee[] = [];
@@ -688,8 +664,6 @@ export class OBPMetricBinding implements OnInit {
         this.showSuggestions = true;
         this.activeSuggestionIndex = -1;
     }
-
-    // Mouse event handlers
     onMouseEnter(index: number) {
         this.activeSuggestionIndex = index;
     }
@@ -699,39 +673,31 @@ export class OBPMetricBinding implements OnInit {
     }
     selectEmployee(employee: Employee) {
         this.ResponsiblePerson = employee.employeeCode;
-        this.AssignedToUid = employee.employeeCode;//this.filteredEmployeesData.map(employee => employee.employeeCode);
+        this.AssignedToUid = employee.employeeCode;
         this.employeeControl.setValue(`${employee.employeeName} (${employee.employeeCode})`);
-
-        // console.log("UID"+this.AssignedToUid)  ;
         this.filteredEmployeesData = [];
         this.showSuggestions = false;
         this.checkUIDValidity();
     }
-
-
-
     checkUIDValidity(): void {
         this.uploadEnabled = this.AssignedToUid != '';
     }
     hideSuggestions() {
-        setTimeout(() => this.showSuggestions = false, 200); // Delay to allow click event to register
+        setTimeout(() => this.showSuggestions = false, 200);
     }
-    ResponsiblePerson: any = ''; // Used for mapping form value
-    headControl = new FormControl(''); // NEW: Separate form control for Head UID input
-    AssignedToUid: any; // The selected Head UID
-    filteredHeadsData: Employee[] = []; // NEW: Separate filtered list for Head suggestions
-    showHeadSuggestions = false; // NEW: Separate boolean for Head suggestions visibility
-    activeHeadSuggestionIndex: number = -1; // NEW: Separate active index for Head
-
-    // --- Assistant UID Properties ---
-    AssistantUid: any; // The selected Assistant UID
-    assistantControl = new FormControl(''); // NEW: Separate form control for Assistant UID input
-    filteredAssistantsData: Employee[] = []; // NEW: Separate filtered list for Assistant suggestions
-    showAssistantSuggestions = false; // NEW: Separate boolean for Assistant suggestions visibility
-    activeAssistantSuggestionIndex: number = -1; // NEW: Separate active index for Assistant
+    ResponsiblePerson: any = '';
+    headControl = new FormControl('');
+    AssignedToUid: any;
+    filteredHeadsData: Employee[] = [];
+    showHeadSuggestions = false;
+    activeHeadSuggestionIndex: number = -1;
+    AssistantUid: any;
+    assistantControl = new FormControl('');
+    filteredAssistantsData: Employee[] = [];
+    showAssistantSuggestions = false;
+    activeAssistantSuggestionIndex: number = -1;
     activeMetricSuggestionIndex: number = -1;
 
-    // --- Head UID Logic (formerly onInput) ---
     onHeadInput() {
         const inputValue = this.headControl.value ? this.headControl.value.toLowerCase() : '';
         if (inputValue) {
@@ -755,14 +721,11 @@ export class OBPMetricBinding implements OnInit {
         this.showHeadSuggestions = false;
         this.checkHeadUIDValidity();
     }
-
     checkHeadUIDValidity(): void {
     }
-
     hideHeadSuggestions() {
         setTimeout(() => this.showHeadSuggestions = false, 200);
     }
-
     onAssistantInput() {
         const inputValue = this.assistantControl.value ? this.assistantControl.value.toLowerCase() : '';
         if (inputValue) {
@@ -776,7 +739,6 @@ export class OBPMetricBinding implements OnInit {
         }
         this.activeAssistantSuggestionIndex = -1;
     }
-
     selectAssistant(employee: Employee) {
         this.AssistantUid = employee.employeeCode;
         this.mappingForm.get('AssistantUID')?.setValue(employee.employeeCode); // Set the form control value for submission
@@ -786,19 +748,15 @@ export class OBPMetricBinding implements OnInit {
         this.showAssistantSuggestions = false;
         this.checkAssistantUIDValidity();
     }
-
     checkAssistantUIDValidity(): void {
     }
-
     hideAssistantSuggestions() {
         setTimeout(() => this.showAssistantSuggestions = false, 200);
     }
-
     metricControl = new FormControl('');
     filteredMetricData: MetricDetails[] = [];
     showMetricSuggestions: boolean = false;
     AssignToMetricId: any;
-
     onKeydown(event: KeyboardEvent, type: 'head' | 'assistant' | 'metric') {
         let activeIndex: number;
         let filteredData: Employee[] | MetricDetails[];
@@ -817,7 +775,6 @@ export class OBPMetricBinding implements OnInit {
             filteredData = this.filteredMetricData;
             selectFunction = this.selectMetric.bind(this);
         }
-
         if (filteredData.length === 0) return;
 
         if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter') {
@@ -825,7 +782,6 @@ export class OBPMetricBinding implements OnInit {
         } else {
             return;
         }
-
         if (event.key === 'ArrowDown') {
             activeIndex = (activeIndex + 1) % filteredData.length;
         } else if (event.key === 'ArrowUp') {
@@ -879,7 +835,6 @@ export class OBPMetricBinding implements OnInit {
     getMetricDescriptionDisplay(id: string | number | null | undefined): string {
         if (!id) return '';
         const metric = this.allMetricDescription.find(m => m.id.toString() === id.toString());
-        // Format: Description (ID)
         return metric ? `${metric.description} (${metric.id})` : `ID ${id}`;
     }
 
@@ -896,8 +851,4 @@ export class OBPMetricBinding implements OnInit {
 
         return names.join(', ');
     }
-
-
-
-
 }

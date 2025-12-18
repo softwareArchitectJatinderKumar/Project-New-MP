@@ -468,9 +468,9 @@ export class MouDocumentsUploadsComponent implements OnInit {
     formData.append('LPUSpocUID', this.AssignedToUid);
     formData.append('LPUSpocEmail', this.LPUSpocEmail);
 
-    formData.forEach((value, key) => {
-    console.log(`${key}: ${value}`);
-    });
+    // formData.forEach((value, key) => {
+    // console.log(`${key}: ${value}`);
+    // });
     this.mouDocumentsService.MouDocumentUpload(formData).subscribe({
       next: (data: any) => {
         const result = data.item1[0]['msg'];

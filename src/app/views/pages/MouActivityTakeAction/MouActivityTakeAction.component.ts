@@ -63,11 +63,12 @@ export class MouActivityTakeActionComponent implements OnInit {
   CurrentdisapprovalReason: any;
   ActivityDetails: any;
 
-
+// Redirect to Other interface for 
 
   clearFields(): void {
     this.mouId = this.CompletedDate = this.ResponsiblePerson = '';
-    if(this.selectedActivityId == 11 || this.selectedActivityId==12  || this.selectedActivityId==23 ) // || this.selectedActivityId==14 removed the Guest lecture from IQAC Redirect
+    if(this.selectedActivityId == 11 || this.selectedActivityId==12  || this.selectedActivityId==23  || this.selectedActivityId==14) // Added on 29 Nov-25 for  the Guest lecture from IQAC Redirect
+    // if(this.selectedActivityId == 11 || this.selectedActivityId==12  || this.selectedActivityId==23 ) // || this.selectedActivityId==14 removed the Guest lecture from IQAC Redirect
     {
       swal.fire({
         title: 'Since this Activity is also involved IQAC Interface thus Redirecting to the IQAC interface ',
@@ -136,9 +137,7 @@ export class MouActivityTakeActionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.mouActivities = mouActivities;
-   
-
+    this.mouActivities = mouActivities;   
     const currentDate = new Date();
     this.CompletedDate = this.endDate = this.CompletedDate = this.endDate =  this.formatDate(currentDate);
     // this.FacultyActivityEndDate  = this.FacultyActivityStartDate = this.formatDate(currentDate);
@@ -162,8 +161,6 @@ export class MouActivityTakeActionComponent implements OnInit {
       FacultyActivityEndDate: new FormControl('', Validators.required),  
     });
   }
-
-
   private formatDate(date: Date): string {
     const year = date.getFullYear();
     const month = this.padZero(date.getMonth() + 1); // Months are zero-based
@@ -180,9 +177,6 @@ export class MouActivityTakeActionComponent implements OnInit {
         this.storageService.saveUser(data);
         this.getAllPlannerSession();
         this.GetEmployeeDetails();
-       
-
-
       },
       error: _err => {
         this.LoginFailed(_err);

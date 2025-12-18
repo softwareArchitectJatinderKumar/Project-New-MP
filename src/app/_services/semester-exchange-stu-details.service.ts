@@ -66,6 +66,7 @@ export class SemesterExchangeStuDetailsService {
 
 
   getStudentById(): Observable<any> {
+    // alert(0);
     var authToken = this.storageService.getUser();
     const httpOptions = {
       headers: new HttpHeaders({

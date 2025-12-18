@@ -64,8 +64,6 @@
                         <label class="form-label">LPU SPOC EmailId</label>
                     </div>
                     <div class="col-3">
-                        <!-- <input type="text" id="lpuSpocEmail" name="lpuSpocEmail" required class="form-control col-3"
-                            [(ngModel)]="LPUSpocEmail" placeholder="lpu Spoc Email" /> -->
                         <input type="email" class="form-control" [style]="{ width: '89%' }" name="LPUSpocEmail" id="LPUSpocEmail"
                             autocomplete="off" placeholder="Provide SOPC Email Id" required
                             pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" ngModel [(ngModel)]="LPUSpocEmail"
@@ -209,11 +207,7 @@
                                 <input class="w-30" required type="file" id="File" name="File"
                                     (change)="onFileSelected($event)" accept=".pdf, .doc, .docx" #fileInput="ngModel"
                                     ngModel />
-                                <!-- <div *ngIf="fileInput.invalid && fileInput.touched" class="themeClr">
-                                    File is required. Allowed Documents format Doc, pdf and of Max size 3MB.
-                                </div> -->
-                                <!-- <input class="w-30" required type="file" id="File" name="File" (change)="onFileSelected($event)"
-                                accept=".pdf, .doc, .docx" #fileInput /> -->
+                               
                                 <div class="col- mt-2"><span class=" themeClr"> Allowed Documents format Doc, pdf and of Max size 3MB </span></div>
                             </div>
                             <div class="col-4 " style="display: none;">
@@ -231,8 +225,7 @@
                             <div class="col-12 text-center ">
                                 <button type="submit" [disabled]="!myForm.valid"
                                     class="btn btn-primary me-2 col-4">Save Record</button>
-                                <!-- <button type="submit" [disabled]="!uploadEnabled"
-                                class="btn btn-primary me-2 col-4" (click)="UploadDocument();">Save Record</button> -->
+                             
                             </div>
                         </div>
                     </form>

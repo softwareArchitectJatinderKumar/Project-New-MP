@@ -103,7 +103,7 @@
               bindValue="id" [multiple]="true" placeholder="Select one or more divisions"
               [(ngModel)]="selectedDivisions" [ngModelOptions]="{standalone: true}">
             </ng-select>
- 
+
             <div class="mt-2 small text-primary" *ngIf="selectedDivisions.length > 0">
               Selected IDs: <strong>{{ selectedDivisions.join(', ') }}</strong>
             </div>
@@ -196,49 +196,27 @@
               <th *ngFor="let col of tableColumns"> <span class="text-dark">{{ col }}</span></th>
             </tr>
           </thead>
-          <!-- <tbody>
-            <tr *ngFor="let record of displayedData$ | async">
-              <td *ngFor="let col of tableColumns">
-                <ng-container [ngSwitch]="col">
-                  <ng-container *ngSwitchCase="'Actions'">
-                    <button type="button" class="btn btn-sm btn-info me-2" (click)="onEdit(record)">
-                      <i class="mdi mdi-pencil"></i>
-                    </button>
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'isActive'">
-                    <button type="button" class="btn btn-sm btn-info me-2 btn-circle" (click)="onDelete(record)">
-                      <i class="mdi mdi-pencil"></i>
-                    </button>
-                  </ng-container>
-                  <ng-container *ngSwitchDefault>
-                    {{ $any(record)[col] }}
-                  </ng-container>
-                </ng-container>
-              </td>
-            </tr>
-          </tbody> -->
-          
           <tbody>
             <tr *ngFor="let record of displayedData$ | async">
               <td *ngFor="let col of tableColumns">
                 <ng-container [ngSwitch]="col">
-                  
+
                   <ng-container *ngSwitchCase="'UpdatedOn'">
                     {{ $any(record)['UpdatedOn'] | date:'medium' }}
                   </ng-container>
-                  
+
                   <ng-container *ngSwitchCase="'HeadUID'">
                     {{ getEmployeeDisplay($any(record)['HeadUID']) }}
                   </ng-container>
-                  
+
                   <ng-container *ngSwitchCase="'AssistantUID'">
                     {{ getEmployeeDisplay($any(record)['AssistantUID']) }}
                   </ng-container>
-                  
+
                   <ng-container *ngSwitchCase="'MetricId'">
                     {{ getMetricDescriptionDisplay($any(record)['MetricId']) }}
                   </ng-container>
-                  
+
                   <ng-container *ngSwitchCase="'SchoolID'">
                     {{ getSchoolNamesDisplay($any(record)['SchoolID']) }}
                   </ng-container>
@@ -247,24 +225,17 @@
                   </ng-container>
                   <ng-container *ngSwitchCase="'SchoolIds'">
                     {{ getSchoolNamesDisplay($any(record)['SchoolIds']) }}
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'isActive'">
-                      <!-- <span [ngClass]="{'text-success': record.IsActive === 1, 'text-danger': record.IsActive === 0}">
-                                                            {{ isActiveDisplay(record.IsActive) }}**
-                                                          </span> -->
-                      <button type="button" class="btn btn-sm btn-info me-2 btn-circle" (click)="onDelete(record)">
-                        <i class="mdi mdi-pencil"></i>
-                      </button>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'isActive'">
+                    <button type="button" class="btn btn-sm btn-info me-2 btn-circle" (click)="onDelete(record)">
+                      <i class="mdi mdi-pencil"></i>
+                    </button>
                   </ng-container>
                   <ng-container *ngSwitchCase="'Actions'">
                     <button type="button" class="btn btn-sm btn-info me-2" (click)="onEdit(record)">
                       <i class="mdi mdi-pencil"></i>
                     </button>
                   </ng-container>
-                  
-                  <!-- <ng-container *ngSwitchCase="'isActive'">
-                    {{ isActiveDisplay($any(record)['isActive']) }}
-                  </ng-container> -->
                   <ng-container *ngSwitchDefault>
                     {{ $any(record)[col] }}
                   </ng-container>

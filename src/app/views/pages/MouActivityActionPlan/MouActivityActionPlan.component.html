@@ -577,31 +577,6 @@
   </div>
 </ng-template>
 
-<!-- <ng-template #AssignNewUIDModal let-modal>
-  <div class="modal-header">
-    <h5 class="modal-title">Assign UID</h5>
-    <button type="button" class="btn-close" (click)="modal.close()"></button>
-  </div>
-  <div class="modal-body">
-     <form (ngSubmit)="UploadUID()">
-        <div class="row mb-3">
-           <div class="col-6"><label>MOU ID</label><div class="form-control bg-light">MOU/{{MouidX}}</div></div>
-           <div class="col-6"><label>Title</label><div class="form-control bg-light">{{MouTitleX}}</div></div>
-        </div>
-        <div class="mb-3 position-relative">
-           <label>Faculty</label>
-           <input type="text" class="form-control" [formControl]="employeeControl" 
-                  (input)="onInput()" (keydown)="onKeydown($event)" (focus)="showSuggestions=true" (blur)="hideSuggestions()">
-           <div *ngIf="showSuggestions && filteredEmployeesData.length" class="suggestions-list border bg-white position-absolute w-100 z-3">
-              <div *ngFor="let emp of filteredEmployeesData" class="p-2 cursor-pointer" (mousedown)="selectEmployee(emp)">
-                 {{emp.employeeName}} ({{emp.employeeCode}})
-              </div>
-           </div>
-        </div>
-        <button type="submit" class="btn btn-success w-100" [disabled]="!uploadEnabled">Update UID</button>
-     </form>
-  </div>
-</ng-template> -->
 
 <ng-template #AssignNewUIDModal let-modal>
     <div class="modal-header">
@@ -756,23 +731,6 @@
     </div>
 </ng-template>
 
-<!-- <ng-template #viewMouActivityActionTakenModal let-modal>
-   <div class="modal-header"><h5 class="modal-title">Action Taken Details</h5><button class="btn-close" (click)="modal.close()"></button></div>
-   <div class="modal-body">
-      <ngx-datatable class="bootstrap table table-striped material" [rows]="allMouActionTakenDetails" [limit]="10"
-         [columnMode]="ColumnMode.force" [headerHeight]="50" [footerHeight]="50" rowHeight="auto">
-         <ngx-datatable-column name="UID" prop="uid"></ngx-datatable-column>
-         <ngx-datatable-column name="Remarks" prop="remarks"></ngx-datatable-column>
-         <ngx-datatable-column name="Start" prop="activityStartDate"></ngx-datatable-column>
-         <ngx-datatable-column name="End" prop="activityEndDate"></ngx-datatable-column>
-         <ngx-datatable-column name="Document">
-            <ng-template let-row="row" ngx-datatable-cell-template>
-               <button *ngIf="row.actionTakenDocument" class="btn btn-dark btn-sm" (click)="onSelectActivityDocument(row)">View</button>
-            </ng-template>
-         </ngx-datatable-column>
-      </ngx-datatable>
-   </div>
-</ng-template> -->
 <ng-template #viewMouActivityActionTakenModal let-modal>
     <div class="modal-header">
       <h5 class="modal-title" id="viewMouActivityActionTakenModal"> View Activity Action Taken /{{this.MouidX}} </h5>
