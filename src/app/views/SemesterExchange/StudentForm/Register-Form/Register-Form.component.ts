@@ -107,11 +107,9 @@ export class RegisterFormcomponent implements OnInit {
     this.PresentDate = this.formatDate(new Date());
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML = 'Semester <span class="text-info">Exchange </span>Registration';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
-    // this.title.setTitle("**Semester Exchange Registration**");
     this.LoginName = this.route.snapshot.params['LoginName'];
     if (this.LoginName != '' && this.LoginName != undefined) {
       this.getToken(this.LoginName);
-
     }
     const consentControl = this.form.get('ConsentLetterDocumentPath');
     if (consentControl) {
@@ -162,11 +160,11 @@ export class RegisterFormcomponent implements OnInit {
         // Sponsor & Declaration
         SponsorType: ['', Validators.required],
         AvailableFunds: ['', Validators.required],
-        SponsorName: [''], 
+        SponsorName: [''],
         SponsorRelation: [''],
         AcceptPolicy: [true, Validators.requiredTrue],
-        SponsorContact:[''],
-        SponsorEmail:[''],
+        SponsorContact: [''],
+        SponsorEmail: [''],
         // Document paths 
         PassportDocumentPath: [''],
         EnglishDocumentPath: [''],
@@ -181,9 +179,6 @@ export class RegisterFormcomponent implements OnInit {
     this.setupConditionalValidators();
     this.subscribeToFormChanges();
   }
-
-  // --- Eligibility Check Flow (Req #1) ---
-
   checkEligibility(): void {
     if (this.eligibilityForm.invalid) {
       this.eligibilityForm.markAllAsTouched();
@@ -193,7 +188,7 @@ export class RegisterFormcomponent implements OnInit {
     this.isLoading = true;
     const { email, contactNumber } = this.eligibilityForm.value;
 
-    
+
     this.servicesSM.getStudentById()
       .pipe(
         finalize(() => this.isLoading = false)
@@ -226,6 +221,7 @@ export class RegisterFormcomponent implements OnInit {
           if (this.storageService.isLoggedIn()) {
             this.loginFailed = false;
             this.buildMainForm();
+
             this.getStudentDetail(); // Kicks off the detailed eligibility checks
           } else {
             this.LoginFailed('Authentication failed');
@@ -250,7 +246,6 @@ export class RegisterFormcomponent implements OnInit {
             this.CurrentYear = stuData.currentYear;
             this.CurrentTerm = stuData.currentTerm;
             this.studentStatus = stuData.studentStatus;
-
             this.form.get('EmailId')?.setValue(stuData.studentEmail || this.eligibilityForm.get('email')?.value);
 
             this.getApplicationDetails(this.RegistrationNo); // Continue eligibility chain
@@ -267,31 +262,19 @@ export class RegisterFormcomponent implements OnInit {
     this.servicesSM.getApplicationDetailsBYId(regId).pipe(finalize(() => this.isLoading = false))
       .subscribe((response) => {
         const stuApplication = response.item1?.[0];
-
         if (stuApplication?.applicationId > 0) {
           Swal.fire({ title: 'Application Already Exists', icon: 'success' }).then(() => {
             this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
           });
           return;
         }
-
-        // --- Core Eligibility Checks (CGPA & Status) ---
-        if (+(this.cgpa) < 7 || (this.studentStatus !== 'A' ||this.studentStatus !== 'ACT')) {
+        else if (this.CurrentTerm == 1) {
           this.GetStudentAllPreviousMarks(this.RegistrationNo);
-          this.isEligible = false;
-          // Swal.fire({ title: 'Not Eligible', text: 'Low CGPA or Inactive status.', icon: 'warning' });
-          return;
         }
-
-        // Continue to Grade check
-        // if (this.CurrentTerm > 1) {
-        //     this.GetStudentMarksDetails(this.RegistrationNo);
-        // } else if (this.CurrentTerm === 1) {
-        this.GetStudentAllPreviousMarks(this.RegistrationNo);
-        // } else {
-        //      this.isEligible = true;
+        else if (this.CurrentTerm > 1 || this.studentStatus == 'A' || this.studentStatus == 'ACT') {
+          this.FindGradeFCount(this.RegistrationNo);
+        }
         this.getUniversityDetails();
-        // }
       });
   }
   getTableHeaders(obj: any): string[] {
@@ -300,60 +283,7 @@ export class RegisterFormcomponent implements OnInit {
   topHeader: any = ['termId', 'courseCode', 'credit', 'gradeNum', 'grade']
   GradeFcount: any;
   studentDetailsWithMarks: any[];
-  // GetStudentMarksDetails(Regdno: any): void {
-  //   this.isLoading = true;
-  //   this.servicesSM.getStudentDetailsWithMarks(Regdno).pipe(finalize(() => this.isLoading = false))
-  //   .subscribe({
-  //     next: response => {
-  //       if (response.item1.length > 0) {            
-  //         this.studentDetailsWithMarks = response.item1;
-  //         this.ProgramCode =  this.studentDetailsWithMarks[0].officialCode;
-  //         this.SectionCode =  this.studentDetailsWithMarks[0].section;
 
-
-  //         this.GradeFcount = 0; // Reset count
-  //             for (const item of this.studentDetailsWithMarks) {
-  //               const gradeStr = item.grade?.toUpperCase();
-  //               const gradeNum = parseInt(item.gradeNum, 10);
-
-  //               // If grade is F or gradeNum ≤ 6
-  //               if (gradeStr === 'F' || (!isNaN(gradeNum) && gradeNum <= 6)) {
-  //                 this.GradeFcount++;
-  //               }
-  //             }
-
-  //         let gradeFcount = 0; 
-  //         for (const item of  this.studentDetailsWithMarks) {
-  //           const gradeStr = item.grade?.toUpperCase();
-  //           const gradeNum = parseInt(item.gradeNum, 10);
-  //           if (gradeStr === 'F' || (!isNaN(gradeNum) && gradeNum <= 6)) {
-  //             gradeFcount++;
-  //           }
-  //         }
-
-  //         if (gradeFcount > 1) {
-  //           this.isEligible = false;
-  //           Swal.fire({ title: 'Not Eligible', text: 'More than one failure grade found.', icon: 'warning' });
-  //         } else {
-  //           this.isEligible = true;
-  //           this.getUniversityDetails();
-  //         }
-  //       } else {
-  //         this.isEligible = false;
-  //         Swal.fire({ title: 'Not Eligible', text: 'Could not fetch marks data.', icon: 'warning' });
-  //       }
-  //     },
-  // this.ServicesSM.getStudentDetailsWithMarks(Regdno).subscribe({
-  //         next: response => {
-  //         if (response.item1.length > 0) {            
-  //             this.StudentDetailsWithMarks = response.item1;
-  //             this.ProgramCode = this.StudentDetailsWithMarks[0].officialCode;
-  //             this.SectionCode = this.StudentDetailsWithMarks[0].section;
-  //             this.SchoolId = this.StudentDetailsWithMarks[0].schoolId;
-              
-  //     error: err => this.LoginFailed(err)
-  //   });
-  // }
   SchoolId: any;
   FindGradeFCount(regdNo: any): void {
     this.servicesSM.getStudentDetailsWithMarks(regdNo).pipe(finalize(() => this.isLoading = false))
@@ -364,8 +294,9 @@ export class RegisterFormcomponent implements OnInit {
             this.ProgramCode = this.studentDetailsWithMarks[0].officialCode;
             this.SectionCode = this.studentDetailsWithMarks[0].section;
             this.SchoolId = this.studentDetailsWithMarks[0].schoolId;
-
+            this.FailedCount = Number(this.studentDetailsWithMarks[0].failCount || 0);
             this.GradeFcount = 0; // Reset count
+            // console.log(JSON.stringify(this.studentDetailsWithMarks));
             for (const item of this.studentDetailsWithMarks) {
               const gradeStr = item.grade?.toUpperCase();
               const gradeNum = parseInt(item.gradeNum, 10);
@@ -376,35 +307,29 @@ export class RegisterFormcomponent implements OnInit {
               }
             }
 
-            let gradeFcount = 0;
-            for (const item of this.studentDetailsWithMarks) {
-              const gradeStr = item.grade?.toUpperCase();
-              const gradeNum = parseInt(item.gradeNum, 10);
-              if (gradeStr === 'F' || (!isNaN(gradeNum) && gradeNum <= 6)) {
-                gradeFcount++;
-              }
+
+            if (this.GradeFcount == 0) {
+              this.setEligible();
+              this.getUniversityDetails();
             }
+            else this.setIneligible('Student has F grades or low marks.');
+
           }
         },
         error: err => this.LoginFailed(err)
       });
   }
-  // Add this variable definition to your class if it doesn't exist
   private setEligible(): void {
     this.isEligible = true;
     this.currentStep = 1; // Start wizard
     Swal.fire({ title: 'Eligibility Confirmed', icon: 'success', timer: 1500 });
   }
 
-  /**
-   * Sets the state to ineligible and displays an error message.
-   */
   private setIneligible(reason: string): void {
     this.isEligible = false;
     Swal.fire({ title: 'Not Eligible', text: reason, icon: 'warning' });
   }
-
-  // Refactored GetStudentAllPreviousMarks function
+  FailedCount: number = 0;
   GetStudentAllPreviousMarks(Regdno: any): void {
     this.isLoading = true;
 
@@ -418,11 +343,11 @@ export class RegisterFormcomponent implements OnInit {
             this.setIneligible('No previous mark records found.');
             return;
           }
-
           // 2. Fetch Academic Details (Needed for ProgramCode, Section, etc., if other functions rely on it)
           this.studentAcademicDetail = response.item4?.[0] || {};
-          this.ProgramCode = this.studentAcademicDetail.PName ? this.studentAcademicDetail.PName.split(':')[0].trim() : this.ProgramCode;
-          this.SectionCode = this.studentAcademicDetail.Section;
+          // this.ProgramCode = this.studentAcademicDetail.PName ? this.studentAcademicDetail.PName.split(':')[0].trim() : this.ProgramCode;
+          // this.SectionCode = this.studentAcademicDetail.Section;
+          this.FailedCount = Number(this.studentAcademicDetail.FailCount || 0);
 
           // 3. Find 10+2 record and percentage
           const studentPreviousMarksData = response.item1;
@@ -430,7 +355,7 @@ export class RegisterFormcomponent implements OnInit {
           const percentage = plus2Record ? parseFloat(plus2Record.Perecentage) : NaN;
 
           // 4. Perform Term 1 eligibility check: 10+2 marks > 69.5%
-          if (percentage > 69.5) {
+          if (percentage > 69.5 && this.FailedCount === 0) {
             // Set CGPA placeholder to the percentage (as requested in original logic)
             this.cgpa = percentage;
             this.setEligible();
@@ -439,101 +364,13 @@ export class RegisterFormcomponent implements OnInit {
             this.cgpa = percentage;
             this.setIneligible('10+2 percentage criterion not met (required > 69.5%).');
           }
-
-          // 5. Post Check Action: Always attempt to fetch university details if data exists
           this.getUniversityDetails();
-          this.FindGradeFCount(this.RegistrationNo);
-          // NOTE: The separate FindGradeFCount() call is removed here as its logic 
-          // should be entirely contained within GetStudentMarksDetails() which handles CurrentTerm > 1.
+          // this.FindGradeFCount(this.RegistrationNo);
         },
         error: err => this.LoginFailed(err)
       });
   }
-  //   GetStudentAllPreviousMarks(Regdno: any): void {
-  //   this.isLoading = true;
 
-  //   this.servicesSM.GetStudentAllPreviousMarks(Regdno)
-  //     .pipe(finalize(() => this.isLoading = false))
-  //     .subscribe({
-  //       next: response => {
-  //         if (response && response.item1?.length > 0) {
-
-  //           // --------------- Previous Marks (10th / 10+2) ----------------
-  //           this.studentPreviousMarksData = response.item1;
-  //           console.log('Previous Marks:', JSON.stringify(this.studentPreviousMarksData));
-  //           // Find 10+2 record if available
-  //           const plus2Record = this.studentPreviousMarksData.find((r: any) => r.ExamDescription === '10+2');
-  //           const percentage = plus2Record ? parseFloat(plus2Record.Perecentage) : 0;
-
-  //           // --------------- Term Marks ----------------
-  //           this.studentTermsMarksData = response.item2?.[0] || {};
-  //           this.studentTermsMarksDataX = response.item2 || {};
-  //           console.log('Term Marks:', JSON.stringify(this.studentTermsMarksDataX));
-  //           console.log('Term Marks:', JSON.stringify(this.studentTermsMarksData));
-
-  //           // --------------- Grade Details ----------------
-  //           this.studentGradeMarksData = response.item3?.[0] || {};
-  //           this.studentGradeMarksDataX = response.item3 || {};
-  //           console.log('Grade Marks:', JSON.stringify(this.studentGradeMarksDataX));
-  //           console.log('Grade Marks:', JSON.stringify(this.studentGradeMarksData));
-
-  //           const grade = this.studentGradeMarksData.Grade || '';
-  //           const gradeCount = Number(this.studentGradeMarksData.RecordCount || 0);
-
-  //           // --------------- Academic Details ----------------
-  //           this.studentAcademicDetail = response.item4?.[0] || {};
-  //           this.studentAcademicDetailX = response.item4 || {};
-  //           console.log('Academic Details:', JSON.stringify(this.studentAcademicDetail));
-  //           console.log('Academic Details:', JSON.stringify(this.studentAcademicDetailX));
-  //           this.SectionCode= this.studentAcademicDetail.Section;
-  //           const parts = this.studentAcademicDetail.PName.split(':');
-  //           this.ProgramCode = parts[0].trim(); // "P13C"
-
-
-  //           // --------------- Eligibility Logic ----------------
-  //           const currentTerm = Number(this.studentAcademicDetail.Term || this.CurrentTerm || 0);
-  //           const failCount = Number(this.studentAcademicDetail.FailCount || 0);
-
-  //           if (currentTerm === 1 && percentage > 69.5) {
-  //             // First term students: based on +2 marks
-  //             this.cgpa=percentage;
-  //             this.isEligible = true;
-  //           } 
-  //           else if (currentTerm > 1 && grade !== 'F' && failCount === 0 && gradeCount > 0) {
-  //             // Senior terms: based on grade record and fail count
-  //             this.cgpa=percentage;
-  //             this.isEligible = true;
-  //           } 
-  //           else {
-  //             // alert(grade+'Grade'+percentage +''+ this.cgpa + ' GC'+ gradeCount + 'Cuurent Term'+currentTerm)
-  //             this.cgpa=percentage;
-  //             this.isEligible = false;
-  //             Swal.fire({
-  //               title: 'Not Eligible',
-  //               text: 'Eligibility criteria not met. Please check your marks or grade records.',
-  //               icon: 'warning'
-  //             });
-  //             this.FindGradeFCount(Regdno);
-  //           }
-
-  //           // --------------- Post Check Actions ----------------
-  //           if (this.isEligible) {
-  //             this.getUniversityDetails();
-  //           }
-
-  //         } else {
-  //           this.isEligible = false;
-  //           Swal.fire({
-  //             title: 'Not Eligible',
-  //             text: 'No previous mark records found.',
-  //             icon: 'warning'
-  //           });
-  //         }
-  //         this.FindGradeFCount(Regdno);
-  //       },
-  //       error: err => this.LoginFailed(err)
-  //     });
-  // }
 
   studentPreviousMarksData: any;
   studentTermsMarksData: any;
@@ -542,68 +379,24 @@ export class RegisterFormcomponent implements OnInit {
   studentGradeMarksDataX: any;
   studentAcademicDetail: any;
   studentAcademicDetailX: any;
-  // GetStudentAllPreviousMarks(Regdno: any): void {
-  //   this.isLoading = true;
-  //   this.servicesSM.GetStudentAllPreviousMarks(Regdno).pipe(finalize(() => this.isLoading = false))
-  //     .subscribe({
-  //       next: response => {
-  //         if (response.item1.length > 0) {
-  //           this.studentPreviousMarksData = response.item1[0];
-  //           console.log(JSON.stringify(response.item1))
-  //           const marksPlus2 = this.studentPreviousMarksData['ExamDescription'];
-  //           const percentages = this.studentPreviousMarksData['Perecentage'];
 
-  //           this.studentTermsMarksData = response.item2[0];
-  //           console.log(JSON.stringify(this.studentTermsMarksData))
-
-  //           this.studentGradeMarksData = response.item3[0];
-  //           console.log(JSON.stringify(this.studentGradeMarksData))
-  //           const grade = this.studentGradeMarksData['Grade'];
-  //           const gradeCount = this.studentGradeMarksData['RecordCount'];
-
-  //           this.studentAcademicDetail = response.item4[0];
-
-  //           console.log(JSON.stringify(this.studentAcademicDetail))
-  //           if (this.CurrentTerm == 1 && marksPlus2 === '10+2' && percentages > 70) {
-  //             this.isEligible = true;
-  //           }
-  //           else if (this.CurrentTerm > 1 && grade === 'F' && gradeCount == 0) {
-  //             this.isEligible = true;
-  //           }
-  //           else {
-  //             Swal.fire({ title: 'Not Eligible', text: 'Marks Criteria not met.', icon: 'warning' });
-  //           }
-
-
-  //           this.getUniversityDetails();
-  //         } else {
-  //           this.isEligible = false;
-  //           Swal.fire({ title: 'Not Eligible', text: 'Could not fetch previous marks.', icon: 'warning' });
-  //         }
-  //       },
-  //       error: err => this.LoginFailed(err)
-  //     });
-  // }
 
   getUniversityDetails(): void {
-    if (!this.ProgramCode) 
-    {
-       this.servicesSM.getUniversityLists('').subscribe((response) => {
-      this.uniData = response.item1;
-    });
+    if (!this.ProgramCode) {
+      this.servicesSM.getUniversityLists('').subscribe((response) => {
+        this.uniData = response.item1;
+      });
     }
-    else
-    {
-    this.servicesSM.getUniversityLists(this.ProgramCode).subscribe((response) => {
-      this.uniData = response.item1;
-    });
-  }
+    else {
+      this.servicesSM.getUniversityLists(this.ProgramCode).subscribe((response) => {
+        this.uniData = response.item1;
+      });
+    }
   }
   togglePolicy(event: MouseEvent): void {
     event.preventDefault(); // prevent page scroll
     this.showPolicy = !this.showPolicy;
   }
-  // --- Wizard Navigation and Submission ---
 
   nextStep(): void {
     if (this.currentStep === this.stepLabels.length) return;
@@ -681,7 +474,7 @@ export class RegisterFormcomponent implements OnInit {
       formData.append("OverallScore", formValue.OverallScore || 'NA');
       formData.append("EnglishTestYear", formValue.EnglishTestYear);
       formData.append("TestDate", formValue.TestDate);
-    } 
+    }
     if (formValue.EnglishTestType === 'Appeared') {
       formData.append("EnglishTestName", formValue.TestName || 'NA');
       formData.append("SpeakingScore", formValue.SpeakingScore || 'NA');
@@ -693,35 +486,35 @@ export class RegisterFormcomponent implements OnInit {
       formData.append("TestDate", formValue.TestDate);
     }
     else {
-      formData.append("EnglishTestName",  'NA');
-      formData.append("SpeakingScore",  'NA');
+      formData.append("EnglishTestName", 'NA');
+      formData.append("SpeakingScore", 'NA');
       formData.append("ListeningScore", 'NA');
-      formData.append("ReadingScore",  'NA');
-      formData.append("WritingScore",  'NA');
-      formData.append("OverallScore",  'NA');
+      formData.append("ReadingScore", 'NA');
+      formData.append("WritingScore", 'NA');
+      formData.append("OverallScore", 'NA');
       formData.append("EnglishTestYear", 'NA');
       formData.append("TestDate", 'NA');
-      
+
     }
 
-  
+
     // formData.append("SponsorEmail", 'NA'); // This field is not in the form, so default to 'NA'
-    formData.append("AvailableFunds", formValue.AvailableFunds );
+    formData.append("AvailableFunds", formValue.AvailableFunds);
     formData.append("TotalCountGradeF", this.GradeFcount?.toString()); // Convert number to string
 
     if (formValue.SponsorType === 'Other') {
-      formData.append("IsSelfFunded", 'False' );
+      formData.append("IsSelfFunded", 'False');
       formData.append("SponsorType", 'Other');
       formData.append("SponsorName", formValue.SponsorName || 'NA');
       formData.append("SponsorRelation", formValue.SponsorRelation || 'NA');
       formData.append("SponsorContact", formValue.SponsorContact || 'NA'); // This field is not in the form, so default to 'NA'
-      formData.append("SponsorEmail", formValue.SponsorEmail ); // This field is not in the form, so default to 'NA'
+      formData.append("SponsorEmail", formValue.SponsorEmail); // This field is not in the form, so default to 'NA'
     } else {
-      formData.append("IsSelfFunded", 'True' );
+      formData.append("IsSelfFunded", 'True');
       formData.append("SponsorType", 'Parent');
       formData.append("SponsorName", 'Parent');
       formData.append("SponsorRelation", 'Parent');
-      formData.append("SponsorContact",  formValue.ParentContact);
+      formData.append("SponsorContact", formValue.ParentContact);
       formData.append("SponsorEmail", 'Parent');
     }
 
@@ -744,9 +537,9 @@ export class RegisterFormcomponent implements OnInit {
     formData.append("RelativeRelation", formValue.RelativeRelation || 'NA'); // Added RelativeRelation
     formData.append("HasRelativeDetails", formValue.HasRelativeDetails || 'NA'); // Added HasRelativeDetails
 
-    formData.forEach((value, key) => {
-      console.log(`${key}: ${value}`);
-    });
+    // formData.forEach((value, key) => {
+    //   console.log(`${key}: ${value}`);
+    // });
     this.servicesSM.SemesterExchangeNewRegistrationForm(formData)
       .pipe(
         finalize(() => this.isLoading = false)

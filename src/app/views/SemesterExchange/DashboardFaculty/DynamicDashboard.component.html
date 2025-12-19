@@ -102,18 +102,193 @@
         </ngx-datatable-column>
 
 
+        <ngx-datatable-column name="Actions" [sortable]="false" prop="Id" [width]="580">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+
+                <button class="btn btn-info btn-sm me-1 mb-1" (click)="GetStudentApplication(row)">
+                    View Application
+                </button>
+
+                <ng-container *ngIf="row.isHOD">
+                    <button class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)">Accept</button>
+                    <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)">Reject</button>
+                    <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'How')">Forward to
+                        HOW</button>
+
+                    <button class="btn btn-primary btn-sm me-1 mb-1"
+                        (click)="row.counsellingStatus === 'True' ? viewCounsellingRemarks(row) : submitCounsellingRemarks(row)">
+                        {{ row.counsellingStatus === 'True' ? 'View Counselling' : 'Submit Counselling' }}
+                    </button>
+                    <button class="btn btn-primary btn-sm me-1 mb-1"
+                        (click)="UploadEvaluationRemarks(row, 'HOD')">Submit Evaluation</button>
+
+                    <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewEvaluationRemarks(row)"
+                        [disabled]="!hasEvaluationRemarks(row)">View Evaluation</button>
+                    <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)"
+                        [disabled]="!hasFacultyRemarks(row)">View Faculty</button>
+                    <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewAuthorityRemarks(row)"
+                        [disabled]="!hasAuthorityRemarks(row)">View Authority</button>
+                    <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewHOWRemarks(row)"
+                        [disabled]="!hasHOWRemarks(row)">View HOW</button>
+                </ng-container>
+
+                <ng-container *ngIf="row.isHoW">
+                    <button class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)">Accept</button>
+                    <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)">Reject</button>
+
+                    <button class="btn btn-primary btn-sm me-1 mb-1"
+                        (click)="row.counsellingStatus === 'True' ? viewCounsellingRemarks(row) : submitCounsellingRemarks(row)">
+                        {{ row.counsellingStatus === 'True' ? 'View Counselling' : 'Submit Counselling' }}
+                    </button>
+                    <button class="btn btn-primary btn-sm me-1 mb-1"
+                        (click)="UploadEvaluationRemarks(row, 'HOW')">Submit Evaluation</button>
+
+                    <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewEvaluationRemarks(row)"
+                        [disabled]="!hasEvaluationRemarks(row)">View Evaluation</button>
+                    <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)"
+                        [disabled]="!hasFacultyRemarks(row)">View Faculty</button>
+                    <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewAuthorityRemarks(row)"
+                        [disabled]="!hasAuthorityRemarks(row)">View Authority</button>
+                    <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewHODRemarks(row)"
+                        [disabled]="!hasHODRemarks(row)">View HOD</button>
+                    <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewHOWRemarks(row)">View Own
+                        HOW</button>
+                </ng-container>
+
+                <ng-container *ngIf="row.isDealingAuthority">
+                    <button class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)">Accept</button>
+                    <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)">Reject</button>
+                    <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToFaculty(row)">Forward to
+                        Faculty</button>
+                    <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'Hod')">Forward to
+                        HOD</button>
+
+                    <button class="btn btn-primary btn-sm me-1 mb-1"
+                        (click)="row.counsellingStatus === 'True' ? viewCounsellingRemarks(row) : submitCounsellingRemarks(row)">
+                        {{ row.counsellingStatus === 'True' ? 'View Counselling' : 'Submit Counselling' }}
+                    </button>
+                    <button class="btn btn-primary btn-sm me-1 mb-1"
+                        (click)="UploadEvaluationRemarks(row, 'Authority')">Submit Evaluation</button>
+
+                    <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewEvaluationRemarks(row)"
+                        [disabled]="!hasEvaluationRemarks(row)">View Evaluation</button>
+                    <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewHODRemarks(row)"
+                        [disabled]="!hasHODRemarks(row)">View HOD</button>
+                    <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewHOWRemarks(row)"
+                        [disabled]="!hasHOWRemarks(row)">View HOW</button>
+                    <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)"
+                        [disabled]="!hasFacultyRemarks(row)">View Faculty</button>
+                </ng-container>
+
+                <ng-container *ngIf="row.isdealingFaculty">
+                    <button class="btn btn-primary btn-sm me-1 mb-1"
+                        (click)="row.counsellingStatus === 'True' ? viewCounsellingRemarks(row) : submitCounsellingRemarks(row)">
+                        {{ row.counsellingStatus === 'True' ? 'View Counselling' : 'Submit Counselling' }}
+                    </button>
+                    <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)">View Own
+                        Faculty Remarks</button>
+                </ng-container>
+
+            </ng-template>
+        </ngx-datatable-column>
+<!-- 
         <ngx-datatable-column name="Actions" [sortable]="false" prop="Id" [width]="520">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <!-- Common Task: View Application (All roles) -->
+
+                <button class="btn btn-info btn-sm me-1 mb-1" (click)="GetStudentApplication(row)">
+                    View Application
+                </button>
+
+                <ng-container *ngIf="row.isDealingAuthority">
+                    <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'Hod')">
+                        Forward to HOD
+                    </button>
+                    <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToFaculty(row)">
+                        Forward to Faculty
+                    </button>
+                    <button class="btn btn-primary btn-sm me-1 mb-1"
+                        (click)="row.counsellingStatus === 'True' ? viewCounsellingRemarks(row) : submitCounsellingRemarks(row)">
+                        {{ row.counsellingStatus === 'True' ? 'View Counselling' : 'Submit Counselling' }}
+                    </button>
+                    <button class="btn btn-primary btn-sm mb-1" (click)="UploadEvaluationRemarks(row, 'Authority')">
+                        Submit Evaluation
+                    </button>
+                </ng-container>
+
+                <ng-container *ngIf="row.isdealingFaculty">
+                    <button class="btn btn-primary btn-sm mb-1" (click)="UploadEvaluationRemarks(row, 'Faculty')">
+                        Submit Evaluation
+                    </button>
+                </ng-container>
+
+                <ng-container *ngIf="row.isHOD">
+                    <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'How')">
+                        Forward to HoW
+                    </button>
+                    <button class="btn btn-primary btn-sm me-1 mb-1"
+                        (click)="row.counsellingStatus === 'True' ? viewCounsellingRemarks(row) : submitCounsellingRemarks(row)">
+                        {{ row.counsellingStatus === 'True' ? 'View Counselling' : 'Submit Counselling' }}
+                    </button>
+                    <button class="btn btn-primary btn-sm me-1 mb-1" (click)="UploadEvaluationRemarks(row, 'HOD')">
+                        Submit Evaluation
+                    </button>
+                    <button class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)">
+                        Accept
+                    </button>
+                    <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)">
+                        Reject
+                    </button>
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewHOWRemarks(row)"
+                        [disabled]="!hasHOWRemarks(row)">
+                        View HoW Remarks
+                    </button>
+                    <button class="btn btn-info btn-sm mb-1" (click)="viewAuthorityRemarks(row)"
+                        [disabled]="!hasAuthorityRemarks(row)">
+                        View Authority Remarks
+                    </button>
+                </ng-container>
+
+                <ng-container *ngIf="row.isHoW">
+                    <button class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)"
+                        [disabled]="row.isApproved === 0">
+                        Accept
+                    </button>
+                    <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)"
+                        [disabled]="row.isApproved === 0">
+                        Reject
+                    </button>
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewEvaluationRemarks(row)"
+                        [disabled]="!hasEvaluationRemarks(row)">
+                        View Evaluation
+                    </button>
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)"
+                        [disabled]="!hasFacultyRemarks(row)">
+                        View Faculty Remarks
+                    </button>
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewHODRemarks(row)"
+                        [disabled]="!hasHODRemarks(row)">
+                        View HOD Remarks
+                    </button>
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewHOWRemarks(row)"
+                        [disabled]="!hasHOWRemarks(row)">
+                        View HoW Remarks
+                    </button>
+                    <button class="btn btn-info btn-sm mb-1" (click)="viewAuthorityRemarks(row)"
+                        [disabled]="!hasAuthorityRemarks(row)">
+                        View Authority Remarks
+                    </button>
+                </ng-container>
+
+            </ng-template>
+        </ngx-datatable-column> -->
+
+        <!-- <ngx-datatable-column name="Actions" [sortable]="false" prop="Id" [width]="520">
+            <ng-template let-row="row" ngx-datatable-cell-template>
                 <button class="btn btn-info btn-sm me-1 mb-1" (click)="GetStudentApplication(row)">View
                     Application</button>
 
-                <!-- Dealing Authority Tasks -->
                 <ng-container *ngIf="row.isDealingAuthority">
-                    <!-- <button class="btn btn-success btn-sm me-1 mb-1"
-                        (click)="acceptApplication(row)">Accept</button> -->
-                    <button class="btn btn-danger btn-sm me-1 mb-1" 
-                        (click)="disapproveApplication(row)">Reject</button>
+                 
                     <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'Hod')">Forward to
                         HOD</button>
                     <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToFaculty(row)">Forward to
@@ -126,15 +301,12 @@
                         (click)="UploadEvaluationRemarks(row, 'Authority')">Submit Evaluation</button>
                 </ng-container>
 
-                <!-- Dealing Faculty Tasks -->
                 <ng-container *ngIf="row.isdealingFaculty">
-                    <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'Hod')">Forward to
-                        HOD</button>
+                   
                     <button class="btn btn-primary btn-sm" (click)="UploadEvaluationRemarks(row, 'Faculty')">Submit
                         Evaluation</button>
                 </ng-container>
 
-                <!-- Dealing HOD Tasks -->
                 <ng-container *ngIf="row.isHOD">
                     <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'How')">Forward to
                         HoW</button>
@@ -142,49 +314,44 @@
                         (click)="row.counsellingStatus === 'True' ? viewCounsellingRemarks(row) : submitCounsellingRemarks(row)">
                         {{ row.counsellingStatus === 'True' ? 'View Counselling' : 'Submit Counselling' }}
                     </button>
-                    <!-- ADDED: Submit Evaluation Remarks for HOD -->
                     <button class="btn btn-primary btn-sm me-1 mb-1"
                         (click)="UploadEvaluationRemarks(row, 'HOD')">Submit Evaluation</button>
-
-                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewEvaluationRemarks(row)" >View
-                        Evaluation</button>
-
-                    <!-- ADDED: View Remarks buttons for HoD -->
                     <button class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)">Accept</button>
-                    <button class="btn btn-danger btn-sm me-1 mb-1"  (click)="disapproveApplication(row)">Reject</button>
-                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)" [disabled]="!hasFacultyRemarks(row)">View Faculty
+                    <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)">Reject</button>
+                   
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewHOWRemarks(row)"
+                        [disabled]="!hasHOWRemarks(row)"> View HoW
+                        Remarks</button> 
+                    <button class="btn btn-info btn-sm mb-1" (click)="viewAuthorityRemarks(row)"
+                        [disabled]="!hasAuthorityRemarks(row)"> View Authority
                         Remarks</button>
-                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewHODRemarks(row)" [disabled]="!hasHODRemarks(row)"> View HOD
-                        Remarks</button>
-                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewHOWRemarks(row)" [disabled]="!hasHOWRemarks(row)"> View HoW
-                        Remarks</button> <!-- Added HoW Remarks button -->
-                    <button class="btn btn-info btn-sm mb-1" (click)="viewAuthorityRemarks(row)" [disabled]="!hasAuthorityRemarks(row)"> View Authority
-                        Remarks</button>
-              
+
                 </ng-container>
 
-                <!-- Dealing HoW Tasks -->
                 <ng-container *ngIf="row.isHoW">
-                    <button class="btn btn-success btn-sm me-1 mb-1"  
-                        (click)="acceptApplication(row)" [disabled]="row.isApproved == 'False'">Accept</button>
+                    <button class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)"
+                        [disabled]="row.isApproved == 'False'">Accept</button>
                     <button class="btn btn-danger btn-sm me-1 mb-1" [disabled]="row.isApproved == 'False'"
                         (click)="disapproveApplication(row)">Reject</button>
-                    <!-- ADDED: View Evaluation Remarks for HoW -->
-                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewEvaluationRemarks(row)" [disabled]="!hasEvaluationRemarks(row)">View
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewEvaluationRemarks(row)"
+                        [disabled]="!hasEvaluationRemarks(row)">View
                         Evaluation</button>
-                    <!-- ADDED: View Remarks buttons for HoW -->
-                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)" [disabled]="!hasFacultyRemarks(row)">View Faculty
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)"
+                        [disabled]="!hasFacultyRemarks(row)">View Faculty
                         Remarks</button>
-                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewHODRemarks(row)" [disabled]="!hasHODRemarks(row)"> View HOD
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewHODRemarks(row)"
+                        [disabled]="!hasHODRemarks(row)"> View HOD
                         Remarks</button>
-                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewHOWRemarks(row)" [disabled]="!hasHOWRemarks(row)"> View HoW
-                        Remarks</button> <!-- Added HoW Remarks button -->
-                    <button class="btn btn-info btn-sm mb-1" (click)="viewAuthorityRemarks(row)" [disabled]="!hasAuthorityRemarks(row)"> View Authority
+                    <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewHOWRemarks(row)"
+                        [disabled]="!hasHOWRemarks(row)"> View HoW
+                        Remarks</button>
+                    <button class="btn btn-info btn-sm mb-1" (click)="viewAuthorityRemarks(row)"
+                        [disabled]="!hasAuthorityRemarks(row)"> View Authority
                         Remarks</button>
                 </ng-container>
 
             </ng-template>
-        </ngx-datatable-column>
+        </ngx-datatable-column> -->
 
     </ngx-datatable>
 </div>
