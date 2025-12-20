@@ -107,7 +107,6 @@ export class RegisterFormcomponent implements OnInit {
     this.PresentDate = this.formatDate(new Date());
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML = 'Semester <span class="text-info">Exchange </span>Registration';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
-    // this.title.setTitle("**Semester Exchange Registration**");
     this.LoginName = this.route.snapshot.params['LoginName'];
     if (this.LoginName != '' && this.LoginName != undefined) {
       this.getToken(this.LoginName);
@@ -119,8 +118,6 @@ export class RegisterFormcomponent implements OnInit {
       consentControl.updateValueAndValidity();
     }
   }
-
-  // --- Form Initialization ---
   private buildEligibilityForm(): void {
     this.eligibilityForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -182,8 +179,6 @@ export class RegisterFormcomponent implements OnInit {
     this.subscribeToFormChanges();
   }
 
-  // --- Eligibility Check Flow (Req #1) ---
-
   checkEligibility(): void {
     if (this.eligibilityForm.invalid) {
       this.eligibilityForm.markAllAsTouched();
@@ -192,7 +187,6 @@ export class RegisterFormcomponent implements OnInit {
 
     this.isLoading = true;
     const { email, contactNumber } = this.eligibilityForm.value;
-
     
     this.servicesSM.getStudentById()
       .pipe(
@@ -200,11 +194,11 @@ export class RegisterFormcomponent implements OnInit {
       )
       .subscribe({
         next: (response: any) => {
-          const studentInfo = response.item1?.[0]; // Assuming response structure
+          const studentInfo = response.item1?.[0];
 
           if (studentInfo) {
             this.RegistrationNo = studentInfo.registerationNumber;
-            this.getToken(this.LoginName); // Start the detailed eligibility check
+            this.getToken(this.LoginName);
           } else {
             Swal.fire({ title: 'Not Eligible', text: 'Email/Contact did not match any record.', icon: 'warning' });
           }
@@ -215,8 +209,6 @@ export class RegisterFormcomponent implements OnInit {
       });
   }
 
-  // --- Core API Flow (Maintaining Original Endpoints) ---
-
   getToken(loginId: any): void {
     this.isLoading = true;
     this.authService.loginTemp(loginId).pipe(finalize(() => this.isLoading = false))
@@ -226,7 +218,7 @@ export class RegisterFormcomponent implements OnInit {
           if (this.storageService.isLoggedIn()) {
             this.loginFailed = false;
             this.buildMainForm();
-            this.getStudentDetail(); // Kicks off the detailed eligibility checks
+            this.getStudentDetail();
           } else {
             this.LoginFailed('Authentication failed');
           }
@@ -274,24 +266,13 @@ export class RegisterFormcomponent implements OnInit {
           });
           return;
         }
-
-        // --- Core Eligibility Checks (CGPA & Status) ---
-        if (+(this.cgpa) < 7 || (this.studentStatus !== 'A' ||this.studentStatus !== 'ACT')) {
+        if (+(this.cgpa) < 7 || this.studentStatus !== 'A' ||this.studentStatus !== 'ACT') {
           this.GetStudentAllPreviousMarks(this.RegistrationNo);
           this.isEligible = false;
-          // Swal.fire({ title: 'Not Eligible', text: 'Low CGPA or Inactive status.', icon: 'warning' });
           return;
         }
-
-        // Continue to Grade check
-        // if (this.CurrentTerm > 1) {
-        //     this.GetStudentMarksDetails(this.RegistrationNo);
-        // } else if (this.CurrentTerm === 1) {
         this.GetStudentAllPreviousMarks(this.RegistrationNo);
-        // } else {
-        //      this.isEligible = true;
         this.getUniversityDetails();
-        // }
       });
   }
   getTableHeaders(obj: any): string[] {
@@ -300,60 +281,7 @@ export class RegisterFormcomponent implements OnInit {
   topHeader: any = ['termId', 'courseCode', 'credit', 'gradeNum', 'grade']
   GradeFcount: any;
   studentDetailsWithMarks: any[];
-  // GetStudentMarksDetails(Regdno: any): void {
-  //   this.isLoading = true;
-  //   this.servicesSM.getStudentDetailsWithMarks(Regdno).pipe(finalize(() => this.isLoading = false))
-  //   .subscribe({
-  //     next: response => {
-  //       if (response.item1.length > 0) {            
-  //         this.studentDetailsWithMarks = response.item1;
-  //         this.ProgramCode =  this.studentDetailsWithMarks[0].officialCode;
-  //         this.SectionCode =  this.studentDetailsWithMarks[0].section;
-
-
-  //         this.GradeFcount = 0; // Reset count
-  //             for (const item of this.studentDetailsWithMarks) {
-  //               const gradeStr = item.grade?.toUpperCase();
-  //               const gradeNum = parseInt(item.gradeNum, 10);
-
-  //               // If grade is F or gradeNum ≤ 6
-  //               if (gradeStr === 'F' || (!isNaN(gradeNum) && gradeNum <= 6)) {
-  //                 this.GradeFcount++;
-  //               }
-  //             }
-
-  //         let gradeFcount = 0; 
-  //         for (const item of  this.studentDetailsWithMarks) {
-  //           const gradeStr = item.grade?.toUpperCase();
-  //           const gradeNum = parseInt(item.gradeNum, 10);
-  //           if (gradeStr === 'F' || (!isNaN(gradeNum) && gradeNum <= 6)) {
-  //             gradeFcount++;
-  //           }
-  //         }
-
-  //         if (gradeFcount > 1) {
-  //           this.isEligible = false;
-  //           Swal.fire({ title: 'Not Eligible', text: 'More than one failure grade found.', icon: 'warning' });
-  //         } else {
-  //           this.isEligible = true;
-  //           this.getUniversityDetails();
-  //         }
-  //       } else {
-  //         this.isEligible = false;
-  //         Swal.fire({ title: 'Not Eligible', text: 'Could not fetch marks data.', icon: 'warning' });
-  //       }
-  //     },
-  // this.ServicesSM.getStudentDetailsWithMarks(Regdno).subscribe({
-  //         next: response => {
-  //         if (response.item1.length > 0) {            
-  //             this.StudentDetailsWithMarks = response.item1;
-  //             this.ProgramCode = this.StudentDetailsWithMarks[0].officialCode;
-  //             this.SectionCode = this.StudentDetailsWithMarks[0].section;
-  //             this.SchoolId = this.StudentDetailsWithMarks[0].schoolId;
-              
-  //     error: err => this.LoginFailed(err)
-  //   });
-  // }
+ 
   SchoolId: any;
   FindGradeFCount(regdNo: any): void {
     this.servicesSM.getStudentDetailsWithMarks(regdNo).pipe(finalize(() => this.isLoading = false))
@@ -370,7 +298,6 @@ export class RegisterFormcomponent implements OnInit {
               const gradeStr = item.grade?.toUpperCase();
               const gradeNum = parseInt(item.gradeNum, 10);
 
-              // If grade is F or gradeNum ≤ 6
               if (gradeStr === 'F' || (!isNaN(gradeNum) && gradeNum <= 6)) {
                 this.GradeFcount++;
               }
@@ -389,22 +316,16 @@ export class RegisterFormcomponent implements OnInit {
         error: err => this.LoginFailed(err)
       });
   }
-  // Add this variable definition to your class if it doesn't exist
   private setEligible(): void {
     this.isEligible = true;
     this.currentStep = 1; // Start wizard
     Swal.fire({ title: 'Eligibility Confirmed', icon: 'success', timer: 1500 });
   }
 
-  /**
-   * Sets the state to ineligible and displays an error message.
-   */
   private setIneligible(reason: string): void {
     this.isEligible = false;
     Swal.fire({ title: 'Not Eligible', text: reason, icon: 'warning' });
   }
-
-  // Refactored GetStudentAllPreviousMarks function
   GetStudentAllPreviousMarks(Regdno: any): void {
     this.isLoading = true;
 
@@ -449,91 +370,7 @@ export class RegisterFormcomponent implements OnInit {
         error: err => this.LoginFailed(err)
       });
   }
-  //   GetStudentAllPreviousMarks(Regdno: any): void {
-  //   this.isLoading = true;
-
-  //   this.servicesSM.GetStudentAllPreviousMarks(Regdno)
-  //     .pipe(finalize(() => this.isLoading = false))
-  //     .subscribe({
-  //       next: response => {
-  //         if (response && response.item1?.length > 0) {
-
-  //           // --------------- Previous Marks (10th / 10+2) ----------------
-  //           this.studentPreviousMarksData = response.item1;
-  //           console.log('Previous Marks:', JSON.stringify(this.studentPreviousMarksData));
-  //           // Find 10+2 record if available
-  //           const plus2Record = this.studentPreviousMarksData.find((r: any) => r.ExamDescription === '10+2');
-  //           const percentage = plus2Record ? parseFloat(plus2Record.Perecentage) : 0;
-
-  //           // --------------- Term Marks ----------------
-  //           this.studentTermsMarksData = response.item2?.[0] || {};
-  //           this.studentTermsMarksDataX = response.item2 || {};
-  //           console.log('Term Marks:', JSON.stringify(this.studentTermsMarksDataX));
-  //           console.log('Term Marks:', JSON.stringify(this.studentTermsMarksData));
-
-  //           // --------------- Grade Details ----------------
-  //           this.studentGradeMarksData = response.item3?.[0] || {};
-  //           this.studentGradeMarksDataX = response.item3 || {};
-  //           console.log('Grade Marks:', JSON.stringify(this.studentGradeMarksDataX));
-  //           console.log('Grade Marks:', JSON.stringify(this.studentGradeMarksData));
-
-  //           const grade = this.studentGradeMarksData.Grade || '';
-  //           const gradeCount = Number(this.studentGradeMarksData.RecordCount || 0);
-
-  //           // --------------- Academic Details ----------------
-  //           this.studentAcademicDetail = response.item4?.[0] || {};
-  //           this.studentAcademicDetailX = response.item4 || {};
-  //           console.log('Academic Details:', JSON.stringify(this.studentAcademicDetail));
-  //           console.log('Academic Details:', JSON.stringify(this.studentAcademicDetailX));
-  //           this.SectionCode= this.studentAcademicDetail.Section;
-  //           const parts = this.studentAcademicDetail.PName.split(':');
-  //           this.ProgramCode = parts[0].trim(); // "P13C"
-
-
-  //           // --------------- Eligibility Logic ----------------
-  //           const currentTerm = Number(this.studentAcademicDetail.Term || this.CurrentTerm || 0);
-  //           const failCount = Number(this.studentAcademicDetail.FailCount || 0);
-
-  //           if (currentTerm === 1 && percentage > 69.5) {
-  //             // First term students: based on +2 marks
-  //             this.cgpa=percentage;
-  //             this.isEligible = true;
-  //           } 
-  //           else if (currentTerm > 1 && grade !== 'F' && failCount === 0 && gradeCount > 0) {
-  //             // Senior terms: based on grade record and fail count
-  //             this.cgpa=percentage;
-  //             this.isEligible = true;
-  //           } 
-  //           else {
-  //             // alert(grade+'Grade'+percentage +''+ this.cgpa + ' GC'+ gradeCount + 'Cuurent Term'+currentTerm)
-  //             this.cgpa=percentage;
-  //             this.isEligible = false;
-  //             Swal.fire({
-  //               title: 'Not Eligible',
-  //               text: 'Eligibility criteria not met. Please check your marks or grade records.',
-  //               icon: 'warning'
-  //             });
-  //             this.FindGradeFCount(Regdno);
-  //           }
-
-  //           // --------------- Post Check Actions ----------------
-  //           if (this.isEligible) {
-  //             this.getUniversityDetails();
-  //           }
-
-  //         } else {
-  //           this.isEligible = false;
-  //           Swal.fire({
-  //             title: 'Not Eligible',
-  //             text: 'No previous mark records found.',
-  //             icon: 'warning'
-  //           });
-  //         }
-  //         this.FindGradeFCount(Regdno);
-  //       },
-  //       error: err => this.LoginFailed(err)
-  //     });
-  // }
+ 
 
   studentPreviousMarksData: any;
   studentTermsMarksData: any;
@@ -542,48 +379,7 @@ export class RegisterFormcomponent implements OnInit {
   studentGradeMarksDataX: any;
   studentAcademicDetail: any;
   studentAcademicDetailX: any;
-  // GetStudentAllPreviousMarks(Regdno: any): void {
-  //   this.isLoading = true;
-  //   this.servicesSM.GetStudentAllPreviousMarks(Regdno).pipe(finalize(() => this.isLoading = false))
-  //     .subscribe({
-  //       next: response => {
-  //         if (response.item1.length > 0) {
-  //           this.studentPreviousMarksData = response.item1[0];
-  //           console.log(JSON.stringify(response.item1))
-  //           const marksPlus2 = this.studentPreviousMarksData['ExamDescription'];
-  //           const percentages = this.studentPreviousMarksData['Perecentage'];
-
-  //           this.studentTermsMarksData = response.item2[0];
-  //           console.log(JSON.stringify(this.studentTermsMarksData))
-
-  //           this.studentGradeMarksData = response.item3[0];
-  //           console.log(JSON.stringify(this.studentGradeMarksData))
-  //           const grade = this.studentGradeMarksData['Grade'];
-  //           const gradeCount = this.studentGradeMarksData['RecordCount'];
-
-  //           this.studentAcademicDetail = response.item4[0];
-
-  //           console.log(JSON.stringify(this.studentAcademicDetail))
-  //           if (this.CurrentTerm == 1 && marksPlus2 === '10+2' && percentages > 70) {
-  //             this.isEligible = true;
-  //           }
-  //           else if (this.CurrentTerm > 1 && grade === 'F' && gradeCount == 0) {
-  //             this.isEligible = true;
-  //           }
-  //           else {
-  //             Swal.fire({ title: 'Not Eligible', text: 'Marks Criteria not met.', icon: 'warning' });
-  //           }
-
-
-  //           this.getUniversityDetails();
-  //         } else {
-  //           this.isEligible = false;
-  //           Swal.fire({ title: 'Not Eligible', text: 'Could not fetch previous marks.', icon: 'warning' });
-  //         }
-  //       },
-  //       error: err => this.LoginFailed(err)
-  //     });
-  // }
+  
 
   getUniversityDetails(): void {
     if (!this.ProgramCode) 
@@ -704,8 +500,6 @@ export class RegisterFormcomponent implements OnInit {
       
     }
 
-  
-    // formData.append("SponsorEmail", 'NA'); // This field is not in the form, so default to 'NA'
     formData.append("AvailableFunds", formValue.AvailableFunds );
     formData.append("TotalCountGradeF", this.GradeFcount?.toString()); // Convert number to string
 
@@ -744,9 +538,9 @@ export class RegisterFormcomponent implements OnInit {
     formData.append("RelativeRelation", formValue.RelativeRelation || 'NA'); // Added RelativeRelation
     formData.append("HasRelativeDetails", formValue.HasRelativeDetails || 'NA'); // Added HasRelativeDetails
 
-    formData.forEach((value, key) => {
-      console.log(`${key}: ${value}`);
-    });
+    // formData.forEach((value, key) => {
+    //   console.log(`${key}: ${value}`);
+    // });
     this.servicesSM.SemesterExchangeNewRegistrationForm(formData)
       .pipe(
         finalize(() => this.isLoading = false)
@@ -775,7 +569,6 @@ export class RegisterFormcomponent implements OnInit {
       });
   }
 
-  // --- Helper Functions and Validators ---
 
   LoginFailed(_NewError: any): void {
     this.loginFailed = true;
@@ -788,7 +581,6 @@ export class RegisterFormcomponent implements OnInit {
   }
 
   subscribeToFormChanges(): void {
-    // Logic to clear subsequent university options when a higher preference changes
     ['UniversityOption1', 'UniversityOption2'].forEach(ctrlName => {
       this.form.get(ctrlName)?.valueChanges.subscribe(value => {
         if (ctrlName === 'UniversityOption1') this.form.get('UniversityOption2')?.setValue('');
@@ -814,29 +606,24 @@ export class RegisterFormcomponent implements OnInit {
   }
 
   private setupConditionalValidators(): void {
-    // Relative details
     this.form.get('HasRelativeDetails')!.valueChanges.subscribe(val => {
       const controls = ['RelativeName', 'RelativeCountryName', 'RelativeRelation'];
       controls.forEach(c => this.toggleRequiredValidator(c, val === 'Yes'));
     });
 
-    // Passport details
     this.form.get('PassportStatus')!.valueChanges.subscribe(val => {
       const controls = ['PassportNumber', 'PassportIssueDate', 'PassportValidUpto', 'PassportDocumentPath'];
       controls.forEach(c => this.toggleRequiredValidator(c, val === 'Yes'));
     });
 
-    // Visa rejected details
     this.form.get('IsVisaRejected')!.valueChanges.subscribe(val => {
       const controls = ['VisaRejectedReason', 'VisaRejectedCountry'];
       controls.forEach(c => this.toggleRequiredValidator(c, val === 'Yes'));
     });
 
-    // English test conditional validators
     this.form.get('EnglishTestType')!.valueChanges.subscribe(() => this.updateEnglishScoreValidators());
     this.form.get('TestDate')!.valueChanges.subscribe(() => this.updateEnglishScoreValidators());
 
-    // Sponsor details
     this.form.get('SponsorType')!.valueChanges.subscribe(val => {
       const controls = ['SponsorName', 'SponsorRelation'];
       controls.forEach(c => this.toggleRequiredValidator(c, val === 'Other'));
@@ -862,13 +649,7 @@ export class RegisterFormcomponent implements OnInit {
       const testDateOnly = new Date(testDate.getFullYear(), testDate.getMonth(), testDate.getDate());
       const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
-      // if (testDateOnly < todayDateOnly) {
-      //   shouldRequireScores = true;
-      // }
     }
-
-    // this.toggleRequiredValidator('EnglishDocumentPath', englishTestType === 'Appeared' && shouldRequireScores);
-    // scoreControls.forEach(name => this.toggleRequiredValidator(name, shouldRequireScores));
   }
   CountryCode: string; UniversityOption1: string = ''; UniversityOption2: string = ''; UniversityOption3: string = '';
   stuData: any;
@@ -892,11 +673,9 @@ export class RegisterFormcomponent implements OnInit {
 
     if (step === 0 && this.form.errors?.numbersMustBeDistinct) return false;
 
-    // Check conditional fields (e.g., required passport fields, sponsor name)
     if (step === 1) {
       if (this.form.get('PassportStatus')?.value === 'Yes' && this.form.get('PassportDocumentPath')?.invalid) return false;
       if (this.form.get('IsVisaRejected')?.value === 'Yes' && this.form.get('VisaRejectedReason')?.invalid) return false;
-      // English document check is handled by validators via updateEnglishScoreValidators
     }
     if (step === 2 && this.form.get('SponsorType')?.value === 'Other' && this.form.get('SponsorName')?.invalid) return false;
 
@@ -927,9 +706,6 @@ export class RegisterFormcomponent implements OnInit {
     link.download = 'SE-Consent-Letter.pdf';
     link.click();
   }
-
-
-  // File data and status
   PassportFileData: any = ''; PassportFileStatus: boolean = false; PassportFileName: any = '';
   ResumeFileData: any = ''; ResumeFileStatus: boolean = false; ResumeFileName: any = '';
   FeesProofData: any = ''; FeesProofStatus: boolean = false; FeesProofFileName: any = '';
@@ -967,7 +743,6 @@ export class RegisterFormcomponent implements OnInit {
       target.files = dataTransfer.files;
 
       this.PassportFileData = modifiedFile;
-      // FIX: Ensure correct variable is used and form control is updated
       this.PassportDocumentPath = validFileName;
       this.PassportFileName = validFileName;
       this.form.get('PassportDocumentPath')!.setValue(validFileName); // <-- CRITICAL FIX
@@ -993,7 +768,6 @@ export class RegisterFormcomponent implements OnInit {
         const ssss = reader.result as string;
         const ssssArray = ssss.split(',');
         this.PassportFileData = ssssArray[1];
-        // FIX: Ensure form control is updated
         this.PassportDocumentPath = file.name;
         this.PassportFileName = file.name;
         this.form.get('PassportDocumentPath')!.setValue(file.name); // <-- CRITICAL FIX
@@ -1003,7 +777,6 @@ export class RegisterFormcomponent implements OnInit {
         this.UploadedPassport = true;
       };
     }
-
   }
 
   onEnglishFileSelected(event: any): void {
@@ -1030,7 +803,6 @@ export class RegisterFormcomponent implements OnInit {
       dataTransfer.items.add(modifiedFile);
       target.files = dataTransfer.files;
       this.EnglishProofData = modifiedFile;
-      // FIX: Ensure correct variable is used and form control is updated
       this.EnglishProofDocumentPath = validFileName;
       this.EnglishProofFileName = validFileName;
       this.form.get('EnglishDocumentPath')!.setValue(validFileName); // <-- CRITICAL FIX
@@ -1054,7 +826,6 @@ export class RegisterFormcomponent implements OnInit {
         const ssss = reader.result as string;
         const ssssArray = ssss.split(',');
         this.EnglishProofData = ssssArray[1];
-        // FIX: Ensure form control is updated
         this.EnglishProofDocumentPath = file.name;
         this.EnglishProofFileName = file.name;
         this.form.get('EnglishDocumentPath')!.setValue(file.name); // <-- CRITICAL FIX
@@ -1090,7 +861,6 @@ export class RegisterFormcomponent implements OnInit {
       dataTransfer.items.add(modifiedFile);
       target.files = dataTransfer.files;
       this.ResumeFileData = modifiedFile;
-      // FIX: Ensure correct variable is used and form control is updated
       this.ResumeDocumentPath = validFileName;
       this.ResumeFileName = validFileName;
       this.uploadedResumeName = validFileName;
@@ -1115,7 +885,6 @@ export class RegisterFormcomponent implements OnInit {
         const ssss = reader.result as string;
         const ssssArray = ssss.split(',');
         this.ResumeFileData = ssssArray[1];
-        // FIX: Ensure form control is updated
         this.ResumeDocumentPath = file.name;
         this.ResumeFileName = file.name;
         this.uploadedResumeName = file.name;
@@ -1151,10 +920,9 @@ export class RegisterFormcomponent implements OnInit {
       dataTransfer.items.add(modifiedFile);
       target.files = dataTransfer.files;
       this.FeesProofData = modifiedFile;
-      // FIX: Ensure correct variable is used and form control is updated
       this.FeesProofDocumentPath = validFileName;
       this.FeesProofFileName = validFileName;
-      this.form.get('FeesDocumentPath')!.setValue(validFileName); // <-- CRITICAL FIX
+      this.form.get('FeesDocumentPath')!.setValue(validFileName);  
       this.FeesProofStatus = true;
 
       reader.readAsDataURL(modifiedFile);
@@ -1176,7 +944,6 @@ export class RegisterFormcomponent implements OnInit {
         const ssss = reader.result as string;
         const ssssArray = ssss.split(',');
         this.FeesProofData = ssssArray[1];
-        // FIX: Ensure form control is updated
         this.FeesProofDocumentPath = file.name;
         this.FeesProofFileName = file.name;
         this.form.get('FeesDocumentPath')!.setValue(file.name); // <-- CRITICAL FIX
@@ -1210,10 +977,9 @@ export class RegisterFormcomponent implements OnInit {
       dataTransfer.items.add(modifiedFile);
       target.files = dataTransfer.files;
       this.ConsentLetterData = modifiedFile;
-      // FIX: Ensure correct variable is used and form control is updated
       this.ConsentLetterDocumentPath = validFileName;
       this.ConsentLetterFileName = validFileName;
-      this.form.get('ConsentLetterDocumentPath')!.setValue(validFileName); // <-- CRITICAL FIX
+      this.form.get('ConsentLetterDocumentPath')!.setValue(validFileName);
       this.ConsentLetterStatus = true;
 
       reader.readAsDataURL(modifiedFile);
@@ -1235,14 +1001,12 @@ export class RegisterFormcomponent implements OnInit {
         const ssss = reader.result as string;
         const ssssArray = ssss.split(',');
         this.ConsentLetterData = ssssArray[1];
-        // FIX: Ensure form control is updated
         this.ConsentLetterDocumentPath = file.name;
         this.ConsentLetterFileName = file.name;
         this.form.get('ConsentLetterDocumentPath')!.setValue(file.name); // <-- CRITICAL FIX
         this.UploadedConsenLetter = true;
       };
     }
-
   }
 
   /**
@@ -1257,7 +1021,6 @@ export class RegisterFormcomponent implements OnInit {
     }
 
     let mimeType = '';
-    // Use the file name extension to reliably determine the MIME type
     const extension = fileName.split('.').pop()?.toLowerCase();
 
     switch (extension) {
@@ -1273,26 +1036,20 @@ export class RegisterFormcomponent implements OnInit {
         break;
       case 'doc':
       case 'docx':
-        // Modern browsers usually don't display DOCX inline, but setting the MIME helps.
-        // It may prompt a download instead of an inline view.
         mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
         break;
       default:
-        // Use a generic MIME type as a fallback
         mimeType = 'application/octet-stream';
         break;
     }
 
-    // CRITICAL FIX: The data URL must be constructed with the correct MIME type
     const dataUrl = `data:${mimeType};base64,${fileData}`;
 
-    // Open the data URL in a new tab
     const win = window.open();
     if (win) {
       win.document.write(
         `<iframe src="${dataUrl}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`
       );
-      // Optional: Add a title for clarity
       win.document.title = fileName;
     } else {
       Swal.fire('Error', 'Could not open new window. Check your browser pop-up blocker.', 'error');
