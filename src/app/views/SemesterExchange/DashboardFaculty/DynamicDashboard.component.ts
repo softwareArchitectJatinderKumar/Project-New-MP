@@ -134,8 +134,6 @@ export class DynamicDashboardComponent implements OnInit {
       imgLogoElement.style.width = '164px';
     }
 
-    // this.title.setTitle(this.pageTitle);
-
     this.initializeForms(); 
     this.getToken(this.LoginName);
   }
@@ -218,8 +216,8 @@ export class DynamicDashboardComponent implements OnInit {
           this.DepartmentName = employee.departmentName;
           this.UserRole = employee.userRole;
 
-          this.getSEAllApplications(); // Load applications after employee details are available
-          this.getAllAuthorityRemarks(); // Already called in getToken, no need to call again here
+          this.getSEAllApplications(); 
+          this.getAllAuthorityRemarks();
         } else {
           this.EmployeeDetails = [];
           this.isLoginFailed = true;
@@ -248,7 +246,7 @@ export class DynamicDashboardComponent implements OnInit {
     ).subscribe({
       next: response => {
         this.AllApplications = Array.isArray(response?.item1) ? response.item1 : [];
-        this.enrichAndFilterApplications(); // Process applications after loading
+        this.enrichAndFilterApplications();
       },
       error: err => {
         this.isLoginFailed = true;
@@ -257,63 +255,149 @@ export class DynamicDashboardComponent implements OnInit {
     });
   }
 
- 
-  private enrichAndFilterApplications(): void {
-    if (!this.AllApplications) {
-      this.AllApplications = [];
-    }
-
-    const empCode = this.EmployeeCode ? this.EmployeeCode.trim() : null;
-
-    // Reset global flags before re-calculating
-    this.isdealingFaculty = false;
-    this.isDealingAuthority = false;
-    this.isHOD = false;
-    this.isHoW = false;
-
-    this.AllApplications = this.AllApplications.map((application: Application) => {
-      const dealingFaculty = application.dealingFaculty ? String(application.dealingFaculty).trim() : null;
-      const dealingAuthority = application.dealingAuthority ? String(application.dealingAuthority).trim() : null;
-      const dealingHODId = application.dealingHODId ? String(application.dealingHODId).trim() : null;
-      const dealingHow = application.dealingHow ? String(application.dealingHow).trim() : null;
-      // Set per-row flags
-      application.isdealingFaculty = empCode ? (dealingFaculty === empCode) : false;
-      application.isDealingAuthority = empCode ? (dealingAuthority === empCode) : false;
-      application.isHOD = empCode ? (dealingHODId === empCode) : false;
-      application.isHoW = empCode ? (dealingHow === empCode) : false;
-  // application.isHOD =true;
-      // Update global flags if any application matches the role
-      if (application.isdealingFaculty) this.isdealingFaculty = true;
-      if (application.isDealingAuthority) this.isDealingAuthority = true;
-      if (application.isHOD) this.isHOD = true;
-      if (application.isHoW) this.isHoW = true;
-//  this.isHOD = true;
-      return application;
-    });
-
-    this.buildPageTitle();
-    if (this.isdealingFaculty || this.isDealingAuthority || this.isHOD || this.isHoW) {
-      this.visibleApplications = this.AllApplications.filter(a =>
-        a.isdealingFaculty || a.isDealingAuthority || a.isHOD || a.isHoW
-      );
-    } else {
-      this.visibleApplications = [...this.AllApplications];
-    }
-
-    this.cd.detectChanges(); // Ensure UI updates
+ private enrichAndFilterApplications(): void {
+  if (!this.AllApplications) {
+    this.AllApplications = [];
   }
+
+  const empCode = this.EmployeeCode ? this.EmployeeCode.trim() : null;
+
+  // Reset global flags before re-calculating
+  this.isdealingFaculty = false;
+  this.isDealingAuthority = false;
+  this.isHOD = false;
+  this.isHoW = false;
+
+  this.AllApplications = this.AllApplications.map((application: Application) => {
+    const dealingFaculty = application.dealingFaculty ? String(application.dealingFaculty).trim() : null;
+    const dealingAuthority = application.dealingAuthority ? String(application.dealingAuthority).trim() : null;
+    const dealingHODId = application.dealingHODId ? String(application.dealingHODId).trim() : null;
+    const dealingHow = application.dealingHow ? String(application.dealingHow).trim() : null;
+
+    // 1. Reset all flags for this specific row first
+    application.isDealingAuthority = false;
+    application.isHOD = false;
+    application.isHoW = false;
+    application.isdealingFaculty = false;
+
+    // 2. Assign exactly ONE role based on priority hierarchy
+    if (empCode) {
+      if (dealingAuthority === empCode) {
+        application.isDealingAuthority = true;
+        this.isDealingAuthority = true; // Update global state
+      } 
+      else if (dealingHODId === empCode) {
+        application.isHOD = true;
+        this.isHOD = true;
+      } 
+      else if (dealingHow === empCode) {
+        application.isHoW = true;
+        this.isHoW = true;
+      } 
+      else if (dealingFaculty === empCode) {
+        application.isdealingFaculty = true;
+        this.isdealingFaculty = true;
+      }
+    }
+
+    return application;
+  });
+
+  this.buildPageTitle();
+
+  // Filter: Show apps where the user has ANY of the four roles assigned
+  if (this.isdealingFaculty || this.isDealingAuthority || this.isHOD || this.isHoW) {
+    this.visibleApplications = this.AllApplications.filter(a =>
+      a.isdealingFaculty || a.isDealingAuthority || a.isHOD || a.isHoW
+    );
+  } else {
+    this.visibleApplications = [...this.AllApplications];
+  }
+
+  this.cd.detectChanges();
+}
+
+private buildPageTitle(): void {
+  let roleTitle = '';
+
+  // Priority should match the order used in enrichAndFilterApplications
+  if (this.isDealingAuthority) {
+    roleTitle = 'Dealing Authority';
+  } else if (this.isHOD) {
+    roleTitle = 'Head of Department';
+  } else if (this.isHoW) {
+    roleTitle = 'Head of Wing';
+  } else if (this.isdealingFaculty) {
+    roleTitle = 'Dealing Faculty';
+  }
+
+  // Set the final string
+  this.pageTitle = roleTitle ? `** ${roleTitle} Dashboard **` : 'Dashboard **';
+  
+  // Update the browser tab title
+  this.title.setTitle(this.pageTitle);
+}
+// old code 
+//   private enrichAndFilterApplications(): void {
+//     if (!this.AllApplications) {
+//       this.AllApplications = [];
+//     }
+
+//     const empCode = this.EmployeeCode ? this.EmployeeCode.trim() : null;
+
+//     // Reset global flags before re-calculating
+//     this.isdealingFaculty = false;
+//     this.isDealingAuthority = false;
+//     this.isHOD = false;
+//     this.isHoW = false;
+
+//     this.AllApplications = this.AllApplications.map((application: Application) => {
+//       const dealingFaculty = application.dealingFaculty ? String(application.dealingFaculty).trim() : null;
+//       const dealingAuthority = application.dealingAuthority ? String(application.dealingAuthority).trim() : null;
+//       const dealingHODId = application.dealingHODId ? String(application.dealingHODId).trim() : null;
+//       const dealingHow = application.dealingHow ? String(application.dealingHow).trim() : null;
+//       // Set per-row flags
+//       application.isdealingFaculty = empCode ? (dealingFaculty === empCode) : false;
+//       application.isDealingAuthority = empCode ? (dealingAuthority === empCode) : false;
+//       application.isHOD = empCode ? (dealingHODId === empCode) : false;
+//       application.isHoW = empCode ? (dealingHow === empCode) : false;
+//   // application.isHOD =true;
+//       // Update global flags if any application matches the role
+//       if (application.isdealingFaculty) this.isdealingFaculty = true;
+//       if (application.isDealingAuthority) this.isDealingAuthority = true;
+//       if (application.isHOD) this.isHOD = true;
+//       if (application.isHoW) this.isHoW = true;
+// //  this.isHOD = true;
+//       return application;
+//     });
+
+//     this.buildPageTitle();
+//     if (this.isdealingFaculty || this.isDealingAuthority || this.isHOD || this.isHoW) {
+//       this.visibleApplications = this.AllApplications.filter(a =>
+//         a.isdealingFaculty || a.isDealingAuthority || a.isHOD || a.isHoW
+//       );
+//     } else {
+//       this.visibleApplications = [...this.AllApplications];
+//     }
+
+//     this.cd.detectChanges(); // Ensure UI updates
+//   }
+
+
+
+// old code 
 
   
-  private buildPageTitle(): void {
-    const roles: string[] = [];
-    if (this.isDealingAuthority) roles.push('Dealing Authority');
-    if (this.isdealingFaculty) roles.push('Dealing Faculty');
-    if (this.isHOD) roles.push('Head of Department');
-    if (this.isHoW) roles.push('Head of Wing');
+  // private buildPageTitle(): void {
+  //   const roles: string[] = [];
+  //   if (this.isDealingAuthority) roles.push('Dealing Authority');
+  //   if (this.isdealingFaculty) roles.push('Dealing Faculty');
+  //   if (this.isHOD) roles.push('Head of Department');
+  //   if (this.isHoW) roles.push('Head of Wing');
 
-    this.pageTitle = roles.length ? `** ${roles.join(' & ')} Dashboard**` : 'Dashboard **';
-    this.title.setTitle(this.pageTitle);
-  }
+  //   this.pageTitle = roles.length ? `** ${roles.join(' & ')} Dashboard**` : 'Dashboard **';
+  //   this.title.setTitle(this.pageTitle);
+  // }
 
   /**
    * @param application The selected application object.
