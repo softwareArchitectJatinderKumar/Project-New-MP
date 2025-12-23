@@ -208,6 +208,7 @@ export class RegisterFormcomponent implements OnInit {
         }
       });
   }
+ApplicationID: any;
 
   getToken(loginId: any): void {
     this.isLoading = true;
@@ -228,53 +229,249 @@ export class RegisterFormcomponent implements OnInit {
   }
   ContactNo: any;
   getStudentDetail(): void {
-    this.isLoading = true;
-    this.servicesSM.getStudentById().pipe(finalize(() => this.isLoading = false))
-      .subscribe({
-        next: response => {
-          if (response.item1.length > 0) {
-            const stuData = response.item1[0];
-            this.studentName = stuData.studentName;
-            this.ContactNo = stuData.studentMobile;
-            this.RegistrationNo = stuData.registerationNumber;
-            this.courseName = stuData.courseName;
-            this.cgpa = stuData.cgpa;
-            this.CurrentYear = stuData.currentYear;
-            this.CurrentTerm = stuData.currentTerm;
-            this.studentStatus = stuData.studentStatus;
+  this.isLoading = true;
+  this.servicesSM.getStudentById().pipe(finalize(() => this.isLoading = false))
+    .subscribe({
+      next: response => {
+        if (response.item1 && response.item1.length > 0) {
+          const stuData = response.item1[0];
+          this.studentName = stuData.studentName;
+          this.ContactNo = stuData.studentMobile;
+          this.RegistrationNo = stuData.registerationNumber;
+          this.courseName = stuData.courseName;
+          this.cgpa = stuData.cgpa;
+          this.CurrentYear = stuData.currentYear;
+          this.CurrentTerm = stuData.currentTerm;
+          this.studentStatus = stuData.studentStatus;
+          this.form.get('EmailId')?.setValue(stuData.studentEmail || this.eligibilityForm.get('email')?.value);
 
-            this.form.get('EmailId')?.setValue(stuData.studentEmail || this.eligibilityForm.get('email')?.value);
+          this.checkApplicationStatusBeforeEligibility();
+        } else {
+          this.LoginFailed('Student data not found');
+        }
+      },
+      error: err => this.LoginFailed(err)
+    });
+}
 
-            this.getApplicationDetails(this.RegistrationNo); // Continue eligibility chain
-          } else {
-            this.LoginFailed('Student data not found');
-          }
-        },
-        error: err => this.LoginFailed(err)
-      });
+private checkApplicationStatusBeforeEligibility(): void {
+  this.isLoading = true;
+  this.servicesSM.getApplicationDetailsBYId(this.RegistrationNo)
+    .pipe(finalize(() => this.isLoading = false))
+    .subscribe({
+      next: (response) => {
+        const stuApplication = response.item1?.[0];
+        this.ApplicationID = stuApplication?.applicationId;
+
+        if (+(this.ApplicationID) > 0) {
+          Swal.fire({ title: 'Application Already Exists', icon: 'success' }).then(() => {
+            this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
+          });
+        } 
+        else {
+          this.runEligibilityChecks();
+        }
+      },
+      error: (err) => this.LoginFailed(err)
+    });
+}
+
+private runEligibilityChecks(): void {
+  if (this.CurrentTerm == 1 || this.CurrentTerm == 2) {
+    this.getPlusTwoMarks(this.RegistrationNo);
+  } 
+  else if (this.CurrentTerm > 2) {
+    if (+(this.cgpa) >= 6) {
+      this.isEligible = true;
+      this.getStudentCodeDetails(this.RegistrationNo);
+    } else {
+      this.setIneligible('CGPA must be $\ge 6$ for terms above 2.');
+    }
   }
+}
 
-  getApplicationDetails(regId: string): void {
+getPlusTwoMarks(Regdno: any): void {
+  this.isLoading = true;
+  this.servicesSM.GetStudentAllPreviousMarks(Regdno)
+    .pipe(finalize(() => this.isLoading = false))
+    .subscribe({
+      next: response => {
+        if (!response || !response.item1?.length) {
+          this.setIneligible('No previous mark records found.');
+          return;
+        }
+
+        const studentPreviousMarksData = response.item1;
+        const plus2Record = studentPreviousMarksData.find((r: any) => r.ExamDescription === '10+2');
+        const graduationRecord = studentPreviousMarksData.find((r: any) => r.ExamDescription === 'Graduation');
+
+        const plus2Percentage = plus2Record ? parseFloat(plus2Record.Perecentage) : 0;
+        const gradPercentage = graduationRecord ? parseFloat(graduationRecord.Perecentage) : NaN;
+
+   
+        if (!isNaN(gradPercentage)) {
+          if (gradPercentage > 65) {
+            this.cgpa = gradPercentage;
+            this.setEligible();
+          } else {
+            this.setIneligible('Graduation marks must be $> 65\%$.');
+          }
+        } 
+        else if (plus2Percentage > 70) {
+          this.cgpa = plus2Percentage;
+          this.setEligible();
+        } 
+        else {
+          this.setIneligible('10+2 marks must be $> 70\%$ when graduation marks are not found.');
+        }
+
+        this.FindGradeFCount(this.RegistrationNo);
+        this.getUniversityDetails();
+      },
+      error: err => this.LoginFailed(err)
+    });
+}
+
+  // getStudentDetail(): void {
+  //   this.isLoading = true;
+  //   this.servicesSM.getStudentById().pipe(finalize(() => this.isLoading = false))
+  //     .subscribe({
+  //       next: response => {
+  //         if (response.item1.length > 0) {
+  //           const stuData = response.item1[0];
+  //           this.studentName = stuData.studentName;
+  //           this.ContactNo = stuData.studentMobile;
+  //           this.RegistrationNo = stuData.registerationNumber;
+  //           this.courseName = stuData.courseName;
+  //           this.cgpa = stuData.cgpa;
+  //           this.CurrentYear = stuData.currentYear;
+  //           this.CurrentTerm = stuData.currentTerm;
+  //           this.studentStatus = stuData.studentStatus;
+  //           this.form.get('EmailId')?.setValue(stuData.studentEmail || this.eligibilityForm.get('email')?.value);
+  //            this.getApplicationDetails(this.RegistrationNo);
+  //            if (+(this.ApplicationID) > 0) {
+  //           Swal.fire({ title: 'Application Already Exists', icon: 'success' }).then(() => {
+  //               this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
+  //             });              
+  //           }
+  //           else if (this.CurrentTerm == 1 || this.CurrentTerm == 2 && this.studentStatus !== 'A' || this.studentStatus !== 'ACT') {
+  //             this.getPlusTwoMarks(this.RegistrationNo);
+  //           }    
+  //           else if (+(this.cgpa) >= 6.0 && this.CurrentTerm > 2 && (this.studentStatus !== 'A' || this.studentStatus !== 'ACT')) {
+  //             this.isEligible = true;
+  //             this.getStudentCodeDetails(this.RegistrationNo);
+  //             return;
+  //           }
+  //         } else {
+  //           this.LoginFailed('Student data not found');
+  //         }
+  //       },
+  //       error: err => this.LoginFailed(err)
+  //     });
+  // }
+    // getPlusTwoMarks(Regdno: any): void {
+  //   this.servicesSM.GetStudentAllPreviousMarks(Regdno)
+  //     .pipe(finalize(() => this.isLoading = false))
+  //     .subscribe({
+  //       next: response => {
+  //         if (!response || !response.item1?.length) {
+  //           this.setIneligible('No previous mark records found.');
+  //           return;
+  //         }
+  //         // 3. Find 10+2 record and percentage
+  //         const studentPreviousMarksData = response.item1;
+  //         const plus2Record = studentPreviousMarksData.find((r: any) => r.ExamDescription === '10+2');
+  //         const GraduationRecord = studentPreviousMarksData.find((r: any) => r.ExamDescription === 'Graduation');
+  //         const percentage = plus2Record ? parseFloat(plus2Record.Perecentage) : NaN;
+  //         const gradPercentage = GraduationRecord ? parseFloat(GraduationRecord.Perecentage) : NaN;
+         
+  //         if ((!Number.isNaN(gradPercentage) && gradPercentage >= 65.0)) {
+  //           this.cgpa = GraduationRecord.Perecentage;
+  //           console.log('Graduation Percentage: ' + this.cgpa);
+  //           this.setEligible();
+  //         } else if (!Number.isNaN(percentage) && percentage >= 70.0) {
+  //           this.cgpa = plus2Record.Perecentage;
+  //           console.log('10+2 Percentage: ' + this.cgpa);
+  //           this.setEligible();
+  //         }
+  //         else {this.cgpa = gradPercentage>0 ? gradPercentage : percentage;
+  //           this.setIneligible('Eligibility Failed '+ (gradPercentage>0 ? 'Graduation percentage criterion not met (required >= 65.0%).' : '10+2 percentage criterion not met (required >= 70.0%).'));
+  //         }
+  //         this.FindGradeFCount(this.RegistrationNo);          
+  //         this.getUniversityDetails();
+  //       },
+  //       error: err => this.LoginFailed(err)
+  //     });
+  // }
+  
+  getApplicationDetails(regId: string): any {
     this.isLoading = true;
     this.servicesSM.getApplicationDetailsBYId(regId).pipe(finalize(() => this.isLoading = false))
       .subscribe((response) => {
         const stuApplication = response.item1?.[0];
-
-        if (stuApplication?.applicationId > 0) {
+        this.ApplicationID= stuApplication?.applicationId;
+        if (this.ApplicationID > 0) {
           Swal.fire({ title: 'Application Already Exists', icon: 'success' }).then(() => {
             this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
           });
-          return;
         }
-        if (+(this.cgpa) < 7 || this.studentStatus !== 'A' ||this.studentStatus !== 'ACT') {
-          this.GetStudentAllPreviousMarks(this.RegistrationNo);
-          this.isEligible = false;
-          return;
-        }
-        this.GetStudentAllPreviousMarks(this.RegistrationNo);
-        this.getUniversityDetails();
+      });
+      return this.ApplicationID;
+  }
+
+  getStudentCodeDetails(Regdno: any){
+     this.servicesSM.GetStudentAllPreviousMarks(Regdno)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: response => { 
+          if (!response || !response.item1?.length) {
+            this.setIneligible('No previous mark records found.');
+            return;
+          }
+          this.studentAcademicDetail = response.item4?.[0] || {};
+          this.ProgramCode = this.studentAcademicDetail.PName ? this.studentAcademicDetail.PName.split(':')[0].trim() : this.ProgramCode;
+          this.SectionCode = this.studentAcademicDetail.Section;
+          this.FindGradeFCount(this.RegistrationNo);
+          this.getUniversityDetails();
+          this.setEligible();          
+          },
+        error: err => this.LoginFailed(err)
       });
   }
+
+  GetStudentAllPreviousMarks(Regdno: any): void {
+    this.isLoading = true;
+    this.servicesSM.GetStudentAllPreviousMarks(Regdno)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: response => {
+          if (!response || !response.item1?.length) {
+            this.setIneligible('No previous mark records found.');
+            return;
+          }
+          this.studentAcademicDetail = response.item4?.[0] || {};
+          this.ProgramCode = this.studentAcademicDetail.PName ? this.studentAcademicDetail.PName.split(':')[0].trim() : this.ProgramCode;
+          this.SectionCode = this.studentAcademicDetail.Section;
+          const studentPreviousMarksData = response.item1;
+          const plus2Record = studentPreviousMarksData.find((r: any) => r.ExamDescription === '10+2');
+          const GraduationRecord = studentPreviousMarksData.find((r: any) => r.ExamDescription === 'Graduation');
+          const percentage = plus2Record ? parseFloat(plus2Record.Perecentage) : NaN;
+          const gradPercentage = GraduationRecord ? parseFloat(GraduationRecord.Perecentage) : NaN;
+          if ((!Number.isNaN(gradPercentage) && gradPercentage > 65.0)) {
+            this.cgpa = gradPercentage;
+            this.setEligible();
+          } else if (Number.isNaN(gradPercentage) && !Number.isNaN(percentage) && percentage > 60) {
+            this.cgpa = percentage;
+            this.setIneligible('10+2 percentage criterion not met (required > 60.0%).');
+          }
+          this.getUniversityDetails();
+          this.FindGradeFCount(this.RegistrationNo);
+        },
+        error: err => this.LoginFailed(err)
+      });
+  }
+ 
+
   getTableHeaders(obj: any): string[] {
     return Object.keys(obj);
   }
@@ -311,6 +508,7 @@ export class RegisterFormcomponent implements OnInit {
                 gradeFcount++;
               }
             }
+            console.log(gradeFcount + ' subjects with Grade F found.' + this.GradeFcount);
           }
         },
         error: err => this.LoginFailed(err)
@@ -326,51 +524,7 @@ export class RegisterFormcomponent implements OnInit {
     this.isEligible = false;
     Swal.fire({ title: 'Not Eligible', text: reason, icon: 'warning' });
   }
-  GetStudentAllPreviousMarks(Regdno: any): void {
-    this.isLoading = true;
 
-    this.servicesSM.GetStudentAllPreviousMarks(Regdno)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe({
-        next: response => {
-
-          // 1. Basic check for data existence
-          if (!response || !response.item1?.length) {
-            this.setIneligible('No previous mark records found.');
-            return;
-          }
-
-          // 2. Fetch Academic Details (Needed for ProgramCode, Section, etc., if other functions rely on it)
-          this.studentAcademicDetail = response.item4?.[0] || {};
-          this.ProgramCode = this.studentAcademicDetail.PName ? this.studentAcademicDetail.PName.split(':')[0].trim() : this.ProgramCode;
-          this.SectionCode = this.studentAcademicDetail.Section;
-
-          // 3. Find 10+2 record and percentage
-          const studentPreviousMarksData = response.item1;
-          const plus2Record = studentPreviousMarksData.find((r: any) => r.ExamDescription === '10+2');
-          const percentage = plus2Record ? parseFloat(plus2Record.Perecentage) : NaN;
-
-          // 4. Perform Term 1 eligibility check: 10+2 marks > 69.5%
-          if (percentage > 69.5) {
-            // Set CGPA placeholder to the percentage (as requested in original logic)
-            this.cgpa = percentage;
-            this.setEligible();
-          } else {
-            // Set CGPA placeholder even if ineligible
-            this.cgpa = percentage;
-            this.setIneligible('10+2 percentage criterion not met (required > 69.5%).');
-          }
-
-          // 5. Post Check Action: Always attempt to fetch university details if data exists
-          this.getUniversityDetails();
-          this.FindGradeFCount(this.RegistrationNo);
-          // NOTE: The separate FindGradeFCount() call is removed here as its logic 
-          // should be entirely contained within GetStudentMarksDetails() which handles CurrentTerm > 1.
-        },
-        error: err => this.LoginFailed(err)
-      });
-  }
- 
 
   studentPreviousMarksData: any;
   studentTermsMarksData: any;
@@ -399,7 +553,7 @@ export class RegisterFormcomponent implements OnInit {
     event.preventDefault(); // prevent page scroll
     this.showPolicy = !this.showPolicy;
   }
-  // --- Wizard Navigation and Submission ---
+  
 
   nextStep(): void {
     if (this.currentStep === this.stepLabels.length) return;
@@ -832,8 +986,6 @@ export class RegisterFormcomponent implements OnInit {
         this.UploadedEnglish = true;
       };
     }
-
-
   }
 
 
