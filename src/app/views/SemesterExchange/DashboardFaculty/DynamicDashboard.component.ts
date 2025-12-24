@@ -299,7 +299,7 @@ export class DynamicDashboardComponent implements OnInit {
         this.isdealingFaculty = true;
       }
     }
-
+       
     return application;
   });
 
@@ -1033,8 +1033,8 @@ private buildPageTitle(): void {
    */
   viewFacultyRemarks(row: Application): void {
     const remarks = this.AllAuthorityRemarks.find(r => r.registrationNo === row.registrationNo);
-    const facultyRemarks = remarks?.facultyRemarks || row.dealingUserInterviewRemarks;
-
+    const facultyRemarks = remarks?.dealingUserInterviewRemarks || remarks?.facultyRemarks;
+    console.log("Faculty Remarks:", remarks);
     Swal.fire({
         title: 'Faculty Remarks',
         text: facultyRemarks ? facultyRemarks : 'No faculty remarks available.',
@@ -1122,7 +1122,7 @@ private buildPageTitle(): void {
     ).subscribe({
       next: response => {
         this.AllAuthorityRemarks = Array.isArray(response?.item1) ? response.item1 : [];
-        // console.log("All Authority Remarks:", JSON.stringify(this.AllAuthorityRemarks));
+        console.log("All Authority Remarks:", JSON.stringify(this.AllAuthorityRemarks));
       },
       error: err => {
         this.isLoginFailed = true;

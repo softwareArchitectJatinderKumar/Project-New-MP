@@ -108,8 +108,8 @@
     </button>
 
     <ng-container *ngIf="row.isHOD">
-      <button class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)">Accept</button>
-      <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)">Reject</button>
+      <button class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)" [hidden]="row.isApproved !== null">Accept</button>
+      <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)" [hidden]="row.isApproved !== null">Reject</button>
       <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'How')">Forward to HOW</button>
       
       <button class="btn btn-primary btn-sm me-1 mb-1"
@@ -118,15 +118,15 @@
       </button>
       <button class="btn btn-primary btn-sm me-1 mb-1" (click)="UploadEvaluationRemarks(row, 'HOD')">Submit Evaluation</button>
 
-      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewEvaluationRemarks(row)" [disabled]="!hasEvaluationRemarks(row)">View Evaluation</button>
-      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)" [disabled]="!hasFacultyRemarks(row)">View Faculty</button>
-      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewAuthorityRemarks(row)" [disabled]="!hasAuthorityRemarks(row)">View Authority</button>
-      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewHOWRemarks(row)" [disabled]="!hasHOWRemarks(row)">View HOW</button>
+      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewEvaluationRemarks(row)" [disabled]="!hasEvaluationRemarks(row)">Evaluation Remarks</button>
+      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)" [disabled]="!hasFacultyRemarks(row)">Faculty Remarks</button>
+      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewAuthorityRemarks(row)" [disabled]="!hasAuthorityRemarks(row)">Authority Remarks</button>
+      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewHOWRemarks(row)" [disabled]="!hasHOWRemarks(row)">Own Remarks</button>
     </ng-container>
 
     <ng-container *ngIf="row.isHoW">
-      <button class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)">Accept</button>
-      <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)">Reject</button>
+      <button class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)" [hidden]="row.isApproved !== null">Accept</button>
+      <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)" [hidden]="row.isApproved !== null">Reject</button>
       
       <button class="btn btn-primary btn-sm me-1 mb-1"
         (click)="row.counsellingStatus === 'True' ? viewCounsellingRemarks(row) : submitCounsellingRemarks(row)">
@@ -134,16 +134,16 @@
       </button>
       <button class="btn btn-primary btn-sm me-1 mb-1" (click)="UploadEvaluationRemarks(row, 'HOW')">Submit Evaluation</button>
 
-      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewEvaluationRemarks(row)" [disabled]="!hasEvaluationRemarks(row)">View Evaluation</button>
-      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)" [disabled]="!hasFacultyRemarks(row)">View Faculty</button>
-      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewAuthorityRemarks(row)" [disabled]="!hasAuthorityRemarks(row)">View Authority</button>
-      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewHODRemarks(row)" [disabled]="!hasHODRemarks(row)">View HOD</button>
-      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewHOWRemarks(row)">View Own HOW</button>
+      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewEvaluationRemarks(row)" [disabled]="!hasEvaluationRemarks(row)">Evaluation Remarks</button>
+      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)" [disabled]="!hasFacultyRemarks(row)">Faculty Remarks</button>
+      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewAuthorityRemarks(row)" [disabled]="!hasAuthorityRemarks(row)">Authority Remarks</button>
+      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewHODRemarks(row)" [disabled]="!hasHODRemarks(row)">HOD Remarks</button>
+      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewHOWRemarks(row)">Own Remarks</button>
     </ng-container>
 
     <ng-container *ngIf="row.isDealingAuthority">
-      <button class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)">Accept</button>
-      <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)">Reject</button>
+      <button class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)" [hidden]="row.isApproved !== null">Accept</button>
+      <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)" [hidden]="row.isApproved !== null">Reject</button>
       <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToFaculty(row)">Forward to Faculty</button>
       <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'Hod')">Forward to HOD</button>
 
@@ -153,18 +153,19 @@
       </button>
       <button class="btn btn-primary btn-sm me-1 mb-1" (click)="UploadEvaluationRemarks(row, 'Authority')">Submit Evaluation</button>
 
-      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewEvaluationRemarks(row)" [disabled]="!hasEvaluationRemarks(row)">View Evaluation</button>
-      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewHODRemarks(row)" [disabled]="!hasHODRemarks(row)">View HOD</button>
-      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewHOWRemarks(row)" [disabled]="!hasHOWRemarks(row)">View HOW</button>
-      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)" [disabled]="!hasFacultyRemarks(row)">View Faculty</button>
+      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewEvaluationRemarks(row)" [disabled]="!hasEvaluationRemarks(row)">Evaluation Remarks</button>
+      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewHODRemarks(row)" [disabled]="!hasHODRemarks(row)">HOD Remarks</button>
+      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewHOWRemarks(row)" [disabled]="!hasHOWRemarks(row)"> HOW Remarks</button>
+      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)" [disabled]="!hasFacultyRemarks(row)"> Faculty Remarks </button>
     </ng-container>
 
     <ng-container *ngIf="row.isdealingFaculty">
       <button class="btn btn-primary btn-sm me-1 mb-1"
         (click)="row.counsellingStatus === 'True' ? viewCounsellingRemarks(row) : submitCounsellingRemarks(row)">
-        {{ row.counsellingStatus === 'True' ? 'View Counselling' : 'Submit Counselling' }}
+        {{ row.counsellingStatus === 'True' ? 'Counselling Remarks' : 'Submit Counselling' }}
       </button>
-      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)">View Own Faculty Remarks</button>
+      <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewFacultyRemarks(row)">Own Remarks</button>
+      <!-- <button class="btn btn-primary btn-sm me-1 mb-1" (click)="UploadEvaluationRemarks(row, 'Faculty')">Submit Evaluation</button> -->
     </ng-container>
 
   </ng-template>
