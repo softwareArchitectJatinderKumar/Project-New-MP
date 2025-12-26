@@ -72,7 +72,10 @@ const routes: Routes = [
         // loadChildren: () => import('./views/SemesterExchange/StudentDashboard/StudentDashboardwithTabs.module').then(m => m.StudentDashboardwithTabsModule),
         loadChildren: () => import('./views/SemesterExchange/StudentDashboard/Edit-Application/StudentForm.module').then(m => m.EditApplicationModule),
       },
-
+      {
+        path: 'SENextStep/:LoginName/:RegistrationNo',
+         loadChildren: () => import('./views/SemesterExchange/StudentDashboard/StudentDashboardwithTabs.module').then(m => m.StudentDashboardwithTabsModule),
+      },
       // {
       //   path: 'DashboardHOW/:LoginName',
       //   loadChildren: () => import('./views/SemesterExchange/HOWDashboard/HOWDashboard.module').then(m => m.HOWDashboardModule),
@@ -106,7 +109,7 @@ const routes: Routes = [
      
      
       {
-        path: 'ApplicationDetails/:LoginName/:RegistrationNo',
+        path: 'ApplicationDetails/:LoginName/:RegistrationNo/:Role',
         loadChildren: () => import('./views/SemesterExchange/StudentApplicationDetails/StudentApplicationDetails.module').then(m => m.StudentApplicationDetailsModule),
       },
 

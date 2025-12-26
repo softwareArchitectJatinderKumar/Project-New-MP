@@ -404,7 +404,7 @@ private buildPageTitle(): void {
    */
   GetStudentApplication(application: Application): void {
     if (this.LoginName && application.registrationNo) {
-      this.router.navigateByUrl(`ApplicationDetails/${this.LoginName}/${application.registrationNo}`);
+      this.router.navigateByUrl(`ApplicationDetails/${this.LoginName}/${application.registrationNo}/Faculty`);
     } else {
       Swal.fire('Navigation Error', 'Login name or registration number is missing.', 'error');
     }

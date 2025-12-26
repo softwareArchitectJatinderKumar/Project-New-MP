@@ -15,7 +15,7 @@ import { countries } from '../countries-list'; // Assuming countries-list.ts exi
 type CourseRow = {
   courseName?: string | null;
   courseCode?: string | null;
-  hours?: number | null;   // <-- allow null
+  hours?: number | null;  
   file?: File | null;
   fileName?: string | null;
   fileData?: string | null;
@@ -37,11 +37,11 @@ export class StudentDashboardwithTabs implements OnInit {
   isLoading = false;
   isSavingCourses = false;
   isLoginFailed = false;
-  activeTab: 'application' | 'documents' | 'courses' = 'application';
+  activeTab: 'application' | 'documents' | 'courses'  ;
 
 
   // 🚀 ADDED: Control property for the Courses tab
-  isCoursesSectionDisabled: boolean = true;
+  isCoursesSectionDisabled: boolean = false;
   // Forms and toggles
   applicationForm!: FormGroup;
   isSection1Edit = false;
@@ -448,7 +448,7 @@ private setupConditionalValidators(): void {
 
   // ---------------- TABS ----------------
   selectTab(tab: 'application' | 'documents' | 'courses'): void {
-    this.activeTab = tab;
+    this.activeTab = 'courses';
   }
 
   // ---------------- SECTION 1 ----------------

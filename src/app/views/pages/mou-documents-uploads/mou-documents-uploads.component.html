@@ -34,7 +34,7 @@
                 <div class="container-fluid">
                     <form #myForm="ngForm" (ngSubmit)="UploadDocument()">     
                         
-                        
+<!--                         
                 <div class="row mb-4 mt-4">
                     <div class="col-3">
                         <label class="form-label">LPU SPOC Name</label>
@@ -75,7 +75,7 @@
                         </div>
                     </div>
                 </div>
- 
+  -->
                         <div class="row mb-4 mt-4">
                             <div class="col-3 "><label class=" form-label"> MOU Partner
                                     Organisation Name </label></div>
@@ -178,7 +178,48 @@
                                 </div>
                             </div>
                         </div>
-
+                                
+                <div class="row mb-4 mt-4">
+                    <div class="col-3">
+                        <label class="form-label">MOU SPOC Name [LPU]</label>
+                    </div>
+                    <div class="col-3">
+                        <input type="text" id="responsiblePerson" name="responsiblePerson" required class="form-control col-3"
+                            [(ngModel)]="ResponsiblePerson" [formControl]="employeeControl" placeholder="Search by name or code"
+                            (input)="onInput()" (keydown)="onKeydown($event)" (change)="checkUIDValidity()"
+                            (focus)="showSuggestions = true" (blur)="hideSuggestions()" />
+                        <div class="themeClr mt-1 small" *ngIf="employeeControl.invalid && employeeControl.touched">
+                            LPU SPOC Name is required.
+                        </div>
+                
+                        <div *ngIf="showSuggestions && filteredEmployeesData.length"
+                            class="list-group position-absolute w-30 shadow-sm z-3">
+                            <button type="button" class="list-group-item list-group-item-action"
+                                *ngFor="let employee of filteredEmployeesData; let i = index"
+                                [class.active]="i === activeSuggestionIndex" (mousedown)="selectEmployee(employee)">
+                                {{ employee.employeeName }} ({{ employee.employeeCode }})
+                            </button>
+                        </div>
+                        <div *ngIf="AssignedToUid > 0" class="text-primary mt-2 small">
+                            Applying to UID: <strong>{{ AssignedToUid }} {{AssignedToUidName}}</strong>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <label class="form-label">MOU SPOC EmailId [LPU]</label>
+                    </div>
+                    <div class="col-3">
+                        <input type="email" class="form-control" [style]="{ width: '89%' }" name="LPUSpocEmail" id="LPUSpocEmail"
+                            autocomplete="off" placeholder="Provide SOPC Email Id" required
+                            pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" ngModel [(ngModel)]="LPUSpocEmail"
+                            #lpusopcEmail="ngModel" />
+                        <div *ngIf="lpusopcEmail.invalid && lpusopcEmail.touched" class="themeClr">
+                            <div *ngIf="lpusopcEmail.errors?.required">LPU SOPC Email Id is required.</div>
+                            <div *ngIf="lpusopcEmail.errors?.pattern">Invalid Email Id must be properly formatted and end with .com or
+                                .org.</div>
+                        </div>
+                    </div>
+                </div>
+ 
                         <div class="row mb-4 mt-5">
                             <div class="col-3">
                                 <label class="form-label">School/Division Involved</label>

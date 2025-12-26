@@ -9,101 +9,125 @@
 
 <div class="container-fluid mt-4" id="StudentDashboard" *ngIf="!isLoginFailed ;  else ErrorApplication">
     <div class="student-registration container-fluid py-4">
-    <!-- Header -->
     <div class="col-md-12 grid-margin stretch-card mb-3">
         <div class="card">
             <div class="card-body">
                 <div class="d-flex justify-content- align-items-center mb-3">
-                    <div class="col-md-4 ms-4">
-                        <h2 class="text-primary m-0">My Dashboard</h2>
-                    </div>
-                    <div class="col-md-6 me-3 text-end">
-                        <span class="text-end fs-4 me-3"> Hi! </span> <span [ngClass]="'fs-4 badge'"
-                            style=" background-color: #FD6C04 !important; "> {{studentDetailsWithImage?.studentName}}
-                        </span>
-                    </div>
-                    <div class="col-md-2 text-center">
-            
-                        <div *ngIf="StudentImage else placeholderImg">
-                            <img alt="Student Image" class="img-fluid rounded-circle border border-3 border-primary"
-                                [src]="StudentImage" style="width: 80px; height: 80px; object-fit: cover;">
+                    <div class="col-md-3 ms-4">
+                        <h3 class="text-info m-0">My Dashboard</h3>
                         </div>
-                        <ng-template #placeholderImg>
-                            <img src="https://placehold.co/150x150" alt="No Image" class="img-thumbnail"
-                                style="max-width:150px; max-height:150px; object-fit:cover;" />
-                        </ng-template>
-                    </div>
-            
+                        <div class="col-md-3 ms-4">
+                            <span class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-info': true }">  Application Status:      </span>
+                             
+                            <span [ngClass]="'badge rounded-pill step-badge fs-6 ms-2'" [style.background-color]="LockedStatus ? '#28a745' : '#ffc107'"
+                                style="color: #000 !important;">
+                               {{ LockedStatus ? 'Approved' : 'Pending' }}
+                            </span>
+                       
+                        </div>
+                        <div class="col-md-3 me-3 text-end">
+                            <span class="text-end fs-5 me-3"> Hi! </span> <span [ngClass]="'fs-5 badge rounded-pill step-badge bg-info'"
+                               > {{studentDetailsWithImage?.studentName}}
+                            </span>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div *ngIf="StudentImage else placeholderImg">
+                                <img alt="Student Image" class="img-fluid rounded-circle border border-3 border-primary" [src]="StudentImage"
+                                    style="width: 90px; height: 90px; object-fit: cover;">
+                            </div>
+                            <ng-template #placeholderImg>
+                                <img src="https://placehold.co/150x150" alt="No Image" class="img-thumbnail"
+                                    style="max-width:150px; max-height:150px; object-fit:cover;" />
+                            </ng-template>
+                        </div>
                 </div>
             </div>
         </div>
     </div>
-        <!-- <div class="row mt-2 mb-4" *ngIf="stuApplication">
-            <div class="col-md-6 grid-margin stretch-card">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row d-flex justify-content-start">
-                            <label class="col-md-5 form-label text-danger">Name</label>
-                            <label class="col-md-7 form-label text-dark">{{ studentName}}</label>
-                        </div>
-                        <div class="row d-flex justify-content-start">
-                            <label class="col-md-5 form-label text-danger">Registration Number</label>
-                            <label class="col-md-7 form-label text-dark">{{ RegistrationNo }}</label>
-                        </div>
-                        <div class="row d-flex justify-content-start">
-                            <label class="col-md-5 form-label text-danger">Program Name</label>
-                            <label class="col-md-7 form-label text-dark">{{ courseName}}</label>
-                        </div>
-                        <div class="row d-flex justify-content-start">
-                            <label class="col-md-5 form-label text-danger">Current Year</label>
-                            <label class="col-md-7 form-label text-dark">{{ CurrentYear }}</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 grid-margin stretch-card">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row d-flex justify-content-center">
-                            <label class="col-md-4 form-label text-danger">Overall Score</label>
-                            <label class="col-md-7 form-label text-dark">{{ cgpa ?? 'NA' }}</label>
-                        </div>
-                        <div class="row d-flex justify-content-center">
-                            <label class="col-md-4 form-label text-danger">Program</label>
-                            <label class="col-md-7 form-label text-dark">{{ courseName}}</label>
-                        </div>
-                        <div class="row d-flex justify-content-center">
-                            <label class="col-md-4 form-label text-danger">Status</label>
-                            <label class="col-md-7 form-label text-dark">{{ studentStatus }}</label>
-                        </div>
-                        <div class="row d-flex justify-content-center">
-                            <label class="col-md-4 form-label text-danger">Current Term</label>
-                            <label class="col-md-7 form-label text-dark">{{ CurrentTerm }}</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-
         <div class="col-md-12 grid-margin stretch-card mb-3">
             <div class="card">
                 <div class="card-body">
-                 
+        
                     <div class="d-flex align-items-center justify-content-center flex-wrap gap-3">
-                        <ng-container *ngFor="let label of stepLabels; let i = index">
-                            <div class="step" [class.active]="i === currentStep" [class.past]="i < currentStep">
-                                <span class="badge rounded-pill step-badge fs-5"
-                                    [ngClass]="{ 'bg-primary': i === currentStep, 'bg-success': i < currentStep, 'bg-secondary': i > currentStep }">
-                                    {{ label }}
-                                </span>
-                            </div>
-                            <div *ngIf="i < stepLabels.length - 1" class="divider"></div>
+                         <ng-container *ngIf="LockedStatus">
+                        <span class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-none': true }">
+                            <button type="button" class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-success': true }"
+                                (click)="moveNextStep()">Course Mapping </button>
+                        </span>
+                        <br/>
+                        <span class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-none': true }">
+                            <button type="button" class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-success': true }"
+                                (click)="GetStudentApplication(this.RegistrationNo)">View Application </button>
+                        </span>
+                        </ng-container>
+                        <span class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-info': true }">
+                            My Application ID: <span class="badge rounded-pill step-badge fs-6"
+                                [ngClass]="{ 'bg-dark': true }">{{ ApplicationId }}</span>
+                        </span>
+                        <ng-container *ngIf="!LockedStatus">
+                            <ng-container *ngFor="let label of stepLabels; let i = index">
+                                <div class="step" [class.active]="i === currentStep" [class.past]="i < currentStep">
+                                    <span class="badge rounded-pill step-badge fs-6"
+                                        [ngClass]="{ 'bg-info': i === currentStep, 'bg-success': i < currentStep, 'bg-secondary': i > currentStep }">
+                                        {{ label }}
+                                    </span>
+                                </div>
+                                <div *ngIf="i < stepLabels.length - 1" class="divider"></div>
+                            </ng-container>
                         </ng-container>
                     </div>
                 </div>
             </div>
         </div>
+        
+
+        <!-- New Task For Course mapping pending -->
+          <section *ngIf="currentStep === 5" class="step-section">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="text-info m-0">Course Covered & Uploads</h5>
+                <div>
+                    <button class="btn btn-success me-2" (click)="addCourseRow()">Add Row</button>
+                    <button class="btn btn-primary" (click)="saveAllCourseCovered()"
+                        [disabled]="isSavingCourses || courseRows.length===0">Save All</button>
+                </div>
+            </div>
+        
+        
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Course Name</th>
+                            <th>Course Code</th>
+                            <th>Hours</th>
+                            <th>Upload Document</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of courseRows; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td><input class="form-control" [(ngModel)]="row.courseName" name="courseName{{i}}" /></td>
+                            <td><input class="form-control" [(ngModel)]="row.courseCode" name="courseCode{{i}}" /></td>
+                            <td><input type="number" min="0" class="form-control" [(ngModel)]="row.hours" name="hours{{i}}" />
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <input type="file" (change)="onCourseFilePicked($event, i)" />
+                                    <a *ngIf="row.fileName" href="#" class="btn btn-outline-secondary btn-sm"
+                                        (click)="downloadCourseFile(i, $event)">{{ row.fileName }}</a>
+                                </div>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger btn-sm" (click)="removeCourseRow(i)">Remove</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        
+        </section>
 
         <div class="col-md-12 grid-margin stretch-card mb-3">
             <div class="card">
@@ -170,7 +194,7 @@
                 <div class="row g-3">
                     <div class="d-flex justify-content-center ">
                         <button type="button" class="btn btn-secondary m-3" (click)="prevStep()">Back</button>
-                        <button type="button" class="btn btn-sm btn-danger m-3" *ngIf="!isEditingStep[1]"
+                        <button type="button" class="btn btn-sm btn-danger m-3" *ngIf="!isEditingStep[1] && !LockedStatus"
                             (click)="startEdit(1)">Edit</button>
                         <button type="button" class="btn btn-danger m-3" *ngIf="isEditingStep[1]"
                             (click)="cancelEdit(1)">Cancel</button>
@@ -247,7 +271,6 @@
                         <div class="card section">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <span>Relative Details</span>
-                                <!-- <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[1]" (click)="startEdit(1)">Edit</button> -->
                             </div>
                             <div class="card-body" [class.disabled-form]="!isEditingStep[1]">
                                 <div class="row mt-2">
@@ -323,7 +346,7 @@
             <section *ngIf="currentStep === 2" class="step-section">
                 <div class="row g-3">
                     <div class="d-flex justify-content-center mt-4">
-                        <button type="button" class="btn btn-sm btn-danger m-3" *ngIf="!isEditingStep[2]" (click)="startEdit(2)">Edit</button>
+                        <button type="button" class="btn btn-sm btn-danger m-3" *ngIf="!isEditingStep[2] && !LockedStatus" (click)="startEdit(2)">Edit</button>
                         <button type="button" class="btn btn-secondary m-3" (click)="prevStep()">Back</button>
                         <button type="button" class="btn btn-danger m-3" *ngIf="isEditingStep[2]" (click)="cancelEdit(2)">Cancel</button>
                         <button type="button" class="btn btn-success m-3" *ngIf="isEditingStep[2]" (click)="updateStep(2)"
@@ -444,7 +467,7 @@
             <section *ngIf="currentStep === 3" class="step-section">
                 <div class="row g-3">
                     <div class="d-flex justify-content-center m-4">
-                        <button type="button" class="btn btn-lg btn-danger  m-3" *ngIf="!isEditingStep[3]" (click)="startEdit(3)">Edit</button>
+                        <button type="button" class="btn btn-lg btn-danger  m-3" *ngIf="!isEditingStep[3] && !LockedStatus" (click)="startEdit(3)">Edit</button>
                   
                         <button type="button" class="btn btn-secondary m-3" (click)="prevStep()">Back</button>
                         <button type="button" class="btn btn-danger m-3" *ngIf="isEditingStep[3]" (click)="cancelEdit(3)">Cancel</button>
@@ -654,7 +677,7 @@
             <section *ngIf="currentStep === 4 " class="step-section">
                 <div class="row g-3">
                     <div class="d-flex justify-content-center m-4">
-                        <button type="button" class="btn btn-lg btn-danger m-3" *ngIf="!isEditingStep[4]" (click)="startEdit(4)">Edit</button>
+                        <button type="button" class="btn btn-lg btn-danger m-3" *ngIf="!isEditingStep[4] && !LockedStatus" (click)="startEdit(4)">Edit</button>
                              <button type="button" class="btn btn-danger m-3" *ngIf="isEditingStep[4]" (click)="cancelEdit(4)">Cancel</button>
                         <button type="button" class="btn btn-secondary m-3" (click)="prevStep()">Back</button>
                         <button type="button" class="btn btn-success m-3" *ngIf="isEditingStep[4]" (click)="Onsubmit()"
