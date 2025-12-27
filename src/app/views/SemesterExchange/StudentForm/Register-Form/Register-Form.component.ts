@@ -159,11 +159,11 @@ export class RegisterFormcomponent implements OnInit {
         // Sponsor & Declaration
         SponsorType: ['', Validators.required],
         AvailableFunds: ['', Validators.required],
-        SponsorName: [''], 
+        SponsorName: [''],
         SponsorRelation: [''],
         AcceptPolicy: [true, Validators.requiredTrue],
-        SponsorContact:[''],
-        SponsorEmail:[''],
+        SponsorContact: [''],
+        SponsorEmail: [''],
         // Document paths 
         PassportDocumentPath: [''],
         EnglishDocumentPath: [''],
@@ -187,7 +187,6 @@ export class RegisterFormcomponent implements OnInit {
 
     this.isLoading = true;
     const { email, contactNumber } = this.eligibilityForm.value;
-    
     this.servicesSM.getStudentById()
       .pipe(
         finalize(() => this.isLoading = false)
@@ -208,7 +207,7 @@ export class RegisterFormcomponent implements OnInit {
         }
       });
   }
-ApplicationID: any;
+  ApplicationID: any;
 
   getToken(loginId: any): void {
     this.isLoading = true;
@@ -229,108 +228,123 @@ ApplicationID: any;
   }
   ContactNo: any;
   getStudentDetail(): void {
-  this.isLoading = true;
-  this.servicesSM.getStudentById().pipe(finalize(() => this.isLoading = false))
-    .subscribe({
-      next: response => {
-        if (response.item1 && response.item1.length > 0) {
-          const stuData = response.item1[0];
-          this.studentName = stuData.studentName;
-          this.ContactNo = stuData.studentMobile;
-          this.RegistrationNo = stuData.registerationNumber;
-          this.courseName = stuData.courseName;
-          this.cgpa = stuData.cgpa;
-          this.CurrentYear = stuData.currentYear;
-          this.CurrentTerm = stuData.currentTerm;
-          this.studentStatus = stuData.studentStatus;
-          this.form.get('EmailId')?.setValue(stuData.studentEmail || this.eligibilityForm.get('email')?.value);
+    this.isLoading = true;
+    this.servicesSM.getStudentById().pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: response => {
+          if (response.item1 && response.item1.length > 0) {
+            const stuData = response.item1[0];
+            this.studentName = stuData.studentName;
+            this.ContactNo = stuData.studentMobile;
+            this.RegistrationNo = stuData.registerationNumber;
+            this.courseName = stuData.courseName;
+            this.cgpa = stuData.cgpa;
+            this.CurrentYear = stuData.currentYear;
+            this.CurrentTerm = stuData.currentTerm;
+            this.studentStatus = stuData.studentStatus;
+            this.form.get('EmailId')?.setValue(stuData.studentEmail || this.eligibilityForm.get('email')?.value);
 
-          this.checkApplicationStatusBeforeEligibility();
-        } else {
-          this.LoginFailed('Student data not found');
-        }
-      },
-      error: err => this.LoginFailed(err)
-    });
-}
+            this.checkApplicationStatusBeforeEligibility();
+          } else {
+            this.LoginFailed('Student data not found');
+          }
+        },
+        error: err => this.LoginFailed(err)
+      });
+  }
 
-private checkApplicationStatusBeforeEligibility(): void {
-  this.isLoading = true;
-  this.servicesSM.getApplicationDetailsBYId(this.RegistrationNo)
-    .pipe(finalize(() => this.isLoading = false))
-    .subscribe({
-      next: (response) => {
-        const stuApplication = response.item1?.[0];
-        this.ApplicationID = stuApplication?.applicationId;
+  private checkApplicationStatusBeforeEligibility(): void {
+    this.isLoading = true;
+    this.servicesSM.getApplicationDetailsBYId(this.RegistrationNo)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: (response) => {
+          const stuApplication = response.item1?.[0];
+          this.ApplicationID = stuApplication?.applicationId;
 
-        if (+(this.ApplicationID) > 0) {
-          Swal.fire({ title: 'Application Already Exists', icon: 'success' }).then(() => {
-            this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
-          });
-        } 
-        else {
+          if (+(this.ApplicationID) > 0) {
+            Swal.fire({ title: 'Application Already Exists', icon: 'success' }).then(() => {
+              this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
+            });
+          }
+          else if (this.studentStatus !== 'A') {
+            this.setIneligible('Student account is not active.');
+          }
           this.runEligibilityChecks();
-        }
-      },
-      error: (err) => this.LoginFailed(err)
-    });
-}
 
-private runEligibilityChecks(): void {
-  if (this.CurrentTerm == 1 || this.CurrentTerm == 2) {
-    this.getPlusTwoMarks(this.RegistrationNo);
-  } 
-  else if (this.CurrentTerm > 2) {
-    if (+(this.cgpa) >= 6) {
+        },
+        error: (err) => this.LoginFailed(err)
+      });
+  }
+
+  private runEligibilityChecks(): void {
+
+    if (this.CurrentTerm == 1 || this.CurrentTerm == 2) {
+      this.getPlusTwoMarks(this.RegistrationNo);
+    }
+    else if (this.CurrentTerm > 2 && +(this.cgpa) >= 6) {
       this.isEligible = true;
       this.getStudentCodeDetails(this.RegistrationNo);
     } else {
-      this.setIneligible('CGPA must be $\ge 6$ for terms above 2.');
+      this.servicesSM.GetStudentAllPreviousMarks(this.RegistrationNo)
+        .pipe(finalize(() => this.isLoading = false))
+        .subscribe({
+          next: response => {
+            if (!response || !response.item1?.length) {
+              this.setIneligible('No previous mark records found.');
+              return;
+            }
+            this.studentAcademicDetail = response.item4?.[0] || {};
+            this.ProgramCode = this.studentAcademicDetail.PName ? this.studentAcademicDetail.PName.split(':')[0].trim() : this.ProgramCode;
+            this.SectionCode = this.studentAcademicDetail.Section;
+          }
+        })
+      this.setIneligible('CGPA must be more than 6 .');
+      // this.GetStudentAllPreviousMarks(this.RegistrationNo);      
     }
   }
-}
 
-getPlusTwoMarks(Regdno: any): void {
-  this.isLoading = true;
-  this.servicesSM.GetStudentAllPreviousMarks(Regdno)
-    .pipe(finalize(() => this.isLoading = false))
-    .subscribe({
-      next: response => {
-        if (!response || !response.item1?.length) {
-          this.setIneligible('No previous mark records found.');
-          return;
-        }
-
-        const studentPreviousMarksData = response.item1;
-        const plus2Record = studentPreviousMarksData.find((r: any) => r.ExamDescription === '10+2');
-        const graduationRecord = studentPreviousMarksData.find((r: any) => r.ExamDescription === 'Graduation');
-
-        const plus2Percentage = plus2Record ? parseFloat(plus2Record.Perecentage) : 0;
-        const gradPercentage = graduationRecord ? parseFloat(graduationRecord.Perecentage) : NaN;
-
-   
-        if (!isNaN(gradPercentage)) {
-          if (gradPercentage > 65) {
-            this.cgpa = gradPercentage;
-            this.setEligible();
-          } else {
-            this.setIneligible('Graduation marks must be $> 65\%$.');
+  getPlusTwoMarks(Regdno: any): void {
+    this.isLoading = true;
+    this.servicesSM.GetStudentAllPreviousMarks(Regdno)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: response => {
+          if (!response || !response.item1?.length) {
+            this.setIneligible('No previous mark records found.');
+            return;
           }
-        } 
-        else if (plus2Percentage > 70) {
-          this.cgpa = plus2Percentage;
-          this.setEligible();
-        } 
-        else {
-          this.setIneligible('10+2 marks must be $> 70\%$ when graduation marks are not found.');
-        }
 
-        this.FindGradeFCount(this.RegistrationNo);
-        this.getUniversityDetails();
-      },
-      error: err => this.LoginFailed(err)
-    });
-}
+          const studentPreviousMarksData = response.item1;
+          const plus2Record = studentPreviousMarksData.find((r: any) => r.ExamDescription === '10+2');
+          const graduationRecord = studentPreviousMarksData.find((r: any) => r.ExamDescription === 'Graduation');
+
+          const plus2Percentage = plus2Record ? parseFloat(plus2Record.Perecentage) : 0;
+          const gradPercentage = graduationRecord ? parseFloat(graduationRecord.Perecentage) : NaN;
+
+
+          if (!isNaN(gradPercentage)) {
+            if (gradPercentage > 65) {
+              this.cgpa = gradPercentage;
+              this.setEligible();
+            } else {
+              this.setIneligible('Graduation marks must be > 65.');
+            }
+          }
+          else if (plus2Percentage > 70) {
+            this.cgpa = plus2Percentage;
+            this.setEligible();
+          }
+          else {
+            this.setIneligible('10+2 marks must be > 70.');
+          }
+
+          this.FindGradeFCount(this.RegistrationNo);
+          this.getUniversityDetails();
+        },
+        error: err => this.LoginFailed(err)
+      });
+  }
 
   // getStudentDetail(): void {
   //   this.isLoading = true;
@@ -369,7 +383,7 @@ getPlusTwoMarks(Regdno: any): void {
   //       error: err => this.LoginFailed(err)
   //     });
   // }
-    // getPlusTwoMarks(Regdno: any): void {
+  // getPlusTwoMarks(Regdno: any): void {
   //   this.servicesSM.GetStudentAllPreviousMarks(Regdno)
   //     .pipe(finalize(() => this.isLoading = false))
   //     .subscribe({
@@ -384,7 +398,7 @@ getPlusTwoMarks(Regdno: any): void {
   //         const GraduationRecord = studentPreviousMarksData.find((r: any) => r.ExamDescription === 'Graduation');
   //         const percentage = plus2Record ? parseFloat(plus2Record.Perecentage) : NaN;
   //         const gradPercentage = GraduationRecord ? parseFloat(GraduationRecord.Perecentage) : NaN;
-         
+
   //         if ((!Number.isNaN(gradPercentage) && gradPercentage >= 65.0)) {
   //           this.cgpa = GraduationRecord.Perecentage;
   //           console.log('Graduation Percentage: ' + this.cgpa);
@@ -403,27 +417,27 @@ getPlusTwoMarks(Regdno: any): void {
   //       error: err => this.LoginFailed(err)
   //     });
   // }
-  
+
   getApplicationDetails(regId: string): any {
     this.isLoading = true;
     this.servicesSM.getApplicationDetailsBYId(regId).pipe(finalize(() => this.isLoading = false))
       .subscribe((response) => {
         const stuApplication = response.item1?.[0];
-        this.ApplicationID= stuApplication?.applicationId;
+        this.ApplicationID = stuApplication?.applicationId;
         if (this.ApplicationID > 0) {
           Swal.fire({ title: 'Application Already Exists', icon: 'success' }).then(() => {
             this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
           });
         }
       });
-      return this.ApplicationID;
+    return this.ApplicationID;
   }
 
-  getStudentCodeDetails(Regdno: any){
-     this.servicesSM.GetStudentAllPreviousMarks(Regdno)
+  getStudentCodeDetails(Regdno: any) {
+    this.servicesSM.GetStudentAllPreviousMarks(Regdno)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
-        next: response => { 
+        next: response => {
           if (!response || !response.item1?.length) {
             this.setIneligible('No previous mark records found.');
             return;
@@ -433,8 +447,8 @@ getPlusTwoMarks(Regdno: any): void {
           this.SectionCode = this.studentAcademicDetail.Section;
           this.FindGradeFCount(this.RegistrationNo);
           this.getUniversityDetails();
-          this.setEligible();          
-          },
+          this.setEligible();
+        },
         error: err => this.LoginFailed(err)
       });
   }
@@ -470,7 +484,7 @@ getPlusTwoMarks(Regdno: any): void {
         error: err => this.LoginFailed(err)
       });
   }
- 
+
 
   getTableHeaders(obj: any): string[] {
     return Object.keys(obj);
@@ -478,7 +492,7 @@ getPlusTwoMarks(Regdno: any): void {
   topHeader: any = ['termId', 'courseCode', 'credit', 'gradeNum', 'grade']
   GradeFcount: any;
   studentDetailsWithMarks: any[];
- 
+
   SchoolId: any;
   FindGradeFCount(regdNo: any): void {
     this.servicesSM.getStudentDetailsWithMarks(regdNo).pipe(finalize(() => this.isLoading = false))
@@ -523,6 +537,7 @@ getPlusTwoMarks(Regdno: any): void {
   private setIneligible(reason: string): void {
     this.isEligible = false;
     Swal.fire({ title: 'Not Eligible', text: reason, icon: 'warning' });
+    return;
   }
 
 
@@ -533,27 +548,25 @@ getPlusTwoMarks(Regdno: any): void {
   studentGradeMarksDataX: any;
   studentAcademicDetail: any;
   studentAcademicDetailX: any;
-  
+
 
   getUniversityDetails(): void {
-    if (!this.ProgramCode) 
-    {
-       this.servicesSM.getUniversityLists('').subscribe((response) => {
-      this.uniData = response.item1;
-    });
+    if (!this.ProgramCode) {
+      this.servicesSM.getUniversityLists('').subscribe((response) => {
+        this.uniData = response.item1;
+      });
     }
-    else
-    {
-    this.servicesSM.getUniversityLists(this.ProgramCode).subscribe((response) => {
-      this.uniData = response.item1;
-    });
-  }
+    else {
+      this.servicesSM.getUniversityLists(this.ProgramCode).subscribe((response) => {
+        this.uniData = response.item1;
+      });
+    }
   }
   togglePolicy(event: MouseEvent): void {
     event.preventDefault(); // prevent page scroll
     this.showPolicy = !this.showPolicy;
   }
-  
+
 
   nextStep(): void {
     if (this.currentStep === this.stepLabels.length) return;
@@ -631,7 +644,7 @@ getPlusTwoMarks(Regdno: any): void {
       formData.append("OverallScore", formValue.OverallScore || 'NA');
       formData.append("EnglishTestYear", formValue.EnglishTestYear);
       formData.append("TestDate", formValue.TestDate);
-    } 
+    }
     if (formValue.EnglishTestType === 'Appeared') {
       formData.append("EnglishTestName", formValue.TestName || 'NA');
       formData.append("SpeakingScore", formValue.SpeakingScore || 'NA');
@@ -643,33 +656,33 @@ getPlusTwoMarks(Regdno: any): void {
       formData.append("TestDate", formValue.TestDate);
     }
     else {
-      formData.append("EnglishTestName",  'NA');
-      formData.append("SpeakingScore",  'NA');
+      formData.append("EnglishTestName", 'NA');
+      formData.append("SpeakingScore", 'NA');
       formData.append("ListeningScore", 'NA');
-      formData.append("ReadingScore",  'NA');
-      formData.append("WritingScore",  'NA');
-      formData.append("OverallScore",  'NA');
+      formData.append("ReadingScore", 'NA');
+      formData.append("WritingScore", 'NA');
+      formData.append("OverallScore", 'NA');
       formData.append("EnglishTestYear", 'NA');
       formData.append("TestDate", 'NA');
-      
+
     }
 
-    formData.append("AvailableFunds", formValue.AvailableFunds );
+    formData.append("AvailableFunds", formValue.AvailableFunds);
     formData.append("TotalCountGradeF", this.GradeFcount?.toString()); // Convert number to string
 
     if (formValue.SponsorType === 'Other') {
-      formData.append("IsSelfFunded", 'False' );
+      formData.append("IsSelfFunded", 'False');
       formData.append("SponsorType", 'Other');
       formData.append("SponsorName", formValue.SponsorName || 'NA');
       formData.append("SponsorRelation", formValue.SponsorRelation || 'NA');
       formData.append("SponsorContact", formValue.SponsorContact || 'NA'); // This field is not in the form, so default to 'NA'
-      formData.append("SponsorEmail", formValue.SponsorEmail ); // This field is not in the form, so default to 'NA'
+      formData.append("SponsorEmail", formValue.SponsorEmail); // This field is not in the form, so default to 'NA'
     } else {
-      formData.append("IsSelfFunded", 'True' );
+      formData.append("IsSelfFunded", 'True');
       formData.append("SponsorType", 'Parent');
       formData.append("SponsorName", 'Parent');
       formData.append("SponsorRelation", 'Parent');
-      formData.append("SponsorContact",  formValue.ParentContact);
+      formData.append("SponsorContact", formValue.ParentContact);
       formData.append("SponsorEmail", 'Parent');
     }
 
@@ -1074,7 +1087,7 @@ getPlusTwoMarks(Regdno: any): void {
       this.FeesProofData = modifiedFile;
       this.FeesProofDocumentPath = validFileName;
       this.FeesProofFileName = validFileName;
-      this.form.get('FeesDocumentPath')!.setValue(validFileName);  
+      this.form.get('FeesDocumentPath')!.setValue(validFileName);
       this.FeesProofStatus = true;
 
       reader.readAsDataURL(modifiedFile);
