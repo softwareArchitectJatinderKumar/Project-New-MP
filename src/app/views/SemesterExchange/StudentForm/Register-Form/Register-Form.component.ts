@@ -16,6 +16,7 @@ import { StorageService } from 'src/app/_services/storage.service';
 import { AuthService } from 'src/app/_services/auth.service';
 import Swal from 'sweetalert2';
 import { finalize } from 'rxjs';
+import { start } from 'repl';
 
 @Component({
   selector: 'app-Register-Form',
@@ -90,6 +91,25 @@ export class RegisterFormcomponent implements OnInit {
   PresentDate: string;
   showPolicy = true;
 
+    // --- STATE & LOADER FLAGS ---
+  private readonly MIN_LOADER_TIME = 10; 
+  private loaderStartTime: number = 0;
+
+   // --- LOADER UTILITIES ---
+  private startLoader(): void {
+    this.isLoading = true;
+    this.loaderStartTime = Date.now();
+  }
+
+  private stopLoader(): void {
+    const elapsed = Date.now() - this.loaderStartTime;
+    const remaining = Math.max(0, this.MIN_LOADER_TIME - elapsed);
+    setTimeout(() => this.isLoading = false, remaining);
+  }
+
+
+
+
   constructor(
     private authService: AuthService,
     private storageService: StorageService,
@@ -109,6 +129,7 @@ export class RegisterFormcomponent implements OnInit {
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
     this.LoginName = this.route.snapshot.params['LoginName'];
     if (this.LoginName != '' && this.LoginName != undefined) {
+       this.startLoader();
       this.getToken(this.LoginName);
 
     }
@@ -184,21 +205,19 @@ export class RegisterFormcomponent implements OnInit {
       this.eligibilityForm.markAllAsTouched();
       return;
     }
-
-    this.isLoading = true;
+    
     const { email, contactNumber } = this.eligibilityForm.value;
+    this.startLoader();
     this.servicesSM.getStudentById()
-      .pipe(
-        finalize(() => this.isLoading = false)
-      )
       .subscribe({
         next: (response: any) => {
           const studentInfo = response.item1?.[0];
-
           if (studentInfo) {
             this.RegistrationNo = studentInfo.registerationNumber;
             this.getToken(this.LoginName);
+             this.stopLoader();
           } else {
+            this.stopLoader();
             Swal.fire({ title: 'Not Eligible', text: 'Email/Contact did not match any record.', icon: 'warning' });
           }
         },
@@ -206,30 +225,42 @@ export class RegisterFormcomponent implements OnInit {
           Swal.fire({ title: 'Error', text: 'Failed to verify details. Try again.', icon: 'error' });
         }
       });
+
   }
   ApplicationID: any;
+  getTokenY(loginId: any): void {
+    this.authService.loginTemp(loginId).subscribe({
+      next: data => {
+        this.storageService.saveUser(data);
+        this.buildMainForm();
+        this.getStudentDetail(); 
+      },
+      error: () => { this.stopLoader(); this.loginFailed = true; }
+    });
+  }
 
-  getToken(loginId: any): void {
-    this.isLoading = true;
-    this.authService.loginTemp(loginId).pipe(finalize(() => this.isLoading = false))
-      .subscribe({
-        next: data => {
-          this.storageService.saveUser(data);
-          if (this.storageService.isLoggedIn()) {
+  getToken(loginId: any): void {     
+    this.authService.loginTemp(loginId).subscribe({
+      next: data => {
+        this.storageService.saveUser(data);
+        const authToken = this.storageService.getUser();
+        if (!this.storageService.isLoggedIn() || authToken === 'Token Expired') {
+           this.loginFailed = true;
+          this.LoginFailed('Invalid or expired token');
+        } else {
             this.loginFailed = false;
             this.buildMainForm();
             this.getStudentDetail();
-          } else {
-            this.LoginFailed('Authentication failed');
-          }
-        },
-        error: err => this.LoginFailed(err)
+           
+        }
+        
+      },
+      error: () => { this.stopLoader(); this.loginFailed = true; }
       });
   }
   ContactNo: any;
   getStudentDetail(): void {
-    this.isLoading = true;
-    this.servicesSM.getStudentById().pipe(finalize(() => this.isLoading = false))
+    this.servicesSM.getStudentById() 
       .subscribe({
         next: response => {
           if (response.item1 && response.item1.length > 0) {
@@ -254,9 +285,7 @@ export class RegisterFormcomponent implements OnInit {
   }
 
   private checkApplicationStatusBeforeEligibility(): void {
-    this.isLoading = true;
-    this.servicesSM.getApplicationDetailsBYId(this.RegistrationNo)
-      .pipe(finalize(() => this.isLoading = false))
+    this.servicesSM.getApplicationDetailsBYId(this.RegistrationNo)     
       .subscribe({
         next: (response) => {
           const stuApplication = response.item1?.[0];
@@ -270,15 +299,15 @@ export class RegisterFormcomponent implements OnInit {
           else if (this.studentStatus !== 'A') {
             this.setIneligible('Student account is not active.');
           }
-          this.runEligibilityChecks();
-
+          else { this.runEligibilityChecks(); }
+         
         },
         error: (err) => this.LoginFailed(err)
       });
+                
   }
 
   private runEligibilityChecks(): void {
-
     if (this.CurrentTerm == 1 || this.CurrentTerm == 2) {
       this.getPlusTwoMarks(this.RegistrationNo);
     }
@@ -287,7 +316,7 @@ export class RegisterFormcomponent implements OnInit {
       this.getStudentCodeDetails(this.RegistrationNo);
     } else {
       this.servicesSM.GetStudentAllPreviousMarks(this.RegistrationNo)
-        .pipe(finalize(() => this.isLoading = false))
+     
         .subscribe({
           next: response => {
             if (!response || !response.item1?.length) {
@@ -300,14 +329,13 @@ export class RegisterFormcomponent implements OnInit {
           }
         })
       this.setIneligible('CGPA must be more than 6 .');
+     
       // this.GetStudentAllPreviousMarks(this.RegistrationNo);      
     }
   }
 
-  getPlusTwoMarks(Regdno: any): void {
-    this.isLoading = true;
-    this.servicesSM.GetStudentAllPreviousMarks(Regdno)
-      .pipe(finalize(() => this.isLoading = false))
+  getPlusTwoMarks(Regdno: any): void {    
+    this.servicesSM.GetStudentAllPreviousMarks(Regdno)     
       .subscribe({
         next: response => {
           if (!response || !response.item1?.length) {
@@ -345,81 +373,8 @@ export class RegisterFormcomponent implements OnInit {
         error: err => this.LoginFailed(err)
       });
   }
-
-  // getStudentDetail(): void {
-  //   this.isLoading = true;
-  //   this.servicesSM.getStudentById().pipe(finalize(() => this.isLoading = false))
-  //     .subscribe({
-  //       next: response => {
-  //         if (response.item1.length > 0) {
-  //           const stuData = response.item1[0];
-  //           this.studentName = stuData.studentName;
-  //           this.ContactNo = stuData.studentMobile;
-  //           this.RegistrationNo = stuData.registerationNumber;
-  //           this.courseName = stuData.courseName;
-  //           this.cgpa = stuData.cgpa;
-  //           this.CurrentYear = stuData.currentYear;
-  //           this.CurrentTerm = stuData.currentTerm;
-  //           this.studentStatus = stuData.studentStatus;
-  //           this.form.get('EmailId')?.setValue(stuData.studentEmail || this.eligibilityForm.get('email')?.value);
-  //            this.getApplicationDetails(this.RegistrationNo);
-  //            if (+(this.ApplicationID) > 0) {
-  //           Swal.fire({ title: 'Application Already Exists', icon: 'success' }).then(() => {
-  //               this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
-  //             });              
-  //           }
-  //           else if (this.CurrentTerm == 1 || this.CurrentTerm == 2 && this.studentStatus !== 'A' || this.studentStatus !== 'ACT') {
-  //             this.getPlusTwoMarks(this.RegistrationNo);
-  //           }    
-  //           else if (+(this.cgpa) >= 6.0 && this.CurrentTerm > 2 && (this.studentStatus !== 'A' || this.studentStatus !== 'ACT')) {
-  //             this.isEligible = true;
-  //             this.getStudentCodeDetails(this.RegistrationNo);
-  //             return;
-  //           }
-  //         } else {
-  //           this.LoginFailed('Student data not found');
-  //         }
-  //       },
-  //       error: err => this.LoginFailed(err)
-  //     });
-  // }
-  // getPlusTwoMarks(Regdno: any): void {
-  //   this.servicesSM.GetStudentAllPreviousMarks(Regdno)
-  //     .pipe(finalize(() => this.isLoading = false))
-  //     .subscribe({
-  //       next: response => {
-  //         if (!response || !response.item1?.length) {
-  //           this.setIneligible('No previous mark records found.');
-  //           return;
-  //         }
-  //         // 3. Find 10+2 record and percentage
-  //         const studentPreviousMarksData = response.item1;
-  //         const plus2Record = studentPreviousMarksData.find((r: any) => r.ExamDescription === '10+2');
-  //         const GraduationRecord = studentPreviousMarksData.find((r: any) => r.ExamDescription === 'Graduation');
-  //         const percentage = plus2Record ? parseFloat(plus2Record.Perecentage) : NaN;
-  //         const gradPercentage = GraduationRecord ? parseFloat(GraduationRecord.Perecentage) : NaN;
-
-  //         if ((!Number.isNaN(gradPercentage) && gradPercentage >= 65.0)) {
-  //           this.cgpa = GraduationRecord.Perecentage;
-  //           console.log('Graduation Percentage: ' + this.cgpa);
-  //           this.setEligible();
-  //         } else if (!Number.isNaN(percentage) && percentage >= 70.0) {
-  //           this.cgpa = plus2Record.Perecentage;
-  //           console.log('10+2 Percentage: ' + this.cgpa);
-  //           this.setEligible();
-  //         }
-  //         else {this.cgpa = gradPercentage>0 ? gradPercentage : percentage;
-  //           this.setIneligible('Eligibility Failed '+ (gradPercentage>0 ? 'Graduation percentage criterion not met (required >= 65.0%).' : '10+2 percentage criterion not met (required >= 70.0%).'));
-  //         }
-  //         this.FindGradeFCount(this.RegistrationNo);          
-  //         this.getUniversityDetails();
-  //       },
-  //       error: err => this.LoginFailed(err)
-  //     });
-  // }
-
+ 
   getApplicationDetails(regId: string): any {
-    this.isLoading = true;
     this.servicesSM.getApplicationDetailsBYId(regId).pipe(finalize(() => this.isLoading = false))
       .subscribe((response) => {
         const stuApplication = response.item1?.[0];
@@ -435,7 +390,6 @@ export class RegisterFormcomponent implements OnInit {
 
   getStudentCodeDetails(Regdno: any) {
     this.servicesSM.GetStudentAllPreviousMarks(Regdno)
-      .pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: response => {
           if (!response || !response.item1?.length) {
@@ -454,9 +408,8 @@ export class RegisterFormcomponent implements OnInit {
   }
 
   GetStudentAllPreviousMarks(Regdno: any): void {
-    this.isLoading = true;
-    this.servicesSM.GetStudentAllPreviousMarks(Regdno)
-      .pipe(finalize(() => this.isLoading = false))
+    
+    this.servicesSM.GetStudentAllPreviousMarks(Regdno)      
       .subscribe({
         next: response => {
           if (!response || !response.item1?.length) {
@@ -495,7 +448,7 @@ export class RegisterFormcomponent implements OnInit {
 
   SchoolId: any;
   FindGradeFCount(regdNo: any): void {
-    this.servicesSM.getStudentDetailsWithMarks(regdNo).pipe(finalize(() => this.isLoading = false))
+    this.servicesSM.getStudentDetailsWithMarks(regdNo) 
       .subscribe({
         next: response => {
           if (response.item1.length > 0) {
@@ -531,12 +484,14 @@ export class RegisterFormcomponent implements OnInit {
   private setEligible(): void {
     this.isEligible = true;
     this.currentStep = 1; // Start wizard
-    Swal.fire({ title: 'Eligibility Confirmed', icon: 'success', timer: 1500 });
+    Swal.fire({ title: 'Eligibility Confirmed', icon: 'success', timer: 500 });
+       this.stopLoader();  
   }
 
   private setIneligible(reason: string): void {
     this.isEligible = false;
-    Swal.fire({ title: 'Not Eligible', text: reason, icon: 'warning' });
+    Swal.fire({ title: 'Not Eligible', text: reason, icon: 'warning',timer: 500 });
+       this.stopLoader();  
     return;
   }
 
@@ -569,6 +524,7 @@ export class RegisterFormcomponent implements OnInit {
 
 
   nextStep(): void {
+     this.startLoader(); 
     if (this.currentStep === this.stepLabels.length) return;
     if (this.canProceedToNext(this.currentStep)) {
       this.currentStep++;
@@ -577,12 +533,14 @@ export class RegisterFormcomponent implements OnInit {
       this.isSubmitted = true;
       Swal.fire({ title: 'Validation Error', text: 'Please complete all required fields on this step.', icon: 'error' });
     }
+    this.stopLoader();
   }
 
   prevStep(): void {
-    if (this.currentStep > 0) {
-      this.currentStep--;
-    }
+    this.startLoader();
+    if (this.currentStep > 0) this.currentStep--;
+    window.scrollTo(0, 0);
+    this.stopLoader();
   }
 
   submitFinalApplication(): void {
@@ -592,7 +550,7 @@ export class RegisterFormcomponent implements OnInit {
       return;
     }
 
-    this.isLoading = true;
+     this.startLoader();
     // const formData = this.form.value; 
     const formValue = this.form.getRawValue();
 
@@ -734,6 +692,8 @@ export class RegisterFormcomponent implements OnInit {
           Swal.fire({ title: 'Error Occurred', text: 'Unable to complete the request. Please try again later.', icon: 'error' });
         }
       });
+
+      this.stopLoader();
   }
 
 
@@ -1221,3 +1181,9 @@ export class RegisterFormcomponent implements OnInit {
     }
   }
 }
+
+
+
+
+
+
