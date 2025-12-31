@@ -16,9 +16,9 @@ import { relative } from 'path';
 })
 export class StudentApplicationDetailsComponent implements OnInit {
 
-  // State & Data Properties
-  loadingIndicator: boolean = false; // Tracks main form loading
-  imageLoading: boolean = false;    // Tracks image loading state
+  
+  loadingIndicator: boolean = false; 
+  imageLoading: boolean = false;    
   studentForm!: FormGroup;
   LoginName: any;
   RegistrationNo: any;
@@ -30,7 +30,7 @@ export class StudentApplicationDetailsComponent implements OnInit {
   IsLoginFailed: boolean = false;
   folderUrl: string = ''; 
   
-  // Initial Form Structure (Simplified for read-only data storage)
+  
   private initialFormControls = {
     applicationId: [''], registrationNo: [''], emailId: [''], countryName: [''], whatsAppNo: [''], phoneNumber: [''], parentContact: [''],
     applyingOption: [''], universityOption1: [''], universityOption2: [''], universityOption3: [''],
@@ -136,7 +136,9 @@ get isReadyForPrint(): boolean {
                   
                   this.studentForm.patchValue({
                       ...this.stuApplication,
-                      
+                      University1: this.stuApplication.UniversityOption1,
+                      University2: this.stuApplication.UniversityOption2,
+                      University3: this.stuApplication.UniversityOption3,
                       acceptPolicy: this.stuApplication.acceptPolicy === 'Yes' || this.stuApplication.acceptPolicy === true || this.stuApplication.acceptPolicy === 'yes', 
                       passportIssueDate: this.formatDateForInput(this.stuApplication.passportIssueDate),
                       passportValidUpto: this.formatDateForInput(this.stuApplication.passportValidUpto),

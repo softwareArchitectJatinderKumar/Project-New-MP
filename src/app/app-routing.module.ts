@@ -9,9 +9,6 @@ import { SemesterMigrationAdminComponent } from './views/SemesterExchange/HODDas
 
 const routes: Routes = [
 
-
-
-
   { path: 'auth', loadChildren: () => import('./views/pages/auth/auth.module').then(m => m.AuthModule) },
   {
     path: '',
@@ -33,13 +30,12 @@ const routes: Routes = [
       },
       {
         path: 'OBPHeadMapping/:loginName',
-         loadChildren: () => import('./views/HeadMappingInterface/HeadMappingWithAssistant/HeadMappingWithAssistant.module').then(m => m.OBPMetricBindingModule),
+        loadChildren: () => import('./views/HeadMappingInterface/HeadMappingWithAssistant/HeadMappingWithAssistant.module').then(m => m.OBPMetricBindingModule),
       },
       // Semester Exchange 
       {
         path: 'StaffLogin',
         loadChildren: () => import('./views/SemesterExchange/LoginPage/LoginPage.module').then(m => m.LoginPageNComponentModule),
-
       },
       { path: 'SMAdmin/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
       // { path: 'newStudentPortal/:LoginName', redirectTo: 'newSemesterExchangeRegistration/:LoginName', pathMatch: 'full' },
@@ -74,7 +70,7 @@ const routes: Routes = [
       },
       {
         path: 'SENextStep/:LoginName/:RegistrationNo',
-         loadChildren: () => import('./views/SemesterExchange/StudentDashboard/StudentDashboardwithTabs.module').then(m => m.StudentDashboardwithTabsModule),
+        loadChildren: () => import('./views/SemesterExchange/StudentDashboard/StudentDashboardwithTabs.module').then(m => m.StudentDashboardwithTabsModule),
       },
       // {
       //   path: 'DashboardHOW/:LoginName',
@@ -83,7 +79,7 @@ const routes: Routes = [
       // 6-Sep-25 Starts
       {
         path: 'HODAdminPanel/:loginName',
-        component:SemesterMigrationAdminComponent
+        component: SemesterMigrationAdminComponent
         // loadChildren: () => import('./views/SemesterExchange/HODDashboard/TopMenuBar/sm-admin-bar.module').then(m => m.SemesterMigrationAdminModule),
       },
       {
@@ -94,8 +90,6 @@ const routes: Routes = [
         path: 'AllUniversities',
         loadChildren: () => import('./views/SemesterExchange/HODDashboard/AllUniveristyDetails/sm-list-all-university.module').then(m => m.SmListAllUniversityComponentModule),
       },
-
-
       //6-sep-ends
       // {
       //   path: 'DashboardHOD/:LoginName',
@@ -106,8 +100,6 @@ const routes: Routes = [
       //   path: 'DashboardDIAHOD/:LoginName',
       //   loadChildren: () => import('./views/SemesterExchange/DealingUserDashboard/DealingUserDashboard.module').then(m => m.DealingUserDashboardModule),
       // },
-     
-     
       {
         path: 'ApplicationDetails/:LoginName/:RegistrationNo/:Role',
         loadChildren: () => import('./views/SemesterExchange/StudentApplicationDetails/StudentApplicationDetails.module').then(m => m.StudentApplicationDetailsModule),
@@ -118,7 +110,6 @@ const routes: Routes = [
         path: 'JournalAdmin/:loginName',
         loadChildren: () => import('./views/pages/NewJournal/NewJournal.module').then(m => m.NewJournalComponentModule)
       },
-
       {
         path: ':Id/:name/EditorialBoard',
         loadChildren: () => import('./views/pages/journal-editor-board/journal-editor-board.component.module').then(m => m.JournalEditorBoardComponentModule)
@@ -135,7 +126,6 @@ const routes: Routes = [
         path: 'EventCalenderAdmin/:loginName',
         loadChildren: () => import('./views/pages/calenderAdmin/contentAdmin.module').then(m => m.ContentAdminComponentModule)
       },
- 
       {
         path: 'summerSchool/:loginName',
         loadChildren: () => import('./views/pages/summer-school-web/summer-school-web.module').then(m => m.SummerSchoolModule)
@@ -144,21 +134,16 @@ const routes: Routes = [
         path: 'summerSchoolmaster/:loginName',
         loadChildren: () => import('./views/pages/summer-school-admin/summer-school-admin.module').then(m => m.SummerSchoolAdminModule)
       },
-
-    
       // 
       {
         path: 'sgrc/:loginName',
-        loadChildren: () => import('./views/pages/SGRC-Casess/SGRC-Casess.module').then(m=>m.SGRCModule)
+        loadChildren: () => import('./views/pages/SGRC-Casess/SGRC-Casess.module').then(m => m.SGRCModule)
         // loadChildren:() => import('./views/pages/SGRC-Casess/NewWaySGRC/SGRC/SGRC-Cases.module').then(m=>m.SGRCModule)
       },
-
-
       {
         path: 'MoUApproval/:loginName',
         loadChildren: () => import('./views/pages/MoUApproval/MoUApproval.module').then(m => m.MoUApprovalModule)
       },
-
       {
         path: 'MouNewRequest/:loginName', // 23-sep-25 added newmouid , ExportExcel fixed
         loadChildren: () => import('./views/pages/mou-documents-uploads/mou-documents-uploads.module').then(m => m.MouDocumentsUploadsModule)
@@ -187,9 +172,9 @@ const routes: Routes = [
         path: 'MouAdminAction/:loginName', // added newMouId on 22-sep-25 5 // 23-sep-25 added newmouid , ExportExcel fixed
         loadChildren: () => import('./views/pages/MouReportDateWise/MouReportDateWise.module').then(m => m.MouReportDateWiseComponentModule)
       },// new interface
-      
-      
-                       // {
+
+
+      // {
       //   path: 'obpallocation-transfer-tool/:loginName',
       //  loadChildren: () =>import('./views/pages/obpallocation-transfer-tool/obpallocation-transfer-tool.module').then(m => m.ObpallocationTransferToolModule)
       // },
@@ -204,7 +189,7 @@ const routes: Routes = [
       //   path: 'RMSDistanceReport/:loginName',
       //   loadChildren: () => import('./views/pages/RMSDistanceReport/RMSDistanceReport.module').then(m => m.RMSDistanceReportComponentModule)
       // },
-        // {
+      // {
       //   path: 'completetask/:loginName',
       //   component: EstateActionablePointCompleteTaskComponent
       //   // loadChildren: ()=> import('./views/pages/estate-actionable-point-completetask/estate-actionable-point-completetask.module').then(m =>m.EstateActionablePointPointCompleteModule)
@@ -243,7 +228,7 @@ const routes: Routes = [
       //   path: 'rmsdashboard/:loginName',
       //   loadChildren: () => import('./views/pages/rms-dashboard/rms-dashboard.module').then(m => m.RMSDashboardModule)
       // },
-        // {
+      // {
       //   path: 'moudashboard/:loginName',
       //   loadChildren: () => import('./views/pages/moudashboard/moudashboard.module').then(m => m.MOUDashboardModule)
       // },

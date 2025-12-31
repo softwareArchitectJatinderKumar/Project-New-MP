@@ -12,35 +12,169 @@
     <div class="col-md-12 grid-margin stretch-card mb-3">
         <div class="card">
             <div class="card-body">
-                <div class="d-flex justify-content- align-items-center mb-3">
+                <div class="row align-items-center mb-4 border-bottom pb-3">
+                    <div class="col-md-3">
+                        <h5 class=" m-0 ms-4">Dashboard</h5>
+                    </div>
+                
+                    <div class="col-md-5 d-flex align-items-center gap-4">
+                        <div class="text-secondary ">
+                            <strong class="text-dark">Status:</strong>
+                            <i [class]="LockedStatus ? 'text-success' : 'text-warning'">
+                                {{ LockedStatus ? 'Approved' : 'Pending' }}
+                            </i>
+                        </div>
+                
+                        <div class="text-secondary ">
+                            <strong class="text-dark">Application ID:</strong>
+                           <i [class]="'text-success'"> {{ ApplicationId }}</i>
+                        </div>
+                    </div>
+                
+                    <div class="col-md-2 text-end">
+                        <div class="text-muted">
+                            Hi, <strong class="text-info">{{ studentDetailsWithImage?.studentName }}</strong>
+                        </div>
+                    </div>
+                
+                    <div class="col-md-2 text-center">
+                        <div *ngIf="StudentImage; else placeholderImg">
+                            <img [src]="StudentImage" alt="Student Image" class="img-thumbnail rounded-circle border-info"
+                                style="width: 110px; height: 110px; object-fit: cover;">
+                        </div>
+                        <ng-template #placeholderImg>
+                            <div class="bg-light rounded-circle border d-inline-block" style="width: 110px; height: 110px;"></div>
+                        </ng-template>
+                    </div>
+                </div>
+                
+                <div class="row align-items-center mb-3">
+                    <div class="col-md-3">
+                        <h5 class="m-0 ms-4">University Preferences:</h5>
+                    </div>
+                
+                    <div class="col-md-9">
+                        <div class="d-flex gap-2">
+                            <div class="border rounded px-3 py-1 bg-light text-dark shadow-sm">
+                                1. {{ stuApplication.universityOption1 }}
+                            </div>
+                            <div class="border rounded px-3 py-1 bg-light text-dark shadow-sm">
+                                2. {{ stuApplication.universityOption2 }}
+                            </div>
+                            <div class="border rounded px-3 py-1 bg-light text-dark shadow-sm">
+                                3. {{ stuApplication.universityOption3 }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="row align-items-center mb-4">
                     <div class="col-md-3 ms-4">
                         <h3 class="text-info m-0">My Dashboard</h3>
+                    </div>
+                
+                    <div class="col-md-4 d-flex align-items-center gap-2">
+                        <span class="badge rounded-pill bg-info fs-6">
+                            Application Status:
+                        </span>
+                        <span class="badge rounded-pill fs-6" [class.bg-success]="LockedStatus" [class.bg-warning]="!LockedStatus"
+                            [class.text-dark]="!LockedStatus">
+                            {{ LockedStatus ? 'Approved' : 'Pending' }}
+                        </span>
+                        <span class="badge rounded-pill bg-info fs-6 ms-3">
+                            ID: {{ ApplicationId }}
+                        </span>
+                    </div>
+                
+                    <div class="col-md-2 text-end">
+                        <span class="fs-5 me-2">Hi!</span>
+                        <span class="badge rounded-pill bg-info fs-6">
+                            {{studentDetailsWithImage?.studentName}}
+                        </span>
+                    </div>
+                
+                    <div class="col-md-2 text-center">
+                        <div *ngIf="StudentImage; else placeholderImg">
+                            <img [src]="StudentImage" alt="Student Image" class="img-fluid rounded-circle border border-3 border-info"
+                                style="width: 80px; height: 80px; object-fit: cover;">
                         </div>
-                        <div class="col-md-3 ms-4">
-                            <span class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-info': true }">  Application Status:      </span>
-                             
-                            <span [ngClass]="'badge rounded-pill step-badge fs-6 ms-2'" [style.background-color]="LockedStatus ? '#28a745' : '#ffc107'"
-                                style="color: #000 !important;">
-                               {{ LockedStatus ? 'Approved' : 'Pending' }}
-                            </span>
-                       
-                        </div>
-                        <div class="col-md-3 me-3 text-end">
-                            <span class="text-end fs-5 me-3"> Hi! </span> <span [ngClass]="'fs-5 badge rounded-pill step-badge bg-info'"
-                               > {{studentDetailsWithImage?.studentName}}
-                            </span>
-                        </div>
-                        <div class="col-md-3 text-center">
-                            <div *ngIf="StudentImage else placeholderImg">
-                                <img alt="Student Image" class="img-fluid rounded-circle border border-3 border-primary" [src]="StudentImage"
-                                    style="width: 90px; height: 90px; object-fit: cover;">
-                            </div>
-                            <ng-template #placeholderImg>
-                                <img src="https://placehold.co/150x150" alt="No Image" class="img-thumbnail"
-                                    style="max-width:150px; max-height:150px; object-fit:cover;" />
-                            </ng-template>
-                        </div>
+                        <ng-template #placeholderImg>
+                            <img src="https://placehold.co/80x80" alt="No Image"
+                                class="rounded-circle border border-3 border-secondary" />
+                        </ng-template>
+                    </div>
                 </div>
+                
+                <div class="row align-items-center mb-3">
+                    <div class="col-md-3 ms-4">
+                        <h3 class="text-info m-0">University Preferences:</h3>
+                    </div>
+                
+                    <div class="col-md-8 d-flex gap-3">
+                        <span class="badge rounded-pill bg-info fs-6">
+                            1. {{ this.stuApplication.universityOption1 }}
+                        </span>
+                        <span class="badge rounded-pill bg-info fs-6">
+                            2. {{ this.stuApplication.universityOption2 }}
+                        </span>
+                        <span class="badge rounded-pill bg-info fs-6">
+                            3. {{ this.stuApplication.universityOption3 }}
+                        </span>
+                    </div>
+                </div> -->
+                <!-- <div class="d-flex justify-content- align-items-center mb-3">
+                    <div class="col-md-3 ms-4">
+                        <h3 class="text-info m-0">My Dashboard</h3>
+                    </div>
+                    <div class="col-md-3 ms-0">
+                        <span class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-info': true }"> Application Status:
+                        </span>            
+                        <span [ngClass]="'badge rounded-pill step-badge fs-6 ms-2'"
+                            [style.background-color]="LockedStatus ? '#28a745' : '#ffc107'" style="color: #000 !important;">
+                            {{ LockedStatus ? 'Approved' : 'Pending' }}
+                        </span>            
+                        <span class="ms-5 badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-info': true }">
+                              Application Id:  {{ ApplicationId }} 
+                          </span>
+                    </div>
+                    <div class="col-md-3 me-3 text-end">
+                        <span class="text-end fs-5 me-3"> Hi! </span> <span
+                            [ngClass]="'fs-5 badge rounded-pill step-badge bg-info'">
+                            {{studentDetailsWithImage?.studentName}}
+                        </span>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div *ngIf="StudentImage else placeholderImg">
+                            <img alt="Student Image" class="img-fluid rounded-circle border border-3 border-primary"
+                                [src]="StudentImage" style="width: 90px; height: 90px; object-fit: cover;">
+                        </div>
+                        <ng-template #placeholderImg>
+                            <img src="https://placehold.co/150x150" alt="No Image" class="img-thumbnail"
+                                style="max-width:150px; max-height:150px; object-fit:cover;" />
+                        </ng-template>
+                    </div>                            
+                </div>
+                <div class="d-flex justify-content- align-items-center mb-3">
+                    <div class="col-md-3 ms-4">
+                        <h3 class="text-info m-0">University Preferences: </h3>
+                    </div>
+                    <div class="col-md-2 ms-0">
+                      
+                        <span [ngClass]="'badge rounded-pill step-badge fs-6 ms-2'"
+                            [style.background-color]="LockedStatus ? '#28a745' : '#ffc107'" style="color: #000 !important;">
+                            {{ this.stuApplication.universityOption1 }}
+                        </span>            
+                    </div>
+                    <div class="col-md-3 me-3 ">
+                        <span [ngClass]="'fs-5 badge rounded-pill step-badge bg-info'">
+                            {{this.stuApplication.universityOption2}}
+                        </span>
+                    </div>
+                    <div class="col-md-3 ">
+                        <span [ngClass]="'fs-5 badge rounded-pill step-badge bg-info'">
+                            {{this.stuApplication.universityOption3}}
+                        </span>
+                    </div>                            
+                </div> -->
             </div>
         </div>
     </div>
@@ -48,22 +182,20 @@
             <div class="card">
                 <div class="card-body">
         
-                    <div class="d-flex align-items-center justify-content-center flex-wrap gap-3">
+                    <div class="d-flex align-items-center justify-content-start flex-wrap gap-3">
                          <ng-container *ngIf="LockedStatus">
-                        <span class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-none': true }">
-                            <button type="button" class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-success': true }"
-                                (click)="moveNextStep()">Course Mapping </button>
-                        </span>
+                        <!-- <span class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-none': true }"> -->
+                            <!-- <button type="button" class="btn btn-success " [ngClass]="{ 'bg-success': true }" -->
+                                <button type="button" class="btn me-5 active" data-bs-toggle="tab" style="padding: .95rem 8rem;" (click)="moveNextStep()">Course Mapping </button>
+                        <!-- </span> -->
                         <br/>
-                        <span class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-none': true }">
-                            <button type="button" class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-success': true }"
+                        <!-- <span class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-none': true }"> -->
+                            <!-- <button type="button" class="btn btn-success "  [ngClass]="{ 'bg-success': true }"></button> -->
+                             <button type="button"class="btn me-5 " data-bs-toggle="tab" style="padding: .95rem 8rem;"
                                 (click)="GetStudentApplication(this.RegistrationNo)">View Application </button>
-                        </span>
+                        <!-- </span> -->
                         </ng-container>
-                        <span class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-info': true }">
-                            My Application ID: <span class="badge rounded-pill step-badge fs-6"
-                                [ngClass]="{ 'bg-dark': true }">{{ ApplicationId }}</span>
-                        </span>
+                      
                         <ng-container *ngIf="!LockedStatus">
                             <ng-container *ngFor="let label of stepLabels; let i = index">
                                 <div class="step" [class.active]="i === currentStep" [class.past]="i < currentStep">
@@ -84,7 +216,7 @@
         <!-- New Task For Course mapping pending -->
           <section *ngIf="currentStep === 5" class="step-section">
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="text-info m-0">Course Covered & Uploads</h5>
+                <h3 class="text-info m-0">Course Covered & Uploads</h3>
                 <div>
                     <button class="btn btn-success me-2" (click)="addCourseRow()">Add Row</button>
                     <button class="btn btn-primary" (click)="saveAllCourseCovered()"

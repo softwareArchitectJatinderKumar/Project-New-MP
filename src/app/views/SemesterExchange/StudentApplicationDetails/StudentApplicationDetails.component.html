@@ -42,6 +42,7 @@
                 <div class="col-md-3">
                   <p class="text-dark fw-bold">{{studentDetailsWithImage?.batchYear}}</p>
                 </div>
+
               </div>
 
               <div class="row mb-2">
@@ -54,12 +55,28 @@
                 <div class="col-md-3">
                   <label class="form-label fw-bold text-danger">Program Code: Section </label>
                 </div>
+               
                 <div class="col-md-3">
                   <p class="text-dark fw-bold">{{this.ProgramCode}} :{{this.SectionCode}}
                     <!-- {{studentDetailsWithImage?.programCode}}  -->
                     <!-- ({{studentDetailsWithImage?.schoolName}}) -->
                   </p>
                 </div>
+              </div>
+               <div class="row mb-2">
+                <div class="col-md-3">
+                  <label class="form-label fw-bold text-danger">University Option 1:</label>
+                </div>
+                <div class="col-md-3">
+                  <p class="text-dark fw-bold">{{this.stuApplication.universityOption1}}</p>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label fw-bold text-danger">University Option 2:</label>
+                </div>
+                <div class="col-md-3">
+                  <p class="text-dark fw-bold">{{this.stuApplication.universityOption2}}</p>
+                </div>
+                 
               </div>
             </div>
             <!-- Student Image -->

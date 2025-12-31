@@ -24,7 +24,6 @@ import { start } from 'repl';
   styleUrls: ['./NewLogicForm.component.scss']
 })
 export class RegisterFormcomponent implements OnInit {
-
   // State Flags
   isLoading: boolean = false;
   loginFailed: boolean = false;
@@ -70,11 +69,11 @@ export class RegisterFormcomponent implements OnInit {
   ];
 
   englishOptions = [
-    { value: '', label: 'Select' },
-    { value: 'Applied', label: 'Applied' },
-    { value: 'NotRequired', label: 'Not required' },
+    { value: '', label: 'Select'},
+    { value: 'Applied', label: 'Applied'},
+    { value: 'NotRequired', label: 'Not required'},
     { value: 'NotGiven', label: 'Not Given' },
-    { value: 'Appeared', label: 'Appeared / Given' },
+    { value: 'Appeared', label: 'Appeared / Given'},
   ];
   englishTestNames = ['PTE', 'IELTS', 'TOEFL', 'DULINGO'];
 
@@ -129,9 +128,9 @@ export class RegisterFormcomponent implements OnInit {
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
     this.LoginName = this.route.snapshot.params['LoginName'];
     if (this.LoginName != '' && this.LoginName != undefined) {
-       this.startLoader();
+      this.startLoader();
       this.getToken(this.LoginName);
-
+      
     }
     const consentControl = this.form.get('ConsentLetterDocumentPath');
     if (consentControl) {
@@ -145,7 +144,6 @@ export class RegisterFormcomponent implements OnInit {
       contactNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10,15}$/)]],
     });
   }
-
   private buildMainForm(): void {
     this.form = this.fb.group(
       {
@@ -246,14 +244,13 @@ export class RegisterFormcomponent implements OnInit {
         const authToken = this.storageService.getUser();
         if (!this.storageService.isLoggedIn() || authToken === 'Token Expired') {
            this.loginFailed = true;
-          this.LoginFailed('Invalid or expired token');
+          this.LoginFailed('Invalid or expired token');                  
         } else {
             this.loginFailed = false;
             this.buildMainForm();
             this.getStudentDetail();
            
         }
-        
       },
       error: () => { this.stopLoader(); this.loginFailed = true; }
       });
@@ -292,6 +289,7 @@ export class RegisterFormcomponent implements OnInit {
           this.ApplicationID = stuApplication?.applicationId;
 
           if (+(this.ApplicationID) > 0) {
+            this.stopLoader();
             Swal.fire({ title: 'Application Already Exists', icon: 'success' }).then(() => {
               this.router.navigate(['StudentDashboard', this.LoginName, this.RegistrationNo]);
             });
@@ -692,7 +690,6 @@ export class RegisterFormcomponent implements OnInit {
           Swal.fire({ title: 'Error Occurred', text: 'Unable to complete the request. Please try again later.', icon: 'error' });
         }
       });
-
       this.stopLoader();
   }
 
@@ -701,6 +698,7 @@ export class RegisterFormcomponent implements OnInit {
     this.loginFailed = true;
     this.isEligible = false;
     Swal.fire({ title: 'Login Failed', text: 'Invalid login or token.', icon: 'warning' });
+    this.stopLoader();  
   }
 
   formatDate(date: Date): string {
