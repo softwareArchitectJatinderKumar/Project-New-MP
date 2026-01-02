@@ -6,10 +6,11 @@
                     <div class="row  p-3 mx-5 ">
                         <div class="col-sm-3">
                             <div class="mb-3">
-                                <button (click)="exportToExcel()" class="btn btn-dark " [disabled]="this.filteredMouDocumentDetails.length ==0">Export to Excel</button>
+                                <button (click)="exportToExcel()" class="btn btn-dark "
+                                    [disabled]="this.filteredMouDocumentDetails.length ==0">Export to Excel</button>
                             </div>
                         </div>
-                       
+
                         <div class="col-sm-3">
                             <div class="mb-3">
                                 <input [(ngModel)]="searchQuery" (keyup)="search()" id="search" type="text"
@@ -22,10 +23,8 @@
                         <ngx-datatable class="bootstrap table-responsive table-striped material"
                             [rows]="filteredMouDocumentDetails" [loadingIndicator]="loadingIndicator"
                             [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="5" [headerHeight]="80"
-                            [rowHeight]="'auto'"
-                            [scrollbarH]="true"
-                            [limit]="15">
-                           
+                            [rowHeight]="'auto'" [scrollbarH]="true" [limit]="15">
+
                             <!-- <ngx-datatable-column name="LPU Spoc Name" [sortable]="false" prop="Id">
                                 <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                     ngx-datatable-cell-template>
@@ -56,19 +55,19 @@
                             <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="Id">
                                 <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                     ngx-datatable-cell-template>
-                                    <ng-container *ngIf="row.newMouId != null">   
+                                    <ng-container *ngIf="row.newMouId != null">
                                         <span
-                                        style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.newMouId}}</span>                                     
-                                    </ng-container>                                     
+                                            style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.newMouId}}</span>
+                                    </ng-container>
                                 </ng-template>
                             </ngx-datatable-column>
                             <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id">
                                 <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                     ngx-datatable-cell-template>
-                                    <ng-container *ngIf="row.id != null">   
+                                    <ng-container *ngIf="row.id != null">
                                         <span
-                                        style="margin: auto;float: left; padding: 10px 10px 10px 10px;">MOU/{{row.id}}</span>                                     
-                                    </ng-container>                                     
+                                            style="margin: auto;float: left; padding: 10px 10px 10px 10px;">MOU/{{row.id}}</span>
+                                    </ng-container>
                                 </ng-template>
                             </ngx-datatable-column>
                             <!-- <ngx-datatable-column name="Employee Id" [sortable]="false" prop="Id">
@@ -84,65 +83,77 @@
                             <ngx-datatable-column name="MOU Organisation" [sortable]="false" prop="Id">
                                 <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                     ngx-datatable-cell-template>
-                                    <ng-container *ngIf="row.mouPartnerName != null">   
+                                    <ng-container *ngIf="row.mouPartnerName != null">
                                         <span
-                                        style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouPartnerName}}</span>                                     
-                                    </ng-container>                                     
+                                            style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouPartnerName}}</span>
+                                    </ng-container>
                                 </ng-template>
                             </ngx-datatable-column>
 
                             <ngx-datatable-column name="MOU StartDate" [sortable]="false" prop="Id">
                                 <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                     ngx-datatable-cell-template>
-                                    <ng-container *ngIf="row.mouStartDate != null; else NoDate">   
+                                    <ng-container *ngIf="row.mouStartDate != null; else NoDate">
                                         <span
-                                        style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouStartDate}}</span>                                     
-                                    </ng-container> 
+                                            style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouStartDate}}</span>
+                                    </ng-container>
                                     <ng-template #NoDate>
-                                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;  color:brown"> NA </span>
-                                    </ng-template>                                     
+                                        <span
+                                            style="margin: auto;float: left; padding: 10px 10px 10px 10px;  color:brown">
+                                            NA </span>
+                                    </ng-template>
                                 </ng-template>
                             </ngx-datatable-column>
                             <ngx-datatable-column name="MOU EndDate" [sortable]="false" prop="Id">
                                 <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                     ngx-datatable-cell-template>
-                                    <ng-container *ngIf="row.mouEndDate != null; else NoName">   
+                                    <ng-container *ngIf="row.mouEndDate != null; else NoName">
                                         <span
-                                        style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouEndDate}}</span>                                     
-                                    </ng-container> 
+                                            style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouEndDate}}</span>
+                                    </ng-container>
                                     <ng-template #NoName>
-                                        <span *ngIf="row.mouEndDate == null && row.mouStartDate != null; " style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">Indefinite </span>
-                                        <span *ngIf="row.mouEndDate == null && row.mouStartDate == null; " style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown"> NA </span>
-                                    </ng-template>                                    
+                                        <span *ngIf="row.mouEndDate == null && row.mouStartDate != null; "
+                                            style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">Indefinite
+                                        </span>
+                                        <span *ngIf="row.mouEndDate == null && row.mouStartDate == null; "
+                                            style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">
+                                            NA </span>
+                                    </ng-template>
                                 </ng-template>
                             </ngx-datatable-column>
 
                             <ngx-datatable-column name="MOU Status" [sortable]="false" prop="Id">
                                 <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                     ngx-datatable-cell-template>
-                                    <ng-container *ngIf="row.mouStatus != null; else noStatus">   
+                                    <ng-container *ngIf="row.mouStatus != null; else noStatus">
                                         <span
-                                        style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouStatus}}</span>                                     
-                                    </ng-container>    
+                                            style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouStatus}}</span>
+                                    </ng-container>
                                     <ng-template #noStatus>
-                                        <span *ngIf="row.mouEndDate != null && row.mouStartDate != null; " style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">{{row.mouStatus}} </span>
-                                        <span *ngIf="row.mouEndDate == null && row.mouStartDate == null; " style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown"> NA </span>
-                                    </ng-template>                                    
+                                        <span *ngIf="row.mouEndDate != null && row.mouStartDate != null; "
+                                            style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">{{row.mouStatus}}
+                                        </span>
+                                        <span *ngIf="row.mouEndDate == null && row.mouStartDate == null; "
+                                            style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">
+                                            NA </span>
+                                    </ng-template>
                                 </ng-template>
                             </ngx-datatable-column>
                             <ngx-datatable-column *ngFor="let col of columns" [prop]="col"></ngx-datatable-column>
 
                             <ngx-datatable-column name="MOU Document" [sortable]="false" prop="Id">
-                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                    ngx-datatable-cell-template>
                                     <ng-container *ngIf="row.filePath ; else NoFile">
                                         <!-- [attr.disabled]="row.isApproved === true || row.isApproved === false ? true : null"
                                         [class.disabled]="row.isApproved === true || row.isApproved === false"  -->
-                                        <a class="btn btn-dark ms-3" [href]="row.filePath" target="_blank"  >  
-                                           <i class="bi bi-download"></i> </a> 
+                                        <a class="btn btn-dark ms-3" [href]="row.filePath" target="_blank">
+                                            <i class="bi bi-download"></i> </a>
 
                                     </ng-container>
                                     <ng-template #NoFile>
-                                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">No Doc Uploaded </span>
+                                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">No Doc
+                                            Uploaded </span>
                                     </ng-template>
                                 </ng-template>
                             </ngx-datatable-column>
@@ -150,36 +161,40 @@
                             <ngx-datatable-column name="Division Involved" [sortable]="false" prop="Id">
                                 <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                     ngx-datatable-cell-template>
-                                    <ng-container *ngIf="row.schoolDivisionInvolved?.length > 0;">   
-                                            <!-- <select class="form-label p-2 col-md-12" id="SchoolInvolvedData">
+                                    <ng-container *ngIf="row.schoolDivisionInvolved?.length > 0;">
+                                        <!-- <select class="form-label p-2 col-md-12" id="SchoolInvolvedData">
                                             
                                                 <option [value]="getDivisionNameById(schoolId)" *ngFor="let schoolId of row.schoolDivisionInvolved.split(',')">
                                                   {{ getDivisionNameById(schoolId) }}:: {{schoolId }} 
                                                 </option>
                                             </select>
                                             <br/> -->
-                                           <ul *ngFor="let schoolId of row.schoolDivisionInvolved.split(',')" style=" list-style: none;  padding: 0;margin: 0; display: inline;">
-                                            <li style=" display: inline; font-weight: 500;"> {{ getDivisionNameById(schoolId) }} {{','}} </li>
-                                            </ul>
-                                    </ng-container>                                     
+                                        <ul *ngFor="let schoolId of row.schoolDivisionInvolved.split(',')"
+                                            style=" list-style: none;  padding: 0;margin: 0; display: inline;">
+                                            <li style=" display: inline; font-weight: 500;"> {{
+                                                getDivisionNameById(schoolId) }} {{','}} </li>
+                                        </ul>
+                                    </ng-container>
                                 </ng-template>
                             </ngx-datatable-column>
                             <ngx-datatable-column name="Update Details " [sortable]="false" prop="Id">
                                 <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                     ngx-datatable-cell-template>
-                                    <ng-container *ngIf="row.id != null">   
-                                        <a class="btn btn-warning me-4  " (click)="ChangeSchool(row)" >
+                                    <ng-container *ngIf="row.id != null">
+                                        <a class="btn btn-warning me-4  " (click)="ChangeSchool(row)">
                                             <!-- <i class="mdi mdi-check"></i> -->
-                                            <i class="bi bi-pencil-square"></i>  
-                                             <!-- Edit Details   -->
-                                        </a>                                    
-                                    </ng-container>                                     
+                                            <i class="bi bi-pencil-square"></i>
+                                            <!-- Edit Details   -->
+                                        </a>
+                                    </ng-container>
                                 </ng-template>
                             </ngx-datatable-column>
                             <ngx-datatable-column name="Approval Status" [sortable]="false" prop="Id">
-                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                                    <ng-container *ngIf="row.isApproved == 1 || row.isApproved == 'True'; else OtherCheck">
-                                        <div>Approved 
+                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                    ngx-datatable-cell-template>
+                                    <ng-container
+                                        *ngIf="row.isApproved == 1 || row.isApproved == 'True'; else OtherCheck">
+                                        <div>Approved
                                             <!-- By {{ row.approvedBy }} -->
                                         </div>
                                     </ng-container>
@@ -199,15 +214,16 @@
                                 </ng-template>
                             </ngx-datatable-column>
                             <ngx-datatable-column name="Actions" [sortable]="false" prop="Id">
-                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                    ngx-datatable-cell-template>
                                     <ng-container *ngIf="row.isApproved===false || row.isApproved===true ; else Allows">
-                                        <span class="text-danger" style="font-weight: bold;">Action Applied</span>   
+                                        <span class="text-danger" style="font-weight: bold;">Action Applied</span>
                                     </ng-container>
                                     <ng-template #Allows>
-                                        <button class="btn btn-success me-2" (click)="ChangeApproveStatus(row.id)" >
+                                        <button class="btn btn-success me-2" (click)="ChangeApproveStatus(row.id)">
                                             <i class="mdi mdi-check"></i>
                                         </button>
-                                        <button class="btn btn-danger" (click)="DisapproveStatus(row.id)" >
+                                        <button class="btn btn-danger" (click)="DisapproveStatus(row.id)">
                                             <i class="mdi mdi-window-close"></i>
                                         </button>
                                     </ng-template>
@@ -243,23 +259,288 @@
         </div>
     </div>
 </ng-template>
+ 
 
 <ng-template #ChangeSchoolDivisionModal let-modal>
+    <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title">MOU Update: MOU/{{mouId}}</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body bg-light" [formGroup]="mouForm">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body py-2">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-7">
+                        <label class="form-label fw-bold small">Partner Organisation Name</label>
+                        <input type="text" class="form-control" formControlName="mouOrganisation"
+                            [class.is-invalid]="isInvalid('mouOrganisation')">
+                        <div class="invalid-feedback">Organisation name is required.</div>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label fw-bold small">Divisions Involved</label>
+                        <ng-select [items]="allSchoolDivisions" [multiple]="true" bindLabel="schoolDivision"
+                            bindValue="id" formControlName="selectedDivisions"
+                            [class.is-invalid]="isInvalid('selectedDivisions')"></ng-select>
+                        <div class="text-danger small mt-1" *ngIf="isInvalid('selectedDivisions')">Select at least one
+                            division.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body py-2">
+                <div class="row g-3 mb-4 align-items-end">
+                    <div class="col-md-3">
+                        <label class="small fw-bold">Start Date</label>
+                        <input type="date" class="form-control" formControlName="startDate"
+                            (change)="updateMouStatus()">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small fw-bold">End Date</label>
+                        <input type="date" class="form-control" formControlName="endDate" (change)="updateMouStatus()">
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-check pt-2">
+                            <input class="form-check-input" type="checkbox" id="isIndefinite"
+                                formControlName="isIndefinite" (change)="toggleEndDate()">
+                            <label class="form-check-label small" for="isIndefinite">Indefinite MOU</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 text-start">
+                        <span class="badge w-20 p-2"
+                            [ngClass]="moustatus === 'Active' ? 'bg-success' : 'bg-danger'">{{moustatus}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body py-2">
+                <h6 class="text-primary small fw-bold text-uppercase mb-3 mt-1">External SPOC (Partner)</h6>
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <label class="fw-bold small text-primary small fw-bold text-uppercase mb-3 mt-1">SPOC
+                            Name</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="SPOC Name"
+                            formControlName="spocName" [class.is-invalid]="isInvalid('spocName')">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="fw-bold small text-primary small fw-bold text-uppercase mb-3 mt-1">SPOC
+                            Email</label>
+                        <input type="email" class="form-control form-control-sm" placeholder="SPOC Email"
+                            formControlName="spocEmail" [class.is-invalid]="isInvalid('spocEmail')">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="fw-bold small text-primary small fw-bold text-uppercase mb-3 mt-1">SPOC
+                            Contact</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="SPOC Contact"
+                            formControlName="spocContact" [class.is-invalid]="isInvalid('spocContact')">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body py-2">
+                <div class="row mt-3" [formGroup]="mouForm">
+                    <div class="col-md-5 position-relative">
+                        <label class="fw-bold small text-primary small fw-bold text-uppercase mb-3 mt-1 ">LPU SPOC Name
+                            (Search)</label>
+                        <input type="text" class="form-control" formControlName="lpuSpocName" (input)="onInput2()"
+                            (focus)="showSuggestions = true" placeholder="Search by Name or UID...">
+
+                        <div *ngIf="showSuggestions && filteredEmployeesData.length"
+                            class="list-group position-absolute w-100 shadow-lg z-3 mt-1">
+                            <button type="button" *ngFor="let emp of filteredEmployeesData"
+                                (mousedown)="selectEmployee2(emp)"
+                                class="list-group-item list-group-item-action d-flex justify-content-between">
+                                <span>{{ emp.employeeName }}</span>
+                                <span class="text-muted small">ID: {{ emp.employeeCode }}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="fw-bold small text-primary small fw-bold text-uppercase mb-3 mt-1">LPU SPOC
+                            UID</label>
+                        <input type="text" class="form-control bg-light" formControlName="lpuSpocUid" readonly
+                            placeholder="Auto-filled">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="fw-bold small text-primary small fw-bold text-uppercase mb-3 mt-1">LPU SPOC
+                            Email</label>
+                        <input type="email" class="form-control" formControlName="lpuSpocEmail"
+                            placeholder="internal-email@lpu.co.in">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- <div class="card shadow-sm border-0 bg-white">
+            <div class="card-body">
+                <h6 class="text-primary fw-bold mb-3 border-bottom pb-2">
+                    <i class="mdi mdi-account-network me-1"></i> Internal LPU SPOC
+                </h6>
+
+                <div class="row g-3">
+                    <div class="col-md-5 position-relative">
+                        <label class="form-label small fw-bold text-muted">Faculty Name (Search)</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light"><i class="mdi mdi-magnify"></i></span>
+                            <input type="text" class="form-control" formControlName="lpuSpocName" (input)="onInput2()"
+                                (focus)="showSuggestions = true" placeholder="Type Name or UID...">
+                        </div>
+
+                        <div *ngIf="showSuggestions && filteredEmployeesData.length"
+                            class="list-group position-absolute w-100 shadow-lg z-3 mt-1"
+                            style="max-height: 200px; overflow-y: auto;">
+                            <button type="button" *ngFor="let emp of filteredEmployeesData"
+                                (mousedown)="selectEmployee(emp)"
+                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2">
+                                <span>{{ emp.employeeName }}</span>
+                                <span class="badge bg-secondary rounded-pill small">{{ emp.employeeCode }}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-muted">Faculty UID</label>
+                        <input type="text" class="form-control form-control-sm bg-light" formControlName="lpuSpocUid"
+                            readonly placeholder="Auto-filled">
+                        <small class="text-info" *ngIf="mouForm.get('lpuSpocUid')?.value">Verified ID</small>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-muted">LPU Email</label>
+                        <input type="email" class="form-control form-control-sm" formControlName="lpuSpocEmail"
+                            placeholder="faculty@lpu.co.in" [class.is-invalid]="isInvalid('lpuSpocEmail')">
+                    </div>
+                </div>
+            </div>
+        </div> -->
+    </div>
+
+    <div class="modal-footer justify-content-center border-0 pb-4">
+        <button type="button" class="btn btn-secondary px-4" (click)="modal.dismiss()">Cancel</button>
+        <button type="button" class="btn btn-dark px-4" (click)="onSubmitUpdate()">
+            <i class="bi bi-cloud-upload me-1"></i> Save Changes
+        </button>
+    </div>
+</ng-template>
+<!-- 
+<ng-template #ChangeSchoolDivisionModal let-modal>
+    <div class="modal-header bg-light">
+        <h5 class="modal-title fw-bold">Update MOU Details: MOU/{{mouId}}</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body" [formGroup]="mouForm">
+        <div class="row mb-3">
+            <div class="col-md-8">
+                <label class="form-label fw-bold">Partner Organisation Name</label>
+                <input type="text" class="form-control" formControlName="mouOrganisation" [class.is-invalid]="isInvalid('mouOrganisation')">
+                <div class="invalid-feedback">Organisation name is required.</div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Divisions Involved</label>
+                <ng-select [items]="allSchoolDivisions" [multiple]="true" bindLabel="schoolDivision" bindValue="id"
+                    formControlName="selectedDivisions" [class.is-invalid]="isInvalid('selectedDivisions')">
+                </ng-select>
+                <div class="text-danger small" *ngIf="isInvalid('selectedDivisions')">Select at least one division.</div>
+            </div>
+        </div>
+
+        <div class="row mb-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Start Date</label>
+                <input type="date" class="form-control" formControlName="startDate" (change)="updateMouStatus()">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-bold">End Date</label>
+                <input type="date" class="form-control" formControlName="endDate" 
+                    [attr.disabled]="mouForm.get('isIndefinite')?.value ? true : null" (change)="updateMouStatus()">
+            </div>
+            <div class="col-md-3">
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="indefiniteCheck" formControlName="isIndefinite" (change)="toggleEndDate()">
+                    <label class="form-check-label" for="indefiniteCheck">Indefinite MOU</label>
+                </div>
+            </div>
+            <div class="col-md-3 text-end">
+                <span class="badge" [ngClass]="moustatus === 'Active' ? 'bg-success' : 'bg-danger'">Status: {{moustatus}}</span>
+            </div>
+        </div>
+
+        <hr>
+        <h6 class="text-primary mb-3"><i class="bi bi-person-badge"></i> External SPOC Details (Partner)</h6>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label class="small fw-bold">Name</label>
+                <input type="text" class="form-control" formControlName="spocName">
+            </div>
+            <div class="col-md-4">
+                <label class="small fw-bold">Email</label>
+                <input type="email" class="form-control" formControlName="spocEmail">
+            </div>
+            <div class="col-md-4">
+                <label class="small fw-bold">Contact</label>
+                <input type="text" class="form-control" formControlName="spocContact">
+            </div>
+        </div>
+
+        <hr>
+        <h6 class="text-primary mb-3"><i class="bi bi-building"></i> Internal SPOC Details (LPU)</h6>
+        <div class="row mb-3">
+            <div class="col-md-6 position-relative">
+                <label class="small fw-bold">LPU SPOC Name (Search)</label>
+                <input type="text" class="form-control" formControlName="lpuSpocName" 
+                    (input)="onInput()" (focus)="showSuggestions = true" (blur)="hideSuggestions()" autocomplete="off">
+                
+                <div *ngIf="showSuggestions && filteredEmployeesData.length" class="list-group position-absolute w-100 shadow-lg z-3">
+                    <button type="button" class="list-group-item list-group-item-action" 
+                        *ngFor="let emp of filteredEmployeesData" (mousedown)="selectEmployee(emp)">
+                        {{emp.employeeName}} ({{emp.employeeCode}})
+                    </button>
+                </div>
+                <div class="mt-1" *ngIf="AssignedToUid">
+                    <small class="text-muted">Selected UID: <strong>{{mouForm.get('lpuSpocUid')?.value}}</strong></small>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="small fw-bold">LPU SPOC Email</label>
+                <input type="email" class="form-control" formControlName="lpuSpocEmail" [class.is-invalid]="isInvalid('lpuSpocEmail')">
+                <div class="invalid-feedback">Valid LPU Email is required.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-secondary px-4" (click)="modal.dismiss()">Cancel</button>
+        <button type="button" class="btn btn-dark px-4" (click)="onSubmitUpdate()">
+            <i class="bi bi-cloud-arrow-up me-1"></i> Update MOU Details
+        </button>
+    </div>
+</ng-template> -->
+
+<!-- <ng-template #ChangeSchoolDivisionModal let-modal>
     <div class="container-fluid">
         <div class="modal-header">
-            <h5 class="modal-title" id="ActivityActionTakenModalModalLabel"> Change School Division Involved </h5>
+            <h5 class="modal-title" id="ActivityActionTakenModalModalLabel"> MOU Edit/Update Details</h5>
             <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
         </div>
         <div class="modal-body">
             <div class="col-md-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body ">
-                        <h2 class="modal-title text-center" >MOU Edit/Update Details </h2>
+                        <h2 class="modal-title text-center">MOU Edit/Update Details </h2>
                         <div class="table-responsive">
                             <div class="row mb-4 mt-5">
                                 <div class="col-md-2">
                                     <label class="form-label fw-bolder"> MOU Id </label>
-                             
+
                                     <label class="ms-4 form-label fw-bold text-danger"> MOU/{{this.mouId}}</label>
                                 </div>
                                 <div class="col-md-3 d-flex justify-content-center ">
@@ -267,7 +548,8 @@
                                         <span class="fw-bold fs-6 " *ngIf="this.CurrentSchool.length>0">
                                             <dl> Current Division Involved List </dl>
                                             <ul class=" p-0 " id="SchoolInvolvedData">
-                                                <li class="themeClr" [value]="getDivisionNameById(+schoolId)" *ngFor="let schoolId of CurrentSchool?.split(',')">
+                                                <li class="themeClr" [value]="getDivisionNameById(+schoolId)"
+                                                    *ngFor="let schoolId of CurrentSchool?.split(',')">
                                                     {{getDivisionNameById(+schoolId)}}
                                                 </li>
                                             </ul>
@@ -275,115 +557,168 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3 text-end">
-                                    <label class="form-label fw-bolder "> Change School/Division Involved </label> <br/>
+                                    <label class="form-label fw-bolder "> Change School/Division Involved </label>
+                                    <br />
 
                                 </div>
                                 <div class="col-md-3">
                                     <ng-select [items]="allSchoolDivisions" #ngSelectComponentStream [multiple]="true"
-                                        bindLabel="schoolDivision" [clearable]="true" [virtualScroll]="true" placeholder="Select"
-                                        (change)="changeResponsiblePlanned($event)" bindValue="id" [hideSelected]="true"
-                                        [(ngModel)]="selectedSchoolDivisions">
+                                        bindLabel="schoolDivision" [clearable]="true" [virtualScroll]="true"
+                                        placeholder="Select" (change)="changeResponsiblePlanned($event)" bindValue="id"
+                                        [hideSelected]="true" [(ngModel)]="selectedSchoolDivisions">
                                     </ng-select>
-                                    <div *ngIf="hasSelectionError" class="themeClr">One school division is Required</div>
+                                    <div *ngIf="hasSelectionError" class="themeClr">One school division is Required
+                                    </div>
                                 </div>
                             </div>
-                                <div class="row mb-4 mt-3">
-                                    <div class="col-2">
-                                      <label class="form-label fw-bolder"> Mou Partner Organisation</label>
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="text" class="form-control text-dark" name="MouOrganisation" id="MouOrganisation"
-                                        autocomplete="off" placeholder="Provide Mou Organisation Name " required [(ngModel)]="MouOrganisation"
-                                          />
-                                      <div *ngIf="!MouOrganisation" class="themeClr">
+                            <div class="row mb-4 mt-3">
+                                <div class="col-2">
+                                    <label class="form-label fw-bolder"> Mou Partner Organisation</label>
+                                </div>
+                                <div class="col-6">
+                                    <input type="text" class="form-control text-dark" name="MouOrganisation"
+                                        id="MouOrganisation" autocomplete="off"
+                                        placeholder="Provide Mou Organisation Name " required
+                                        [(ngModel)]="MouOrganisation" />
+                                    <div *ngIf="!MouOrganisation" class="themeClr">
                                         Mou Organisation Name Required is required.
-                                      </div>
                                     </div>
                                 </div>
+                            </div>
                             <div class="row">
                                 <div class="row mb-4 mt-4">
                                     <div class="col-2">
-                                      <label class="form-label">MOU Start Date</label>
+                                        <label class="form-label">MOU Start Date</label>
                                     </div>
                                     <div class="col-2">
-                                      <input type="date" class="form-control w-10 text-dark" name="MouStartDate" [style]="{ width: '89%' }"
-                                        autocomplete="off" placeholder="Provide Mou Start Date" required [(ngModel)]="MouStartDate"
-                                        (change)="updateMouStatus()" />
-                                      <div *ngIf="!MouStartDate" class="themeClr">
-                                        MOU Start Date is required.
-                                      </div>
+                                        <input type="date" class="form-control w-10 text-dark" name="MouStartDate"
+                                            [style]="{ width: '89%' }" autocomplete="off"
+                                            placeholder="Provide Mou Start Date" required [(ngModel)]="MouStartDate"
+                                            (change)="updateMouStatus()" />
+                                        <div *ngIf="!MouStartDate" class="themeClr">
+                                            MOU Start Date is required.
+                                        </div>
                                     </div>
-                    
-                    
+
+
                                     <div class="col-2">
-                                      <label class="form-label">MOU End Date </label>
-                                     </div>
-                                    
+                                        <label class="form-label">MOU End Date </label>
+                                    </div>
+
                                     <div class="col-2">
-                                      <input type="date" class="form-control" [disabled]="isIndefiniteMou" name="MouEndDate"
-                                        autocomplete="off" placeholder="Provide Mou End Date" [(ngModel)]="MouEndDate"
-                                        (change)="updateMouStatus()" />
-                                      <div *ngIf="!isIndefiniteMou && !MouEndDate && MouStartDate" class="themeClr">
-                                        Mou End Date is optional.
-                                      </div>
+                                        <input type="date" class="form-control" [disabled]="isIndefiniteMou"
+                                            name="MouEndDate" autocomplete="off" placeholder="Provide Mou End Date"
+                                            [(ngModel)]="MouEndDate" (change)="updateMouStatus()" />
+                                        <div *ngIf="!isIndefiniteMou && !MouEndDate && MouStartDate" class="themeClr">
+                                            Mou End Date is optional.
+                                        </div>
                                     </div>
                                     <div class="col-2">
                                         Check if the Mou is Indefinite
-                                        <input type="checkbox" id="IndefiniteMou" [(ngModel)]="isIndefiniteMou" (change)="toggleEndDate()" />
-                                      </div>
-                                    <div class="col-2">
-                                      <p [ngStyle]="{ color: moustatus === 'Active' ? 'green' : 'red' }">
-                                        <span class="text-dark">Status </span> : {{ moustatus }}
-                                      </p>
+                                        <input type="checkbox" id="IndefiniteMou" [(ngModel)]="isIndefiniteMou"
+                                            (change)="toggleEndDate()" />
                                     </div>
-                                  </div>
+                                    <div class="col-2">
+                                        <p [ngStyle]="{ color: moustatus === 'Active' ? 'green' : 'red' }">
+                                            <span class="text-dark">Status </span> : {{ moustatus }}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                            <!--  SPOC Person details  -->
+                             
                             <div class="row">
                                 <div class="row mb-4 mt-4">
                                     <div class="col-2">
-                                      <label class="form-label">SPOC Person Name</label>
+                                        <label class="form-label">SPOC Person Name</label>
                                     </div>
                                     <div class="col-2">
-                                      <input type="text" class="form-control w-10 text-dark" name="SPOCPerson" [style]="{ width: '89%' }"
-                                        autocomplete="off" placeholder="Provide SPOCPerson Name " required [(ngModel)]="SPOCPerson"
-                                          />
-                                      <div *ngIf="!SPOCPerson" class="themeClr">
-                                        SPOCPerson Name Required is required.
-                                      </div>
+                                        <input type="text" class="form-control w-10 text-dark" name="SPOCPerson"
+                                            [style]="{ width: '89%' }" autocomplete="off"
+                                            placeholder="Provide SPOCPerson Name " required [(ngModel)]="SPOCPerson" />
+                                        <div *ngIf="!SPOCPerson" class="themeClr">
+                                            SPOCPerson Name Required is required.
+                                        </div>
                                     </div>
-                    
-                    
+
+
                                     <div class="col-2">
-                                      <label class="form-label">SPOC PersonEmail</label>
-                                    </div>
-                                    <div class="col-2">
-                                      <input type="text" class="form-control"  name="SPOCPersonEmail"
-                                        autocomplete="off" placeholder="Provide Mou End Date" [(ngModel)]="SPOCPersonEmail"
-                                        />
-                                      <div *ngIf="!SPOCPersonEmail " class="themeClr">
-                                        Required SPOC PersonEmail.
-                                      </div>
+                                        <label class="form-label">SPOC PersonEmail</label>
                                     </div>
                                     <div class="col-2">
-                                      <label class="form-label">SPOC Contact No</label>
+                                        <input type="text" class="form-control" name="SPOCPersonEmail"
+                                            autocomplete="off" placeholder="Provide Mou End Date"
+                                            [(ngModel)]="SPOCPersonEmail" />
+                                        <div *ngIf="!SPOCPersonEmail " class="themeClr">
+                                            Required SPOC PersonEmail.
+                                        </div>
                                     </div>
                                     <div class="col-2">
-                                      <input type="text" class="form-control"  name="SPOCPersonContact"
-                                        autocomplete="off" placeholder="Provide SPOCPerson Contact no" [(ngModel)]="SPOCPersonContact"
-                                        />
-                                      <div *ngIf="!SPOCPersonContact " class="themeClr">
-                                        Required SPOC  PersonContact.
-                                      </div>
+                                        <label class="form-label">SPOC Contact No</label>
                                     </div>
-                                  </div>
+                                    <div class="col-2">
+                                        <input type="text" class="form-control" name="SPOCPersonContact"
+                                            autocomplete="off" placeholder="Provide SPOCPerson Contact no"
+                                            [(ngModel)]="SPOCPersonContact" />
+                                        <div *ngIf="!SPOCPersonContact " class="themeClr">
+                                            Required SPOC PersonContact.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="row mb-4 mt-4">
+                                <div class="col-3">
+                                    <label class="form-label">MOU SPOC Name [LPU]</label>
+                                </div>
+                                <div class="col-3">
+                                    <input type="text" id="responsiblePerson" name="responsiblePerson" required
+                                        class="form-control col-3" [(ngModel)]="ResponsiblePerson"
+                                        [formControl]="employeeControl" placeholder="Search by name or code"
+                                        (input)="onInput()" (keydown)="onKeydown($event)" (change)="checkUIDValidity()"
+                                        (focus)="showSuggestions = true" (blur)="hideSuggestions()" />
+                                    <div class="themeClr mt-1 small"
+                                        *ngIf="employeeControl.invalid && employeeControl.touched">
+                                        LPU SPOC Name is required.
+                                    </div>
+
+                                    <div *ngIf="showSuggestions && filteredEmployeesData.length"
+                                        class="list-group position-absolute w-30 shadow-sm z-3">
+                                        <button type="button" class="list-group-item list-group-item-action"
+                                            *ngFor="let employee of filteredEmployeesData; let i = index"
+                                            [class.active]="i === activeSuggestionIndex"
+                                            (mousedown)="selectEmployee(employee)">
+                                            {{ employee.employeeName }} ({{ employee.employeeCode }})
+                                        </button>
+                                    </div>
+                                    <div *ngIf="AssignedToUid > 0" class="text-primary mt-2 small">
+                                        Applying to UID: <strong>{{ AssignedToUid }} {{AssignedToUidName}}</strong>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <label class="form-label">MOU SPOC EmailId [LPU]</label>
+                                </div>
+                                <div class="col-3">
+                                    <input type="email" class="form-control" [style]="{ width: '89%' }"
+                                        name="LPUSpocEmail" id="LPUSpocEmail" autocomplete="off"
+                                        placeholder="Provide SOPC Email Id" required
+                                        pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" ngModel
+                                        [(ngModel)]="LPUSpocEmail" #lpusopcEmail="ngModel" />
+                                    <div *ngIf="lpusopcEmail.invalid && lpusopcEmail.touched" class="themeClr">
+                                        <div *ngIf="lpusopcEmail.errors?.required">LPU SOPC Email Id is required.</div>
+                                        <div *ngIf="lpusopcEmail.errors?.pattern">Invalid Email Id must be properly
+                                            formatted and end with .com or
+                                            .org.</div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row">
-                                <br/>
-                                <br/>
-                                <br/>
+                                <br />
+                                <br />
+                                <br />
                                 <div class="col-md-12 text-center">
-                                    <button class="btn btn-dark me-2" (click)="ChangeUpdateSchoolDivision(this.mouId, this.selectedSchoolDivisions.length>0 ? this.selectedSchoolDivisions: this.CurrentSchool   ,this.MouStartDate, this.MouEndDate, this.moustatus, this.SPOCPerson, this.SPOCPersonContact, this.SPOCPersonEmail, this.MouOrganisation)" >
+                                    <button class="btn btn-dark me-2"
+                                        (click)="ChangeUpdateSchoolDivision(this.mouId, this.selectedSchoolDivisions.length>0 ? this.selectedSchoolDivisions: this.CurrentSchool   ,this.MouStartDate, this.MouEndDate, this.moustatus, this.SPOCPerson, this.SPOCPersonContact, this.SPOCPersonEmail, this.MouOrganisation)">
                                         Update Details
                                     </button>
                                 </div>
@@ -395,14 +730,168 @@
             </div>
             <div class="container-fluid">
                 <div class="row">
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
+                    <br />
+                    <br />
+                    <br />
+                    <br />
                 </div>
-            </div>
-        </div>
+            </div>-->
+
+
+<!-- <div class="container-fluid" [formGroup]="mouForm">
+                <div class="modal-header">
+                    <h5 class="modal-title">MOU Edit/Update Details</h5>
+                    <button type="button" class="btn-close" (click)="modal.close()"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="text-center mb-4">MOU Edit/Update Details</h2>
+
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <label class="fw-bold">MOU Id: <span
+                                            class="text-danger">MOU/{{mouId}}</span></label>
+                                </div>
+                                <div class="col-md-3 d-flex justify-content-center ">
+                                    <div class="col-md-8 text-start">
+                                        <span class="fw-bold fs-6 " *ngIf="this.CurrentSchool.length>0">
+                                            <dl> Current Division Involved List </dl>
+                                            <ul class=" p-0 " id="SchoolInvolvedData">
+                                                <li class="themeClr" [value]="getDivisionNameById(+schoolId)"
+                                                    *ngFor="let schoolId of CurrentSchool?.split(',')">
+                                                    {{getDivisionNameById(+schoolId)}}
+                                                </li>
+                                            </ul>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <label class="form-label fw-bold">Change School/Division Involved</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <ng-select [items]="allSchoolDivisions" formControlName="selectedDivisions"
+                                        [multiple]="true" bindLabel="schoolDivision" bindValue="id"
+                                        placeholder="Select Divisions">
+                                    </ng-select>
+                                    <small class="text-danger" *ngIf="isInvalid('selectedDivisions')">
+                                        At least one division is required.
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-2"><label class="fw-bold">Partner Organisation</label></div>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" formControlName="mouOrganisation"
+                                        placeholder="Enter Organisation Name">
+                                    <small class="text-danger" *ngIf="isInvalid('mouOrganisation')">Organisation name is
+                                        required.</small>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <label>Start Date</label>
+                                    <input type="date" class="form-control" formControlName="startDate"
+                                        (change)="updateMouStatus()">
+                                    <small class="text-danger" *ngIf="isInvalid('startDate')">Required.</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>End Date</label>
+                                    <input type="date" class="form-control" formControlName="endDate"
+                                        (change)="updateMouStatus()">
+                                </div>
+                                <div class="col-md-3 d-flex align-items-center mt-4">
+                                    <input type="checkbox" id="indefinite" formControlName="isIndefinite"
+                                        (change)="toggleEndDate()">
+                                    <label for="indefinite" class="ms-2">Indefinite MOU</label>
+                                </div>
+                                <div class="col-md-3 mt-4">
+                                    <span class="fw-bold">Status: </span>
+                                    <span [style.color]="moustatus === 'Active' ? 'green' : 'red'">{{moustatus}}</span>
+                                </div>
+                            </div>
+
+                            <hr>
+                            <h6>SPOC Details (Partner)</h6>
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control" formControlName="spocName"
+                                        placeholder="Name" [(ngModel)]="SPOCPerson">
+                                    <small class="text-danger" *ngIf="isInvalid('spocName')">Name required.</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="email" class="form-control" formControlName="spocEmail"
+                                        placeholder="Email">
+                                    <small class="text-danger" *ngIf="isInvalid('spocEmail')">Valid email
+                                        required.</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control" formControlName="spocContact"
+                                        placeholder="Contact No">
+                                    <small class="text-danger" *ngIf="isInvalid('spocContact')">Numbers only.</small>
+                                </div>
+                            </div>
+
+                            <hr>
+                            <h6>SPOC Details (Internal/LPU)</h6>
+                            <div class="row mb-4">
+                            
+                                <div class="col-md-6 position-relative"> <label class="form-label fw-bold">MOU SPOC Name
+                                        [LPU]</label>
+
+                                    <input type="text" id="responsiblePerson" formControlName="lpuSpocName"
+                                        class="form-control" [class.is-invalid]="isInvalid('lpuSpocName')"
+                                        placeholder="Search by name or code" (input)="onInput()"
+                                        (keydown)="onKeydown($event)" (change)="checkUIDValidity()"
+                                        (focus)="showSuggestions = true" (blur)="hideSuggestions()"
+                                        autocomplete="off" />
+
+                                    <div class="text-danger mt-1 small" *ngIf="isInvalid('lpuSpocName')">
+                                        LPU SPOC Name is required.
+                                    </div>
+
+                                    <div *ngIf="showSuggestions && filteredEmployeesData.length"
+                                        class="list-group position-absolute w-100 shadow-sm z-3"
+                                        style="max-height: 200px; overflow-y: auto;">
+
+                                        <button type="button" class="list-group-item list-group-item-action"
+                                            *ngFor="let employee of filteredEmployeesData; let i = index"
+                                            [class.active]="i === activeSuggestionIndex"
+                                            (mousedown)="selectEmployee(employee)">
+                                            <i class="mdi mdi-account me-2"></i>
+                                            {{ employee.employeeName }} <small class="text-muted">({{
+                                                employee.employeeCode }})</small>
+                                        </button>
+                                    </div>
+
+                                    <div *ngIf="AssignedToUid > 0"
+                                        class="alert alert-info py-1 px-2 mt-2 small d-inline-block">
+                                        <i class="mdi mdi-check-circle"></i>
+                                        Applying to UID: <strong>{{ AssignedToUid }} - {{AssignedToUidName}}</strong>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>LPU SPOC Email</label>
+                                    <input type="email" class="form-control" formControlName="lpuSpocEmail"
+                                        placeholder="Internal Email">
+                                    <small class="text-danger" *ngIf="isInvalid('lpuSpocEmail')">Valid internal email
+                                        required.</small>
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <button class="btn btn-dark px-5" (click)="onSubmit()"
+                                    [disabled]="mouForm.invalid && mouForm.touched">
+                                    Update Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+<!--</div>
     </div>
-</ng-template>
-
-
+</ng-template> -->

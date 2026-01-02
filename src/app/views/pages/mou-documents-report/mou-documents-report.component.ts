@@ -1,6 +1,6 @@
 
 import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
@@ -20,13 +20,148 @@ interface SchoolDivision {
   schoolDivision: string;
 }
 
+interface Employee {
+  employeeName: string;
+  employeeCode: string;
+}
 @Component({
   selector: 'app-mou-documents-report',
   templateUrl: './mou-documents-report.component.html',
   styleUrls: ['./mou-documents-report.component.scss']
 })
 export class MouDocumentsReportComponent implements OnInit {
-  @ViewChild('ChangeSchoolDivisionModal') ChangeSchoolDivisionModal: TemplateRef<any>; 
+
+
+  // Logic added start on 02-Jan-26
+  mouForm: FormGroup;
+
+  // Helper for Template to check validation
+  isInvalid(controlName: string): boolean {
+    const control = this.mouForm.get(controlName);
+    return !!(control && control.invalid && (control.dirty || control.touched));
+  }
+
+  onSubmit() {
+    if (this.mouForm.valid) {
+      console.log("Form Data:", this.mouForm.getRawValue());
+      // Call your service: ChangeUpdateSchoolDivision(...)
+    } else {
+      this.mouForm.markAllAsTouched();
+    }
+  }
+
+
+
+  IdX: any;
+  LPUSpocEmail: any = '';
+  employeeControl = new FormControl();
+  EmployeeData: Employee[] = [];
+  filteredEmployeesData: Employee[] = [];
+  showSuggestions = false;
+  activeSuggestionIndex: number = -1;
+
+  AssignedToUid: any = '';
+  AssignedToUidName: any = '';
+  GetEmployeeData(): void {
+    this.mouDocumentsService.GetEmployeeData().subscribe({
+      next: response => {
+        this.EmployeeData = response.item1.length > 0 ? response.item1 : [];
+      },
+      error: err => console.error(err)
+    });
+  }
+
+
+  onInput2() {
+    const query = this.mouForm.get('lpuSpocName')?.value?.toLowerCase();
+
+    if (query && query.length >= 2) {
+      this.filteredEmployeesData = this.EmployeeData.filter(emp =>
+        emp.employeeName.toLowerCase().includes(query) ||
+        emp.employeeCode.toLowerCase().includes(query)
+      ).slice(0, 10); // Limit to top 10 for clean UI
+
+      this.showSuggestions = true;
+    } else {
+      this.showSuggestions = false;
+    }
+  }
+
+  onInput() {
+    const query = this.mouForm.get('lpuSpocName')?.value;
+    const inputValue = (this.employeeControl.value || this.mouForm.get('lpuSpocName')?.value).toLowerCase();
+    if (inputValue) {
+      this.filteredEmployeesData = this.EmployeeData.filter(employee =>
+        employee.employeeName.toLowerCase().includes(inputValue) ||
+        employee.employeeCode.toLowerCase().includes(inputValue)
+      ).slice(0, 10);
+    } else {
+      this.filteredEmployeesData = [];
+    }
+    this.showSuggestions = true;
+    this.activeSuggestionIndex = -1;
+  }
+
+  selectEmployee2(employee: Employee) {
+    // This updates the variables used in your console.log/HTML
+    this.ResponsiblePerson = employee.employeeCode;
+    this.AssignedToUid = employee.employeeCode;
+    this.AssignedToUidName = employee.employeeName;
+
+    // IMPORTANT: This updates the Reactive Form state for the API
+    this.mouForm.patchValue({
+      lpuSpocName: employee.employeeName,
+      lpuSpocUid: employee.employeeCode // This ensures the UID is captured
+    });
+
+    // Update the separate search control if you are still using it
+    this.employeeControl.setValue(`${employee.employeeName} (${employee.employeeCode})`);
+
+    this.filteredEmployeesData = [];
+    this.showSuggestions = false;
+    this.checkUIDValidity();
+  }
+  selectEmployee(employee: Employee) {
+    this.ResponsiblePerson = employee.employeeCode;
+    this.AssignedToUid = employee.employeeCode;
+    this.AssignedToUidName = employee.employeeName;
+    this.employeeControl.setValue(`${employee.employeeName} (${employee.employeeCode})`);
+    this.filteredEmployeesData = [];
+    this.showSuggestions = false;
+    this.checkUIDValidity();
+  }
+
+
+  onKeydown(event: KeyboardEvent) {
+    if (this.filteredEmployeesData.length > 0) {
+      if (event.key === 'ArrowDown') {
+        this.activeSuggestionIndex = (this.activeSuggestionIndex + 1) % this.filteredEmployeesData.length;
+      } else if (event.key === 'ArrowUp') {
+        this.activeSuggestionIndex = (this.activeSuggestionIndex - 1 + this.filteredEmployeesData.length) % this.filteredEmployeesData.length;
+      } else if (event.key === 'Enter') {
+        if (this.activeSuggestionIndex >= 0 && this.activeSuggestionIndex < this.filteredEmployeesData.length) {
+          this.selectEmployee(this.filteredEmployeesData[this.activeSuggestionIndex]);
+        }
+      }
+    }
+  }
+
+  hideSuggestions() {
+    setTimeout(() => this.showSuggestions = false, 200);
+  }
+
+
+  checkUIDValidity(): void {
+    this.uploadEnabled = this.IdX !== '' && this.AssignedToUid != '';
+  }
+
+
+
+
+
+
+
+  @ViewChild('ChangeSchoolDivisionModal') ChangeSchoolDivisionModal: TemplateRef<any>;
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
   @ViewChild('fileInput') fileInput!: ElementRef;
   isLogin: boolean = false;
@@ -59,7 +194,7 @@ export class MouDocumentsReportComponent implements OnInit {
   filterText: string = '';
   filteredMouDocumentDetails: any[] = [];
   Reason: any;
-  searchQuery: any= ''; ResponsiblePerson: any = ''; ColumnMode = ColumnMode; columns: any; headHtmlData: any[] = [];
+  searchQuery: any = ''; ResponsiblePerson: any = ''; ColumnMode = ColumnMode; columns: any; headHtmlData: any[] = [];
   mouId: any;
 
 
@@ -68,7 +203,7 @@ export class MouDocumentsReportComponent implements OnInit {
     private storageService: StorageService, private mouDocumentsService: MouDocumentsService,
     private modalService: NgbModal, private authService: AuthService,
     public formBuilder: UntypedFormBuilder, private route: ActivatedRoute,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder) { this.initForm(); }
 
   ngOnInit(): void {
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML = '<span class="themeClr">MOU </span> Document <span class="themeClr">Approvals</span>';
@@ -94,6 +229,7 @@ export class MouDocumentsReportComponent implements OnInit {
         this.storageService.saveUser(data);
         this.GetAllUploadsDetails();
         this.GetEmployeeDetails();
+        this.GetEmployeeData();
       },
       error: err => {
         this.LoginFailed(err);
@@ -148,11 +284,11 @@ export class MouDocumentsReportComponent implements OnInit {
           this.showNoDataFoundMessage = false;
           this.dataSource.data = this.MouDocumentDetails;
           this.filteredMouDocumentDetails = this.MouDocumentDetails;
-          console.log(JSON.stringify(this.filteredMouDocumentDetails))
+
           this.columns = []; this.headHtmlData = [];
           this.headHtmlData = this.MouDocumentDetails[0];
           this.columns = Object.keys(this.MouDocumentDetails[0]);
-          this.columns = this.columns.filter((item: any) => item !== 'fileName' && item !== 'newMouId' && item!=='mouPartnerName' && item!== 'mouUploadedBy' && item!== 'mouUploadedByUID' && item!== 'mouApprovedBy' && item !== 'mouEndDate'  && item !== 'mouStartDate' && item !== 'mouStatus' && item !== 'filePath' && item !== 'uid' && item !== 'updatedOn'  && item !== 'facultyName'  && item !== 'mouTitle' && item !== 'mouPartnerName' && item !== 'spocContactNo'&& item !== 'spocName' && item !== 'spocEmailId' && item !== 'mouPartner' && item !== 'createdOn' && item !== 'createdBy' && item !== 'ipAddress' && item !== 'updatedBy' && item !== 'disapprovalReason' && item !== 'approvedBy'    && item !== 'updatedOn'  && item !== 'isActive' && item !== 'isApproved' && item !== 'approvalDate' && item !== 'schoolDivisionInvolved' && item !== 'mouId'  && item !== 'id' && item !== 'activityStartDate' && item !== 'activityEndDate' && item!=='assignedBy' && item!=='assignedTo');
+          this.columns = this.columns.filter((item: any) => item !== 'fileName' && item !== 'newMouId' && item !== 'mouPartnerName' && item !== 'mouUploadedBy' && item !== 'mouUploadedByUID' && item !== 'mouApprovedBy' && item !== 'mouEndDate' && item !== 'mouStartDate' && item !== 'mouStatus' && item !== 'filePath' && item !== 'uid' && item !== 'updatedOn' && item !== 'facultyName' && item !== 'mouTitle' && item !== 'mouPartnerName' && item !== 'spocContactNo' && item !== 'spocName' && item !== 'spocEmailId' && item !== 'mouPartner' && item !== 'createdOn' && item !== 'createdBy' && item !== 'ipAddress' && item !== 'updatedBy' && item !== 'disapprovalReason' && item !== 'approvedBy' && item !== 'updatedOn' && item !== 'isActive' && item !== 'isApproved' && item !== 'approvalDate' && item !== 'schoolDivisionInvolved' && item !== 'mouId' && item !== 'id' && item !== 'activityStartDate' && item !== 'activityEndDate' && item !== 'assignedBy' && item !== 'assignedTo');
           this.columns.push()
           this.loadingIndicator = false;
 
@@ -191,7 +327,7 @@ export class MouDocumentsReportComponent implements OnInit {
       }
     });
   }
- 
+
   search() {
     const query = this.searchQuery.trim().toLowerCase();
     // console.log(JSON.stringify(this.MouDocumentDetails))
@@ -199,17 +335,17 @@ export class MouDocumentsReportComponent implements OnInit {
       return Object.entries(item).some(([key, val]) => {
         if (val !== null && val !== undefined) {
           let valueString = String(val).toLowerCase();
-  
+
           // Special handling for mouid (Numeric & "MOU/x" String Comparison)
           if (key === 'id') {
             const numericId = Number(val); // Convert mouid to a number
-            
+
             // Handle cases where user searches with "MOU/x" or just a number
             if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
               return true;
             }
           }
-  
+
           // General search for all other fields
           return valueString.includes(query);
         }
@@ -290,9 +426,9 @@ export class MouDocumentsReportComponent implements OnInit {
   }
   exportToExcel(): void {
     const fileName = 'Mou_Document_report.xlsx';
-  
+
     const exportedData = this.MouDocumentDetails.map(item => ({
-      NewMOUId:  (item.newMouId ?? 'N/A'),
+      NewMOUId: (item.newMouId ?? 'N/A'),
       OldMOUId: "MOU/" + (item.id ?? 'N/A'),
       'Mou Partner Organisation Name': item.mouTitle ?? 'N/A',
       'Mou Start Date': item.mouStartDate ?? 'N/A',
@@ -307,21 +443,21 @@ export class MouDocumentsReportComponent implements OnInit {
       'School/Division Name Of Faculty Who Uploaded': item.mouUploadedBy ?? 'N/A',
       'Date of MOU Upload at interface': item.createdOn
         ? new Date(item.createdOn).toLocaleDateString('en-GB', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric'
-          }).replace(/ /g, '-')
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        }).replace(/ /g, '-')
         : 'N/A', // Handle null case
-      'Approval Status (Approved/Rejected/Pending)': item.isApproved == 1        ? 'Approved'        : item.isApproved == 0        ? 'Disapproved'        : 'Pending',
+      'Approval Status (Approved/Rejected/Pending)': item.isApproved == 1 ? 'Approved' : item.isApproved == 0 ? 'Disapproved' : 'Pending',
       'MOU Approved /Rejected By : Faculty Name': item.mouApprovedBy ?? 'N/A',
       'MOU Approved /Rejected By : Faculty UID': item.approvedBy ?? 'N/A',
       'MOU Approval/ Rejection Date': item.approvalDate ?? 'N/A'
     }));
-  
+
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
     const wscols = Array(17).fill({ wpx: 220 }); // Set uniform column widths
     ws['!cols'] = wscols;
-  
+
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
     const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
@@ -330,8 +466,8 @@ export class MouDocumentsReportComponent implements OnInit {
     link.download = fileName;
     link.click();
   }
-  
-  
+
+
   // exportToExcel(): void {
   //   const fileName = 'Mou_Document_report.xlsx';
   //   const exportedData = this.MouDocumentDetails.map(item => ({
@@ -370,11 +506,22 @@ export class MouDocumentsReportComponent implements OnInit {
   //   link.click();
   // }
 
-  formatDate(date: Date): string {
-    const DateX = new Date(date).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
-    return DateX;
+  // formatDate(date: Date): string {
+  //   const DateX = new Date(date).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+  //   return DateX;
+  // }
+  /**
+     * FIX: Helper to convert any date format to YYYY-MM-DD for HTML5 Input binding
+     */
+  private formatDate(date: any): string {
+    if (!date) return '';
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return '';
+    const month = '' + (d.getMonth() + 1);
+    const day = '' + d.getDate();
+    const year = d.getFullYear();
+    return [year, month.padStart(2, '0'), day.padStart(2, '0')].join('-');
   }
-
   DisapproveStatus(Id: any) {
     swal.fire({
       title: "Reason for Disapproval",
@@ -395,7 +542,7 @@ export class MouDocumentsReportComponent implements OnInit {
     });
   }
 
- 
+
   ChangeApproveStatus(Id: any) {
     const formData = new FormData();
     formData.append('Id', Id);
@@ -444,43 +591,124 @@ export class MouDocumentsReportComponent implements OnInit {
       'error'
     );
   }
-// added logic on 7-may-25 
-MouOrganisation: any;
-MouOrganisationPrevious:any;
-selectedSchoolDivisionsX: string ;
+  // added logic on 7-may-25 
+  MouOrganisation: any;
+  MouOrganisationPrevious: any;
+  selectedSchoolDivisionsX: string;
 
-  ChangeSchool(a: any) {
+
+
+  initForm() {
+    this.mouForm = this.fb.group({
+      mouId: [{ value: '', disabled: true }], // Locked field
+      selectedDivisions: [[], [Validators.required]],
+      mouOrganisation: ['', [Validators.required, Validators.minLength(3)]],
+      startDate: ['', [Validators.required]],
+      endDate: [''],
+      isIndefinite: [false],
+      spocName: ['', [Validators.required]],
+      spocEmail: ['', [Validators.required, Validators.email]],
+      spocContact: [''],
+      lpuSpocName: ['', [Validators.required]], // Internal SPOC Name
+      lpuSpocUid: ['', [Validators.required]],  // Internal SPOC UID
+      lpuSpocEmail: ['', [Validators.required, Validators.email]] // Internal SPOC Email
+    });
+  }
+
+  ChangeSchool(data: any) {
+    this.showSuggestions = false;
+    this.filteredEmployeesData = [];
+    this.mouForm.patchValue({
+      mouId: data.id,
+      selectedDivisions: data.schoolDivisionInvolved ? data.schoolDivisionInvolved.split(',') : [],
+      mouOrganisation: data.mouPartnerName,
+      startDate: data.mouStartDate,
+      endDate: data.mouEndDate,
+      isIndefinite: data.mouStatus === 'Active' && !data.mouEndDate,
+      spocName: data.spocName,
+      spocEmail: data.spocEmailId,
+      spocContact: data.spocContactNo,
+      lpuSpocName: data.lpuSpocName,
+      lpuSpocUid: data.lpuSpocUID,
+      lpuSpocEmail: data.lpuSpocEmail
+    });
+
+    // Set internal display variables for the UI
+    this.mouId = data.id;
+    this.AssignedToUid = data.lpuSpocUID;
+    this.AssignedToUidName = data.lpuSpocName;
+    this.moustatus = data.mouStatus;
+
     const arrayUniqueByKey = [...new Map(this.selectedDivisions.map(item =>
-      [item, item])).values()];    
-    
+      [item, item])).values()];
+
     this.selectedSchoolDivisionsX = arrayUniqueByKey.join(',');
-    let aa = a;
+    let aa = data
     this.mouId = aa['id'];
-    this.MouOrganisationPrevious = aa['mouPartnerName']; 
-    this.SPOCPerson=aa['spocName'];
-    this.SPOCPersonEmail= aa['spocEmailId'];
-    this.MouStartDate= aa['mouStartDate'];
-    this.MouEndDate= aa['mouEndDate'];
-    this.moustatus= aa['mouStatus'];
-    this.selectedSchoolDivisions=aa['schoolDivisionInvolved'];
-    this.CurrentSchool =aa['schoolDivisionInvolved']
-    this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'sm' }).result.then((result) => {
+    this.MouOrganisationPrevious = aa['mouPartnerName'];
+    this.SPOCPerson = aa['spocName'];
+    this.SPOCPersonEmail = aa['spocEmailId'];
+    this.MouStartDate = aa['mouStartDate'];
+    this.MouEndDate = aa['mouEndDate'];
+    this.moustatus = aa['mouStatus'];
+    this.selectedSchoolDivisions = aa['schoolDivisionInvolved'];
+    this.CurrentSchool = aa['schoolDivisionInvolved'];
+
+    this.mouForm.patchValue({
+      selectedDivisions: data['schoolDivisionInvolved'] ? data['schoolDivisionInvolved'].split(',') : [],
+      mouOrganisation: data['mouPartnerName'],
+      startDate: this.formatDate(data.mouStartDate), // Formatting fix
+      endDate: this.formatDate(data.mouEndDate),     // Formatting fix
+
+      spocName: data['spocName'],
+      spocEmail: data['spocEmailId'],
+      spocContact: data['spocContact'],
+      lpuSpocName: data['lpuSpocName'],
+      lpuSpocEmail: data['lpuSpocEmail'],
+
+      // Note: Add other fields if they exist in your data object 'data'
+    });
+    // this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'lg', backdrop: 'static' });
+    this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'lg', backdrop: 'static' }).result.then((result) => {
       // console.log("Modal closed" + result);
     }).catch((res) => { });
   }
 
-  ChangeUpdateSchoolDivision(Id: any, School: any, StartDate: any, EndDate: any, Status: any, SPName: any, SPContact: any,SPEmail: any, MouOrganisation: any) {
-    alert(MouOrganisation)
+  // 4. Final Update Submission
+  onSubmitUpdate() {
+    if (this.mouForm.invalid) {
+      this.mouForm.markAllAsTouched();
+      console.warn("Form Invalid:", this.mouForm.value);
+      return;
+    }
+
+    const val = this.mouForm.getRawValue();
+
+    // // --- CONSOLE DATA BEFORE API CALL ---
+    // console.log("--- Preparing Update Payload ---");
+    // console.log("MOU ID:", val.mouId);
+    // console.log("Divisions:", val.selectedDivisions.join(','));
+    // console.log("Dates:", { Start: val.startDate, End: val.isIndefinite ? 'Indefinite' : val.endDate });
+    // console.log("Partner SPOC:", { Name: val.spocName, Email: val.spocEmail });
+    // console.log("LPU SPOC (New Fields):", {
+    //   Name: val.lpuSpocName,
+    //   UID: val.lpuSpocUid,
+    //   Email: val.lpuSpocEmail
+    // });
+    // const formValues = this.mouForm.getRawValue();
     const formData = new FormData();
-    formData.append('Id', Id);
-    formData.append('SchoolInvolved', School.length<1? this.CurrentSchool: School);
-    formData.append('MouStartDate', StartDate);
-    formData.append('MouEndDate', EndDate);
-    formData.append('MouStatus', Status);
-    formData.append('SPOCPerson', SPName);
-    formData.append('SPOCContat', SPContact);
-    formData.append('SPOCEmail', SPEmail);
-    formData.append('MouOrganisation', MouOrganisation.length< 3? this.MouOrganisationPrevious: MouOrganisation);
+    formData.append('Id', val.mouId);
+    formData.append('SchoolInvolved', val.selectedDivisions.join(','));
+    formData.append('MouStartDate', val.startDate);
+    formData.append('MouEndDate', val.isIndefinite ? '' : val.endDate);
+    formData.append('MouStatus', this.moustatus);
+    formData.append('SPOCPerson', val.spocName);
+    formData.append('SPOCContat', val.spocContact);
+    formData.append('SPOCEmail', val.spocEmail);
+    formData.append('MouOrganisation', val.mouOrganisation);
+    formData.append('LPUSpocName', val.lpuSpocName);
+    formData.append('LPUSpocUID', val.lpuSpocUid);
+    formData.append('LPUSpocEmail', val.lpuSpocEmail);
     swal.fire({
       title: 'Are you sure you want to change the School?',
       icon: 'warning',
@@ -496,7 +724,43 @@ selectedSchoolDivisionsX: string ;
     });
   }
 
+
+  ChangeUpdateSchoolDivision(Id: any, School: any, StartDate: any, EndDate: any, Status: any, SPName: any, SPContact: any, SPEmail: any, MouOrganisation: any) {
+    // alert(MouOrganisation)
+    const formData = new FormData();
+    formData.append('Id', Id);
+    formData.append('SchoolInvolved', School.length < 1 ? this.CurrentSchool : School);
+    formData.append('MouStartDate', StartDate);
+    formData.append('MouEndDate', EndDate);
+    formData.append('MouStatus', Status);
+    formData.append('SPOCPerson', SPName);
+    formData.append('SPOCContat', SPContact);
+    formData.append('SPOCEmail', SPEmail);
+    formData.append('LPUSpocName', this.AssignedToUidName);
+    formData.append('LPUSpocUID', this.AssignedToUid);
+    formData.append('LPUSpocEmail', this.LPUSpocEmail);
+    formData.append('MouOrganisation', MouOrganisation.length < 3 ? this.MouOrganisationPrevious : MouOrganisation);
+    console.log(this.CurrentSchool + StartDate + EndDate + Status + SPName + SPContact + SPEmail + this.AssignedToUid + this.AssignedToUidName + this.LPUSpocEmail + this.MouOrganisationPrevious + JSON.stringify(formData))
+    // swal.fire({
+    //   title: 'Are you sure you want to change the School?',
+    //   icon: 'warning',
+    //   showCancelButton: true,
+    //   confirmButtonText: 'Yes, accept current changes!',
+    //   cancelButtonText: 'No, do not change it'
+    // }).then((result: any) => {
+    //   if (result.value) {
+    //     this.handleSchoolChange(formData);
+    //   } else {
+    //     this.showCancelledSwal();
+    //   }
+    // });
+  }
+
   private handleSchoolChange(formData: FormData) {
+    //     console.log("--- FormData Content ---");
+    // formData.forEach((value, key) => {
+    //   console.log(`${key}: ${value}`);
+    // });
     this.mouDocumentsService.UpdateSchoolDivision(formData).subscribe((data: any) => {
       if (data.responseData === 'FAILED') {
         swal.fire(
@@ -515,11 +779,11 @@ selectedSchoolDivisionsX: string ;
       }
     });
   }
-//  changes made on 15-Feb-25
+  //  changes made on 15-Feb-25
 
-SPOCPerson: any;
-SPOCPersonEmail: any;
-SPOCPersonContact: any;
+  SPOCPerson: any;
+  SPOCPersonEmail: any;
+  SPOCPersonContact: any;
   isLoading: boolean = false;
   MouStartDate: string = ''; // Bound to Start Date input
   MouEndDate: string = ''; // Bound to End Date input
@@ -527,7 +791,7 @@ SPOCPersonContact: any;
   moustatus: string = 'Expired';
 
 
-  
+
   toggleEndDate(): void {
     if (this.isIndefiniteMou) {
       this.isIndefiniteMou = true;

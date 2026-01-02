@@ -312,7 +312,9 @@ reloadGrid(){
     formData.append('StartDate', this.startDate);
     formData.append('EndDate', this.endDate);
     formData.append('ActivityDetails', this.selectedActivityId);
-
+    // alert(JSON.stringify(formData))
+    // console.log(formData)
+    // console.log(this.mouId +'uid '+ this.AssignedToUid +' ' +this.EmployeeCode+this.remarks+this.startDate+this.endDate+this.selectedActivityId)
     this.mouDocumentsService.MouNewActivityPlanAddNew(formData).subscribe({
       next: (data: any) => {
         if (data?.item1?.[0]?.msg === 'success') {
@@ -459,12 +461,21 @@ reloadGrid(){
     setTimeout(() => this.showSuggestions = false, 200);
   }
 
-  checkFormValidity(): void {
-    this.uploadEnabled = !!(this.mouId && this.mouId !== 'select Id'
-      && this.partnerName && this.ResponsiblePerson
-      && this.startDate && this.endDate
-      && this.AssignedToUid && this.AssignedToUid.length > 4
-      && this.remarks && this.remarks.length > 5);
+  checkFormValidity(): boolean {
+    // this.uploadEnabled = !!(this.mouId && this.mouId !== 'select Id'
+    //   && this.partnerName && this.ResponsiblePerson
+    //   && this.startDate && this.endDate
+    //   && this.AssignedToUid && this.AssignedToUid.length > 4
+    //   && this.remarks && this.remarks.length > 5);
+
+
+    return !!(
+      this.startDate &&
+      this.endDate &&
+      this.remarks &&
+      this.selectedActivityId &&
+      this.AssignedToUid > 0 // Ensures a faculty was selected from suggestions
+    );
   }
 
   checkUIDValidity(): void {
@@ -477,9 +488,13 @@ reloadGrid(){
   }
 
   onSelect(a: any) {
+    alert(JSON.stringify(a))
     this.mouId = a['mouId'];
     this.CurrentMouTitle = a['mouTitle'];
-    this.modalService.open(this.viewDescModal, { size: 'sm' });
+    // this.startDate = a['mouStartDate'];
+    // this.endDate = a['mouEndDate'];
+ 
+    this.modalService.open(this.viewDescModal, { size: 'lg' });
   }
 
   AssignUid(rows: any) {
@@ -490,12 +505,12 @@ reloadGrid(){
     this.EndDateX = rows['endDate'];
     this.ActivityDetailsX = rows['activityDetails'];
     this.RemarksX = rows['remarks'];
-    this.modalService.open(this.AssignNewUIDModal, { size: 'sm' }).result.then(() => window.location.reload()).catch(() => {});
+    this.modalService.open(this.AssignNewUIDModal, { size: 'lg' }).result.then(() => window.location.reload()).catch(() => {});
   }
   ViewAllActionTaken(rows: any) {
     this.MouidX = rows['mouId'];
     this.GetAllActionDetails(this.MouidX);
-    this.modalService.open(this.viewMouActivityActionTakenModal, { size: 'sm' }).result.then((result) => {      
+    this.modalService.open(this.viewMouActivityActionTakenModal, { size: 'lg' }).result.then((result) => {      
       window.location.reload();
     }).catch((res) => { });
   }
