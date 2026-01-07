@@ -488,7 +488,7 @@ reloadGrid(){
   }
 
   onSelect(a: any) {
-    alert(JSON.stringify(a))
+    // alert(JSON.stringify(a))
     this.mouId = a['mouId'];
     this.CurrentMouTitle = a['mouTitle'];
     // this.startDate = a['mouStartDate'];

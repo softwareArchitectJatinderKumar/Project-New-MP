@@ -12,9 +12,8 @@ import { deleteUniversity } from '../views/pages/sm-add-new-university/deleteUni
 interface IStudentDetails {
     RegisterationNumber: string;
     Name: string;
-    // ... include all other fields used in the Student Profile card ...
     CGPA: number;
-    FailCount: number; // Important for eligibility check (assuming this is used for 'F' grades)
+    FailCount: number; 
 }
 
 interface IApiTupleResponse {
@@ -24,7 +23,6 @@ interface IApiTupleResponse {
     item4: IStudentDetails[]; // RegisterationNumber, Name, Section... (Student Details)
 }
 
-// Internal interface for organized data delivery to the component
 interface IFormattedApiResponse {
     OverallSummary: any[];
     CourseAttendance: any[];
