@@ -9,7 +9,8 @@ import { environment } from 'src/environments/environment';
 const AUTH_API = 'https://projectsapi.lpu.in/api/';
 const AUTH_APILOCAL = 'https://projectsapi.lpu.in/api/';
 
-
+// const AUTH_API = 'https://localhost:7125/'; //'https://projectsapi.lpu.in/';
+// const AUTH_APILOCAL = 'https://localhost:7125/'; //'https://localhost:7125/';
 
 @Injectable({
   providedIn: 'root'
