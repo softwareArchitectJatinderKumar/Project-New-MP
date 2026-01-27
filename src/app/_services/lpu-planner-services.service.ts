@@ -75,4 +75,18 @@ export class LpuPlannerServicesService {
     // return this.http.get<any>(AUTH_API + 'Planning/GetObpDailyFilledProgrees?UID=' + UId + '&DCode=' + DeptCode, httpOptions);
   }
 
+
+
+  
+  GetCirteriaList(Id: any): Observable<any> {
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+    .set('Authorization', 'Bearer ' + token)
+    .set('Content-Type', 'application/json'); 
+    return this.http.get(
+      AUTH_API + 'api/Planning/GetCirteriaList?DivisionId=' + Id,
+     {headers}
+    );   
+  }
+
 }

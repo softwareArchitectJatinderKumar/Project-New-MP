@@ -5,6 +5,7 @@ import { AuthGuard } from './core/guard/auth.guard';
 import { ErrorPageComponent } from './views/pages/error-page/error-page.component';
 import { EstateActionablePointCompleteTaskComponent } from './views/pages/estate-actionable-point-completetask/estate-actionable-point-completetask.component';
 import { SemesterMigrationAdminComponent } from './views/SemesterExchange/HODDashboard/TopMenuBar/sm-admin-bar.component';
+// import { CriteriaMasterComponent } from './views/Criteria-Master/criteria-master.component';
 
 
 const routes: Routes = [
@@ -198,11 +199,11 @@ const routes: Routes = [
       //   path: 'estate-actionable-point/:loginName',
       //   loadChildren: () => import('./views/pages/estate-actionable-point/estate-actionable-point.module').then(m => m.EstateActionablePointModule),
       // },
-      // {
-      //   path: "OBPProgress/:loginName",
-      //   loadChildren: () => import('./views/pages/SchoolDivisions/metricand-planner-data/metricand-palnner-data.module').then(m => m.MetricandPlannerDataModule)
-      //   //  component:MetricandPlannerDataComponent
-      // },
+      {
+        path: "OBPProgress/:loginName",
+        loadChildren: () => import('./views/pages/SchoolDivisions/metricand-planner-data/metricand-palnner-data.module').then(m => m.MetricandPlannerDataModule)
+        //  component:MetricandPlannerDataComponent
+      },
       // {
       //   path: "UserOBPProgress/:loginName/:uid/:date",
       //   loadChildren: () => import('./views/pages/SchoolDivisions/metricand-planner-data/metricand-palnner-data.module').then(m => m.MetricandPlannerDataModule)
@@ -374,6 +375,12 @@ const routes: Routes = [
       // {
       //   path:'AllAppointments/:loginName',
       //   loadChildren:()=> import('./views/pages/OutReach-Appointments/ViewAll-Appointments/ViewAll-appointments.module').then(m=> m.ViewAllAppointmentsModule)
+      // },
+
+      // {
+      //   path:'CriteriaMaster',
+      //   component: CriteriaMasterComponent
+      //   // loadChildren:()=> import('./views/pages/UMS-Angular/CriteriaMaster/criteria-master.module').then(m=> m.CriteriaMasterModule)
       // },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       // { path: '**', redirectTo: 'dashboard', pathMatch: 'full' }

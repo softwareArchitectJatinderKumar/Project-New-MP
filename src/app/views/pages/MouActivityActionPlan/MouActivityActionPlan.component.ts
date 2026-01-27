@@ -268,12 +268,10 @@ reloadGrid(){
             return activity.actionAssignedBy !== this.EmployeeCode;
           });
 
-           // Sort
-          this.MouActivityAssignedOthersMaster.sort((a, b) => a.id - b.id); // Assuming ID exists, mostly checks createdOn usually
+          this.MouActivityAssignedOthersMaster.sort((a, b) => a.id - b.id);
           this.setupColumns(this.MouActivityAssignedOthersMaster[0], 'assigned');
           this.showNoDataFoundMessage = false;
           this.filterTab3(); 
-          // console.log(JSON.stringify(this.MouActivityAssignedOthersMaster))
         } else {
           this.MouActivityAssignedOthersMaster = [];
           this.filteredMouActivityAssignedOthers = [];
@@ -312,9 +310,6 @@ reloadGrid(){
     formData.append('StartDate', this.startDate);
     formData.append('EndDate', this.endDate);
     formData.append('ActivityDetails', this.selectedActivityId);
-    // alert(JSON.stringify(formData))
-    // console.log(formData)
-    // console.log(this.mouId +'uid '+ this.AssignedToUid +' ' +this.EmployeeCode+this.remarks+this.startDate+this.endDate+this.selectedActivityId)
     this.mouDocumentsService.MouNewActivityPlanAddNew(formData).subscribe({
       next: (data: any) => {
         if (data?.item1?.[0]?.msg === 'success') {
@@ -346,15 +341,12 @@ reloadGrid(){
  
   genericSearch(data: any[], query: string): any[] {
     if (!query || query.trim() === '') {
-      return [...data]; // Return copy of full data
+      return [...data];
     }
-
     const lowerQuery = query.trim().toLowerCase();
-
     return data.filter(item => {
       return Object.entries(item).some(([key, val]) => {
         if (val === null || val === undefined) return false;
-        
         const valueString = String(val).toLowerCase();
 
         // Special Logic: Search by "MOU/123" or just "123" for mouId
@@ -366,8 +358,6 @@ reloadGrid(){
              }
           }
         }
-
-        // Standard substring match
         return valueString.includes(lowerQuery);
       });
     });
@@ -533,17 +523,19 @@ reloadGrid(){
 
  
   exportToExcel(data: any[], type: 'tab2' | 'tab3'): void {
-    const fileName = 'Mou_Document_report.xlsx';
+    const fileName = 'Mou Plan Report.xlsx';
     const exportedData = data.map(item => ({
       NewMOUId: item.newMouId ?? 'N/A',
       OldMOUId: "MOU/" + item.mouId,
       'Name of Mou Organisation': item.mouTitle,
       'MOU Activity Assigned to Faculty UID': item.uid,
+      'MOU Activity Assigned BY ': item.actionAssignedBy,
+      'Assigned Date': item.createdOn,
       'Activity Start Date': item.startDate,
       'Activity End Date': item.endDate,
       'Remarks': item.remarks,
       'Details of Allocated MOU Activity': this.removeNumberPrefix(item.activityDetails),
-      'Date Assigned': item.createdOn,
+      'Session': item.sessionAcademicYear,
     }));
 
     const ws = XLSX.utils.json_to_sheet(exportedData);
@@ -559,6 +551,7 @@ reloadGrid(){
   exportTab3(): void { this.exportToExcel(this.filteredMouActivityAssignedOthers, 'tab3'); }
 
   exportToExcelLegacy(data: any[]): void {
+    
     const exportedData = data.map(item => ({
       NewMOUId: item.newMouId ?? 'N/A',
       OldMOUId: "MOU/" + item.mouId,
