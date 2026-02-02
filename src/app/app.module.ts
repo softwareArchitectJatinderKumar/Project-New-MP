@@ -30,6 +30,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MouDocumentsUploadsComponent } from './views/pages/mou-documents-uploads/mou-documents-uploads.component';
 import { MouDocumentsReportComponent } from './views/pages/mou-documents-report/mou-documents-report.component';
 import { StudentFormComponent } from './views/SemesterExchange/StudentForm/StudentForm.component';
+import { CriteriaMasterComponent } from './components/criteria-master/criteria-master.component';
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 // import { OBPEstatefinalVerficationComponent } from './views/pages/obpestatefinal-verfication/obpestatefinal-verfication.component';
 
 @NgModule({
@@ -40,6 +42,7 @@ import { StudentFormComponent } from './views/SemesterExchange/StudentForm/Stude
     SummerSchoolAdminComponent,
     AdministrativeReportComponent, 
     StudentFormComponent,
+    CriteriaMasterComponent,
     // OBPEstatefinalVerficationComponent
   ],
   imports: [
@@ -64,6 +67,7 @@ import { StudentFormComponent } from './views/SemesterExchange/StudentForm/Stude
     MatDatepickerModule,
     MatTabsModule,
     MatNativeDateModule,
+    SweetAlert2Module.forRoot(),
     
   ],
   providers: [

@@ -1,0 +1,750 @@
+<div class="criteria-master-container" id="MasterPage" *ngIf="isLoginFailed==false; else loginFailed">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Outcome Based Planner Master</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+            <!-- Division Selector -->
+            <div class="form-row">
+                <mat-form-field appearance="outline">
+                    <mat-label>Division</mat-label>
+                    <mat-select [(ngModel)]="selectedDivisionId" (selectionChange)="onDivisionChange()">
+                        <mat-option value="0">Select Division</mat-option>
+                        <mat-option *ngFor="let division of divisions" [value]="division.id">
+                            {{ division.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <!-- Angular Material Tabs with All 6 Tabs -->
+            <mat-tab-group animationDuration="200ms">
+
+                <!-- Tab 1: Criteria Master -->
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <mat-icon>assignment</mat-icon>
+                        <span style="margin-left: 8px;">Criteria Master</span>
+                    </ng-template>
+                    <div class="tab-content">
+                        <!-- Action Bar -->
+                        <div class="action-bar">
+                            <button mat-raised-button color="primary" (click)="showAddForm = !showAddForm">
+                                <mat-icon>{{ showAddForm ? 'visibility_off' : 'add' }}</mat-icon>
+                                {{ showAddForm ? 'Hide Form' : 'Add New Criteria' }}
+                            </button>
+
+                            <button mat-raised-button color="accent" (click)="showUploadForm = !showUploadForm">
+                                <mat-icon>upload</mat-icon>
+                                Upload from Excel
+                            </button>
+
+                            <button mat-raised-button color="warn" (click)="exportCriteria()">
+                                <mat-icon>download</mat-icon>
+                                Export to Excel
+                            </button>
+                        </div>
+
+                        <!-- Add/Edit Form -->
+                        <mat-card *ngIf="showAddForm" class="form-card">
+                            <mat-card-header>
+                                <mat-card-title>{{ editingCriteria ? 'Edit Criteria' : 'Add New Criteria'
+                                    }}</mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <form [formGroup]="criteriaForm" (ngSubmit)="saveCriteria()">
+                                    <div class="form-row">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Criteria Description</mat-label>
+                                            <textarea matInput formControlName="name" rows="3"
+                                                placeholder="Enter criteria description"></textarea>
+                                            <mat-error *ngIf="criteriaForm.get('name')?.hasError('required')">
+                                                Criteria description is required
+                                            </mat-error>
+                                            <mat-error *ngIf="criteriaForm.get('name')?.hasError('maxlength')">
+                                                Maximum 500 characters allowed
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button mat-raised-button color="primary" type="submit"
+                                            [disabled]="criteriaForm.invalid || isSaving">
+                                            <mat-icon>save</mat-icon>
+                                            {{ isSaving ? 'Saving...' : 'Save Criteria' }}
+                                        </button>
+                                        <button mat-raised-button type="button" (click)="resetForm()">
+                                            <mat-icon>refresh</mat-icon>
+                                            Reset
+                                        </button>
+                                    </div>
+                                </form>
+                            </mat-card-content>
+                        </mat-card>
+
+                        <!-- Upload Form -->
+                        <mat-card *ngIf="showUploadForm" class="form-card">
+                            <mat-card-header>
+                                <mat-card-title>Upload Criteria from Excel</mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <div class="upload-section">
+                                    <p>Download the format file and upload your criteria data:</p>
+                                    <a mat-raised-button color="accent" href="Forms/StrategicStages/Criteria Master.xls"
+                                        target="_blank">
+                                        <mat-icon>download</mat-icon>
+                                        Download Format
+                                    </a>
+
+                                    <div class="file-input">
+                                        <input type="file" (change)="onFileSelected($event)" accept=".xlsx,.xls"
+                                            #fileInput>
+                                    </div>
+
+                                    <button mat-raised-button color="primary" (click)="uploadFile()"
+                                        [disabled]="!selectedFile || isSaving">
+                                        <mat-icon>upload</mat-icon>
+                                        {{ isSaving ? 'Uploading...' : 'Upload' }}
+                                    </button>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+
+                        <!-- Criteria Data Table -->
+                        <mat-card class="table-card">
+                            <mat-card-header>
+                                <mat-card-title>Criteria List</mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <!-- Filter -->
+                                <mat-form-field appearance="outline" class="filter-field">
+                                    <mat-label>Filter</mat-label>
+                                    <input matInput (keyup)="applyFilter($event, criteriaDataSource)"
+                                        placeholder="Search criteria...">
+                                    <mat-icon matSuffix>search</mat-icon>
+                                </mat-form-field>
+
+                                <!-- Table -->
+                                <table mat-table [dataSource]="criteriaDataSource" matSort class="criteria-table">
+                                    <!-- ID Column -->
+                                    <ng-container matColumnDef="id">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+                                        <td mat-cell *matCellDef="let criteria">{{ criteria.id }}</td>
+                                    </ng-container>
+
+                                    <!-- Description Column -->
+                                    <ng-container matColumnDef="name">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+                                        <td mat-cell *matCellDef="let criteria">{{ criteria.name }}</td>
+                                    </ng-container>
+
+                                    <!-- Status Column -->
+                                    <ng-container matColumnDef="isActive">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+                                        <td mat-cell *matCellDef="let criteria">
+                                            <mat-chip [color]="criteria.isActive ? 'primary' : 'warn'" selected>
+                                                {{ criteria.isActive ? 'Active' : 'Inactive' }}
+                                            </mat-chip>
+                                        </td>
+                                    </ng-container>
+
+                                    <!-- Actions Column -->
+                                    <ng-container matColumnDef="actions">
+                                        <th mat-header-cell *matHeaderCellDef>Actions</th>
+                                        <td mat-cell *matCellDef="let criteria">
+                                            <button mat-icon-button color="primary" (click)="editCriteria(criteria)"
+                                                *ngIf="criteria.isActive" matTooltip="Edit">
+                                                <mat-icon>edit</mat-icon>
+                                            </button>
+                                            <button mat-icon-button color="warn" (click)="deactivateCriteria(criteria)"
+                                                *ngIf="criteria.isActive" matTooltip="Deactivate">
+                                                <mat-icon>block</mat-icon>
+                                            </button>
+                                            <button mat-icon-button color="accent" (click)="activateCriteria(criteria)"
+                                                *ngIf="!criteria.isActive" matTooltip="Activate">
+                                                <mat-icon>check_circle</mat-icon>
+                                            </button>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr mat-header-row *matHeaderRowDef="criteriaDisplayedColumns"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: criteriaDisplayedColumns;"></tr>
+                                </table>
+
+                                <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"
+                                    showFirstLastButtons></mat-paginator>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+                </mat-tab>
+
+                <!-- Tab 2: Key Indicator Master -->
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <mat-icon>indicator</mat-icon>
+                        <span style="margin-left: 8px;">Key Indicator Master</span>
+                    </ng-template>
+                    <div class="tab-content">
+                        <div class="action-bar">
+                            <button mat-raised-button color="primary">
+                                <mat-icon>add</mat-icon>
+                                Add New Key Indicator
+                            </button>
+                            <button mat-raised-button color="accent">
+                                <mat-icon>upload</mat-icon>
+                                Upload from Excel
+                            </button>
+                            <button mat-raised-button color="warn">
+                                <mat-icon>download</mat-icon>
+                                Export to Excel
+                            </button>
+                        </div>
+
+                        <!-- Key Indicator Filters -->
+                        <mat-card class="form-card">
+                            <mat-card-content>
+                                <div class="form-row">
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Criteria</mat-label>
+                                        <mat-select [(ngModel)]="selectedCriteriaId">
+                                            <mat-option value="0">Select Criteria</mat-option>
+                                            <mat-option *ngFor="let criteria of criteriaList" [value]="criteria.id">
+                                                {{ criteria.name }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+
+                        <!-- Key Indicator Table -->
+                        <mat-card class="table-card">
+                            <mat-card-header>
+                                <mat-card-title>Key Indicators</mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <table mat-table [dataSource]="indicatorDataSource" matSort class="criteria-table">
+                                    <ng-container matColumnDef="id">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+                                        <td mat-cell *matCellDef="let indicator">{{ indicator.id }}</td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="indicatorDesc">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+                                        <td mat-cell *matCellDef="let indicator">{{ indicator.indicatorDesc }}</td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="isActive">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+                                        <td mat-cell *matCellDef="let indicator">
+                                            <mat-chip [color]="indicator.isActive ? 'primary' : 'warn'" selected>
+                                                {{ indicator.isActive ? 'Active' : 'Inactive' }}
+                                            </mat-chip>
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="actions">
+                                        <th mat-header-cell *matHeaderCellDef>Actions</th>
+                                        <td mat-cell *matCellDef="let indicator">
+                                            <button mat-icon-button color="primary" matTooltip="Edit">
+                                                <mat-icon>edit</mat-icon>
+                                            </button>
+                                            <button mat-icon-button color="warn" matTooltip="Deactivate"
+                                                *ngIf="indicator.isActive">
+                                                <mat-icon>block</mat-icon>
+                                            </button>
+                                            <button mat-icon-button color="accent" matTooltip="Activate"
+                                                *ngIf="!indicator.isActive">
+                                                <mat-icon>check_circle</mat-icon>
+                                            </button>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr mat-header-row *matHeaderRowDef="indicatorDisplayedColumns"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: indicatorDisplayedColumns;"></tr>
+                                </table>
+                                <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"
+                                    showFirstLastButtons></mat-paginator>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+                </mat-tab>
+
+                <!-- Tab 3: Metric Master -->
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <mat-icon>metrics</mat-icon>
+                        <span style="margin-left: 8px;">Metric Master</span>
+                    </ng-template>
+                    <div class="tab-content">
+                        <div class="action-bar">
+                            <button mat-raised-button color="primary">
+                                <mat-icon>add</mat-icon>
+                                Add New Metric
+                            </button>
+                            <button mat-raised-button color="accent">
+                                <mat-icon>upload</mat-icon>
+                                Upload from Excel
+                            </button>
+                            <button mat-raised-button color="warn">
+                                <mat-icon>download</mat-icon>
+                                Export to Excel
+                            </button>
+                        </div>
+
+                        <!-- Metric Filters -->
+                        <mat-card class="form-card">
+                            <mat-card-content>
+                                <div class="form-row-inline">
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Division</mat-label>
+                                        <mat-select [(ngModel)]="selectedDivisionId">
+                                            <mat-option *ngFor="let division of divisions" [value]="division.id">
+                                                {{ division.name }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Criteria</mat-label>
+                                        <mat-select>
+                                            <mat-option *ngFor="let criteria of criteriaList" [value]="criteria.id">
+                                                {{ criteria.name }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Key Indicator</mat-label>
+                                        <mat-select [(ngModel)]="selectedIndicatorId">
+                                            <mat-option *ngFor="let indicator of keyIndicators" [value]="indicator.id">
+                                                {{ indicator.indicatorDesc }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+
+                        <!-- Metric Table -->
+                        <mat-card class="table-card">
+                            <mat-card-header>
+                                <mat-card-title>Metrics</mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <table mat-table [dataSource]="metricDataSource" matSort class="criteria-table">
+                                    <ng-container matColumnDef="id">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+                                        <td mat-cell *matCellDef="let metric">{{ metric.id }}</td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="metricDesc">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+                                        <td mat-cell *matCellDef="let metric">{{ metric.metricDesc }}</td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="category">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
+                                        <td mat-cell *matCellDef="let metric">
+                                            <mat-chip>{{ metric.category }}</mat-chip>
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="isActive">
+                                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+                                        <td mat-cell *matCellDef="let metric">
+                                            <mat-chip [color]="metric.isActive ? 'primary' : 'warn'" selected>
+                                                {{ metric.isActive ? 'Active' : 'Inactive' }}
+                                            </mat-chip>
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="actions">
+                                        <th mat-header-cell *matHeaderCellDef>Actions</th>
+                                        <td mat-cell *matCellDef="let metric">
+                                            <button mat-icon-button color="primary" matTooltip="Edit">
+                                                <mat-icon>edit</mat-icon>
+                                            </button>
+                                            <button mat-icon-button color="warn" matTooltip="Deactivate"
+                                                *ngIf="metric.isActive">
+                                                <mat-icon>block</mat-icon>
+                                            </button>
+                                            <button mat-icon-button color="accent" matTooltip="Activate"
+                                                *ngIf="!metric.isActive">
+                                                <mat-icon>check_circle</mat-icon>
+                                            </button>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr mat-header-row *matHeaderRowDef="metricDisplayedColumns"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: metricDisplayedColumns;"></tr>
+                                </table>
+                                <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"
+                                    showFirstLastButtons></mat-paginator>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+                </mat-tab>
+
+                <!-- Tab 4: Metric Source -->
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <mat-icon>source</mat-icon>
+                        <span style="margin-left: 8px;">Metric Source</span>
+                    </ng-template>
+                    <div class="tab-content">
+                        <div class="action-bar">
+                            <button mat-raised-button color="primary">
+                                <mat-icon>add</mat-icon>
+                                Add Source Mapping
+                            </button>
+                        </div>
+
+                        <mat-card class="form-card">
+                            <mat-card-content>
+                                <div class="form-row-inline">
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Division</mat-label>
+                                        <mat-select [(ngModel)]="selectedDivisionId">
+                                            <mat-option *ngFor="let division of divisions" [value]="division.id">
+                                                {{ division.name }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Criteria</mat-label>
+                                        <mat-select>
+                                            <mat-option *ngFor="let criteria of criteriaList" [value]="criteria.id">
+                                                {{ criteria.name }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Key Indicator</mat-label>
+                                        <mat-select>
+                                            <mat-option *ngFor="let indicator of keyIndicators" [value]="indicator.id">
+                                                {{ indicator.indicatorDesc }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Metric</mat-label>
+                                        <mat-select>
+                                            <mat-option *ngFor="let metric of metrics" [value]="metric.id">
+                                                {{ metric.metricDesc }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+
+                        <mat-card class="table-card">
+                            <mat-card-header>
+                                <mat-card-title>Metric Source Mappings</mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <div class="source-mapping-section">
+                                    <div class="source-list">
+                                        <label>Source:</label>
+                                        <mat-selection-list>
+                                            <mat-list-option *ngFor="let source of metricSources">
+                                                {{ source.name }}
+                                            </mat-list-option>
+                                        </mat-selection-list>
+                                    </div>
+                                    <div class="source-list">
+                                        <label>Main Points:</label>
+                                        <mat-selection-list>
+                                            <mat-list-option *ngFor="let mainPoint of mainPoints">
+                                                {{ mainPoint }}
+                                            </mat-list-option>
+                                        </mat-selection-list>
+                                    </div>
+                                    <div class="source-list">
+                                        <label>Sub Points:</label>
+                                        <mat-selection-list>
+                                            <mat-list-option *ngFor="let subPoint of subPoints">
+                                                {{ subPoint }}
+                                            </mat-list-option>
+                                        </mat-selection-list>
+                                    </div>
+                                </div>
+                                <div class="form-actions" style="margin-top: 16px;">
+                                    <button mat-raised-button color="primary">
+                                        <mat-icon>save</mat-icon>
+                                        Save Mapping
+                                    </button>
+                                    <button mat-raised-button>
+                                        <mat-icon>refresh</mat-icon>
+                                        Reset
+                                    </button>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+                </mat-tab>
+
+                <!-- Tab 5: Metric Weightage -->
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <mat-icon>percent</mat-icon>
+                        <span style="margin-left: 8px;">Metric Weightage</span>
+                    </ng-template>
+                    <div class="tab-content">
+                        <div class="action-bar">
+                            <button mat-raised-button color="primary">
+                                <mat-icon>save</mat-icon>
+                                Save Weightage
+                            </button>
+                        </div>
+
+                        <mat-card class="form-card">
+                            <mat-card-content>
+                                <div class="form-row-inline">
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Planner Session</mat-label>
+                                        <mat-select>
+                                            <mat-option value="1">Session 2024-2025</mat-option>
+                                            <mat-option value="2">Session 2025-2026</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Division</mat-label>
+                                        <mat-select [(ngModel)]="selectedDivisionId">
+                                            <mat-option *ngFor="let division of divisions" [value]="division.id">
+                                                {{ division.name }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Criteria</mat-label>
+                                        <mat-select>
+                                            <mat-option *ngFor="let criteria of criteriaList" [value]="criteria.id">
+                                                {{ criteria.name }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <mat-form-field appearance="outline">
+                                        <mat-label>Key Indicator</mat-label>
+                                        <mat-select [(ngModel)]="selectedIndicatorId">
+                                            <mat-option *ngFor="let indicator of keyIndicators" [value]="indicator.id">
+                                                {{ indicator.indicatorDesc }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+
+                        <mat-card class="table-card">
+                            <mat-card-header>
+                                <mat-card-title>Metric Weightage</mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <table mat-table class="weightage-table">
+                                    <ng-container matColumnDef="sno">
+                                        <th mat-header-cell *matHeaderCellDef>SNo</th>
+                                        <td mat-cell *matCellDef="let i = index">{{ i + 1 }}</td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="metricId">
+                                        <th mat-header-cell *matHeaderCellDef>Metric ID</th>
+                                        <td mat-cell *matCellDef="let weightage">{{ weightage.metricId }}</td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="metricDesc">
+                                        <th mat-header-cell *matHeaderCellDef>Description</th>
+                                        <td mat-cell *matCellDef="let weightage">{{ weightage.metricDesc }}</td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="weightage">
+                                        <th mat-header-cell *matHeaderCellDef>Weightage</th>
+                                        <td mat-cell *matCellDef="let weightage">
+                                            <mat-form-field appearance="outline" style="width: 100px;">
+                                                <input matInput type="number" min="0" [(ngModel)]="weightage.weightage">
+                                            </mat-form-field>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr mat-header-row
+                                        *matHeaderRowDef="['sno', 'metricId', 'metricDesc', 'weightage']"></tr>
+                                    <tr mat-row
+                                        *matRowDef="let row; columns: ['sno', 'metricId', 'metricDesc', 'weightage'];">
+                                    </tr>
+                                </table>
+                                <div class="total-weightage">
+                                    <strong>Total Weightage: </strong>
+                                    <span [class.error]="totalWeightage > 100" [class.success]="totalWeightage <= 100">
+                                        {{ totalWeightage }}%
+                                    </span>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+                </mat-tab>
+
+                <!-- Tab 6: Miscellaneous -->
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <mat-icon>more_horiz</mat-icon>
+                        <span style="margin-left: 8px;">Miscellaneous</span>
+                    </ng-template>
+                    <div class="tab-content">
+                        <mat-tab-group>
+                            <!-- Stages Sub-tab -->
+                            <mat-tab label="Stages">
+                                <div class="tab-content">
+                                    <div class="action-bar">
+                                        <button mat-raised-button color="primary">
+                                            <mat-icon>add</mat-icon>
+                                            Add Stage
+                                        </button>
+                                    </div>
+
+                                    <mat-card class="form-card">
+                                        <mat-card-content>
+                                            <div class="form-row-inline">
+                                                <mat-form-field appearance="outline">
+                                                    <mat-label>Metric</mat-label>
+                                                    <mat-select>
+                                                        <mat-option *ngFor="let metric of metrics" [value]="metric.id">
+                                                            {{ metric.metricDesc }}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+                                        </mat-card-content>
+                                    </mat-card>
+
+                                    <mat-card class="table-card">
+                                        <mat-card-content>
+                                            <table mat-table class="criteria-table">
+                                                <ng-container matColumnDef="id">
+                                                    <th mat-header-cell *matHeaderCellDef>ID</th>
+                                                    <td mat-cell *matCellDef="let stage">{{ stage.id }}</td>
+                                                </ng-container>
+                                                <ng-container matColumnDef="stageName">
+                                                    <th mat-header-cell *matHeaderCellDef>Stage Name</th>
+                                                    <td mat-cell *matCellDef="let stage">{{ stage.stageName }}</td>
+                                                </ng-container>
+                                                <ng-container matColumnDef="orderNo">
+                                                    <th mat-header-cell *matHeaderCellDef>Order</th>
+                                                    <td mat-cell *matCellDef="let stage">{{ stage.orderNo }}</td>
+                                                </ng-container>
+                                                <ng-container matColumnDef="actions">
+                                                    <th mat-header-cell *matHeaderCellDef>Actions</th>
+                                                    <td mat-cell *matCellDef="let stage">
+                                                        <button mat-icon-button color="primary" matTooltip="Edit">
+                                                            <mat-icon>edit</mat-icon>
+                                                        </button>
+                                                        <button mat-icon-button color="warn" matTooltip="Delete">
+                                                            <mat-icon>delete</mat-icon>
+                                                        </button>
+                                                    </td>
+                                                </ng-container>
+                                                <tr mat-header-row
+                                                    *matHeaderRowDef="['id', 'stageName', 'orderNo', 'actions']"></tr>
+                                                <tr mat-row
+                                                    *matRowDef="let row; columns: ['id', 'stageName', 'orderNo', 'actions'];">
+                                                </tr>
+                                            </table>
+                                        </mat-card-content>
+                                    </mat-card>
+                                </div>
+                            </mat-tab>
+
+                            <!-- Checklist Sub-tab -->
+                            <mat-tab label="Checklist">
+                                <div class="tab-content">
+                                    <div class="action-bar">
+                                        <button mat-raised-button color="primary">
+                                            <mat-icon>add</mat-icon>
+                                            Add Checklist Item
+                                        </button>
+                                    </div>
+
+                                    <mat-card class="form-card">
+                                        <mat-card-content>
+                                            <div class="form-row-inline">
+                                                <mat-form-field appearance="outline">
+                                                    <mat-label>Metric</mat-label>
+                                                    <mat-select>
+                                                        <mat-option *ngFor="let metric of metrics" [value]="metric.id">
+                                                            {{ metric.metricDesc }}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+                                        </mat-card-content>
+                                    </mat-card>
+
+                                    <mat-card class="table-card">
+                                        <mat-card-content>
+                                            <table mat-table class="criteria-table">
+                                                <ng-container matColumnDef="id">
+                                                    <th mat-header-cell *matHeaderCellDef>ID</th>
+                                                    <td mat-cell *matCellDef="let checklist">{{ checklist.id }}</td>
+                                                </ng-container>
+                                                <ng-container matColumnDef="checklistName">
+                                                    <th mat-header-cell *matHeaderCellDef>Checklist Name</th>
+                                                    <td mat-cell *matCellDef="let checklist">{{ checklist.checklistName
+                                                        }}</td>
+                                                </ng-container>
+                                                <ng-container matColumnDef="actions">
+                                                    <th mat-header-cell *matHeaderCellDef>Actions</th>
+                                                    <td mat-cell *matCellDef="let checklist">
+                                                        <button mat-icon-button color="primary" matTooltip="Edit">
+                                                            <mat-icon>edit</mat-icon>
+                                                        </button>
+                                                        <button mat-icon-button color="warn" matTooltip="Delete">
+                                                            <mat-icon>delete</mat-icon>
+                                                        </button>
+                                                    </td>
+                                                </ng-container>
+                                                <tr mat-header-row
+                                                    *matHeaderRowDef="['id', 'checklistName', 'actions']"></tr>
+                                                <tr mat-row
+                                                    *matRowDef="let row; columns: ['id', 'checklistName', 'actions'];">
+                                                </tr>
+                                            </table>
+                                        </mat-card-content>
+                                    </mat-card>
+                                </div>
+                            </mat-tab>
+                        </mat-tab-group>
+                    </div>
+                </mat-tab>
+
+            </mat-tab-group>
+        </mat-card-content>
+    </mat-card>
+</div>
+<ng-template #loginFailed>
+  <div class="text-center" *ngIf="isLoginFailed">
+    <h3 class="text-center fs-2 m-5 text-warn pt-2"> Unauthorised Access </h3>
+    <div class="row mt-4 mb-4 d-flex justify-content-center">
+      <div class="col-3">
+        <label class="form-label fs-4 badge bg-white themeClr">Try logging in again.</label>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<!-- Loading Spinner -->
+<ngx-spinner *ngIf="isLoading" bdColor="rgba(51,51,51,0.8)" size="medium" color="#fff" type="ball-spin-clockwise">
+    <p style="color: white">Loading...</p>
+</ngx-spinner>
+
+<!-- Success/Error Messages -->
+<swal #successSwal title="Success" [text]="successMessage" icon="success" [timer]="3000">
+</swal>
+
+<swal #errorSwal title="Error" [text]="errorMessage" icon="error">
+</swal>

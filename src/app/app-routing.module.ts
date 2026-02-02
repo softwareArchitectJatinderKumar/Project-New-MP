@@ -5,6 +5,7 @@ import { AuthGuard } from './core/guard/auth.guard';
 import { ErrorPageComponent } from './views/pages/error-page/error-page.component';
 import { EstateActionablePointCompleteTaskComponent } from './views/pages/estate-actionable-point-completetask/estate-actionable-point-completetask.component';
 import { SemesterMigrationAdminComponent } from './views/SemesterExchange/HODDashboard/TopMenuBar/sm-admin-bar.component';
+import { CriteriaMasterComponent } from './components/criteria-master/criteria-master.component';
 // import { CriteriaMasterComponent } from './views/Criteria-Master/criteria-master.component';
 
 
@@ -204,6 +205,7 @@ const routes: Routes = [
         loadChildren: () => import('./views/pages/SchoolDivisions/metricand-planner-data/metricand-palnner-data.module').then(m => m.MetricandPlannerDataModule)
         //  component:MetricandPlannerDataComponent
       },
+       { path: 'criteria-master/:loginName', component: CriteriaMasterComponent },
       // {
       //   path: "UserOBPProgress/:loginName/:uid/:date",
       //   loadChildren: () => import('./views/pages/SchoolDivisions/metricand-planner-data/metricand-palnner-data.module').then(m => m.MetricandPlannerDataModule)
