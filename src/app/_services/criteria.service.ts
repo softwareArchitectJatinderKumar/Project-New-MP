@@ -36,7 +36,17 @@ export class CriteriaService {
   private readonly baseApiUrl = AUTH_API + 'api/Planning/';
 
   constructor(private http: HttpClient, private storageService: StorageService) { }
-
+GetDynamicDataList(Type: any, DivisionId: any):Observable<any>{
+    let token = this.storageService.getUser();
+       let headers = new HttpHeaders()
+       .set('Authorization', 'Bearer ' + token)
+       .set('Content-Type', 'application/json'); 
+       return this.http.get(
+        //  'https://localhost:7125/api/Planning/GetDynamicDataList?Type=' + Type + '&DivisionId=' + DivisionId, 
+         AUTH_API + 'api/Planning/GetDynamicDataList?Type=' + Type + '&DivisionId=' + DivisionId, 
+        {headers}
+       );
+}
   /**
    * Get all divisions
    */

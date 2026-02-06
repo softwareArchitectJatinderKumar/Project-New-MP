@@ -148,10 +148,8 @@
                   <ngx-datatable-column name="MOU Docuement Link" [sortable]="false" prop="Id">
                     <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                       <ng-container *ngIf="row.filePath != null">
-                        <button class="btn btn-dark" (click)="onSelectFile(row)">
-                          <!-- View -->
+                        <button class="btn btn-dark" (click)="onDownloadFile(row.filePath)">
                           <i class="bi bi-file-earmark-text"></i>
-
                         </button>
                       </ng-container>
                       <ng-container *ngIf="row.filePath == null">
@@ -164,9 +162,7 @@
                   <ngx-datatable-column name="Actions" [sortable]="false" prop="Id">
                     <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                       <button class="btn btn-warning" (click)="onSelect(row)">
-                        <!-- Edit{{rowIndex + 1}} -->
                         <i class="bi bi-person-plus fs-5"></i>
-                        <!-- Assign Activity -->
                       </button>
                     </ng-template>
                   </ngx-datatable-column>

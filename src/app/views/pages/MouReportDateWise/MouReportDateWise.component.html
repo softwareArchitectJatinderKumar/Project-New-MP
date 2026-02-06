@@ -61,7 +61,10 @@
                 <ngx-datatable-column name="MOU Docuement" [sortable]="false" prop="Id">
                   <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                     <ng-container *ngIf="row.filePath != null">
-                      <button class="btn btn-dark" (click)="onSelectFileDocument(row)"> View MOU</button>
+                      <!-- <button class="btn btn-dark" (click)="onSelectFileDocument(row)"> View MOU</button> -->
+                          <button class="btn btn-dark" (click)="onDownloadFile(row.filePath)">
+                        <i class="bi bi-file-earmark-text"></i>
+                      </button>
                     </ng-container>
                     <ng-container *ngIf="row.filePath == null">
                       <span style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">No
@@ -72,18 +75,20 @@
                
                 <ngx-datatable-column name="Actions" [sortable]="false" prop="Id">
                   <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                    <button class="btn btn-dark" (click)="onSelect(row)">
+                    <button class="btn btn-warning" (click)="onSelect(row)">
                       <!-- Edit{{rowIndex + 1}} -->
-                      Take Action
+                      <!-- Take Action -->
+                       <i class="bi bi-person-plus fs-5"></i>
                     </button>
                   </ng-template>
                 </ngx-datatable-column>
                 
                 <ngx-datatable-column name="Action Details" [sortable]="false" prop="Id">
                   <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                    <button class="btn btn-danger" (click)="ViewAllActionTaken(row)">
+                    <button class="btn btn-warning" (click)="ViewAllActionTaken(row)">
                       <!-- Edit{{rowIndex + 1}} -->
-                      View Details
+                      <!-- View Details -->
+                       <i class="bi bi-files fs-5"></i>
                     </button>
                   </ng-template>
                 </ngx-datatable-column>
@@ -562,7 +567,10 @@
                 <ngx-datatable-column name="Uploaded Document" [sortable]="false" prop="actionTakenDocument">
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     <ng-container *ngIf="row.actionTakenDocument; else noFile">
-                      <button class="btn btn-dark" (click)="onSelectActivityDocument(row)">View</button>
+                      <!-- <button class="btn btn-dark" (click)="onSelectActivityDocument(row)">View</button> -->
+                        <button class="btn btn-dark" (click)="onDownloadFile(row.actionTakenDocument)">
+                        <i class="bi bi-file-earmark-text"></i>
+                      </button>
                     </ng-container>
                     <ng-template #noFile>
                       <span class="font-weight-bold p-2">No File</span>

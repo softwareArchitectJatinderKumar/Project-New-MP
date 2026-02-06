@@ -57,11 +57,14 @@
                                 <div class="d-flex justify-content-">
                                     <ng-container *ngIf="element.xlsFileName!=null; else NoSheetDoc">
                                         <div class="text-danger text-center fs-5"> {{element.participants}} <br />
-                                            <a class="text-success fw-bold fs-5 me-2"
+                                            <!-- <a class="text-success fw-bold fs-5 me-2"
                                                 [href]="this.serverUrl+element.xlsFileName" target="_blank">Download
                                                 Sheet
-                                                <!-- <i class="mdi ms-5 fs-2 mdi-file"> </i> -->
-                                            </a>
+                                                <i class="mdi ms-5 fs-2 mdi-file"> </i>
+                                            </a> -->
+                                            <button class="btn btn-info me-2" (click)="onDownloadFile(element.xlsFileName, this.serverUrl)">
+                                                <i class="bi bi-file-earmark-text"></i>
+                                            </button>
                                         </div>
                                     </ng-container>
                                     <ng-template #NoSheetDoc>
@@ -86,11 +89,14 @@
                             <ng-container matColumnDef="uploadProof">
                                 <th mat-header-cell *matHeaderCellDef class="p-2  text-danger fs-5"> Proof </th>
                                 <td mat-cell class=" p-3" *matCellDef="let element">
-                                    <a class="text-success fw-bold fs-5 me-2"
+                                    <!-- <a class="text-success fw-bold fs-5 me-2"
                                         [href]="this.serverUrl+element.uploadProof" target="_blank">
-                                        <!-- <i class="mdi ms-5 fs-2 mdi-file"> </i><br /> -->
+                                        <i class="mdi ms-5 fs-2 mdi-file"> </i><br />
                                         Download Proof
-                                    </a>
+                                    </a> -->
+                                    <button class="btn btn-info me-2" (click)="onDownloadFile(element.uploadProof, this.serverUrl)">
+                                        <i class="bi bi-file-earmark-text"></i>
+                                    </button>
                                 </td>
                             </ng-container>
                             <ng-container matColumnDef="remarksAmounts">
@@ -164,8 +170,7 @@
                             <tr mat-header-row *matHeaderRowDef="displayedColumns" class=" m-4 p-5"></tr>
                             <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="m-5 p-5"></tr>
                         </table>
-                        <mat-paginator class="p-2 fs-5 text-danger" [length]="this.SchoolData.length" [pageSizeOptions]="[5, 10, 15, 20]"
-                            showFirstLastButtons></mat-paginator>
+                        <mat-paginator #paginator [pageSizeOptions]="[5, 10, 15, 20]" showFirstLastButtons></mat-paginator>
                     </div>
                     <div class="text-center" *ngIf="showNoDataFoundMessage==0">
                         <h3 class="text-center fs-4 text-danger btn btn-warning"> No data found.

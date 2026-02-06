@@ -165,7 +165,7 @@ export class MouActivityActionPlanComponent implements OnInit {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
-          this.EmployeeCode = response.item1[0].employeeCode; // '11840';   Hardcoded as per original
+          this.EmployeeCode =  response.item1[0].employeeCode; // // Hardcoded as per original
           this.ContactNoX = response.item1[0].contactNo;
           this.Department = response.item1[0].department;
           this.DepartmentName = response.item1[0].departmentName;
@@ -601,4 +601,38 @@ reloadGrid(){
   selectedId: number | undefined;
   MouPartner: any;
   allMouActionTakenDetails: any; 
+
+
+
+   onDownloadFile(remoteUrl: string): void {
+      swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); }});
+  
+      this.mouDocumentsService.downloadMOUFile(remoteUrl).subscribe({
+        next: (blob: Blob) => {
+          const downloadUrl = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+  
+          const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+          link.download = fileName;
+  
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(downloadUrl);
+  
+          swal.close();
+        },
+        error: async (err) => {
+          swal.close();
+          if (err.error instanceof Blob) {
+            const errorMsg = JSON.parse(await err.error.text());
+            swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+          } else {
+            swal.fire('Error', 'Could not connect to the server', 'error');
+          }
+        }
+      });
+    }
+  
 }

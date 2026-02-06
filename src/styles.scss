@@ -112,4 +112,21 @@
       transform: rotate(360deg);
     }
   }
+
+  /* Data Grid Font Size Fix */
+  .mat-elevation-z8 .mat-mdc-cell,
+  .mat-elevation-z8 .mat-mdc-header-cell {
+    font-size: 14px !important;
+    font-weight: 500;
+  }
+
+  /* Material Table font size fix */
+  .mat-mdc-table .mat-mdc-cell {
+    font-size: 14px !important;
+  }
+
+  .mat-mdc-table .mat-mdc-header-cell {
+    font-size: 14px !important;
+    font-weight: 600;
+  }
   

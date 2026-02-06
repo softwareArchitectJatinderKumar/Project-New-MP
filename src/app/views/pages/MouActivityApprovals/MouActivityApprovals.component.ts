@@ -52,6 +52,40 @@ export class MouActivityApprovalsComponent implements OnInit {
   searchQuery: any;
   DocumentName: string;
 
+
+  // added on 5-Feb-26
+     onDownloadFile(remoteUrl: string): void {
+      swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); }});
+  
+      this.mouDocumentsService.downloadMOUFile(remoteUrl).subscribe({
+        next: (blob: Blob) => {
+          const downloadUrl = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+  
+          const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+          link.download = fileName;
+  
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(downloadUrl);
+  
+          swal.close();
+        },
+        error: async (err) => {
+          swal.close();
+          if (err.error instanceof Blob) {
+            const errorMsg = JSON.parse(await err.error.text());
+            swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+          } else {
+            swal.fire('Error', 'Could not connect to the server', 'error');
+          }
+        }
+      });
+    }
+
+    //Ended logic 
   constructor(
     private lpuPlannerServiceService: LpuPlannerServiceService,
     private storageService: StorageService, private mouDocumentsService: MouDocumentsService,
@@ -483,10 +517,10 @@ GetAllUploadsDetails(SessionId: any): void {
     }
   
     const selectedActivityId = parseInt(activityDetailsParts[1], 10);
-    console.log("Extracted Activity ID:", selectedActivityId);
+    // console.log("Extracted Activity ID:", selectedActivityId);
   
     if (isNaN(selectedActivityId)) {
-      console.error("Invalid extracted Activity ID."+ selectedActivityId);
+      // console.error("Invalid extracted Activity ID."+ selectedActivityId);
       return;
     }
   
@@ -502,7 +536,7 @@ GetAllUploadsDetails(SessionId: any): void {
   
     // Generate file URL
     const fileUrl = `assets/MouTemplateDocuments/${selectedActivityId}.zip`;
-    console.log("Generated File URL:", fileUrl);
+    // console.log("Generated File URL:", fileUrl);
   
     // Create and trigger the download
     const link = document.createElement('a');

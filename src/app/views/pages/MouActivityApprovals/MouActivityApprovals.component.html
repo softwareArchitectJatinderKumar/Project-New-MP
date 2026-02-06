@@ -156,14 +156,15 @@
                                                         ngx-datatable-cell-template>
                                                         <ng-container
                                                             *ngIf="row.isApproved==='False' || row.isApproved==='True' ; else AllowsFile">
-                                                            <button class="btn btn-dark" (click)="onSelectFileY(row)">
-                                                                Download </button>
+                                                            <!-- <button class="btn btn-dark" (click)="onSelectFileY(row)"> Download </button> -->
+                                                                <button class="btn btn-dark" (click)="onDownloadFile(row.documentUploadedFile)">
+                        <i class="bi bi-file-earmark-text"></i> </button>
                                                         </ng-container>
                                                         <ng-template #AllowsFile>
                                                             <ng-container *ngIf="row.documentUploadedFile != null">
-                                                                <button class="btn btn-dark"
-                                                                    (click)="onSelectFileY(row)">
-                                                                    Download </button>
+                                                                <!-- <button class="btn btn-dark" (click)="onSelectFileY(row)"> Download </button> -->
+                                                                <button class="btn btn-dark" (click)="onDownloadFile(row.documentUploadedFile)">
+                        <i class="bi bi-file-earmark-text"></i> *</button>
                                                             </ng-container>
                                                         </ng-template>
                                                     </ng-template>
@@ -180,8 +181,7 @@
                                                     prop="Id">
                                                     <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                                         ngx-datatable-cell-template>
-                                                        <button class="btn btn-success"
-                                                            (click)="DownloadFormatDocument(row)"> Download </button>
+                                                        <button class="btn btn-success" (click)="DownloadFormatDocument(row)"> <i class="bi bi-file-earmark-text"></i> </button>
                                                     </ng-template>
                                                 </ngx-datatable-column>
 

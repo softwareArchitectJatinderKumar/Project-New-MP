@@ -1,12 +1,39 @@
-.custom-btn-incoming {
-    margin: 20px;
-  }
-  
-  .custom-btn-outgoing {
-      margin-left: 20px;
-  }
-  
-  #nav-tab .btn.active {
-    background-color: black;
-    color: white;
-  }
+/* Summer School Web Component Styles */
+.summer-school-container {
+    .mat-mdc-table {
+        font-size: 14px !important;
+    }
+    
+    .mat-mdc-cell, .mat-mdc-header-cell {
+        font-size: 14px !important;
+        font-weight: 500;
+    }
+    
+    /* Make font size larger for data grid content */
+    .table-responsive.mat-elevation-z8 {
+        font-size: 14px !important;
+        
+        td {
+            font-size: 14px !important;
+            font-weight: 500;
+        }
+        
+        th {
+            font-size: 14px !important;
+            font-weight: 600;
+        }
+    }
+}
+
+/* Alternative approach - increase font size in all table cells */
+.mat-elevation-z8 {
+    font-size: 14px !important;
+    
+    td {
+        font-size: 14px !important;
+    }
+    
+    th {
+        font-size: 14px !important;
+    }
+}

@@ -5,7 +5,7 @@
     </ol>
 </nav>
 
-<ng-container  class="row" id="myTabs" *ngIf="isLoginFailed==false; else loginFailed">
+<ng-container class="row" id="myTabs" *ngIf="isLoginFailed==false; else loginFailed">
     <nav>
         <div class="nav nav-tabs nav nav-tabs d-flex justify-content-center " id="nav-tab" role="tablist">
             <button class=" btn btn-lg btn-primary me-5" id="summerschool-incomming-tab" data-bs-toggle="tab"
@@ -19,8 +19,9 @@
     </nav>
     <div class="tab-content" id="nav-tabContent">
         <!-- Tab one contents -->
-        <div class="tab-pane fade " id="summerschool-incomming" role="tabpanel" aria-labelledby="summerschool-incomming-tab">
-        
+        <div class="tab-pane fade " id="summerschool-incomming" role="tabpanel"
+            aria-labelledby="summerschool-incomming-tab">
+
             <div class="row">
                 <div class="col-md-12 grid-margin stretch-card">
                     <div class="card">
@@ -34,8 +35,8 @@
                                                 <label for="UniversityName" class="fw-bold fs-6 text-success">University
                                                     Name:</label>
                                                 <input type="text" [(ngModel)]="UniversityName" id="UniversityName"
-                                                    name="UniversityName" ngModel required class="form-control " required
-                                                    placeholder=" " autocomplete="off" />
+                                                    name="UniversityName" ngModel required class="form-control "
+                                                    required placeholder=" " autocomplete="off" />
                                             </div>
                                         </div>
                                     </div>
@@ -43,10 +44,11 @@
                                         <div class="mb-3">
                                             <div class="form-group">
                                                 <label for="Country" class="fw-bold fs-6 text-success">Country :</label>
-                                                <select name="Country" class="form-control" [(ngModel)]="Country" id="Country"
-                                                    (ngModelChange)="onCountryChange()">
+                                                <select name="Country" class="form-control" [(ngModel)]="Country"
+                                                    id="Country" (ngModelChange)="onCountryChange()">
                                                     <option value="" selected>Please Select Country</option>
-                                                    <option [value]="currency.text" *ngFor="let currency of CurrencyList">{{
+                                                    <option [value]="currency.text"
+                                                        *ngFor="let currency of CurrencyList">{{
                                                         currency.text }}</option>
                                                 </select>
                                             </div>
@@ -72,9 +74,10 @@
                                             <div class="form-group">
                                                 <label for="startDate" class="fw-bold fs-6 text-success"> Start
                                                     Date:</label>
-                                                <input type="date" [(ngModel)]="startDate" id="startDate" name="startDate"
-                                                    ngModel class="form-control" (ngModelChange)="calculateDays()" required
-                                                    placeholder=" " autocomplete="off" />
+                                                <input type="date" [(ngModel)]="startDate" id="startDate"
+                                                    name="startDate" ngModel class="form-control"
+                                                    (ngModelChange)="calculateDays()" required placeholder=" "
+                                                    autocomplete="off" />
                                             </div>
                                         </div>
                                     </div>
@@ -83,9 +86,9 @@
                                             <div class="form-group">
                                                 <label for="endDate" class="fw-bold fs-6 text-success"> End
                                                     Date:</label>
-                                                <input type="date" [(ngModel)]="endDate" id="endDate" name="endDate" ngModel
-                                                    class="form-control" (ngModelChange)="calculateDays()" required
-                                                    placeholder="Visit End Date " autocomplete="off" />
+                                                <input type="date" [(ngModel)]="endDate" id="endDate" name="endDate"
+                                                    ngModel class="form-control" (ngModelChange)="calculateDays()"
+                                                    required placeholder="Visit End Date " autocomplete="off" />
                                             </div>
                                         </div>
                                     </div>
@@ -104,10 +107,11 @@
                                 <div class="row mt-4 mb-4">
                                     <div class="col-sm-4">
                                         <div class="mb-3">
-                                            <label for="currencySymbol" class="fw-bold fs-6 text-success">Amount </label><br />
+                                            <label for="currencySymbol" class="fw-bold fs-6 text-success">Amount
+                                            </label><br />
                                             <div class="form-group d-flex justify-content-">
-                                                <input type="number" [(ngModel)]="Amount" id="Amount" name="Amount" ngModel
-                                                    required class="form-control " required placeholder="Amount"
+                                                <input type="number" [(ngModel)]="Amount" id="Amount" name="Amount"
+                                                    ngModel required class="form-control " required placeholder="Amount"
                                                     autocomplete="off" />
                                             </div>
                                         </div>
@@ -127,7 +131,8 @@
                                         <div class="col-sm-4">
                                             <div class="mb-3">
                                                 <div class="form-group">
-                                                    <label class="fw-bold fs-6 text-danger"> Participants List Sheet</label>
+                                                    <label class="fw-bold fs-6 text-danger"> Participants List
+                                                        Sheet</label>
                                                     <input required type="file" id="exclSheet" name="excelSheet"
                                                         [(ngModel)]="excelSheet" (change)="onFileSelectedXls($event)"
                                                         accept=".xls,.xlsx" />
@@ -166,7 +171,7 @@
                     </div>
                 </div>
             </div>
-        
+
             <div class="row" *ngIf="SchoolData?.length > 0 ">
                 <div class="col-md-12 stretch-card">
                     <div class="card">
@@ -174,7 +179,8 @@
                             <div class="row mt-4 mb-4">
                                 <div class="col-">
                                     <div class="mb-3 text-center">
-                                        <Label class="text-center fs-2 text-danger">Incomming Summer school Report</Label>
+                                        <Label class="text-center fs-2 text-danger">Incomming Summer school
+                                            Report</Label>
                                     </div>
                                 </div>
                             </div>
@@ -182,106 +188,150 @@
                                 <div class="row mt-4 mb-4">
                                     <div class="col-sm-4">
                                         <div class="mb-3">
-                                            <button (click)="exportToExcel()" class="btn btn-success ">Export to
+                                            <button (click)="exportToExcels()" class="btn btn-success ">Export to
                                                 ExcelSheet</button>
                                         </div>
                                     </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3">
+                                            <input type="text" (keyup)="applyFilterIn($event)" placeholder="Search..." class="form-control">
+                                        </div>
+                                    </div>
                                 </div>
-                                <table id="SummerSchoolDataTable" #table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th class="form-label text-danger">University </th>
-                                            <th class="form-label text-danger">Country</th>
-                                            <th class="form-label text-danger">Participants Excel Sheet</th>
-                                            <th class="form-label text-danger">Visit Start Date</th>
-                                            <th class="form-label text-danger">Visit End Date</th>
-                                            <th class="form-label text-danger">Visit Duration (Days)</th>
-                                            <th class="form-label text-danger">Proof</th>
-                                            <th class="form-label text-danger">Amount Received </th>
-                                            <th class="form-label text-danger">Amount Particulars </th>
-                                            <th class="form-label text-danger">Approval Status </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <ng-container *ngFor="let SchoolDataRow of SchoolDataIn">
-                                            <tr>
-                                                <td class="fw-bold fs-6 text-success"> {{SchoolDataRow.universityName}}</td>
-                                                <td class="fw-bold fs-6 text-success">{{SchoolDataRow.country}}</td>
-                                                <td>
-                                                    <ng-container *ngIf="SchoolDataRow.xlsFileName!=null; else NoSheetDoc">
-                                                        <div class="text-danger text-center fs-5"> {{ SchoolDataRow.participants
-                                                            }}
-                                                            <br />
-                                                            <a class=" me-2" [href]="this.serverUrl+SchoolDataRow.xlsFileName"
-                                                                target="_blank"> <i class="mdi ms-2 fs-3 mdi-file"> </i> </a>
-                                                        </div>
+                                
+                                <!-- Angular Material Table for Incoming Data -->
+                                <div class="table-responsive mat-elevation-z8">
+                                    <table mat-table [dataSource]="dataSourceIn" matSort #sortIn="matSort" class="w-100">
+                                        
+                                        <!-- University Column -->
+                                        <ng-container matColumnDef="universityName">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold">University</th>
+                                            <td mat-cell *matCellDef="let row" class="fw-bold fs-6 text-success">{{row.universityName}}</td>
+                                        </ng-container>
+                                        
+                                        <!-- Country Column -->
+                                        <ng-container matColumnDef="country">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold">Country</th>
+                                            <td mat-cell *matCellDef="let row" class="fw-bold fs-6 text-success">{{row.country}}</td>
+                                        </ng-container>
+                                        
+                                        <!-- Participants Excel Sheet Column -->
+                                        <ng-container matColumnDef="xlsFileName">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold">Participants Excel Sheet</th>
+                                            <td mat-cell *matCellDef="let row">
+                                                <div class="text-danger text-center fs-5">
+                                                    {{row.participants}}
+                                                    <ng-container *ngIf="row.xlsFileName != null; else NoSheetDocIn">
+                                                        <br />
+                                                         <button class="btn btn-dark me-2" (click)="onDownloadFile(row.xlsFileName, this.serverUrl)">
+                                                        <i class="bi bi-file-earmark-text"></i>
+                                                    </button>
+                                                        <!-- <a class="me-2" [href]="this.serverUrl + row.xlsFileName" target="_blank">
+                                                            <i class="mdi ms-2 fs-3 mdi-file"></i>
+                                                        </a> -->
                                                     </ng-container>
-                                                    <ng-template #NoSheetDoc>
-                                                        <div class="text-danger text-center fs-5"> {{ SchoolDataRow.participants
-                                                            }}
-                                                            <br />
-                                                            <a class="text-danger me-2">No Uploaded Yet</a>
-                                                        </div>
+                                                    <ng-template #NoSheetDocIn>
+                                                        <span class="text-danger">No Uploaded Yet</span>
                                                     </ng-template>
-                                                </td>
-                                                <td class="fw-bold fs-6 text-success">{{ SchoolDataRow.startDate |
-                                                    date:'dd/MM/yyyy'
-                                                    }}</td>
-                                                <td class="fw-bold fs-6 text-success">{{ SchoolDataRow.endDate |
-                                                    date:'dd/MM/yyyy'
-                                                    }}</td>
-                                                <td class="fw-bold fs-6 text-success"> {{SchoolDataRow.visitDuration}}</td>
-                                                <ng-container *ngIf="SchoolDataRow.uploadProof; else NoFile">
-                                                    <td> <a class="fs-5 me-2" [href]="this.serverUrl+SchoolDataRow.uploadProof"
-                                                            target="_blank"><i class="mdi ms-2 fs-3 mdi-file"> </i></a> </td>
+                                                </div>
+                                            </td>
+                                        </ng-container>
+                                        
+                                        <!-- Start Date Column -->
+                                        <ng-container matColumnDef="startDate">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold">Visit Start Date</th>
+                                            <td mat-cell *matCellDef="let row" class="fw-bold fs-6 text-success">{{row.startDate | date:'dd/MM/yyyy'}}</td>
+                                        </ng-container>
+                                        
+                                        <!-- End Date Column -->
+                                        <ng-container matColumnDef="endDate">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold">Visit End Date</th>
+                                            <td mat-cell *matCellDef="let row" class="fw-bold fs-6 text-success">{{row.endDate | date:'dd/MM/yyyy'}}</td>
+                                        </ng-container>
+                                        
+                                        <!-- Duration Column -->
+                                        <ng-container matColumnDef="visitDuration">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold">Visit Duration (Days)</th>
+                                            <td mat-cell *matCellDef="let row" class="fw-bold fs-6 text-success">{{row.visitDuration}}</td>
+                                        </ng-container>
+                                        
+                                        <!-- Proof Column -->
+                                        <ng-container matColumnDef="uploadProof">
+                                            <th mat-header-cell *matHeaderCellDef class="text-danger fw-bold">Proof</th>
+                                            <td mat-cell *matCellDef="let row">
+                                                <ng-container *ngIf="row.uploadProof; else NoFileIn">
+                                                    <button class="btn btn-dark me-2" (click)="onDownloadFile(row.uploadProof, this.serverUrl)">
+                                                        <i class="bi bi-file-earmark-text"></i>
+                                                    </button>
+                                                    <!-- <a class="fs-5 me-2" [href]="this.serverUrl + row.uploadProof" target="_blank">
+                                                        <i class="mdi ms-2 fs-3 mdi-file"></i>
+                                                    </a> -->
                                                 </ng-container>
-                                                <ng-template #NoFile>
-                                                    <td> No Proof Uploaded </td>
+                                                <ng-template #NoFileIn>
+                                                    <span>No Proof Uploaded</span>
                                                 </ng-template>
-        
-                                                <ng-container *ngIf="SchoolDataRow.amount> 0; else NoAmount">
-                                                    <td> {{SchoolDataRow.amount}} </td>
+                                            </td>
+                                        </ng-container>
+                                        
+                                        <!-- Amount Column -->
+                                        <ng-container matColumnDef="amount">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold">Amount Received</th>
+                                            <td mat-cell *matCellDef="let row">
+                                                <ng-container *ngIf="row.amount > 0; else NoAmountIn">
+                                                    {{row.amount}}
                                                 </ng-container>
-                                                <ng-template #NoAmount>
-                                                    <td> N A </td>
+                                                <ng-template #NoAmountIn>
+                                                    <span>NA</span>
                                                 </ng-template>
-                                                <ng-container *ngIf="SchoolDataRow.remarksAmounts ; else NoRemarks">//typeof
-                                                    SchoolDataRow.remarksAmounts === 'string' &&
-                                                    SchoolDataRow.remarksAmounts.length
-                                                    > 2; else NoRemarks
-                                                    <td> {{SchoolDataRow.remarksAmounts}} </td>
+                                            </td>
+                                        </ng-container>
+                                        
+                                        <!-- Remarks Column -->
+                                        <ng-container matColumnDef="remarksAmounts">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold">Amount Particulars</th>
+                                            <td mat-cell *matCellDef="let row">
+                                                <ng-container *ngIf="row.remarksAmounts && row.remarksAmounts.length > 2; else NoRemarksIn">
+                                                    {{row.remarksAmounts}}
                                                 </ng-container>
-                                                <ng-template #NoRemarks>
-                                                    <td> N A </td>
+                                                <ng-template #NoRemarksIn>
+                                                    <span>NA</span>
                                                 </ng-template>
-                                                <td [ngSwitch]="SchoolDataRow.isApproved">
+                                            </td>
+                                        </ng-container>
+                                        
+                                        <!-- Approval Status Column -->
+                                        <ng-container matColumnDef="isApproved">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold">Approval Status</th>
+                                            <td mat-cell *matCellDef="let row">
+                                                <ng-container [ngSwitch]="row.isApproved">
                                                     <ng-container *ngSwitchCase="1">
-                                                        <div class="fw-bold fs-6 text-success">Approved By {{
-                                                            SchoolDataRow.approvedBy }}</div>
+                                                        <div class="fw-bold fs-6 text-success">Approved By {{row.approvedBy}}</div>
                                                     </ng-container>
                                                     <ng-container *ngSwitchCase="0">
-                                                        <div class="fw-bold fs-6 text-danger">Disapproved by {{
-                                                            SchoolDataRow.approvedBy }} <br />** {{
-                                                            SchoolDataRow.disapprovalReason }}</div>
+                                                        <div class="fw-bold fs-6 text-danger">Disapproved by {{row.approvedBy}}<br />** {{row.disapprovalReason}}</div>
                                                     </ng-container>
                                                     <ng-container *ngSwitchDefault>
                                                         <div class="fw-bold fs-6 text-info">Pending Approval</div>
                                                     </ng-container>
-                                                </td>
-                                            </tr>
+                                                </ng-container>
+                                            </td>
                                         </ng-container>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
+                                        
+                                        <!-- Header and Row Definitions -->
+                                        <tr mat-header-row *matHeaderRowDef="displayedColumnsIn; sticky: true" class="bg-light"></tr>
+                                        <tr mat-row *matRowDef="let row; columns: displayedColumnsIn;"></tr>
+                                        
+                                        <!-- No Data Row -->
+                                        <tr class="mat-row" *matNoDataRow>
+                                            <td class="mat-cell" [attr.colspan]="displayedColumnsIn.length">
+                                                No data matching the filter
+                                            </td>
                                         </tr>
-                                    </tfoot>
-                                </table>
+                                    </table>
+                                    
+                                    <!-- Paginator -->
+                                    <mat-paginator #paginatorIn [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+                                </div>
                             </ng-container>
                             <ng-template #noRecords>
                                 <p class="fs-2 text-danger text-center ">No Grid Data Available.</p>
@@ -291,8 +341,10 @@
                 </div>
             </div>
         </div>
+        
         <!-- Tab Two contents -->
-        <div class="tab-pane fade" id="summerschool-outgoing" role="tabpanel" aria-labelledby="summerschool-outgoing-tab">
+        <div class="tab-pane fade" id="summerschool-outgoing" role="tabpanel"
+            aria-labelledby="summerschool-outgoing-tab">
             <div class="row">
                 <div class="col-md-12 grid-margin stretch-card">
                     <div class="card">
@@ -303,7 +355,8 @@
                                     <div class="col-sm-4">
                                         <div class="mb-3">
                                             <div class="form-group">
-                                                <label for="UniversityOutgoingName" class="fw-bold fs-6 text-success">University
+                                                <label for="UniversityOutgoingName"
+                                                    class="fw-bold fs-6 text-success">University
                                                     Name:</label>
                                                 <input type="text" [(ngModel)]="UniversityOutgoingName"
                                                     id="UniversityOutgoingName" name="UniversityOutgoingName" ngModel
@@ -312,14 +365,15 @@
                                             </div>
                                         </div>
                                     </div>
-        
+
                                     <div class="col-sm-4">
                                         <div class="mb-3">
                                             <div class="form-group">
                                                 <label for="SelfCountry" class="fw-bold fs-6 text-success">Country
                                                     :</label>
-                                                <input type="text" [(ngModel)]="SelfCountry" id="SelfCountry" name="SelfCountry"
-                                                    ngModel class="form-control" autocomplete="off" placeholder=" Country" />
+                                                <input type="text" [(ngModel)]="SelfCountry" id="SelfCountry"
+                                                    name="SelfCountry" ngModel class="form-control" autocomplete="off"
+                                                    placeholder=" Country" />
                                             </div>
                                         </div>
                                     </div>
@@ -355,8 +409,9 @@
                                             <div class="form-group">
                                                 <label for="endDateOut" class="fw-bold fs-6 text-success"> End
                                                     Date:</label>
-                                                <input type="date" [(ngModel)]="endDateOut" id="endDateOut" name="endDateOut"
-                                                    ngModel class="form-control" (ngModelChange)="calculateDaysOut()" required
+                                                <input type="date" [(ngModel)]="endDateOut" id="endDateOut"
+                                                    name="endDateOut" ngModel class="form-control"
+                                                    (ngModelChange)="calculateDaysOut()" required
                                                     placeholder="Visit End Date " autocomplete="off" />
                                             </div>
                                         </div>
@@ -366,8 +421,8 @@
                                             <div class="form-group">
                                                 <label for="DaysOut" class="fw-bold fs-6 text-success">Duration </label>
                                                 <br />
-                                                <input type="text" [(ngModel)]="DaysOut" id="DaysOut" name="DaysOut" ngModel
-                                                    class="form-control" autocomplete="off" />
+                                                <input type="text" [(ngModel)]="DaysOut" id="DaysOut" name="DaysOut"
+                                                    ngModel class="form-control" autocomplete="off" />
                                             </div>
                                         </div>
                                     </div>
@@ -379,9 +434,9 @@
                                             <div class="form-group">
                                                 <label for="AmountOut" class="fw-bold fs-6 text-success">Amount
                                                     :</label>
-                                                <input type="number" [(ngModel)]="AmountOut" id="AmountOut" name="AmountOut"
-                                                    ngModel class="form-control " required placeholder="Amount"
-                                                    autocomplete="off" />
+                                                <input type="number" [(ngModel)]="AmountOut" id="AmountOut"
+                                                    name="AmountOut" ngModel class="form-control " required
+                                                    placeholder="Amount" autocomplete="off" />
                                             </div>
                                         </div>
                                     </div>
@@ -391,15 +446,16 @@
                                                 <label for="RemarksAmountOut" class="fw-bold fs-6 text-success">Remarks
                                                     for Amount </label>
                                                 <input type="text" [(ngModel)]="RemarksAmountOut" id="RemarksAmountOut"
-                                                    name="RemarksAmountOut" ngModel class="form-control " placeholder=" "
-                                                    autocomplete="off" />
+                                                    name="RemarksAmountOut" ngModel class="form-control "
+                                                    placeholder=" " autocomplete="off" />
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="mb-3">
                                             <div class="form-group">
-                                                <label class="fw-bold fs-4 text-danger">Participants List Excel</label> <br />
+                                                <label class="fw-bold fs-4 text-danger">Participants List Excel</label>
+                                                <br />
                                                 <input required type="file" id="exclSheet" name="excelSheet"
                                                     [(ngModel)]="excelSheet" (change)="onFileSelectedXls($event)"
                                                     accept=".xls,.xlsx" />
@@ -414,8 +470,9 @@
                                             <div class="form-group">
                                                 <label for="File" class="fw-bold fs-6 text-success">Upload
                                                     All Proofs</label> <br />
-                                                <input required type="file" id="File" name="File" [(ngModel)]="ProofFile1"
-                                                    (change)="onFileSelected($event)" accept=".zip,.7z" />
+                                                <input required type="file" id="File" name="File"
+                                                    [(ngModel)]="ProofFile1" (change)="onFileSelected($event)"
+                                                    accept=".zip,.7z" />
                                             </div>
                                         </div>
                                     </div>
@@ -441,119 +498,155 @@
                             <div class="row mt-4 mb-4">
                                 <div class="col-">
                                     <div class="mb-3 text-center">
-                                        <Label class="text-center fs-2 text-success">Outgoing Summer school Report</Label>
+                                        <Label class="text-center fs-2 text-success">Outgoing Summer school
+                                            Report</Label>
                                     </div>
                                 </div>
                             </div>
-                            <ng-container *ngIf="SchoolDataOut?.length >0; else noRecords">
-                                <div class="row mt-4 mb-4">
-                                    <div class="col-sm-4">
-                                        <div class="mb-3">
-                                            <button (click)="exportToExcelforOut()" class="btn btn-success ">Export to2
+                            <ng-container *ngIf="SchoolDataOut?.length > 0; else noRecords">
+                                <div class="row mt-4 mb-4 d-flex justify-content-">
+                                    <div class="col-4">
+                                            <button (click)="exportToExcelOut()" class="btn btn-success ">Export to
                                                 ExcelSheet</button>
-                                        </div>
                                     </div>
+                                    <div class="col-4">
+                                            <input type="text" (keyup)="applyFilterOut($event)" placeholder="Search..." class="form-control">
+                                    </div>
+                                
                                 </div>
-                                <div class="table-responsive">
-        
-                                    <table id="SummerSchoolDataTableY" #table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th class="form-label text-danger">University </th>
-                                                <th class="form-label text-danger">Country</th>
-                                                <th class="form-label text-danger text-center">Participants </th>
-                                                <th class="form-label text-danger">Visit Start Date</th>
-                                                <th class="form-label text-danger">Visit End Date</th>
-                                                <th class="form-label text-danger">Visit Duration (Days)</th>
-                                                <th class="form-label text-danger">Proof </th>
-                                                <th class="form-label text-danger">Amount Received </th>
-                                                <th class="form-label text-danger">Amount Particulars </th>
-                                                <th class="form-label text-danger">Approval Status </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-        
-                                            <ng-container *ngFor="let SchoolDataRow of SchoolDataOut">
-                                                <tr>
-                                                    <td class="fw-bold fs-6 text-success">
-                                                        {{SchoolDataRow.universityName}}</td>
-                                                    <td class="fw-bold fs-6 text-success">{{SchoolDataRow.country}}
-                                                    </td>
-                                                    <td>
-                                                        <ng-container *ngIf="SchoolDataRow.xlsFileName!=null; else NoSheetDoc">
-                                                            <div class="text-danger text-center fs-5"> {{
-                                                                SchoolDataRow.participants }} <br />
-                                                                <a class=" me-2"
-                                                                    [href]="this.serverUrl+SchoolDataRow.xlsFileName"
-                                                                    target="_blank">
-                                                                    <i class="mdi ms-2 fs-3 mdi-file"> </i>
-                                                                </a>
-                                                            </div>
-                                                        </ng-container>
-                                                        <ng-template #NoSheetDoc>
-                                                            <div class="text-danger text-center fs-5"> {{
-                                                                SchoolDataRow.participants }} <br />
-                                                                <span class="text-danger me-2">No Uploaded Yet</span>
-                                                            </div>
-                                                        </ng-template>
-                                                    </td>
-                                                    <td class="fw-bold fs-6 text-success">{{ SchoolDataRow.startDate
-                                                        |date:'dd/MM/yyyy' }}</td>
-                                                    <td class="fw-bold fs-6 text-success">{{ SchoolDataRow.endDate
-                                                        |date:'dd/MM/yyyy' }}</td>
-                                                    <td class="fw-bold text-success"> {{SchoolDataRow.visitDuration}}</td>
-                                                    <ng-container *ngIf="SchoolDataRow.uploadProof; else NoFile">
-                                                        <td> <a class="fs-5 me-2"
-                                                                [href]="this.serverUrl+SchoolDataRow.uploadProof"
-                                                                target="_blank"><i class="mdi ms-2 fs-3 mdi-file"> </i> </a>
-                                                        </td>
+                                
+                                <!-- Angular Material Table for Outgoing Data -->
+                                <div class="table-responsive mat-elevation-z8">
+                                    <table mat-table [dataSource]="dataSourceOut" matSort #sortOut="matSort" class="w-100">
+                                        
+                                        <!-- University Column -->
+                                        <ng-container matColumnDef="universityName">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold">University</th>
+                                            <td mat-cell *matCellDef="let row" class="fw-bold fs-6 text-success">{{row.universityName}}</td>
+                                        </ng-container>
+                                        
+                                        <!-- Country Column -->
+                                        <ng-container matColumnDef="country">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold">Country</th>
+                                            <td mat-cell *matCellDef="let row" class="fw-bold fs-6 text-success">{{row.country}}</td>
+                                        </ng-container>
+                                        
+                                        <!-- Participants Column -->
+                                        <ng-container matColumnDef="participants">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold text-center">Participants</th>
+                                            <td mat-cell *matCellDef="let row">
+                                                <div class="text-danger text-center fs-5">
+                                                    {{row.participants}}
+                                                    <ng-container *ngIf="row.xlsFileName != null; else NoSheetDocOut">
+                                                        <br />
+                                                          <button class="btn btn-info me-2" (click)="onDownloadFile(row.xlsFileName, this.serverUrl)">
+                                                        <i class="bi bi-file-earmark-text"></i>
+                                                    </button>
+                                                        <!-- <a class="me-2" [href]="this.serverUrl + row.xlsFileName" target="_blank">
+                                                            <i class="mdi ms-2 fs-3 mdi-file"></i>
+                                                        </a> -->
                                                     </ng-container>
-                                                    <ng-template #NoFile>
-                                                        <td> No Proof Uploaded </td>
+                                                    <ng-template #NoSheetDocOut>
+                                                        <span class="text-danger">No Uploaded Yet</span>
                                                     </ng-template>
-                                                    <ng-container *ngIf="SchoolDataRow.amount> 0; else NoAmount">
-                                                        <td> {{SchoolDataRow.amount}} </td>
+                                                </div>
+                                            </td>
+                                        </ng-container>
+                                        
+                                        <!-- Start Date Column -->
+                                        <ng-container matColumnDef="startDate">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold">Visit Start Date</th>
+                                            <td mat-cell *matCellDef="let row" class="fw-bold fs-6 text-success">{{row.startDate | date:'dd/MM/yyyy'}}</td>
+                                        </ng-container>
+                                        
+                                        <!-- End Date Column -->
+                                        <ng-container matColumnDef="endDate">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold">Visit End Date</th>
+                                            <td mat-cell *matCellDef="let row" class="fw-bold fs-6 text-success">{{row.endDate | date:'dd/MM/yyyy'}}</td>
+                                        </ng-container>
+                                        
+                                        <!-- Duration Column -->
+                                        <ng-container matColumnDef="visitDuration">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold">Visit Duration (Days)</th>
+                                            <td mat-cell *matCellDef="let row" class="fw-bold fs-6 text-success">{{row.visitDuration}}</td>
+                                        </ng-container>
+                                        
+                                        <!-- Proof Column -->
+                                        <ng-container matColumnDef="uploadProof">
+                                            <th mat-header-cell *matHeaderCellDef class="text-danger fw-bold">Proof</th>
+                                            <td mat-cell *matCellDef="let row">
+                                                <ng-container *ngIf="row.uploadProof; else NoFileOut">
+                                                      <button class="btn btn-warning me-2" (click)="onDownloadFile(row.uploadProof, this.serverUrl)">
+                                                        <i class="bi bi-file-earmark-text"></i>
+                                                    </button>
+                                                    <!-- <a class="fs-5 me-2" [href]="this.serverUrl + row.uploadProof" target="_blank">
+                                                        <i class="mdi ms-2 fs-3 mdi-file"></i>
+                                                    </a> -->
+                                                </ng-container>
+                                                <ng-template #NoFileOut>
+                                                    <span>No Proof Uploaded</span>
+                                                </ng-template>
+                                            </td>
+                                        </ng-container>
+                                        
+                                        <!-- Amount Column -->
+                                        <ng-container matColumnDef="amount">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold">Amount Received</th>
+                                            <td mat-cell *matCellDef="let row" class="fw-bold fs-6 text-success">
+                                                <ng-container *ngIf="row.amount > 0; else NoAmountOut">
+                                                    {{row.amount}}
+                                                </ng-container>
+                                                <ng-template #NoAmountOut>
+                                                    <span>NA</span>
+                                                </ng-template>
+                                            </td>
+                                        </ng-container>
+                                        
+                                        <!-- Remarks Column -->
+                                        <ng-container matColumnDef="remarksAmounts">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold">Amount Particulars</th>
+                                            <td mat-cell *matCellDef="let row" class="fw-bold fs-6 text-success">
+                                                <ng-container *ngIf="row.remarksAmounts && row.remarksAmounts.length > 0; else NoRemarksOut">
+                                                    {{row.remarksAmounts}}
+                                                </ng-container>
+                                                <ng-template #NoRemarksOut>
+                                                    <span>NA</span>
+                                                </ng-template>
+                                            </td>
+                                        </ng-container>
+                                        
+                                        <!-- Approval Status Column -->
+                                        <ng-container matColumnDef="isApproved">
+                                            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-danger fw-bold">Approval Status</th>
+                                            <td mat-cell *matCellDef="let row">
+                                                <ng-container [ngSwitch]="row.isApproved">
+                                                    <ng-container *ngSwitchCase="1">
+                                                        <div class="fw-bold fs-6 text-success">Approved By {{row.approvedBy}}</div>
                                                     </ng-container>
-                                                    <ng-template #NoAmount>
-                                                        <td> N A </td>
-                                                    </ng-template>
-                                                    <ng-container
-                                                        *ngIf="SchoolDataRow.remarksAmounts.length >0 ; else NoRemarks">
-                                                        <td> {{SchoolDataRow.remarksAmounts}} </td>
+                                                    <ng-container *ngSwitchCase="0">
+                                                        <div class="fw-bold fs-6 text-danger">Disapproved by {{row.approvedBy}}<br />** {{row.disapprovalReason}}</div>
                                                     </ng-container>
-                                                    <ng-template #NoRemarks>
-                                                        <td> N A </td>
-                                                    </ng-template>
-                                                    <td [ngSwitch]="SchoolDataRow.isApproved">
-                                                        <ng-container *ngSwitchCase="1">
-                                                            <div class="fw-bold fs-6 text-success">Approved By {{
-                                                                SchoolDataRow.approvedBy }}</div>
-                                                        </ng-container>
-                                                        <ng-container *ngSwitchCase="0">
-                                                            <div class="fw-bold fs-6 text-danger">Disapproved by {{
-                                                                SchoolDataRow.approvedBy }} <br />** {{
-                                                                SchoolDataRow.disapprovalReason }}</div>
-                                                        </ng-container>
-                                                        <ng-container *ngSwitchDefault>
-                                                            <div class="fw-bold fs-6 text-info">Pending Approval</div>
-                                                        </ng-container>
-                                                    </td>
-                                                </tr>
-                                            </ng-container>
-        
-                                        </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                            </tr>
-                                        </tfoot>
+                                                    <ng-container *ngSwitchDefault>
+                                                        <div class="fw-bold fs-6 text-info">Pending Approval</div>
+                                                    </ng-container>
+                                                </ng-container>
+                                            </td>
+                                        </ng-container>
+                                        
+                                        <!-- Header and Row Definitions -->
+                                        <tr mat-header-row *matHeaderRowDef="displayedColumnsOut; sticky: true" class="bg-light"></tr>
+                                        <tr mat-row *matRowDef="let row; columns: displayedColumnsOut;"></tr>
+                                        
+                                        <!-- No Data Row -->
+                                        <tr class="mat-row" *matNoDataRow>
+                                            <td class="mat-cell" [attr.colspan]="displayedColumnsOut.length">
+                                                No data matching the filter
+                                            </td>
+                                        </tr>
                                     </table>
-        
+                                    
+                                    <!-- Paginator -->
+                                    <mat-paginator #paginatorOut [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
                                 </div>
                             </ng-container>
                             <ng-template #noRecords>
@@ -565,14 +658,14 @@
             </div>
         </div>
     </div>
-
 </ng-container>
+
 <ng-template #loginFailed>
     <div class="row">
         <div class="col-md-12 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body ">
-                    <h4 class="card-title  text-center fs-3 text-danger"> Summer School  </h4>
+                    <h4 class="card-title  text-center fs-3 text-danger"> Summer School </h4>
                 </div>
             </div>
         </div>
@@ -580,7 +673,7 @@
 </ng-template>
 
 <div class="text-center bg-warning" *ngIf="isLoginFailed">
-    <h3 class="text-center fs-2 m-5 text-danger pt-5 "> Error in User Login .    </h3>
+    <h3 class="text-center fs-2 m-5 text-danger pt-5 "> Error in User Login . </h3>
     <div class="row mt-4 mb-4">
         <div class="col-sm-12 text-center">
             <div class="mb-3 p-4">
@@ -589,3 +682,4 @@
         </div>
     </div>
 </div>
+

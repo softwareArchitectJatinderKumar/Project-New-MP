@@ -147,9 +147,11 @@
                                     <ng-container *ngIf="row.filePath ; else NoFile">
                                         <!-- [attr.disabled]="row.isApproved === true || row.isApproved === false ? true : null"
                                         [class.disabled]="row.isApproved === true || row.isApproved === false"  -->
-                                        <a class="btn btn-dark ms-3" [href]="row.filePath" target="_blank">
-                                            <i class="bi bi-download"></i> </a>
-
+                                        <!-- <a class="btn btn-dark ms-3" (click)="DownloadFile(row.filePath)" target="_blank">
+                                            <i class="bi bi-download"></i> </a> -->
+                                             <button class="btn btn-secondary ms-3" (click)="onDownloadFile(row.filePath)" [disabled]="row.filePath<1">
+           <i class="bi bi-download"></i>
+          </button>
                                     </ng-container>
                                     <ng-template #NoFile>
                                         <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">No Doc
