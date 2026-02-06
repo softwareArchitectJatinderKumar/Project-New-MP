@@ -1,4 +1,13 @@
 /* Summer School Web Component Styles */
+
+  #nav-tab .btn.active {
+  background-color: #FD6C04; 
+   color: black;  
+}
+#nav-tab .btn {
+  color: black;  
+  background-color: white;
+}
 .summer-school-container {
     .mat-mdc-table {
         font-size: 14px !important;
