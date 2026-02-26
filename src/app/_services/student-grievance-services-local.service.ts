@@ -73,7 +73,7 @@ export class StudentGrievanceServicesLocalService {
   // Semester Exchange and Summer school 
 
 
-  folderUrl = 'http://172.19.2.206/umsweb/webftp/MOUDocuments/';
+  folderUrl = 'http://files.lpu.in/umsweb/webftp/MOUDocuments/';
 
   // Method to get folder URL
   getFolderUrl(): string {

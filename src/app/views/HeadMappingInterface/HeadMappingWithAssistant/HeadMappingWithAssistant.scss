@@ -64,6 +64,35 @@
   font-size: 16px; 
 }
 
+/* Dropdown scroll styles for Metric ID suggestions */
+.dropdown-scroll {
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1050 !important;
+  background-color: white;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+}
+
+/* Custom scrollbar for dropdown */
+.dropdown-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dropdown-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.dropdown-scroll::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.dropdown-scroll::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 
 
 

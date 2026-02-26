@@ -41,6 +41,23 @@ export class MouDocumentsReportComponent implements OnInit {
     return !!(control && control.invalid && (control.dirty || control.touched));
   }
 
+  // Helper to get display name for form fields
+  getFieldDisplayName(fieldName: string): string {
+    const fieldNames: { [key: string]: string } = {
+      'mouOrganisation': 'Partner Organisation Name',
+      'selectedDivisions': 'Divisions Involved',
+      'startDate': 'Start Date',
+      'endDate': 'End Date',
+      'spocName': 'SPOC Name',
+      'spocEmail': 'SPOC Email',
+      'spocContact': 'SPOC Contact',
+      'lpuSpocName': 'LPU SPOC Name',
+      'lpuSpocUid': 'LPU SPOC UID',
+      'lpuSpocEmail': 'LPU SPOC Email'
+    };
+    return fieldNames[fieldName] || fieldName;
+  }
+
   onSubmit() {
     if (this.mouForm.valid) {
       console.log("Form Data:", this.mouForm.getRawValue());
@@ -693,8 +710,9 @@ export class MouDocumentsReportComponent implements OnInit {
 
       spocName: data['spocName'],
       spocEmail: data['spocEmailId'],
-      spocContact: data['spocContact'],
+      spocContact: data['spocContactNo'],
       lpuSpocName: data['lpuSpocName'],
+      lpuSpocUid: data['lpuSpocUID'],
       lpuSpocEmail: data['lpuSpocEmail'],
 
       // Note: Add other fields if they exist in your data object 'data'
@@ -709,7 +727,21 @@ export class MouDocumentsReportComponent implements OnInit {
   onSubmitUpdate() {
     if (this.mouForm.invalid) {
       this.mouForm.markAllAsTouched();
-      console.warn("Form Invalid:", this.mouForm.value);
+      
+      // Build list of invalid fields for user feedback
+      const invalidFields: string[] = [];
+      const controls = this.mouForm.controls;
+      for (const name in controls) {
+        if (controls[name].invalid) {
+          invalidFields.push(name);
+        }
+      }
+      
+      swal.fire({
+        title: 'Validation Error',
+        html: `<p>Please fill in all required fields:</p><ul class="text-start">${invalidFields.map(f => `<li>${this.getFieldDisplayName(f)}</li>`).join('')}</ul>`,
+        icon: 'error'
+      });
       return;
     }
 

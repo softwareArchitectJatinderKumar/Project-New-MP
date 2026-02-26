@@ -804,7 +804,7 @@ export class OBPMetricBinding implements OnInit {
         if (inputValue) {
             this.filteredMetricData = this.allMetricDescription.filter(metric =>
                 metric.id.toString().includes(inputValue)
-            ).slice(0, 10);
+            );
             this.showMetricSuggestions = true;
         } else {
             this.filteredMetricData = [];
