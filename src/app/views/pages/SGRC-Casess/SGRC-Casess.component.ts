@@ -32,6 +32,7 @@ import { map, debounceTime } from 'rxjs/operators';
 export class SGRCComponenent implements OnInit {
 
   isLoginFailed = false;
+  currentTab: string = 'all';
 
 
   @ViewChild('ngSelectComponent') ngSelectComponent: NgSelectComponent;
@@ -168,6 +169,51 @@ export class SGRCComponenent implements OnInit {
 
     this.Block = ['BH1', 'BH1', 'BH1', 'BH1']
 
+    // Restore tab from sessionStorage on init
+    const savedTab = sessionStorage.getItem('sgrcActiveTab');
+    if (savedTab) {
+      this.currentTab = savedTab;
+    }
+  }
+
+  // Format date to DD-MM-YYYY
+  formatDate(dateString: any): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
+  // Restore active tab after page reload
+  restoreActiveTab(): void {
+    const savedTab = sessionStorage.getItem('sgrcActiveTab');
+    if (savedTab) {
+      this.currentTab = savedTab;
+      // Use setTimeout to ensure DOM is ready, but don't click the button
+      // to avoid reloading data and showing loading indicator again
+      setTimeout(() => {
+        // Manually trigger Bootstrap tab show without reloading data
+        const tabElement = document.getElementById(`studentGrievance-${savedTab}`);
+        const tabButton = document.getElementById(`studentGrievance-${savedTab}-tab`);
+        if (tabElement && tabButton) {
+          // Remove active class from all tab buttons
+          document.querySelectorAll('#nav-tab .btn').forEach((btn: Element) => {
+            btn.classList.remove('active');
+          });
+          // Remove active and show class from all tab panes
+          document.querySelectorAll('.tab-pane').forEach((pane: Element) => {
+            pane.classList.remove('active', 'show');
+          });
+          // Add active class to clicked button
+          tabButton.classList.add('active');
+          // Add active and show class to the tab pane
+          tabElement.classList.add('active', 'show');
+        }
+      }, 100);
+    }
   }
 
   ticketNumber: any;
@@ -241,6 +287,8 @@ export class SGRCComponenent implements OnInit {
       this.Agreement.updateSGRCCases(this.responses[0]).subscribe({
         next: data => {
           this.isInputDisabled = false;
+          // Save current tab before reload
+          sessionStorage.setItem('sgrcActiveTab', this.currentTab);
           swal.fire({ title: 'SGRC Cases', text: 'SGRC Case update successfully   !', icon: 'success' }).then(function () {
             window.location.reload();
           });
@@ -397,7 +445,7 @@ export class SGRCComponenent implements OnInit {
       TicketNo: item.ticketNumber,
       subject: item.subject,
       Nature: item.nature,
-      createdOn: item.createdOn,
+      createdOn: this.formatDate(item.createdOn),
       Status: item.status=='O' ? 'Open':item.status=='C'?'Closed':'-',
       Remarks: item.remarksDetails =='' || item.remarksDetails ==null  ? 'NA' : item.remarksDetails ,
     }));
@@ -425,7 +473,7 @@ export class SGRCComponenent implements OnInit {
       TicketNo: item.ticketNumber,
       subject: item.subject,
       Nature: item.nature,
-      createdOn: item.createdOn,
+      createdOn: this.formatDate(item.createdOn),
       Status: item.status=='O' ? 'Open':item.status=='C'?'Closed':'-',
       Remarks: item.remarksDetails =='' || item.remarksDetails ==null  ? 'NA' : item.remarksDetails ,
     }));
@@ -453,7 +501,7 @@ export class SGRCComponenent implements OnInit {
       TicketNo: item.ticketNumber,
       subject: item.subject,
       Nature: item.nature,
-      createdOn: item.createdOn,
+      createdOn: this.formatDate(item.createdOn),
       Status: item.status=='O' ? 'Open':item.status=='C'?'Closed':'-',
       Remarks: item.remarksDetails =='' || item.remarksDetails ==null  ? 'NA' : item.remarksDetails ,
     }));
@@ -518,6 +566,9 @@ export class SGRCComponenent implements OnInit {
         this.columns = Object.keys(this.studentLists[0]);
         this.columns = this.columns.filter((item: any) => item !== 'fileName');
         this.columns.push()
+        
+        // Restore tab after data is loaded
+        this.restoreActiveTab();
         this.loadingIndicator = false;
       } else {
         this.studentLists = [];
@@ -626,6 +677,8 @@ export class SGRCComponenent implements OnInit {
     });
   }
   onTabClick(tabType: string): void {
+    this.currentTab = tabType;
+    sessionStorage.setItem('sgrcActiveTab', tabType);
     if (tabType === 'all') {
       this.searchQuery = "";
 

@@ -2,18 +2,18 @@
 
  
         <nav>
-            <div class="nav nav-tabs nav nav-tabs d-flex justify-content-center active" id="nav-tab" role="tablist">
-                <button class="btn btn-dark me-5 active" id="studentGrievance-all-tab" data-bs-toggle="tab"
+            <div class="nav nav-tabs nav nav-tabs d-flex justify-content-center" [class.active]="currentTab === 'all'" id="nav-tab" role="tablist">
+                <button class="btn btn-dark me-5" [class.active]="currentTab === 'all'" id="studentGrievance-all-tab" data-bs-toggle="tab"
                     (click)="onTabClick('all')" style="padding: .95rem 8rem;" data-bs-target="#studentGrievance-all"
                     type="button" role="tab" aria-controls="studentGrievance-all" aria-selected="true">All
                     cases</button>
 
-                <button class=" btn btn-dark btn-lg ms-5" id="studentGrievance-open-tab" data-bs-toggle="tab"
+                <button class=" btn btn-dark btn-lg ms-5" [class.active]="currentTab === 'open'" id="studentGrievance-open-tab" data-bs-toggle="tab"
                     (click)="onTabClick('open')" style="padding: .95rem 8rem;" data-bs-target="#studentGrievance-open"
                     type="button" role="tab" aria-controls="studentGrievance-open" aria-selected="false">Open
                     Cases</button>
 
-                <button class=" btn btn-dark btn-lg ms-5" id="studentGrievance-closed-tab" data-bs-toggle="tab"
+                <button class=" btn btn-dark btn-lg ms-5" [class.active]="currentTab === 'closed'" id="studentGrievance-closed-tab" data-bs-toggle="tab"
                     (click)="onTabClick('closed')" style="padding: .95rem 8rem;"
                     data-bs-target="#studentGrievance-closed" type="button" role="tab"
                     aria-controls="studentGrievance-closed" aria-selected="false">Closed
@@ -23,7 +23,7 @@
         <div class="tab-content" id="nav-tabContent">
             <!-- Tab one contents -->
 
-            <div class="tab-pane fade active show" id="studentGrievance-all" role="tabpanel"
+            <div class="tab-pane fade" [class.active]="currentTab === 'all'" [class.show]="currentTab === 'all'" id="studentGrievance-all" role="tabpanel"
                 aria-labelledby="studentGrievance-all-tab">
                 <div class="row">
                     <div class="col-md-12 stretch-card">
@@ -61,8 +61,16 @@
                                         [rows]="FilteredstudentLists" [loadingIndicator]="loadingIndicator"
                                         [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
                                         [headerHeight]="80" rowHeight="auto">
-                                        <ngx-datatable-column *ngFor="let col of columns"
-                                            [prop]="col"></ngx-datatable-column>
+                                        <ngx-datatable-column *ngFor="let col of columns" [prop]="col">
+                                            <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                                                <ng-container *ngIf="col === 'createdOn'">
+                                                    {{ formatDate(value) }}
+                                                </ng-container>
+                                                <ng-container *ngIf="col !== 'createdOn'">
+                                                    {{ value }}
+                                                </ng-container>
+                                            </ng-template>
+                                        </ngx-datatable-column>
                                         <ngx-datatable-column name="Download File" [sortable]="false" prop="Id">
                                             <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                                 ngx-datatable-cell-template>
@@ -101,7 +109,7 @@
             </div>
 
             <!-- Tab Two  Open cases contents -->
-            <div class="tab-pane fade" id="studentGrievance-open" role="tabpanel"
+            <div class="tab-pane fade" [class.active]="currentTab === 'open'" [class.show]="currentTab === 'open'" id="studentGrievance-open" role="tabpanel"
                 aria-labelledby="studentGrievance-open-tab">
                 <div class="row">
                     <div class="col-md-12 stretch-card">
@@ -137,8 +145,16 @@
                                         [rows]="studentListsOpenCases" [loadingIndicator]="loadingIndicator"
                                         [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
                                         [headerHeight]="80" rowHeight="auto">
-                                        <ngx-datatable-column *ngFor="let col of columns"
-                                            [prop]="col"></ngx-datatable-column>
+                                        <ngx-datatable-column *ngFor="let col of columns" [prop]="col">
+                                            <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                                                <ng-container *ngIf="col === 'createdOn'">
+                                                    {{ formatDate(value) }}
+                                                </ng-container>
+                                                <ng-container *ngIf="col !== 'createdOn'">
+                                                    {{ value }}
+                                                </ng-container>
+                                            </ng-template>
+                                        </ngx-datatable-column>
                                         <ngx-datatable-column name="Download File" [sortable]="false" prop="Id">
                                             <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                                 ngx-datatable-cell-template>
@@ -176,7 +192,7 @@
             </div>
 
             <!-- Tab Three contents -->
-            <div class="tab-pane fade " id="studentGrievance-closed" role="tabpanel"
+            <div class="tab-pane fade " [class.active]="currentTab === 'closed'" [class.show]="currentTab === 'closed'" id="studentGrievance-closed" role="tabpanel"
                 aria-labelledby="studentGrievance-closed-tab">
                 <div class="row">
                     <div class="col-md-12 stretch-card">
@@ -213,8 +229,16 @@
                                         [rows]="studentListsClosedCases" [loadingIndicator]="loadingIndicator"
                                         [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
                                         [headerHeight]="80" rowHeight="auto">
-                                        <ngx-datatable-column *ngFor="let col of columns"
-                                            [prop]="col"></ngx-datatable-column>
+                                        <ngx-datatable-column *ngFor="let col of columns" [prop]="col">
+                                            <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                                                <ng-container *ngIf="col === 'createdOn'">
+                                                    {{ formatDate(value) }}
+                                                </ng-container>
+                                                <ng-container *ngIf="col !== 'createdOn'">
+                                                    {{ value }}
+                                                </ng-container>
+                                            </ng-template>
+                                        </ngx-datatable-column>
                                         <ngx-datatable-column name="Download File" [sortable]="false" prop="Id">
                                             <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                                 ngx-datatable-cell-template>
