@@ -581,7 +581,7 @@ export class SGRCComponenent implements OnInit {
   @ViewChild('table') table: ElementRef;
 
   DataSearch() {
-    // Ensure that searchQuery is not null/undefined and trim any extra spaces.
+    this.resetPagination();
     const query = this.searchQuery?.trim().toLowerCase() || '';
 
     // If search query is empty, reset to the original list
@@ -618,6 +618,7 @@ export class SGRCComponenent implements OnInit {
   }
 
   DataSearchOpen() {
+    this.resetPagination();
     const query = this.searchQuery?.trim().toLowerCase() || '';
 
     if (!query) {
@@ -652,6 +653,7 @@ export class SGRCComponenent implements OnInit {
   }
 
   DataSearchClosed() {
+    this.resetPagination();
     const query = this.searchQuery?.trim().toLowerCase() || '';
     if (!query) {
       this.GetAllStudentsCases();
@@ -688,7 +690,11 @@ export class SGRCComponenent implements OnInit {
     } else if (tabType === 'closed') {
       this.searchQuery = "";
     }
+    this.resetPagination(); // Reset pages when switching tabs
     this.GetAllStudentsCases();
+
+
+     
   }
 
 
@@ -707,4 +713,55 @@ export class SGRCComponenent implements OnInit {
       element.hidden = true;
     }
   }
+
+ 
+  pageSize: number = 5;
+  pageOptions: number[] = [5, 10, 15, 20, 25];
+
+  allOffset: number = 0;
+  openOffset: number = 0;
+  closedOffset: number = 0;
+
+  
+  
+  TabsLogic():void {
+     const savedTab = sessionStorage.getItem('sgrcActiveTab');
+    if (savedTab) {
+      this.currentTab = savedTab;
+    }
+}
+resetPagination() {
+    this.loadingIndicator = true;
+    
+    this.allOffset = 0;
+    this.openOffset = 0;
+    this.closedOffset = 0;
+
+    setTimeout(() => {
+        this.loadingIndicator = false;
+        this.cdRef.detectChanges(); 
+    }, 400);
+}
+
+changePage(tab: string, direction: number) {
+    this.loadingIndicator = true; // Show loader
+    
+    if (tab === 'all') this.allOffset += direction;
+    else if (tab === 'open') this.openOffset += direction;
+    else if (tab === 'closed') this.closedOffset += direction;
+
+    // Small delay to allow the grid to re-render
+    setTimeout(() => {
+        this.loadingIndicator = false;
+        this.cdRef.detectChanges();
+    }, 300);
+}
+  // Page Count Getters
+  get totalPagesAll() { return Math.ceil((this.FilteredstudentLists?.length || 0) / this.pageSize) || 1; }
+  get totalPagesOpen() { return Math.ceil((this.studentListsOpenCases?.length || 0) / this.pageSize) || 1; }
+  get totalPagesClosed() { return Math.ceil((this.studentListsClosedCases?.length || 0) / this.pageSize) || 1; }
+
+
+   
+ 
 }
