@@ -149,4 +149,19 @@ export class LpuPlannerServiceService {
     // };
     // return this.http.get<any>(AUTH_API + 'Planning/GetObpDailyFilledProgrees?UID=' + UId + '&DCode=' + DeptCode, httpOptions);
   }
+
+  GetAllPlannerSessionWithType(Type: any): Observable<any>{
+     var authToken = this.storageService.getUser();
+    const httpOptions = {
+      headers: new HttpHeaders({
+        // 'Authorization': `Bearer ${authToken}`
+        'Authorization': `Bearer ${authToken}`
+      })
+    };
+    return this.http.get<any>('https://localhost:7125/api/Planning/GetPlannerSessionWithType?Type=P', httpOptions);
+    // return this.http.get<any>(AUTH_API + 'api/Planning/GetPlannerSessionWithType?Type=' + Type, httpOptions);
+  }
+
+
+  
 }

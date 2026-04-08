@@ -34,6 +34,14 @@ interface SchoolDivision {
     schoolDivision: string;
 }
 
+interface PlannerSession {
+    id: number;
+    sessionName: string;
+    sessionType: string;
+    startDate: Date;
+    endDate: Date;
+}
+
 @Component({
     selector: 'app-metric-mapping',
     templateUrl: './HeadMappingWithAssistant.html',
@@ -72,6 +80,18 @@ export class OBPMetricBinding implements OnInit {
         }
         return metric ? metric.description : `ID ${idStr} not found`;
     }
+
+
+     getDateDisplay(date: any): string {
+        if (!date) return '';
+        try {
+            const dateObj = new Date(date);
+            return dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        } catch (e) {
+            return date;
+        }
+    }
+
 
     // Logic End 19-Nov
     changeResponsiblePlanned(event: any) {
@@ -169,6 +189,98 @@ export class OBPMetricBinding implements OnInit {
         private authService: AuthService, private storageService: StorageService,
         private title: Title
     ) { }
+
+ // Planner Session related properties
+    allPlannerSessions: PlannerSession[] = [];
+    selectedPlannerSession: PlannerSession | null = null;
+    selectedSessionId: number | null = null;
+
+
+
+    GetAllPlannerSessionWithType(): void {
+        this.lpuPlannerServiceService.GetAllPlannerSessionWithType('P').subscribe((response) => {
+            if (response.item1.length > 0) {
+                this.allPlannerSessions = response.item1;
+                console.log(JSON.stringify(this.allPlannerSessions))
+            } else {
+                this.allPlannerSessions = [];
+            }
+        });
+    }
+    /**
+     * Handle planner session selection
+     */
+    onPlannerSessionChange(event: any): void {
+        const sessionId = event.target.value;
+        if (sessionId) {
+            this.selectedSessionId = parseInt(sessionId);
+            this.selectedPlannerSession = this.allPlannerSessions.find(s => s.id === this.selectedSessionId) || null;
+            this.mappingForm.get('SessionId')?.setValue(this.selectedSessionId);
+            this.enableFormControls();
+        } else {
+            this.selectedSessionId = null;
+            this.selectedPlannerSession = null;
+            this.mappingForm.get('SessionId')?.setValue('');
+            this.disableFormControls();
+        }
+    }
+
+    /**
+     * Disable form controls until session is selected
+     */
+    private disableFormControls(): void {
+        const controlsToDisable = ['HeadUID', 'AssistantUID', 'MetricId', 'SchoolId', 'IsActive', 'Remarks', 'Type', 'StartDate', 'EndDate'];
+        controlsToDisable.forEach(controlName => {
+            this.mappingForm.get(controlName)?.disable();
+        });
+    }
+
+    /**
+     * Enable form controls after session is selected
+     */
+    private enableFormControls(): void {
+        const controlsToEnable = ['HeadUID', 'AssistantUID', 'MetricId', 'SchoolId', 'IsActive', 'Remarks', 'Type', 'StartDate', 'EndDate'];
+        controlsToEnable.forEach(controlName => {
+            this.mappingForm.get(controlName)?.enable();
+        });
+    }
+
+    /**
+     * Validator for StartDate - ensure it's >= session start date
+     */
+    startDateValidator(control: FormControl): { [key: string]: any } | null {
+        if (!control.value || !this.selectedPlannerSession) {
+            return null;
+        }
+
+        const enteredDate = new Date(control.value);
+        const sessionStartDate = this.selectedPlannerSession.startDate;
+
+        if (enteredDate < sessionStartDate) {
+            return { 'startDateBeforeSession': { value: control.value } };
+        }
+        return null;
+    }
+
+    /**
+     * Validator for EndDate - ensure it's >= session end date
+     */
+    endDateValidator(control: FormControl): { [key: string]: any } | null {
+        if (!control.value || !this.selectedPlannerSession) {
+            return null;
+        }
+
+        const enteredDate = new Date(control.value);
+        const sessionEndDate = this.selectedPlannerSession.endDate;
+
+        if (enteredDate < sessionEndDate) {
+            return { 'endDateBeforeSession': { value: control.value } };
+        }
+        return null;
+    }
+
+
+
     ngOnInit(): void {
         this.initForm();
         let loginName = this.route.snapshot.params['loginName'];
@@ -176,6 +288,9 @@ export class OBPMetricBinding implements OnInit {
             this.getToken(loginName);
         }
     }
+    
+
+
     GetEmployeeData(): void {
         this.mouDocumentsService.GetEmployeeData().subscribe({
             next: response => {
@@ -198,6 +313,7 @@ export class OBPMetricBinding implements OnInit {
                 if (!this.storageService.isLoggedIn() || authToken === 'Token Expired') {
                     this.LoginFailed('Token Expired');
                 }
+                this.GetAllPlannerSessionWithType();
                 this.GetAllEventsData();
                 this.GetEmployeeData();
                 this.GetAllActivities();
@@ -851,4 +967,12 @@ export class OBPMetricBinding implements OnInit {
 
         return names.join(', ');
     }
+
+      getSessionDisplay(sessionId: number | null | undefined): string {
+        if (!sessionId) return '';
+        const session = this.allPlannerSessions.find(s => s.id === sessionId);
+        return session ? `${session.sessionName} (${session.sessionType})` : `ID ${sessionId}`;
+    }
+
+
 }

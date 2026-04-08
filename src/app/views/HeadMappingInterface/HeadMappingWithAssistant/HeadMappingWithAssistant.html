@@ -18,6 +18,30 @@
       <form [formGroup]="mappingForm" (ngSubmit)="onSubmit()">
         <div class="row g-3">
 
+          <!-- Planner Session Selection (New) -->
+          <div class="col-md-6">
+            <label for="plannerSession" class="form-label">Planner Session <span class="text-danger">*</span></label>
+            <select id="plannerSession" class="form-select" 
+              (change)="onPlannerSessionChange($event)" formControlName="SessionId">
+              <option value="">-- Select a Planner Session --</option>
+              <option *ngFor="let session of allPlannerSessions" [value]="session.id">
+                {{ session.sessionName }} ({{ session.sessionType }}) - 
+                {{ getDateDisplay(session.startDate) }} to {{ getDateDisplay(session.endDate) }}
+              </option>
+            </select>
+            <div class="text-danger mt-1 small"
+              *ngIf="mappingForm.get('SessionId')?.invalid && mappingForm.get('SessionId')?.touched">
+              Planner Session is required.
+            </div>
+            <div *ngIf="selectedPlannerSession" class="text-info mt-2 small">
+              Session Period: {{ getDateDisplay(selectedPlannerSession.startDate) }} to {{ getDateDisplay(selectedPlannerSession.endDate) }}
+            </div>
+          </div>
+
+          <!-- Empty column for spacing -->
+          <div class="col-md-6"></div>
+
+          <!-- Head UID -->
           <div class="col-md-6">
             <label for="headUid" class="form-label">Head UID <span class="text-danger">*</span></label>
             <div class="position-relative">
@@ -41,13 +65,11 @@
             <div *ngIf="AssignedToUid > 0" class="text-primary mt-2 small">
               Selected Head Id: <strong>{{ AssignedToUid }}</strong>
             </div>
-
-
           </div>
 
+          <!-- Assistant UID -->
           <div class="col-md-6">
             <label for="assistantUid" class="form-label">Assistant UID <span class="text-danger">*</span></label>
-
             <div class="position-relative">
               <input type="text" id="AssistantUID" name="AssistantUID" required class="form-control"
                 [formControl]="assistantControl" placeholder="Search by name or code" (input)="onAssistantInput()"
@@ -67,9 +89,11 @@
               </div>
             </div>
             <div *ngIf="AssistantUid > 0" class="text-primary mt-2 small">
-              Selected Assistant UId: <strong>{{ AssistantUid }}</strong>
+              Selected Assistant UID: <strong>{{ AssistantUid }}</strong>
             </div>
           </div>
+
+          <!-- Metric ID -->
           <div class="col-md-4">
             <label for="metricId" class="form-label">Metric ID <span class="text-danger">*</span></label>
             <div class="position-relative">
@@ -96,6 +120,36 @@
                 AssignToMetricId }}</strong>
             </div>
           </div>
+
+          <!-- Start Date (New) -->
+          <div class="col-md-4">
+            <label for="startDate" class="form-label">Start Date <span class="text-danger">*</span></label>
+            <input type="date" id="startDate" class="form-control" formControlName="StartDate"
+              [class.is-invalid]="mappingForm.get('StartDate')?.invalid && mappingForm.get('StartDate')?.touched" />
+            <div class="invalid-feedback d-block"
+              *ngIf="mappingForm.get('StartDate')?.invalid && mappingForm.get('StartDate')?.touched">
+              <span *ngIf="mappingForm.get('StartDate')?.getError('required')">Start Date is required.</span>
+              <span *ngIf="mappingForm.get('StartDate')?.getError('startDateBeforeSession')">
+                Start Date must be on or after {{ selectedPlannerSession?.startDate | date:'short' }}.
+              </span>
+            </div>
+          </div>
+
+          <!-- End Date (New) -->
+          <div class="col-md-4">
+            <label for="endDate" class="form-label">End Date <span class="text-danger">*</span></label>
+            <input type="date" id="endDate" class="form-control" formControlName="EndDate"
+              [class.is-invalid]="mappingForm.get('EndDate')?.invalid && mappingForm.get('EndDate')?.touched" />
+            <div class="invalid-feedback d-block"
+              *ngIf="mappingForm.get('EndDate')?.invalid && mappingForm.get('EndDate')?.touched">
+              <span *ngIf="mappingForm.get('EndDate')?.getError('required')">End Date is required.</span>
+              <span *ngIf="mappingForm.get('EndDate')?.getError('endDateBeforeSession')">
+                End Date must be on or after {{ selectedPlannerSession?.endDate | date:'short' }}.
+              </span>
+            </div>
+          </div>
+
+          <!-- School Division -->
           <div class="col-md-6">
             <label for="schoolDivisionNgSelect" class="form-label">School Division (Optional)</label>
 
@@ -113,6 +167,8 @@
 
             <input type="hidden" formControlName="SchoolId" />
           </div>
+
+          <!-- Is Active (Update Mode Only) -->
           <div class="col-md-2" *ngIf="isUpdateMode">
             <label class="form-label d-block">Is Active <span class="text-danger">*</span></label>
             <div class="btn-group" role="group" aria-label="Is Active options">
@@ -127,6 +183,7 @@
               option.</div>
           </div>
 
+          <!-- Remarks (Update Mode Only) -->
           <div class="col-md-12" *ngIf="isUpdateMode">
             <label for="remarks" class="form-label">Remarks <span class="text-danger">*</span></label>
             <textarea id="remarks" formControlName="Remarks" class="form-control" rows="3"
@@ -135,6 +192,8 @@
               *ngIf="mappingForm.get('Remarks')?.invalid && mappingForm.get('Remarks')?.touched">Remarks are required
               for updates.</div>
           </div>
+
+          <!-- Type and Action Buttons -->
           <div class="row g-3">
             <div class="col-md-4">
               <label class="form-label d-block">Type <span class="text-danger">*</span></label>
@@ -150,14 +209,14 @@
                 Please select a type.</div>
             </div>
 
-
-            <div class=" col-md-4 mt-5">
+            <div class="col-md-4 mt-5">
               <button type="submit" class="btn btn-lg w-30"
                 [ngClass]="{'btn-primary': !isUpdateMode, 'btn-info': isUpdateMode}" [disabled]="mappingForm.invalid">
                 <i class="bi bi-cloud-arrow-up"></i> {{ isUpdateMode ? 'Update Record' : 'Submit Record' }}
               </button>
             </div>
-            <div class=" col-md-4 mt-5">
+
+            <div class="col-md-4 mt-5">
               <button type="button" class="btn btn-secondary w-30 mt-2" *ngIf="isUpdateMode" (click)="onCancelUpdate()">
                 Cancel Update
               </button>
@@ -168,11 +227,13 @@
     </div>
   </div>
 
-  <div class="card shadow ">
+  <!-- Data Grid Section -->
+  <div class="card shadow">
     <div class="card-header bg-primary text-white">
-      <h5 class="mb-0 ">Existing Mappings Details</h5>
+      <h5 class="mb-0">Existing Mappings Details</h5>
     </div>
     <div class="card-body p-0">
+      <!-- Search and Filter Bar -->
       <div class="p-3 d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
           <label class="me-2 mb-0">Search:</label>
@@ -189,11 +250,12 @@
         <div class="text-muted">Total: {{ totalRecords }}</div>
       </div>
 
+      <!-- Table -->
       <div class="table-responsive">
         <table class="table table-striped table-hover mb-0">
           <thead class="table-danger bg-dark">
             <tr>
-              <th *ngFor="let col of tableColumns"> <span class="text-dark">{{ col }}</span></th>
+              <th *ngFor="let col of tableColumns"><span class="text-dark">{{ col }}</span></th>
             </tr>
           </thead>
           <tbody>
@@ -201,41 +263,79 @@
               <td *ngFor="let col of tableColumns">
                 <ng-container [ngSwitch]="col">
 
-                  <ng-container *ngSwitchCase="'UpdatedOn'">
-                    {{ $any(record)['UpdatedOn'] | date:'medium' }}
+                  <!-- ID -->
+                  <ng-container *ngSwitchCase="'id'">
+                    {{ $any(record)['id'] }}
                   </ng-container>
 
-                  <ng-container *ngSwitchCase="'HeadUID'">
-                    {{ getEmployeeDisplay($any(record)['HeadUID']) }}
+                  <!-- Head UID -->
+                  <ng-container *ngSwitchCase="'headUID'">
+                    {{ getEmployeeDisplay($any(record)['headUID']) }}
                   </ng-container>
 
-                  <ng-container *ngSwitchCase="'AssistantUID'">
-                    {{ getEmployeeDisplay($any(record)['AssistantUID']) }}
+                  <!-- Assistant UID -->
+                  <ng-container *ngSwitchCase="'assistantUID'">
+                    {{ getEmployeeDisplay($any(record)['assistantUID']) }}
                   </ng-container>
 
-                  <ng-container *ngSwitchCase="'MetricId'">
-                    {{ getMetricDescriptionDisplay($any(record)['MetricId']) }}
+                  <!-- Session ID (New) -->
+                  <ng-container *ngSwitchCase="'sessionId'">
+                    {{ getSessionDisplay($any(record)['sessionId']) }}
                   </ng-container>
 
+                  <!-- Start Date (New) -->
+                  <ng-container *ngSwitchCase="'startDate'">
+                    {{ getDateDisplay($any(record)['startDate']) }}
+                  </ng-container>
+
+                  <!-- End Date (New) -->
+                  <ng-container *ngSwitchCase="'endDate'">
+                    {{ getDateDisplay($any(record)['endDate']) }}
+                  </ng-container>
+
+                  <!-- Is Active -->
+                  <ng-container *ngSwitchCase="'isActive'">
+                    <span class="badge" [ngClass]="$any(record)['isActive'] ? 'bg-success' : 'bg-danger'">
+                      {{ $any(record)['isActive'] ? 'Active' : 'Inactive' }}
+                    </span>
+                  </ng-container>
+
+                  <!-- Metric ID -->
+                  <ng-container *ngSwitchCase="'metricId'">
+                    {{ getMetricDescriptionDisplay($any(record)['metricId']) }}
+                  </ng-container>
+
+                  <!-- Type -->
+                  <ng-container *ngSwitchCase="'type'">
+                    {{ $any(record)['type'] }}
+                  </ng-container>
+
+                  <!-- School ID -->
                   <ng-container *ngSwitchCase="'SchoolID'">
                     {{ getSchoolNamesDisplay($any(record)['SchoolID']) }}
                   </ng-container>
+
+                  <!-- School Division IDs -->
                   <ng-container *ngSwitchCase="'SchoolDivisionIDs'">
                     {{ getSchoolNamesDisplay($any(record)['SchoolDivisionIDs']) }}
                   </ng-container>
+
+                  <!-- School Ids -->
                   <ng-container *ngSwitchCase="'SchoolIds'">
                     {{ getSchoolNamesDisplay($any(record)['SchoolIds']) }}
                   </ng-container>
-                  <ng-container *ngSwitchCase="'isActive'">
-                    <button type="button" class="btn btn-sm btn-info me-2 btn-circle" (click)="onDelete(record)">
-                      <i class="mdi mdi-pencil"></i>
-                    </button>
-                  </ng-container>
+
+                  <!-- Actions -->
                   <ng-container *ngSwitchCase="'Actions'">
                     <button type="button" class="btn btn-sm btn-info me-2" (click)="onEdit(record)">
-                      <i class="mdi mdi-pencil"></i>
+                      <i class="mdi mdi-pencil"></i> Edit
+                    </button>
+                    <button type="button" class="btn btn-sm btn-danger" (click)="onDelete(record)">
+                      <i class="mdi mdi-trash-can"></i> Delete
                     </button>
                   </ng-container>
+
+                  <!-- Default -->
                   <ng-container *ngSwitchDefault>
                     {{ $any(record)[col] }}
                   </ng-container>
@@ -250,6 +350,8 @@
           </tfoot>
         </table>
       </div>
+
+      <!-- Pagination -->
       <div class="d-flex justify-content-between align-items-center p-3">
         <div>
           <button class="btn btn-info me-2" [disabled]="currentPage <= 1"
@@ -262,6 +364,8 @@
     </div>
   </div>
 </div>
+
+<!-- Login Failed Template -->
 <ng-template #loginFailed>
   <div class="card shadow-sm">
     <div class="card-body text-center py-5">
