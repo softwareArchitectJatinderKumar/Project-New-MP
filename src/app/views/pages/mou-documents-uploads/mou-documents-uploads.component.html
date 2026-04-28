@@ -34,48 +34,7 @@
                 <div class="container-fluid">
                     <form #myForm="ngForm" (ngSubmit)="UploadDocument()">
 
-                        <!--                         
-                <div class="row mb-4 mt-4">
-                    <div class="col-3">
-                        <label class="form-label">LPU SPOC Name</label>
-                    </div>
-                    <div class="col-3">
-                        <input type="text" id="responsiblePerson" name="responsiblePerson" required class="form-control col-3"
-                            [(ngModel)]="ResponsiblePerson" [formControl]="employeeControl" placeholder="Search by name or code"
-                            (input)="onInput()" (keydown)="onKeydown($event)" (change)="checkUIDValidity()"
-                            (focus)="showSuggestions = true" (blur)="hideSuggestions()" />
-                        <div class="themeClr mt-1 small" *ngIf="employeeControl.invalid && employeeControl.touched">
-                            LPU SPOC Name is required.
-                        </div>
-                
-                        <div *ngIf="showSuggestions && filteredEmployeesData.length"
-                            class="list-group position-absolute w-30 shadow-sm z-3">
-                            <button type="button" class="list-group-item list-group-item-action"
-                                *ngFor="let employee of filteredEmployeesData; let i = index"
-                                [class.active]="i === activeSuggestionIndex" (mousedown)="selectEmployee(employee)">
-                                {{ employee.employeeName }} ({{ employee.employeeCode }})
-                            </button>
-                        </div>
-                        <div *ngIf="AssignedToUid > 0" class="text-primary mt-2 small">
-                            Applying to UID: <strong>{{ AssignedToUid }} {{AssignedToUidName}}</strong>
-                        </div>
-                    </div>
-                    <div class="col-3">
-                        <label class="form-label">LPU SPOC EmailId</label>
-                    </div>
-                    <div class="col-3">
-                        <input type="email" class="form-control" [style]="{ width: '89%' }" name="LPUSpocEmail" id="LPUSpocEmail"
-                            autocomplete="off" placeholder="Provide SOPC Email Id" required
-                            pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" ngModel [(ngModel)]="LPUSpocEmail"
-                            #lpusopcEmail="ngModel" />
-                        <div *ngIf="lpusopcEmail.invalid && lpusopcEmail.touched" class="themeClr">
-                            <div *ngIf="lpusopcEmail.errors?.required">LPU SOPC Email Id is required.</div>
-                            <div *ngIf="lpusopcEmail.errors?.pattern">Invalid Email Id must be properly formatted and end with .com or
-                                .org.</div>
-                        </div>
-                    </div>
-                </div>
-  -->
+
                         <div class="row mb-4 mt-4">
                             <div class="col-3 "><label class=" form-label"> MOU Partner
                                     Organisation Name </label></div>
@@ -313,19 +272,13 @@
                                         </td>
 
                                         <td class="fw-bold fs-6 ">{{DocumentRow.mouPartnerName}} </td>
-                                        <!-- <td class="fw-bold fs-6 "> {{
-                                                formatDate(DocumentRow.createdOn)}}
-                                            </td>
-                                            <td class="fw-bold fs-6 "> {{ DocumentRow.approvalDate!= null ?
-                                                formatDate(DocumentRow.approvalDate): 'N/A'}} </td> -->
+
 
                                         <ng-container *ngIf="DocumentRow.filePath; else NoFile">
                                             <td> <a class="btn btn-primaryme-2" [href]="DocumentRow.filePath"
                                                     target="_blank"> View
                                                 </a> </td>
-                                            <!-- <td> <a class="btn btn-primaryme-2" [href]=this.serverUrl+DocumentRow.fileName
-                                                    target="_blank"> View 
-                                                </a> </td> -->
+
                                         </ng-container>
                                         <ng-template #NoFile>
                                             <td> No Doc Uploaded </td>
@@ -388,10 +341,7 @@
                                         <td class="fw-bold fs-6 "> {{ DocumentRow.spocName!= null &&
                                             DocumentRow.spocEmailId!= null && DocumentRow.spocContactNo ?
                                             DocumentRow.spocName + DocumentRow.spocEmailId : 'N/A'}} </td>
-                                        <!-- <td class="fw-bold fs-6 "> {{ DocumentRow.spocEmailId!= null ?
-                                                DocumentRow.spocEmailId: 'N/A'}} </td>
-                                            <td class="fw-bold fs-6 "> {{ DocumentRow.spocContactNo!= null ?
-                                                DocumentRow.spocContactNo: 'N/A'}} </td> -->
+
 
                                         <td class="fw-bold fs-6 "> {{ DocumentRow.mouStartDate?.length>0 ?
                                             DocumentRow.mouStartDate: 'NA' }} </td>
@@ -451,20 +401,7 @@
         </div>
     </ng-template>
 </div>
-<!-- <ng-template #loginFailed>
-         
-        <div class="text-center  " *ngIf="isLoginFailed">
-            <h3 class="text-center fs-2 m-5  pt-5 "> Error in User Login . </h3>
-            <div class="row mt-4 mb-4">
-                <div class="col-sm-12 text-center">
-                    <div class="mb-3 p-4">
-                        <Label class="form-label fs-4  ">Something Went Wrong. Please Login
-                            again!.</Label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </ng-template> -->
+
 <ng-template #loginFailed>
     <div class="text-center " *ngIf="isLoginFailed">
         <h3 class="text-center fs-2 m-5 text-warn pt-2 "> Unauthorised Access </h3>
@@ -476,8 +413,7 @@
                     <li class="list-group-item">Your current session has expired.</li>
                 </ul>
             </div>
-            <!-- </div>
-        <div class="row mt-4 mb-4 d-flex justify-content-center "> -->
+
             <div class="col-3 ">
                 <ul class="list-group  w-20">
                     <Label class="form-label fs-4 badge bg-white themeClr">Try Following step(s) :- </Label>

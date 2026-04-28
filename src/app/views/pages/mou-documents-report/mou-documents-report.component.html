@@ -11,6 +11,16 @@
                             </div>
                         </div>
 
+                        <div class="col-sm-3">                            
+                            <div class="mb-3">
+                                <select class="form-select" [(ngModel)]="statusFilter" (change)="onStatusChange($event)">
+                                    <option value="all">All MOU</option>
+                                    <option value="active">Active</option>
+                                    <option value="expired">Expired</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="col-sm-3">
                             <div class="mb-3">
                                 <input [(ngModel)]="searchQuery" (keyup)="search()" id="search" type="text"
@@ -19,6 +29,28 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Summary Stats Row -->
+                    <div class="row p-3 mx-5" *ngIf="statusFilter !== 'all'">
+                        <div class="col-12">
+                            <div class="d-flex gap-3 align-items-center">
+                                <span class="fw-bold me-2">Summary:</span>
+                                <!-- <span class="badge bg-secondary" [class.bg-primary]="statusFilter === 'all'">
+                                    All: {{ MouDocumentDetails.length }}
+                                </span> -->
+                                <span class="badge bg-success" [class.bg-primary]="statusFilter === 'active'">
+                                    Active: {{ getActiveCount() }}
+                                </span>
+                                <span class="badge bg-danger" [class.bg-primary]="statusFilter === 'expired'">
+                                    Expired: {{ getExpiredCount() }}
+                                </span>
+                                <span class="badge bg-dark" *ngIf="searchQuery">
+                                    Filtered: {{ filteredMouDocumentDetails.length }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="table-responsive">
                         <ngx-datatable class="bootstrap table-responsive table-striped material"
                             [rows]="filteredMouDocumentDetails" [loadingIndicator]="loadingIndicator"

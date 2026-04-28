@@ -30,17 +30,17 @@ export class MouDocumentsUploadsComponent implements OnInit {
 
 
   // Logic added start on 24-Nov-25
-  IdX:any;
-  LPUSpocEmail:any='';
-    employeeControl = new FormControl();
-   EmployeeData: Employee[] = [];
+  IdX: any;
+  LPUSpocEmail: any = '';
+  employeeControl = new FormControl();
+  EmployeeData: Employee[] = [];
   filteredEmployeesData: Employee[] = [];
   showSuggestions = false;
   activeSuggestionIndex: number = -1;
   ResponsiblePerson: any = '';
   AssignedToUid: any = '';
   AssignedToUidName: any = '';
-    GetEmployeeData(): void {
+  GetEmployeeData(): void {
     this.mouDocumentsService.GetEmployeeData().subscribe({
       next: response => {
         this.EmployeeData = response.item1.length > 0 ? response.item1 : [];
@@ -51,11 +51,11 @@ export class MouDocumentsUploadsComponent implements OnInit {
 
 
 
-    onInput() {
+  onInput() {
     const inputValue = (this.employeeControl.value || '').toLowerCase();
     if (inputValue) {
       this.filteredEmployeesData = this.EmployeeData.filter(employee =>
-        employee.employeeName.toLowerCase().includes(inputValue) || 
+        employee.employeeName.toLowerCase().includes(inputValue) ||
         employee.employeeCode.toLowerCase().includes(inputValue)
       ).slice(0, 10);
     } else {
@@ -75,7 +75,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
     this.checkUIDValidity();
   }
 
-  
+
   onKeydown(event: KeyboardEvent) {
     if (this.filteredEmployeesData.length > 0) {
       if (event.key === 'ArrowDown') {
@@ -94,12 +94,12 @@ export class MouDocumentsUploadsComponent implements OnInit {
     setTimeout(() => this.showSuggestions = false, 200);
   }
 
- 
+
   checkUIDValidity(): void {
     this.uploadEnabled = this.IdX !== '' && this.AssignedToUid != '';
   }
 
- 
+
 
 
 
@@ -157,13 +157,13 @@ export class MouDocumentsUploadsComponent implements OnInit {
   MouStartDate: string = ''; // Bound to Start Date input
   MouEndDate: string = ''; // Bound to End Date input
   isIndefiniteMou: boolean = false; // For Indefinite Mou checkbox
-  moustatus: string = 'Expired';  
- // Toggles the disabled state of the MouEndDate field and sets MOU status
- toggleEndDate(): void {
+  moustatus: string = 'Expired';
+  // Toggles the disabled state of the MouEndDate field and sets MOU status
+  toggleEndDate(): void {
     if (this.isIndefiniteMou) {
-      this.MouEndDate = '';  
-      this.moustatus = 'Active';   
-      
+      this.MouEndDate = '';
+      this.moustatus = 'Active';
+
     } else {
       this.updateMouStatus(); // Recalculate status if unchecked
     }
@@ -285,7 +285,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
       }
     });
   }
-  
+
 
   toggleDropdown(): void {
 
@@ -325,10 +325,10 @@ export class MouDocumentsUploadsComponent implements OnInit {
     return division ? division.schoolDivision : `ID ${idStr} not found`;
   }
 
-   getDivisionNamesByIds(ids: number[]): string {
+  getDivisionNamesByIds(ids: number[]): string {
     return ids.map(id => this.getDivisionNameById(id)).join(', ');
   }
-  
+
   GetAllActivities(): void {
     this.lpuPlannerServiceService.GetSchoolDivisions().subscribe((response) => {
       if (response.item1.length > 0) {
@@ -455,7 +455,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
     formData.append('MouPartnerName', this.MouPartner);
     formData.append('FacultyName', this.EmployeeName);
     formData.append('MouStartDate', this.MouStartDate);
-    formData.append('MouEndDate', this.MouEndDate.length>0?this.MouEndDate:'null');
+    formData.append('MouEndDate', this.MouEndDate.length > 0 ? this.MouEndDate : 'null');
     formData.append('MouStatus', this.moustatus);
     formData.append('FilePath', this.fileName);
     formData.append('File', this.FileData);
@@ -540,15 +540,15 @@ export class MouDocumentsUploadsComponent implements OnInit {
       return Object.entries(item).some(([key, val]) => {
         if (val !== null && val !== undefined) {
           let valueString = String(val).toLowerCase();
-  
+
           if (key === 'id') {
             const numericId = Number(val); // Convert mouid to a number
-            
+
             if (!isNaN(numericId) && (numericId.toString().includes(lowerCaseFilter) || `mou/${numericId}`.includes(lowerCaseFilter))) {
               return true;
             }
           }
-  
+
           // General search for all other fields
           return valueString.includes(lowerCaseFilter);
         }
@@ -608,24 +608,24 @@ export class MouDocumentsUploadsComponent implements OnInit {
     if (!Array.isArray(ids)) { // Ensure ids is an array
       return '';
     }
-    
+
     const names = ids.map(id => this.getDivisionNameByIds(id)).join(', '); // Map IDs to names
     return names;
   }
-  
+
   getDivisionNameByIds(id: number): string {
-    const division = this.allSchoolDivisions.find(school => school.id === id);  
-    return division ? division?.schoolDivision : ' '+id;  
+    const division = this.allSchoolDivisions.find(school => school.id === id);
+    return division ? division?.schoolDivision : ' ' + id;
   }
   getDivisionNamesByIdss(ids: number[]): string {
     return ids.map(id => this.getDivisionNameById(id)).join(', ');
   }
-  
+
   exportToExcel(): void {
     const fileName = 'Mou_Document_report.xlsx';
- 
+
     const exportedData = this.MouDocumentsData.map(item => ({
-      NewMouid:(item.newMouId ?? 'Disapproved'),//1
+      NewMouid: (item.newMouId ?? 'Disapproved'),//1
       OldMOUId: "MOU/" + (item.id ?? 'N/A'),//1
       'Mou Partner Name': item.mouPartnerName ?? 'N/A',//2
       'Mou Start Date': item.mouStartDate ?? 'N/A',//3
@@ -633,7 +633,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
       'Mou Status': item.mouStatus ?? 'N/A',//5
       'SPOC Person Name (Mou Partner Organisation)': item.spocName ?? 'N/A',//6
       'SPOC Person Email (Mou Partner Organisation)': item.spocEmailId ?? 'N/A',//7,
-      'SPOC Person Contact (Mou Partner Organisation)': item.spocContactNo =='undefined' ? 'N/A': item.spocContactNo ?? 'N/A',//8
+      'SPOC Person Contact (Mou Partner Organisation)': item.spocContactNo == 'undefined' ? 'N/A' : item.spocContactNo ?? 'N/A',//8
       'MOU Uploaded By Faculty Name': item.mouUploadedByFacultyName ?? 'N/A',//10
       'MOU Uploaded By Faculty UID': item.createdBy ?? 'N/A',//11
       'School/Division Involved Id': item.schoolDivisionInvolved ?? 'N/A',//9
@@ -642,24 +642,24 @@ export class MouDocumentsUploadsComponent implements OnInit {
         : 'N/A', // Prevent error if null //12
       'Date of MOU Uploaded at Interface': item.createdOn
         ? new Date(item.createdOn).toLocaleDateString('en-GB', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric'
-          }).replace(/ /g, '-')
-        : 'N/A' , // Prevent error if null //13
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        }).replace(/ /g, '-')
+        : 'N/A', // Prevent error if null //13
       'Approval Status': item.disapprovalReason == null && item.isApproved == 1
         ? 'Approved'
         : item.disapprovalReason?.length > 10 && item.isApproved == 0
-        ? 'Disapproved'
-        : 'Pending', //14
-      
+          ? 'Disapproved'
+          : 'Pending', //14
+
     }));
-  
+
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
-  
+
     const wscols = Array(18).fill({ wpx: 240 }); // Simplified column width assignment
     ws['!cols'] = wscols;
-  
+
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
     const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
@@ -668,7 +668,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
     link.download = fileName;
     link.click();
   }
-    
+
   // exportToExcel(): void {
   //   const fileName = 'Mou_Document_report.xlsx';
   //   const exportedData = this.MouDocumentsData.map(item => ({
@@ -693,14 +693,14 @@ export class MouDocumentsUploadsComponent implements OnInit {
   //     }).replace(/ /g, '-')
   //   }));
 
-  
+
   //   const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
-  
+
   //   const wscols = [
   //     { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 180 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }
   //   ];
   //   ws['!cols'] = wscols;
-  
+
   //   const wb: XLSX.WorkBook = XLSX.utils.book_new();
   //   XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
   //   const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
@@ -709,9 +709,9 @@ export class MouDocumentsUploadsComponent implements OnInit {
   //   link.download = fileName;
   //   link.click();
   // }
-   
+
   // exportToExcel(): void {
-    
+
   //   const fileName = 'Mou_UploadDocument_report.xlsx';
   //   const exportedData = this.filteredMouDocumentsData.map(item => ({
   //     MOUId: "MOU/" + item.id,

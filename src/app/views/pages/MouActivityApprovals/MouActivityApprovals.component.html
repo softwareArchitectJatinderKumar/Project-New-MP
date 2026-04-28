@@ -42,8 +42,9 @@
 
                     <div class="col-sm-3">
                         <div class="mb-3">
-                            <input [(ngModel)]="searchQuery" (keyup)="search()" id="search" type="text" [disabled]="filteredMouActivityData.length == 0"
-                                style="width: auto;" class="form-control" placeholder="Search" aria-label="Search"
+                            <input [(ngModel)]="searchQuery" (keyup)="search()" id="search" type="text"
+                                [disabled]="filteredMouActivityData.length == 0" style="width: auto;"
+                                class="form-control" placeholder="Search" aria-label="Search"
                                 aria-describedby="basic-addon1" />
                         </div>
                     </div>
@@ -92,14 +93,18 @@
                                                 rowHeight="auto">
 
                                                 <ngx-datatable-column name="Session Year" [sortable]="false" prop="Id">
-                                                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                                                        <ng-container *ngIf="row.sessionAcademicYear != null; else NotFilled">
-                                                            <span style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.sessionAcademicYear}}</span>
+                                                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                                        ngx-datatable-cell-template>
+                                                        <ng-container
+                                                            *ngIf="row.sessionAcademicYear != null; else NotFilled">
+                                                            <span
+                                                                style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.sessionAcademicYear}}</span>
                                                         </ng-container>
                                                         <ng-template #NotFilled>
                                                             <!-- <button class="btn btn-danger me-2"
                                                                 (click)="ApproveAction(row)"> -->
-                                                                <span  style="margin: auto;float: left; padding: 10px 10px 10px 10px; font-weight: bold; color: red">NA</span>
+                                                            <span
+                                                                style="margin: auto;float: left; padding: 10px 10px 10px 10px; font-weight: bold; color: red">NA</span>
                                                             <!-- </button> -->
                                                         </ng-template>
                                                     </ng-template>
@@ -157,14 +162,16 @@
                                                         <ng-container
                                                             *ngIf="row.isApproved==='False' || row.isApproved==='True' ; else AllowsFile">
                                                             <!-- <button class="btn btn-dark" (click)="onSelectFileY(row)"> Download </button> -->
-                                                                <button class="btn btn-dark" (click)="onDownloadFile(row.documentUploadedFile)">
-                        <i class="bi bi-file-earmark-text"></i> </button>
+                                                            <button class="btn btn-dark"
+                                                                (click)="onDownloadFile(row.documentUploadedFile)">
+                                                                <i class="bi bi-file-earmark-text"></i> </button>
                                                         </ng-container>
                                                         <ng-template #AllowsFile>
                                                             <ng-container *ngIf="row.documentUploadedFile != null">
                                                                 <!-- <button class="btn btn-dark" (click)="onSelectFileY(row)"> Download </button> -->
-                                                                <button class="btn btn-dark" (click)="onDownloadFile(row.documentUploadedFile)">
-                        <i class="bi bi-file-earmark-text"></i> *</button>
+                                                                <button class="btn btn-dark"
+                                                                    (click)="onDownloadFile(row.documentUploadedFile)">
+                                                                    <i class="bi bi-file-earmark-text"></i> *</button>
                                                             </ng-container>
                                                         </ng-template>
                                                     </ng-template>
@@ -181,7 +188,9 @@
                                                     prop="Id">
                                                     <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                                         ngx-datatable-cell-template>
-                                                        <button class="btn btn-success" (click)="DownloadFormatDocument(row)"> <i class="bi bi-file-earmark-text"></i> </button>
+                                                        <button class="btn btn-success"
+                                                            (click)="DownloadFormatDocument(row)"> <i
+                                                                class="bi bi-file-earmark-text"></i> </button>
                                                     </ng-template>
                                                 </ngx-datatable-column>
 

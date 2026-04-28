@@ -211,7 +211,12 @@ export class MouDocumentsReportComponent implements OnInit {
   filterText: string = '';
   filteredMouDocumentDetails: any[] = [];
   Reason: any;
-  searchQuery: any = ''; ResponsiblePerson: any = ''; ColumnMode = ColumnMode; columns: any; headHtmlData: any[] = [];
+  searchQuery: any = '';
+  statusFilter: string = 'all';
+  ResponsiblePerson: any = '';
+  ColumnMode = ColumnMode;
+  columns: any;
+  headHtmlData: any[] = [];
   mouId: any;
 
 
@@ -331,7 +336,9 @@ export class MouDocumentsReportComponent implements OnInit {
           this.MouDocumentDetails = response.item1;
           this.showNoDataFoundMessage = false;
           this.dataSource.data = this.MouDocumentDetails;
-          this.filteredMouDocumentDetails = this.MouDocumentDetails;
+
+          // Apply initial filters
+          this.applyFilters();
 
           this.columns = []; this.headHtmlData = [];
           this.headHtmlData = this.MouDocumentDetails[0];
@@ -341,8 +348,10 @@ export class MouDocumentsReportComponent implements OnInit {
           this.loadingIndicator = false;
 
           this.isLoginFailed = false;
+          console.log(JSON.stringify(this.MouDocumentDetails) + ' documents');
         } else {
           this.dataSource.data = this.MouDocumentDetails = [];
+          this.filteredMouDocumentDetails = [];
           this.showNoDataFoundMessage = true;
           //  this.isLoginFailed = true;
         }
@@ -377,29 +386,65 @@ export class MouDocumentsReportComponent implements OnInit {
   }
 
   search() {
-    const query = this.searchQuery.trim().toLowerCase();
-    // console.log(JSON.stringify(this.MouDocumentDetails))
-    this.filteredMouDocumentDetails = this.MouDocumentDetails.filter(item => {
-      return Object.entries(item).some(([key, val]) => {
-        if (val !== null && val !== undefined) {
-          let valueString = String(val).toLowerCase();
+    this.applyFilters();
+  }
 
-          // Special handling for mouid (Numeric & "MOU/x" String Comparison)
-          if (key === 'id') {
-            const numericId = Number(val); // Convert mouid to a number
+  onStatusChange(event: any): void {
+    this.applyFilters();
+  }
 
-            // Handle cases where user searches with "MOU/x" or just a number
-            if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
-              return true;
-            }
-          }
+  applyFilters(): void {
+    // First filter by status
+    let filtered = this.MouDocumentDetails.filter(item => {
+      if (this.statusFilter === 'all') {
+        return true;
+      }
 
-          // General search for all other fields
-          return valueString.includes(query);
-        }
-        return false;
-      });
+      if (this.statusFilter === 'active') {
+        return item.mouStatus === 'Active';
+      } else if (this.statusFilter === 'expired') {
+        return item.mouStatus === 'Expired';
+      }
+      return true;
     });
+
+    // Then apply search filter if exists
+    const query = this.searchQuery.trim().toLowerCase();
+    if (query) {
+      filtered = filtered.filter(item => {
+        return Object.entries(item).some(([key, val]) => {
+          if (val !== null && val !== undefined) {
+            let valueString = String(val).toLowerCase();
+
+            // Special handling for mouid (Numeric & "MOU/x" String Comparison)
+            if (key === 'id') {
+              const numericId = Number(val);
+              if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
+                return true;
+              }
+            }
+
+            // General search for all other fields
+            return valueString.includes(query);
+          }
+          return false;
+        });
+      });
+    }
+
+    this.filteredMouDocumentDetails = filtered;
+  }
+
+  getActiveCount(): number {
+    return this.MouDocumentDetails.filter(item => {
+      return item.mouStatus === 'Active';
+    }).length;
+  }
+
+  getExpiredCount(): number {
+    return this.MouDocumentDetails.filter(item => {
+      return item.mouStatus === 'Expired';
+    }).length;
   }
   // filterData() {
   //   const lowerCaseFilter = this.filterText.toLowerCase();
@@ -475,7 +520,7 @@ export class MouDocumentsReportComponent implements OnInit {
   exportToExcel(): void {
     const fileName = 'Mou_Document_report.xlsx';
 
-    const exportedData = this.MouDocumentDetails.map(item => ({
+    const exportedData = this.filteredMouDocumentDetails.map(item => ({
       NewMOUId: (item.newMouId ?? 'N/A'),
       OldMOUId: "MOU/" + (item.id ?? 'N/A'),
       'Mou Partner Organisation Name': item.mouTitle ?? 'N/A',
