@@ -298,7 +298,24 @@
                       <ngx-datatable-column name="Assigned To" [sortable]="false" prop="Id">
                         <ng-template let-row="row" ngx-datatable-cell-template>
                           <ng-container *ngIf="row.uid != null && row.uid !== 'undefined'; else noFaculty">
-                            <span class="fw-bold ps-2">{{ row.uid }}</span>
+                            <span class="fw-bold ps-2 ">{{ row.uid }}</span> <br />
+                            <div class="col-3">
+                      
+                              <ng-container *ngIf="selectedRow?.activityPerformed?.length > 0; else ReminderEmails">
+                                <p><strong>Activity Performed:</strong></p>
+                                <p class="text-danger fw-bold">
+                                  {{ selectedRow?.activityPerformed }}
+                                </p>
+                              </ng-container>
+                      
+                              <ng-template #ReminderEmails>
+                                <!-- <p><strong>Send Reminder Email</strong></p> -->
+                                <button type="button" class="btn btn-danger" (click)="ReminderEmailTab2(row)">
+                                  <i class="bi bi-envelope-exclamation"> </i>
+                                </button>
+                              </ng-template>
+                            </div>
+                      
                           </ng-container>
                           <ng-template #noFaculty>
                             <span class="text-danger fw-bold ps-2">No Faculty Assigned</span> <br />
@@ -716,8 +733,7 @@
               <div class="col-3">
                 <p><strong>Approved By:</strong></p>
                 <p class="text-primary fw-bold">{{ selectedRow?.approvedBy }}</p>
-              </div>
-              <div class="col-3">
+              </div><div class="col-3">
                 <p><strong>Activity Assigned:</strong></p>
                 <p class="text-primary fw-bold">{{ removeNumberPrefix(selectedRow?.activityDetails ||
                   'Not Assigned Yet')
@@ -727,10 +743,22 @@
                 <p><strong>Assigned To:</strong></p>
                 <p class="text-danger fw-bold">{{ selectedRow?.uid }}</p>
               </div>
-
+              
               <div class="col-3">
-                <p><strong>Activity Performed:</strong></p>
-                <p class="text-danger fw-bold">{{ selectedRow?.activityPerformed || 'Not Performed Yet' }}</p>
+                
+                <ng-container *ngIf="selectedRow?.activityPerformed?.length > 0; else ReminderEmails">
+                  <p><strong>Activity Performed:</strong></p>
+                  <p class="text-danger fw-bold">
+                    {{ selectedRow?.activityPerformed }}
+                  </p>
+                </ng-container>
+              
+                <ng-template #ReminderEmails>
+                   <p><strong>Send Reminder Email</strong></p>
+                  <button type="button" class="btn btn-danger" (click)="ReminderEmailTab1(selectedRow)">
+                    <i class="bi bi-envelope-exclamation"></i>
+                  </button>
+                </ng-template>
               </div>
 
 

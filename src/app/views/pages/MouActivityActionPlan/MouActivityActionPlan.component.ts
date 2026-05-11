@@ -191,6 +191,7 @@ export class MouActivityActionPlanComponent implements OnInit {
   this.searchTextTab1="";
   this.GetAllMouDocumentsForApprovals(this.EmployeeCode);
 }
+
   GetAllMouDocumentsForApprovals(IdCode: any): void {
     this.mouDocumentsService.GetMouDocumentToAssignActivity(IdCode).subscribe({
       next: response => {
@@ -497,6 +498,8 @@ reloadGrid(){
     this.RemarksX = rows['remarks'];
     this.modalService.open(this.AssignNewUIDModal, { size: 'lg' }).result.then(() => window.location.reload()).catch(() => {});
   }
+
+
   ViewAllActionTaken(rows: any) {
     this.MouidX = rows['mouId'];
     this.GetAllActionDetails(this.MouidX);
@@ -634,5 +637,105 @@ reloadGrid(){
         }
       });
     }
+
+  ReminderEmailTab2(rows: any) {
+
+    if (!rows) {
+      console.error('Rows data is null or undefined');
+      return;
+    }
+
+
+    this.MouidX = rows?.mouId ?? '';
+    const uid = rows?.uid ?? '';
+    const AssignedBy = rows?.actionAssignedBy ?? '';
+
+    this.MouTitleX = rows?.mouTitle ?? '';
+
+    // Correct property names
+    this.StartDateX = rows?.startDate ?? '';
+    this.EndDateX = rows?.endDate ?? '';
+
+    this.ActivityDetailsX = rows?.activityDetails ?? '';
+    this.RemarksX = rows?.remarks ?? '';
+
+    const formData = new FormData();
+
+    formData.append('MouId', this.MouidX);
+    formData.append('Uid', uid);
+    formData.append('Remarks', this.RemarksX);
+    formData.append('StartDate', this.StartDateX);
+    formData.append('EndDate', this.EndDateX);
+    formData.append('CreatedBy', AssignedBy);
+    formData.append('IpAddress', '');
+    formData.append('ActionAssignedBy', AssignedBy);
+    formData.append('ActivityDetails', this.ActivityDetailsX);
+
+    this.mouDocumentsService.MouReminderEmail(formData).subscribe({
+      next: (data: any) => {
+
+        if (data?.item1?.[0]?.msg === 'success') {
+          this.showAlert('Reminder Email Sent Successfully!', 'success');
+        } else {
+          // this.showAlert('Sending Email Failed', 'error');
+        }
+
+      },
+      error: (err) => {
+        console.error('API Error:', err);
+        this.showAlert('Something went wrong', 'error');
+      },
+      complete: () => this.clearFields()
+    });
+  }
+
+  ReminderEmailTab1(rows: any) {
+
+    if (!rows) {
+      console.error('Rows data is null or undefined');
+      return;
+    }
+
+    this.MouidX = rows?.mouId ?? '';
+    const uid = rows?.uid ?? '';
+    const AssignedBy = rows?.approvedBy ?? '';
+
+    this.MouTitleX = rows?.mouTitle ?? '';
+
+    this.StartDateX = rows?.mouStartDate ?? '';
+    this.EndDateX = rows?.mouEndDate ?? '';
+
+    this.ActivityDetailsX = rows?.activityDetails ?? '';
+    this.RemarksX = rows?.remarks ?? '';
+
+    const formData = new FormData();
+
+    formData.append('MouId', this.MouidX);
+    formData.append('Uid', uid);
+    formData.append('Remarks', this.RemarksX);
+    formData.append('StartDate', this.StartDateX);
+    formData.append('EndDate', this.EndDateX);
+    formData.append('CreatedBy', AssignedBy);
+    formData.append('IpAddress', '');
+    formData.append('ActionAssignedBy', AssignedBy);
+    formData.append('ActivityDetails', this.ActivityDetailsX);
+
+    this.mouDocumentsService.MouReminderEmail(formData).subscribe({
+      next: (data: any) => {
+
+        if (data?.item1?.[0]?.msg === 'success') {
+          this.showAlert('Reminder Email Sent Successfully!', 'success');
+        } else {
+          // this.showAlert('Server Error', 'error');
+        }
+
+      },
+      error: (err) => {
+        console.error('API Error:', err);
+        this.showAlert('Something went wrong', 'error');
+      },
+      complete: () => this.clearFields()
+    });
+  }
   
 }

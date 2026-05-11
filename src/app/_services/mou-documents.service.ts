@@ -24,13 +24,11 @@ export class MouDocumentsService {
   fileName: string;
 
   constructor(private http: HttpClient, private storageService: StorageService) { }
-  // private Localtoken = environment.authToken;
 
   GetEmployeeDetails(): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + token)
-      //.set('Authorization', 'Bearer ' + this.Localtoken)
       .set('Content-Type', 'application/json');
     return this.http.get(
       AUTH_API + 'api/Mou/GetEmployeeDetails',
@@ -44,7 +42,6 @@ export class MouDocumentsService {
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
     return this.http.post(AUTH_API + 'api/Mou/MouDocumentInsert', dataSoft, { headers }
-      // return this.http.post( 'https://localhost:7125/api/Mou/MouDocumentInsert', dataSoft, { headers }
     );
   }
 
@@ -52,25 +49,18 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-      //.set('Authorization', 'Bearer ' + this.Localtoken)
       .set('Content-Type', 'application/json');
     return this.http.get(AUTH_API_LOCAL + 'api/Mou/GetAllUploadedDocuments', { headers }
-      // return this.http.get(  'https://localhost:7125/api/Mou/GetAllUploadedDocuments', {headers}
     );
   }
   ApproveDocument(dataSoft: FormData): Observable<any> {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-    //.set('Authorization', 'Bearer ' + this.Localtoken)
     return this.http.post(
       AUTH_API + 'api/Mou/ApprovalAction',
       dataSoft,
       { headers });
-    // // Create an HttpHeaders object with the Authorization header
-    // debugger;
-    // let headers = new HttpHeaders()
-    //   .set('Authorization', 'Bearer ' + this.authToken)
   }
 
 
@@ -78,7 +68,6 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-    //.set('Authorization', 'Bearer ' + this.Localtoken)
     return this.http.post(
       AUTH_API + 'api/Mou/MouDocumentUpdateFile',
       dataSoft,
@@ -90,21 +79,14 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-      //.set('Authorization', 'Bearer ' + this.Localtoken)
       .set('Content-Type', 'application/json');
     return this.http.get(AUTH_API + 'api/Mou/GetUIDWiseMouDocumentDetails?Uid=' + Id, { headers });
-    // return this.http.get('https://localhost:7125/api/Mou/GetUIDWiseMouDocumentDetails?Uid=' + Id, {headers});
-    // return this.http.get(
-    //   AUTH_API + 'api/Mou/GetUIDWiseMouDocumentDetails?Uid=' + Id,
-    //  {headers}
-    // );
   }
 
   MouActivityInsert(dataSoft: FormData): Observable<any> {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-    //.set('Authorization', 'Bearer ' + this.Localtoken)
     return this.http.post(
       AUTH_API + 'api/Mou/MouActivityInsert',
       dataSoft,
@@ -116,20 +98,14 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-      //.set('Authorization', 'Bearer ' + this.Localtoken)
       .set('Content-Type', 'application/json');
     return this.http.get(AUTH_API + 'api/Mou/GetUIDWiseMouActivityDetails?Uid=' + Id, { headers });
-    // return this.http.get(
-    //   AUTH_API + 'api/Mou/GetUIDWiseMouDocumentDetails?Uid=' + Id,
-    //  {headers}
-    // );
   }
 
   GetAllUploadedActivities(): Observable<any> {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-      //.set('Authorization', 'Bearer ' + this.Localtoken)
       .set('Content-Type', 'application/json');
     return this.http.get(AUTH_API + 'api/Mou/GetAllMouActivityDetails', { headers });
   }
@@ -138,7 +114,6 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-    //.set('Authorization', 'Bearer ' + this.Localtoken)
     return this.http.post(
       AUTH_API + 'api/Mou/MouActivityUpdateFile',
       dataSoft,
@@ -150,23 +125,17 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-    //.set('Authorization', 'Bearer ' + this.Localtoken)
     return this.http.post(
       AUTH_API + 'api/Mou/ActivityApprovalAction',
       dataSoft,
       { headers }
     );
-    // // Create an HttpHeaders object with the Authorization header
-    // debugger;
-    // let headers = new HttpHeaders()
-    //   .set('Authorization', 'Bearer ' + this.authToken)
   }
 
   GetEmployeeData(): Observable<any> {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-      //.set('Authorization', 'Bearer ' + this.Localtoken)
       .set('Content-Type', 'application/json');
     return this.http.get(
       AUTH_API + 'api/Mou/GetAllEmployeeData',
@@ -177,7 +146,6 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-      //.set('Authorization', 'Bearer ' + this.Localtoken)
       .set('Content-Type', 'application/json');
     return this.http.get(
       AUTH_API + 'api/Mou/GetMouDocumentsforApproval?Uid=' + EmployeeCode,
@@ -191,15 +159,11 @@ export class MouDocumentsService {
       .set('Authorization', 'Bearer ' + authToken)
     //.set('Authorization', 'Bearer ' + this.Localtoken)
     return this.http.post(
-      // AUTH_API_LOCAs + 'api/Mou/MouNewActivityPlan',
       AUTH_API + 'api/Mou/MouNewActivityPlan',
       dataSoft,
       { headers }
     );
-    // // Create an HttpHeaders object with the Authorization header
-    // debugger;
-    // let headers = new HttpHeaders()
-    //   .set('Authorization', 'Bearer ' + this.authToken)
+  
   }
   InsertMouActivityActionTaken(dataSoft: FormData): Observable<any> {
     let authToken = this.storageService.getUser();
@@ -208,24 +172,19 @@ export class MouDocumentsService {
     //.set('Authorization', 'Bearer ' + this.Localtoken)
     return this.http.post(
       AUTH_API + 'api/Mou/MouActivityActionTakenInsert',
-      // AUTH_API_LOCAs + 'api/Mou/MouActivityActionTakenInsert',
       dataSoft,
       { headers }
     );
-    // // Create an HttpHeaders object with the Authorization header
-    // debugger;
-    // let headers = new HttpHeaders()
-    //   .set('Authorization', 'Bearer ' + this.authToken)
+  
   }
   MouDocumentstoTakeAction(Uid: any): Observable<any> {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-      //.set('Authorization', 'Bearer ' + this.Localtoken)
       .set('Content-Type', 'application/json');
     return this.http.get(
       AUTH_API_LOCALs + 'api/Mou/GetMouDocumentstoTakeAction?Uid=' + Uid,
-      // AUTH_API_LOCAL + 'api/Mou/GetMouDocumentstoTakeAction?Uid=' + Uid,
+ 
       { headers }
     );
   }
@@ -235,11 +194,9 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-      //.set('Authorization', 'Bearer ' + this.Localtoken)
       .set('Content-Type', 'application/json');
     return this.http.get(
       AUTH_API + 'api/Mou/GetMouActivityActionTakenWithSession?Uid=' + Uid + '&SessionId=' + SessionId,
-      // AUTH_API + 'api/Mou/GetMouActivityActionTaken?Uid=' + Uid+'&SessionId='+SessionId,
       { headers }
     );
   }
@@ -247,27 +204,20 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-    //.set('Authorization', 'Bearer ' + this.Localtoken)
     return this.http.post(
-      // AUTH_API + 'api/Mou/MouActionTakenDocumentApproval',
       AUTH_API_LOCAs + 'api/Mou/MouActionTakenDocumentApproval',
       dataSoft,
       { headers }
     );
-    // // Create an HttpHeaders object with the Authorization header
-    // debugger;
-    // let headers = new HttpHeaders()
-    //   .set('Authorization', 'Bearer ' + this.authToken)
+  
   }
 
   MOUGetAllActivitiesAssigned(EmployeeCode: any): Observable<any> {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-      //.set('Authorization', 'Bearer ' + this.Localtoken)
       .set('Content-Type', 'application/json');
     return this.http.get(
-      // AUTH_API_LOCALs + 'api/Mou/GetAllActivitiesAssigned?Uid=' + EmployeeCode,
       AUTH_API + 'api/Mou/GetAllActivitiesAssigned?Uid=' + EmployeeCode,
       { headers }
     );
@@ -280,28 +230,21 @@ export class MouDocumentsService {
     //.set('Authorization', 'Bearer ' + this.Localtoken)
     return this.http.post(
       AUTH_API + 'api/Mou/MouUpdateSchoolInvolved',
-      //  'https://localhost:7125/api/Mou/MouUpdateSchoolInvolved',
       dataSoft,
       { headers });
-    // // Create an HttpHeaders object with the Authorization header
-    // debugger;
-    // let headers = new HttpHeaders()
-    //   .set('Authorization', 'Bearer ' + this.authToken)
+  
   }
 
   MouActivityandActionDetails(StartDate: any, endDate: any): Observable<any> {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-      //.set('Authorization', 'Bearer ' + this.Localtoken)
       .set('Content-Type', 'application/json');
     return this.http.get(
-      // AUTH_API + 'api/Mou/GetAllMouActivityAndActionDetails?StartDate=' + StartDate,
       AUTH_API_LOCAL + 'api/Mou/GetAllMouActivityAndActionDetails?StartDate=' + StartDate + '&EndDate=' + endDate,
-      // AUTH_API + 'api/Mou/GetAllMouActivityAndActionDetails?StartDate=' + StartDate+'&EndDate='+endDate,
       { headers }
     );
-  } //GetAllMouActivityAndActionDetails?StartDate=2024-08-01&EndDate=2024-08-10
+  } 
 
   GetAllMouActivities(): Observable<any> {
     let token = this.storageService.getUser();
@@ -309,7 +252,6 @@ export class MouDocumentsService {
       .set('Authorization', 'Bearer ' + token)
       .set('Content-Type', 'application/json');
     return this.http.get(
-      // AUTH_API + 'api/Mou/GetAllMouActivityCategories', { headers }
       AUTH_API_LOCAL + 'api/Mou/GetAllMouActivityCategories', { headers }
     );
   }
@@ -318,15 +260,11 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-    //.set('Authorization', 'Bearer ' + this.Localtoken)
     return this.http.post(
       AUTH_API_LOCAL + 'api/Mou/MOUActionPlanMaster',
       dataSoft,
       { headers });
-    // // Create an HttpHeaders object with the Authorization header
-    // debugger;
-    // let headers = new HttpHeaders()
-    //   .set('Authorization', 'Bearer ' + this.authToken)
+  
   }
 
 
@@ -334,7 +272,6 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-      //.set('Authorization', 'Bearer ' + this.Localtoken)
       .set('Content-Type', 'application/json');
     return this.http.get(AUTH_API + 'api/Mou/GetAllMouDocumentDetails', { headers });
   }
@@ -348,26 +285,17 @@ export class MouDocumentsService {
       AUTH_API_LOCAL + 'api/Mou/GetMouActivityActionTakenDetails?Mouid=' + Id,
       { headers }
     );
-    // const httpOptions = {
-    //   headers: new HttpHeaders({
-    //     'Authorization': `Bearer ${this.authToken}`
-    //   })
-    // };
-    // return this.http.get<any>(AUTH_API + 'Planning/GetSchoolDivisionsDepartment?Id=' + Id, httpOptions);
   }
   GetAllMouActivitiesForAdminAction(Session: any): Observable<any> {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-      //.set('Authorization', 'Bearer ' + this.Localtoken)
       .set('Content-Type', 'application/json');
     return this.http.get(
-      // AUTH_API + 'api/Mou/GetAllMouActivityAndActionDetails?StartDate=' + StartDate,
       AUTH_API_LOCAL + 'api/Mou/GetAllMouActivitiesForAdminAction?SessionId=' + Session,
-      // AUTH_API + 'api/Mou/GetAllMouActivityAndActionDetails?StartDate=' + StartDate+'&EndDate='+endDate,
       { headers }
     );
-  } //GetAllMouActivityAndActionDetails?StartDate=2024-08-01&EndDate=2024-08-10
+  } 
 
   GetAllMouActivitiesForExportToExcel(Uid: any): Observable<any> {
     let authToken = this.storageService.getUser();
@@ -376,7 +304,6 @@ export class MouDocumentsService {
       .set('Content-Type', 'application/json');
     return this.http.get(
       AUTH_API + 'api/Mou/GetAllMouActivitiesForExportToExcel?UID=' + Uid,
-      // AUTH_API_LOCALs + 'api/Mou/GetAllMouActivitiesForExportToExcel?UID=' + Uid,
       { headers }
     );
   }
@@ -386,11 +313,9 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-      //.set('Authorization', 'Bearer ' + this.Localtoken)
       .set('Content-Type', 'application/json');
     return this.http.get(
       AUTH_API + 'api/Mou/GetMouDocumentsToAssignActivity?Uid=' + EmployeeCode,
-      // AUTH_API + 'api/Mou/GetMouDocumentsToAssignActivity?Uid=' + EmployeeCode,
       { headers }
     );
   }
@@ -402,7 +327,6 @@ export class MouDocumentsService {
       .set('Authorization', 'Bearer ' + token)
       .set('Content-Type', 'application/json');
     return this.http.get(
-      // AUTH_API + 'api/LpuObpAutomation/GetAGetInstrumentChargesDetailsllSpecifications', { headers }
       AUTH_API + 'api/LpuObpAutomation/GetOBPPlannerSessions', { headers }
     );
   }
@@ -411,11 +335,9 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-      //.set('Authorization', 'Bearer ' + this.Localtoken)
       .set('Content-Type', 'application/json');
     return this.http.get(
       AUTH_API + 'api/Mou/GetAllActivitiesAssignedwithSession?Uid=' + EmployeeCode + '&SessionId=' + SessionId,
-      // 'https://localhost:7125/'+ 'api/Mou/GetAllActivitiesAssignedwithSession?Uid=' + EmployeeCode +'&SessionId='+SessionId,
 
       { headers }
     );
@@ -424,11 +346,9 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-      //.set('Authorization', 'Bearer ' + this.Localtoken)
       .set('Content-Type', 'application/json');
     return this.http.get(
       AUTH_API + 'api/Mou/GetMouDocumentsToAssignActivityWithSession?Uid=' + EmployeeCode + '&SessionId=' + SessionId,
-      // AUTH_API_LOCAL + 'api/Mou/GetAllMouActivityAndActionDetails?StartDate=' + StartDate+'&EndDate='+endDate,
       { headers }
     );
   }
@@ -439,7 +359,6 @@ export class MouDocumentsService {
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
     return this.http.post(
-      // AUTH_API_LOCAs + 'api/Mou/MouNewActivityPlan',
       AUTH_API + 'api/Mou/MouActivityPlanUpdateUID',
       DataToSend,
       { headers }
@@ -452,8 +371,6 @@ export class MouDocumentsService {
       .set('Authorization', 'Bearer ' + token)
       .set('Content-Type', 'application/json');
     return this.http.get(
-      // AUTH_API + 'api/LpuObpAutomation/GetAGetInstrumentChargesDetailsllSpecifications', { headers }
-      //  'https://localhost:7125/api/Mou/GetMouActivityProperties', { headers }
       AUTH_API + 'api/Mou/GetMouActivityProperties', { headers }
     );
   }
@@ -486,7 +403,22 @@ downloadMOUFile(fileUrl: string): Observable<Blob> {
       'Accept': '*/*',
       'Authorization': `Bearer ${token}`
     });
-    // return this.http.post(AUTH_API + 'api/Mou/DownloadMOUFiles/MOUDownloadFiles', payload, { headers: headers, responseType: 'blob' });
     return this.http.post(AUTH_API+'api/Mou/DownloadMOUFiles/MOUDownloadFiles', payload, { headers: headers, responseType: 'blob' });
+  }
+
+
+
+
+
+    MouReminderEmail(dataSoft: FormData): Observable<any> {
+    let authToken = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + authToken)
+    return this.http.post(
+      AUTH_API+ 'api/Mou/MouSendPendingReminderEmail',
+      dataSoft,
+      { headers }
+    );
+    
   }
 }
