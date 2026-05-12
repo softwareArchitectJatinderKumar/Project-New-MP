@@ -1,5 +1,5 @@
 
-import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbDateStruct, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute } from '@angular/router';
@@ -28,6 +28,279 @@ import { LpuPlannerServiceService } from 'src/app/_services/lpu-planner-service.
 })
 export class MouDocumentsUploadsComponent implements OnInit {
 
+// added on 12-May-26 
+@ViewChild('ChangeSchoolDivisionModal') ChangeSchoolDivisionModal: TemplateRef<any>;
+CurrentSchool: any;
+ mouForm: FormGroup;
+  mouId: any;
+  isRenewalMode: boolean = false;
+  renewalFile: File | null = null;
+  renewalFileBase64: string | null = null;
+  renewalFileName: string = '';
+  renewalFileError: string = '';
+  originalMouData: any = null;
+
+  
+  onInput2() {
+    const query = this.mouForm.get('lpuSpocName')?.value?.toLowerCase();
+
+    if (query && query.length >= 2) {
+      this.filteredEmployeesData = this.EmployeeData.filter(emp =>
+        emp.employeeName.toLowerCase().includes(query) ||
+        emp.employeeCode.toLowerCase().includes(query)
+      ).slice(0, 10); // Limit to top 10 for clean UI
+
+      this.showSuggestions = true;
+    } else {
+      this.showSuggestions = false;
+    }
+  }
+
+
+   selectEmployee2(employee: Employee) {
+    // This updates the variables used in your console.log/HTML
+    this.ResponsiblePerson = employee.employeeCode;
+    this.AssignedToUid = employee.employeeCode;
+    this.AssignedToUidName = employee.employeeName;
+
+    // IMPORTANT: This updates the Reactive Form state for the API
+    this.mouForm.patchValue({
+      lpuSpocName: employee.employeeName,
+      lpuSpocUid: employee.employeeCode // This ensures the UID is captured
+    });
+
+    // Update the separate search control if you are still using it
+    this.employeeControl.setValue(`${employee.employeeName} (${employee.employeeCode})`);
+
+    this.filteredEmployeesData = [];
+    this.showSuggestions = false;
+    this.checkUIDValidity();
+  }
+
+
+  
+  onRenewFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (!file) {
+      return;
+    }
+    
+    // Validate file type (PDF and Word documents only)
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    if (!allowedTypes.includes(file.type)) {
+      this.renewalFileError = 'Only PDF and Word documents are allowed.';
+      return;
+    }
+    
+    this.renewalFile = file;
+    this.renewalFileName = file.name;
+    this.renewalFileError = '';
+    
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      // Data URL format: "data:application/pdf;base64,<base64string>"
+      const base64Data = result.split(',')[1];
+      this.renewalFileBase64 = base64Data;
+    };
+    reader.readAsDataURL(file);
+  }
+
+    onSubmitModal(): void {
+    if (this.isRenewalMode) {
+      this.onSubmitRenew();
+    } 
+  }
+
+  onSubmitRenew(): void {
+    if (this.mouForm.invalid) {
+      this.mouForm.markAllAsTouched();
+      const invalidFields: string[] = [];
+      const controls = this.mouForm.controls;
+      for (const name in controls) {
+        if (controls[name].invalid) {
+          invalidFields.push(name);
+        }
+      }
+      swal.fire({
+        title: 'Validation Error',
+        html: `<p>Please fill in all required fields:</p><ul class="text-start">${invalidFields.map(f => `<li>${this.getFieldDisplayName(f)}</li>`).join('')}</ul>`,
+        icon: 'error'
+      });
+      return;
+    }
+    
+    if (!this.renewalFile) {
+      swal.fire('Error', 'Please upload a MOU document for renewal.', 'error');
+      return;
+    }
+    
+    if (!this.renewalFileBase64) {
+      swal.fire('Error', 'File is still being processed. Please try again.', 'error');
+      return;
+    }
+    
+    const val = this.mouForm.getRawValue();
+    
+    // Compute new MOU status based on dates
+    let newMouStatus = 'Active';
+    const today = new Date();
+    const startDate = val.startDate ? new Date(val.startDate) : null;
+    const endDate = val.isIndefinite ? null : (val.endDate ? new Date(val.endDate) : null);
+    
+    if (val.isIndefinite) {
+      newMouStatus = 'Active';
+    } else if (startDate) {
+      if (!endDate || (today >= startDate && today <= endDate)) {
+        newMouStatus = 'Active';
+      } else {
+        newMouStatus = 'Expired';
+      }
+    } else {
+      newMouStatus = 'Expired';
+    }
+    
+    // Prepare FormData for new MOU upload
+    const formData = new FormData();
+
+    formData.append('UID', this.EmployeeCode);
+    formData.append('MasterMouId', this.mouId);
+    formData.append('RenewalRemark', val.remarks);
+    // formData.append('MouTitle', val.mouOrganisation);
+    // formData.append('MouPartnerName', val.mouOrganisation);
+    // formData.append('FacultyName', this.EmployeeName);
+    formData.append('FilePath', this.renewalFileName);
+    formData.append('File', this.renewalFileBase64);
+    formData.append('MouStartDate', val.startDate);
+    formData.append('MouEndDate', val.endDate);
+    formData.append('MouStatus', newMouStatus);
+    formData.append('SchoolDivisionInvolved', val.selectedDivisions.join(','));
+    formData.append('SPOCName', val.spocName);
+    formData.append('SPOCEmailId', val.spocEmail);
+    formData.append('SPOCContactNo', val.spocContact);
+    formData.append('LPUSpocName', val.lpuSpocName);
+    formData.append('LPUSpocUID', val.lpuSpocUid);
+    formData.append('LPUSpocEmail', val.lpuSpocEmail);
+    formData.append('SessionId', '18');
+   
+    formData.append('CreatedBy', this.EmployeeCode);
+     
+    swal.fire({
+      title: 'Renew MOU',
+      text: 'Are you sure you want to renew this MOU? This will create a new MOU and mark the old one as Renewed.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, renew MOU',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.value) {
+        this.mouDocumentsService.MouRenewalDetails(formData).subscribe({
+          next: (data: any) => {
+            const resultMsg = data.item1 && data.item1.length > 0 ? data.item1[0].msg : data.responseData;
+            if (resultMsg === 'success' ) {
+             swal.fire('Success', 'Renewed MOU.', 'success');
+            } else if( data.responseData == 'Failed') {
+              swal.fire('Error', 'Failed to create new MOU. Please try again.', 'error');
+            }
+          },
+          error: (err) => {
+            swal.fire('Error', 'Failed to upload new MOU document.', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  // Helper for Template to check validation
+  isInvalid(controlName: string): boolean {
+    const control = this.mouForm.get(controlName);
+    return !!(control && control.invalid && (control.dirty || control.touched));
+  }
+
+  // Helper to get display name for form fields
+  getFieldDisplayName(fieldName: string): string {
+    const fieldNames: { [key: string]: string } = {
+      'mouOrganisation': 'Partner Organisation Name',
+      'selectedDivisions': 'Divisions Involved',
+      'startDate': 'Start Date',
+      'endDate': 'End Date',
+      'spocName': 'SPOC Name',
+      'spocEmail': 'SPOC Email',
+      'spocContact': 'SPOC Contact',
+      'lpuSpocName': 'LPU SPOC Name',
+      'lpuSpocUid': 'LPU SPOC UID',
+      'remarks': 'Renew Remarks',
+      'mouid': 'Original Mouid',
+      'lpuSpocEmail': 'LPU SPOC Email'
+    };
+    return fieldNames[fieldName] || fieldName;
+  }
+
+initForm() {
+    this.mouForm = this.fb.group({
+      mouId: [{ value: '', disabled: true }], // Locked field
+      selectedDivisions: [[], [Validators.required]],
+      mouOrganisation: ['', [Validators.required, Validators.minLength(3)]],
+      startDate: ['', [Validators.required]],
+      endDate: [''],
+      isIndefinite: [false],
+      spocName: ['', [Validators.required]],
+      spocEmail: ['', [Validators.required, Validators.email]],
+      spocContact: [''],
+      lpuSpocName: ['', [Validators.required]], // Internal SPOC Name
+      lpuSpocUid: ['', [Validators.required]],  // Internal SPOC UID
+      lpuSpocEmail: ['', [Validators.required, Validators.email]] ,// Internal SPOC Email
+      remarks: ['', [Validators.required]] // Internal SPOC Email
+    });
+  }
+
+
+  openRenewModal(row: any): void {
+    this.isRenewalMode = true;
+    this.showSuggestions = false;
+    this.filteredEmployeesData = [];
+    this.originalMouData = { ...row };
+    
+    // Reset file upload fields
+    this.renewalFile = null;
+    this.renewalFileBase64 = null;
+    this.renewalFileName = '';
+    this.renewalFileError = '';
+    
+    // Populate form with existing MOU data
+    this.mouForm.patchValue({
+      mouId: row.id,
+      selectedDivisions: row.schoolDivisionInvolved ? row.schoolDivisionInvolved.split(',') : [],
+      mouOrganisation: row.mouPartnerName,
+      startDate: this.formatDate(row.mouStartDate),
+      endDate: this.formatDate(row.mouEndDate),
+      isIndefinite: row.mouStatus === 'Active' && !row.mouEndDate,
+      spocName: row.spocName,
+      spocEmail: row.spocEmailId,
+      spocContact: row.spocContactNo,
+      lpuSpocName: row.lpuSpocName,
+      lpuSpocUid: row.lpuSpocUID,
+      lpuSpocEmail: row.lpuSpocEmail
+    });
+    
+    // Set display variables
+    this.mouId = row.id;
+    this.AssignedToUid = row.lpuSpocUID;
+    this.AssignedToUidName = row.lpuSpocName;
+    this.moustatus = row.mouStatus;
+    this.MouStartDate = row.mouStartDate;
+    this.MouEndDate = row.mouEndDate;
+    this.isIndefiniteMou = row.mouStatus === 'Active' && !row.mouEndDate;
+    this.CurrentSchool = row.schoolDivisionInvolved;
+    
+    this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'lg', backdrop: 'static' }).result.then(() => {
+      // Modal closed
+    }).catch(() => {});
+  }
 
   // Logic added start on 24-Nov-25
   IdX: any;
@@ -192,7 +465,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
   constructor(
     private lpuPlannerServiceService: LpuPlannerServiceService,
     private storageService: StorageService, private mouDocumentsService: MouDocumentsService,
-    private authService: AuthService,
+    private authService: AuthService, private modalService: NgbModal,
     public formBuilder: UntypedFormBuilder, private route: ActivatedRoute,
     private fb: FormBuilder) { }
 
@@ -215,6 +488,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
   getToken(id: string): void {
     this.authService.loginTemp(id).subscribe({
       next: data => {
+        this.initForm();
         this.storageService.saveUser(data);
         this.GetEmployeeDetails();
         this.GetAllActivities();
@@ -263,7 +537,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
           this.Email = response.item1[0].email;
-          this.EmployeeCode = response.item1[0].employeeCode;
+          this.EmployeeCode =  response.item1[0].employeeCode;
           this.OfficialEmailId = response.item1[0].officialEmailId;
           this.ContactNoX = response.item1[0].contactNo;
           this.Department = response.item1[0].department;

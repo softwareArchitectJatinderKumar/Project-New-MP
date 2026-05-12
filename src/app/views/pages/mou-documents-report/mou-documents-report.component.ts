@@ -53,6 +53,8 @@ export class MouDocumentsReportComponent implements OnInit {
       'spocContact': 'SPOC Contact',
       'lpuSpocName': 'LPU SPOC Name',
       'lpuSpocUid': 'LPU SPOC UID',
+      'remarks': 'Renew Remarks',
+      'mouid': 'Original Mouid',
       'lpuSpocEmail': 'LPU SPOC Email'
     };
     return fieldNames[fieldName] || fieldName;
@@ -167,6 +169,36 @@ export class MouDocumentsReportComponent implements OnInit {
     setTimeout(() => this.showSuggestions = false, 200);
   }
 
+  onRenewFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (!file) {
+      return;
+    }
+    
+    // Validate file type (PDF and Word documents only)
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    if (!allowedTypes.includes(file.type)) {
+      this.renewalFileError = 'Only PDF and Word documents are allowed.';
+      return;
+    }
+    
+    this.renewalFile = file;
+    this.renewalFileName = file.name;
+    this.renewalFileError = '';
+    
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      // Data URL format: "data:application/pdf;base64,<base64string>"
+      const base64Data = result.split(',')[1];
+      this.renewalFileBase64 = base64Data;
+    };
+    reader.readAsDataURL(file);
+  }
 
   checkUIDValidity(): void {
     this.uploadEnabled = this.IdX !== '' && this.AssignedToUid != '';
@@ -218,6 +250,12 @@ export class MouDocumentsReportComponent implements OnInit {
   columns: any;
   headHtmlData: any[] = [];
   mouId: any;
+  isRenewalMode: boolean = false;
+  renewalFile: File | null = null;
+  renewalFileBase64: string | null = null;
+  renewalFileName: string = '';
+  renewalFileError: string = '';
+  originalMouData: any = null;
 
 
   constructor(
@@ -704,11 +742,13 @@ export class MouDocumentsReportComponent implements OnInit {
       spocContact: [''],
       lpuSpocName: ['', [Validators.required]], // Internal SPOC Name
       lpuSpocUid: ['', [Validators.required]],  // Internal SPOC UID
-      lpuSpocEmail: ['', [Validators.required, Validators.email]] // Internal SPOC Email
+      lpuSpocEmail: ['', [Validators.required, Validators.email]] ,// Internal SPOC Email
+      remarks: ['', [Validators.required]] // Internal SPOC Email
     });
   }
 
   ChangeSchool(data: any) {
+    this.isRenewalMode = false;
     this.showSuggestions = false;
     this.filteredEmployeesData = [];
     this.mouForm.patchValue({
@@ -766,6 +806,49 @@ export class MouDocumentsReportComponent implements OnInit {
     this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'lg', backdrop: 'static' }).result.then((result) => {
       // console.log("Modal closed" + result);
     }).catch((res) => { });
+  }
+
+  openRenewModal(row: any): void {
+    this.isRenewalMode = true;
+    this.showSuggestions = false;
+    this.filteredEmployeesData = [];
+    this.originalMouData = { ...row };
+    
+    // Reset file upload fields
+    this.renewalFile = null;
+    this.renewalFileBase64 = null;
+    this.renewalFileName = '';
+    this.renewalFileError = '';
+    
+    // Populate form with existing MOU data
+    this.mouForm.patchValue({
+      mouId: row.id,
+      selectedDivisions: row.schoolDivisionInvolved ? row.schoolDivisionInvolved.split(',') : [],
+      mouOrganisation: row.mouPartnerName,
+      startDate: this.formatDate(row.mouStartDate),
+      endDate: this.formatDate(row.mouEndDate),
+      isIndefinite: row.mouStatus === 'Active' && !row.mouEndDate,
+      spocName: row.spocName,
+      spocEmail: row.spocEmailId,
+      spocContact: row.spocContactNo,
+      lpuSpocName: row.lpuSpocName,
+      lpuSpocUid: row.lpuSpocUID,
+      lpuSpocEmail: row.lpuSpocEmail
+    });
+    
+    // Set display variables
+    this.mouId = row.id;
+    this.AssignedToUid = row.lpuSpocUID;
+    this.AssignedToUidName = row.lpuSpocName;
+    this.moustatus = row.mouStatus;
+    this.MouStartDate = row.mouStartDate;
+    this.MouEndDate = row.mouEndDate;
+    this.isIndefiniteMou = row.mouStatus === 'Active' && !row.mouEndDate;
+    this.CurrentSchool = row.schoolDivisionInvolved;
+    
+    this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'lg', backdrop: 'static' }).result.then(() => {
+      // Modal closed
+    }).catch(() => {});
   }
 
   // 4. Final Update Submission
@@ -832,6 +915,149 @@ export class MouDocumentsReportComponent implements OnInit {
     });
   }
 
+  onSubmitModal(): void {
+    if (this.isRenewalMode) {
+      this.onSubmitRenew();
+    } else {
+      this.onSubmitUpdate();
+    }
+  }
+
+  onSubmitRenew(): void {
+    if (this.mouForm.invalid) {
+      this.mouForm.markAllAsTouched();
+      const invalidFields: string[] = [];
+      const controls = this.mouForm.controls;
+      for (const name in controls) {
+        if (controls[name].invalid) {
+          invalidFields.push(name);
+        }
+      }
+      swal.fire({
+        title: 'Validation Error',
+        html: `<p>Please fill in all required fields:</p><ul class="text-start">${invalidFields.map(f => `<li>${this.getFieldDisplayName(f)}</li>`).join('')}</ul>`,
+        icon: 'error'
+      });
+      return;
+    }
+    
+    if (!this.renewalFile) {
+      swal.fire('Error', 'Please upload a MOU document for renewal.', 'error');
+      return;
+    }
+    
+    if (!this.renewalFileBase64) {
+      swal.fire('Error', 'File is still being processed. Please try again.', 'error');
+      return;
+    }
+    
+    const val = this.mouForm.getRawValue();
+    
+    // Compute new MOU status based on dates
+    let newMouStatus = 'Active';
+    const today = new Date();
+    const startDate = val.startDate ? new Date(val.startDate) : null;
+    const endDate = val.isIndefinite ? null : (val.endDate ? new Date(val.endDate) : null);
+    
+    if (val.isIndefinite) {
+      newMouStatus = 'Active';
+    } else if (startDate) {
+      if (!endDate || (today >= startDate && today <= endDate)) {
+        newMouStatus = 'Active';
+      } else {
+        newMouStatus = 'Expired';
+      }
+    } else {
+      newMouStatus = 'Expired';
+    }
+    
+    // Prepare FormData for new MOU upload
+    const formData = new FormData();
+
+    formData.append('UID', this.EmployeeCode);
+    formData.append('MasterMouId', this.mouId);
+    formData.append('RenewalRemark', val.remarks);
+    // formData.append('MouTitle', val.mouOrganisation);
+    // formData.append('MouPartnerName', val.mouOrganisation);
+    // formData.append('FacultyName', this.EmployeeName);
+    formData.append('FilePath', this.renewalFileName);
+    formData.append('File', this.renewalFileBase64);
+    formData.append('MouStartDate', val.startDate);
+    formData.append('MouEndDate', val.endDate);
+    formData.append('MouStatus', newMouStatus);
+    formData.append('SchoolDivisionInvolved', val.selectedDivisions.join(','));
+    formData.append('SPOCName', val.spocName);
+    formData.append('SPOCEmailId', val.spocEmail);
+    formData.append('SPOCContactNo', val.spocContact);
+    formData.append('LPUSpocName', val.lpuSpocName);
+    formData.append('LPUSpocUID', val.lpuSpocUid);
+    formData.append('LPUSpocEmail', val.lpuSpocEmail);
+    formData.append('SessionId', '18');
+   
+    formData.append('CreatedBy', this.EmployeeCode);
+     
+    swal.fire({
+      title: 'Renew MOU',
+      text: 'Are you sure you want to renew this MOU? This will create a new MOU and mark the old one as Renewed.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, renew MOU',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.value) {
+        this.mouDocumentsService.MouRenewalDetails(formData).subscribe({
+          next: (data: any) => {
+            const resultMsg = data.item1 && data.item1.length > 0 ? data.item1[0].msg : data.responseData;
+            if (resultMsg === 'success' || data.responseData !== 'FAILED') {
+              this.updateOldMouStatus(this.mouId, 'Renewed');
+            } else {
+              swal.fire('Error', 'Failed to create new MOU. Please try again.', 'error');
+            }
+          },
+          error: (err) => {
+            swal.fire('Error', 'Failed to upload new MOU document.', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  updateOldMouStatus(oldId: any, newStatus: string): void {
+    if (!this.originalMouData) {
+      window.location.reload();
+      return;
+    }
+    
+    const orig = this.originalMouData;
+    const formData = new FormData();
+    formData.append('Id', oldId);
+    formData.append('SchoolInvolved', orig.schoolDivisionInvolved);
+    formData.append('MouStartDate', orig.mouStartDate);
+    formData.append('MouEndDate', orig.mouEndDate);
+    formData.append('MouStatus', newStatus);
+    formData.append('SPOCPerson', orig.spocName);
+    formData.append('SPOCContact', orig.spocContactNo);
+    formData.append('SPOCEmail', orig.spocEmailId);
+    formData.append('MouOrganisation', orig.mouPartnerName);
+    formData.append('LPUSpocName', orig.lpuSpocName);
+    formData.append('LPUSpocUID', orig.lpuSpocUID);
+    formData.append('LPUSpocEmail', orig.lpuSpocEmail);
+    
+    this.mouDocumentsService.UpdateSchoolDivision(formData).subscribe({
+      next: (data: any) => {
+        if (data.responseData === 'FAILED') {
+          swal.fire('Warning', 'New MOU created but failed to update old MOU status to Renewed.', 'warning');
+        } else {
+          swal.fire('Success', 'MOU renewed successfully! Old MOU marked as Renewed.', 'success');
+        }
+        window.location.reload();
+      },
+      error: (err) => {
+        swal.fire('Warning', 'New MOU created but failed to update old MOU status.', 'warning');
+        window.location.reload();
+      }
+    });
+  }
 
   ChangeUpdateSchoolDivision(Id: any, School: any, StartDate: any, EndDate: any, Status: any, SPName: any, SPContact: any, SPEmail: any, MouOrganisation: any) {
     // alert(MouOrganisation)

@@ -222,13 +222,22 @@
                                     </ng-container>
                                 </ng-template>
                             </ngx-datatable-column>
+                            
+                            <ngx-datatable-column *ngIf="statusFilter=='expired'" name="Renew MOU" [sortable]="false" prop="Id">
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                    <a class="btn btn-success me-4" (click)="openRenewModal(row)">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </a>
+                                </ng-template>
+                            </ngx-datatable-column>
+                 
                             <ngx-datatable-column name="Approval Status" [sortable]="false" prop="Id">
                                 <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                     ngx-datatable-cell-template>
                                     <ng-container
                                         *ngIf="row.isApproved == 1 || row.isApproved == 'True'; else OtherCheck">
                                         <div>Approved
-                                            <!-- By {{ row.approvedBy }} -->
+                                             
                                         </div>
                                     </ng-container>
                                     <ng-template #OtherCheck>
@@ -296,7 +305,7 @@
 
 <ng-template #ChangeSchoolDivisionModal let-modal>
     <div class="modal-header bg-dark text-white">
-        <h5 class="modal-title">MOU Update: MOU/{{mouId}}</h5>
+        <h5 class="modal-title">{{isRenewalMode ? 'Renew MOU - ' + mouId : 'MOU Update: MOU/' + mouId}}</h5>
         <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
     </div>
 
@@ -344,6 +353,10 @@
                     <div class="col-md-2 text-start">
                         <span class="badge w-20 p-2"
                             [ngClass]="moustatus === 'Active' ? 'bg-success' : 'bg-danger'">{{moustatus}}</span>
+                    </div>
+                    <div class="col-md-2 text-start" *ngIf="isRenewalMode">
+                        <label class="small fw-bold">Renewal Remarks</label>
+                        <input type="text" class="form-control" formControlName="remarks" >
                     </div>
                 </div>
             </div>
@@ -416,6 +429,15 @@
             </div>
         </div>
 
+        <div class="card mb-4 shadow-sm" *ngIf="isRenewalMode">
+            <div class="card-body py-2">
+                <label class="form-label fw-bold small">Upload New MOU Document</label>
+                <input type="file" class="form-control" (change)="onRenewFileSelected($event)" accept=".pdf,.doc,.docx" />
+                <small class="text-muted" *ngIf="renewalFileName">{{renewalFileName}}</small>
+                <div *ngIf="renewalFileError" class="text-danger small">{{renewalFileError}}</div>
+            </div>
+        </div>
+        
         <!-- <div class="card shadow-sm border-0 bg-white">
             <div class="card-body">
                 <h6 class="text-primary fw-bold mb-3 border-bottom pb-2">
@@ -462,8 +484,8 @@
 
     <div class="modal-footer justify-content-center border-0 pb-4">
         <button type="button" class="btn btn-secondary px-4" (click)="modal.dismiss()">Cancel</button>
-        <button type="button" class="btn btn-dark px-4" (click)="onSubmitUpdate()">
-            <i class="bi bi-cloud-upload me-1"></i> Save Changes
+        <button type="button" class="btn btn-dark px-4" (click)="onSubmitModal()">
+            <i class="bi bi-cloud-upload me-1"></i> {{isRenewalMode ? 'Renew MOU' : 'Save Changes'}}
         </button>
     </div>
 </ng-template>

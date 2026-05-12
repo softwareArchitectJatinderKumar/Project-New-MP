@@ -36,6 +36,15 @@ export class MouDocumentsService {
     );
   }
 
+    MouRenewalDetails(dataSoft: FormData): Observable<any> {
+    let authToken = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + authToken)
+    return this.http.post( 'https://localhost:7135/api/Mou/MouRenewalInsertNewRecord', dataSoft, { headers }
+    // return this.http.post( 'https://localhost:7135/api/Mou/MouRenewalInsertNewRecord', dataSoft, { headers }
+    );
+  }
+
 
   MouDocumentUpload(dataSoft: FormData): Observable<any> {
     let authToken = this.storageService.getUser();
