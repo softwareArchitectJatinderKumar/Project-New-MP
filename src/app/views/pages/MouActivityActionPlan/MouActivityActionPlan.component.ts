@@ -34,6 +34,107 @@ interface SchoolDivision {
 })
 export class MouActivityActionPlanComponent implements OnInit {
 
+
+  // Added on 14-May-25
+  
+    statusFilter: string = 'all';
+    searchQuery: any = '';
+  
+    @ViewChild('ViewRenewedMouDetailsModal') ViewRenewedMouDetailsModal: TemplateRef<any>;
+    renewedMouDocumentDetails: any[] = [];
+ 
+    onStatusChange(event: any): void {
+      this.applyFilters();
+    }
+  
+    applyFilters(): void {
+      // First filter by status
+      let filtered = this.MouActivityAssignedMeMaster.filter(item => {
+        if (this.statusFilter === 'all') {
+          return true;
+        }
+  
+        if (this.statusFilter === 'active') {
+          return item.mouStatus === 'Active';
+        } else if (this.statusFilter === 'expired') {
+          return item.mouStatus === 'Expired' && item.renewalCount == null && item.renewalCount != 0  ;
+        } else if (this.statusFilter === 'renewed') {
+          return item.renewalCount > 0 || item.renewalCount !== 'null' && item.renewalCount !== null && item.renewalCount !== undefined && item.renewalCount !== '0';
+        }
+        return true;
+      });
+  
+      // Then apply search filter if exists
+      const query = this.searchQuery.trim().toLowerCase();
+      if (query) {
+        filtered = filtered.filter(item => {
+          return Object.entries(item).some(([key, val]) => {
+            if (val !== null && val !== undefined) {
+              let valueString = String(val).toLowerCase();
+  
+              // Special handling for mouid (Numeric & "MOU/x" String Comparison)
+              if (key === 'id') {
+                const numericId = Number(val);
+                if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
+                  return true;
+                }
+              }
+  
+              // General search for all other fields
+              return valueString.includes(query);
+            }
+            return false;
+          });
+        });
+      }
+  
+      // this.filteredMouActivityAssignedMeMaster = filtered;
+      this.filteredMouActivityAssignedMe = filtered;
+    }
+  
+    getActiveCount(): number {
+      return this.MouActivityAssignedMeMaster.filter(item => {
+        return item.mouStatus === 'Active';
+      }).length;
+    }
+  
+    getExpiredCount(): number {
+      return this.MouActivityAssignedMeMaster.filter(item => {
+        return item.mouStatus === 'Expired';
+      }).length;
+    }
+    getRenewedCount(): number {
+      return this.MouActivityAssignedMeMaster.filter(item => {
+        return item.renewalCount >0  || item.renewalCount != null && item.renewalCount !== undefined && item.renewalCount !== '0' && item.renewalCount !== 'null';
+      }).length;
+    }
+  
+    OpenAllMouRenewalHistory(row: any): void {
+      this.mouId = row.id;
+      this.getRenewedMouDetails(row.id);
+       this.modalService.open(this.ViewRenewedMouDetailsModal, { size: 'lg', backdrop: 'static' }).result.then(() => {
+        // Modal closed
+      }).catch(() => { 
+        window.location.reload()
+  
+      });
+    }
+  
+   
+  
+    getRenewedMouDetails(mouId: any): void {
+      this.mouDocumentsService.GetRenewedMouDetails(mouId).subscribe((response) => {
+        if (response.item1.length > 0) {
+          this.renewedMouDocumentDetails = response.item1;
+        } else {
+          this.renewedMouDocumentDetails = [];
+        }
+      });
+    }
+  
+  
+
+
   @ViewChild('ngSelectComponent') ngSelectComponent: NgSelectComponent;
   @ViewChild('viewDescModal') viewDescModal: TemplateRef<any>;
   @ViewChild('viewActivityActionTakenModalAll') viewActivityActionTakenModalAll: TemplateRef<any>;
@@ -165,7 +266,7 @@ export class MouActivityActionPlanComponent implements OnInit {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
-          this.EmployeeCode =  response.item1[0].employeeCode; // // Hardcoded as per original
+          this.EmployeeCode = response.item1[0].employeeCode; // // Hardcoded as per original
           this.ContactNoX = response.item1[0].contactNo;
           this.Department = response.item1[0].department;
           this.DepartmentName = response.item1[0].departmentName;

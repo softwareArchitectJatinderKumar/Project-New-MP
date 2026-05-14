@@ -21,12 +21,146 @@ import { UntypedFormGroup, UntypedFormBuilder } from '@angular/forms';
 import swal from 'sweetalert2';
 import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
 import { LpuPlannerServiceService } from 'src/app/_services/lpu-planner-service.service';
+import { ColumnMode } from '@swimlane/ngx-datatable';
 @Component({
   selector: 'app-mou-documents-uploads',
   templateUrl: './mou-documents-uploads.component.html',
   styleUrls: ['./mou-documents-uploads.component.scss']
 })
 export class MouDocumentsUploadsComponent implements OnInit {
+
+
+  // Added on 14-May-25
+
+  statusFilter: string = 'all';
+  searchQuery: any = '';
+
+  @ViewChild('ViewRenewedMouDetailsModal') ViewRenewedMouDetailsModal: TemplateRef<any>;
+  renewedMouDocumentDetails: any[] = [];
+  ColumnMode = ColumnMode;
+  columns: any;
+
+  onStatusChange(event: any): void {
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    // First filter by status
+    let filtered = this.MouDocumentsData.filter(item => {
+      if (this.statusFilter === 'all') {
+        return true;
+      }
+
+      if (this.statusFilter === 'active') {
+        return item.mouStatus === 'Active';
+      } else if (this.statusFilter === 'expired') {
+        return item.mouStatus === 'Expired' && item.renewalCount == null && item.renewalCount != 0  ;
+      } else if (this.statusFilter === 'renewed') {
+        return item.renewalCount > 0 || item.renewalCount !== 'null' && item.renewalCount !== null && item.renewalCount !== undefined && item.renewalCount !== '0';
+      }
+      return true;
+    });
+
+    // Then apply search filter if exists
+    const query = this.searchQuery.trim().toLowerCase();
+    if (query) {
+      filtered = filtered.filter(item => {
+        return Object.entries(item).some(([key, val]) => {
+          if (val !== null && val !== undefined) {
+            let valueString = String(val).toLowerCase();
+
+            // Special handling for mouid (Numeric & "MOU/x" String Comparison)
+            if (key === 'id') {
+              const numericId = Number(val);
+              if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
+                return true;
+              }
+            }
+
+            // General search for all other fields
+            return valueString.includes(query);
+          }
+          return false;
+        });
+      });
+    }
+
+    this.filteredMouDocumentsData = filtered;
+  }
+
+  getActiveCount(): number {
+    return this.MouDocumentsData.filter(item => {
+      return item.mouStatus === 'Active';
+    }).length;
+  }
+
+  getExpiredCount(): number {
+    return this.MouDocumentsData.filter(item => {
+      return item.mouStatus === 'Expired';
+    }).length;
+  }
+  getRenewedCount(): number {
+    return this.MouDocumentsData.filter(item => {
+      return item.renewalCount >0  || item.renewalCount != null && item.renewalCount !== undefined && item.renewalCount !== '0' && item.renewalCount !== 'null';
+    }).length;
+  }
+
+   onDownloadFile(remoteUrl: string): void {
+      swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); }});
+  
+      this.mouDocumentsService.downloadMOUFile(remoteUrl).subscribe({
+        next: (blob: Blob) => {
+          const downloadUrl = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+  
+          const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+          link.download = fileName;
+  
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(downloadUrl);
+  
+          swal.close();
+        },
+        error: async (err) => {
+          swal.close();
+          if (err.error instanceof Blob) {
+            const errorMsg = JSON.parse(await err.error.text());
+            swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+          } else {
+            swal.fire('Error', 'Could not connect to the server', 'error');
+          }
+        }
+      });
+    }
+
+  OpenAllMouRenewalHistory(row: any): void {
+    this.mouId = row.id;
+    this.getRenewedMouDetails(row.id);
+     this.modalService.open(this.ViewRenewedMouDetailsModal, { size: 'lg', backdrop: 'static' }).result.then(() => {
+      // Modal closed
+    }).catch(() => { 
+      window.location.reload()
+
+    });
+  }
+
+ 
+
+  getRenewedMouDetails(mouId: any): void {
+    this.mouDocumentsService.GetRenewedMouDetails(mouId).subscribe((response) => {
+      if (response.item1.length > 0) {
+        this.renewedMouDocumentDetails = response.item1;
+      } else {
+        this.renewedMouDocumentDetails = [];
+      }
+    });
+  }
+
+
+
 
 // added on 12-May-26 
 @ViewChild('ChangeSchoolDivisionModal') ChangeSchoolDivisionModal: TemplateRef<any>;
@@ -185,7 +319,6 @@ CurrentSchool: any;
     formData.append('LPUSpocName', val.lpuSpocName);
     formData.append('LPUSpocUID', val.lpuSpocUid);
     formData.append('LPUSpocEmail', val.lpuSpocEmail);
-    formData.append('SessionId', '18');
    
     formData.append('CreatedBy', this.EmployeeCode);
      
@@ -203,8 +336,10 @@ CurrentSchool: any;
             const resultMsg = data.item1 && data.item1.length > 0 ? data.item1[0].msg : data.responseData;
             if (resultMsg === 'success' ) {
              swal.fire('Success', 'Renewed MOU.', 'success');
+             window.location.reload();
             } else if( data.responseData == 'Failed') {
               swal.fire('Error', 'Failed to create new MOU. Please try again.', 'error');
+              window.location.reload();
             }
           },
           error: (err) => {
@@ -213,6 +348,7 @@ CurrentSchool: any;
         });
       }
     });
+    
   }
 
   // Helper for Template to check validation
@@ -299,7 +435,9 @@ initForm() {
     
     this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'lg', backdrop: 'static' }).result.then(() => {
       // Modal closed
-    }).catch(() => {});
+    }).catch(() => {
+
+    });
   }
 
   // Logic added start on 24-Nov-25
@@ -830,27 +968,7 @@ initForm() {
       });
     });
 
-    // this.filteredMouDocumentsData = this.MouDocumentsData.filter(document => {
-    //   if (lowerCaseFilter.includes("approve")) {
-    //     if (lowerCaseFilter.includes("disapprove")) {
-    //       return document.isApproved || (document.disapprovalReason && document.isApproved === false);
-    //     } else {
-    //       return document.isApproved;
-    //     }
-    //   } else if (lowerCaseFilter.includes("disapprove")) {
-    //     return document.disapprovalReason && document.isApproved === false;
-    //   }
-
-    //   const mouMatch = lowerCaseFilter.match(/^mou\/(\d+)$/);
-    //   if (mouMatch) {
-    //     const mouId = parseInt(mouMatch[1], 10);
-    //     return document.id === mouId;
-    //   }
-
-    //   return Object.values(document).some(value =>
-    //     String(value).toLowerCase().includes(lowerCaseFilter)
-    //   );
-    // });
+ 
   }
 
 
@@ -943,80 +1061,7 @@ initForm() {
     link.click();
   }
 
-  // exportToExcel(): void {
-  //   const fileName = 'Mou_Document_report.xlsx';
-  //   const exportedData = this.MouDocumentsData.map(item => ({
-  //     MOUId: "MOU/" + item.id,
-  //     'Mou Partner Name': item.mouPartnerName,
-  //     'Mou Start Date': item.mouStartDate==null?'NA':item.mouStartDate,
-  //     'Mou End Date': item.mouEndDate==null?'NA': item.mouEndDate,
-  //     'Mou Status': item.mouStatus==null?'NA': item.mouStatus,
-  //     // EmployeeName: item.facultyName,
-  //     'SPOC Person Name ': item.spocName,
-  //     'SPOC Person Email': item.spocEmailId,
-  //     'SPOC Person Contact': item.spocContactNo,
-  //     'School Division Involved Id ': item.schoolDivisionInvolved,
-  //     'MOU Uploaded By Faculty Name': item.createdBy,
-  //     'MOU Uploaded By Faculty UID': item.createdBy,
-  //     'School Division Involved ': this.getDivisionNamesByIdss(item.schoolDivisionInvolved.split(',').map(Number)),
-  //     'Approval Status': item.disapprovalReason == null && item.isApproved == 1 ? 'Approved' : item.disapprovalReason?.length > 10 && item.isApproved == 0 ? 'Disapproved' : 'Pending',
-  //     'Date of MOU Uploaded at Interface': new Date(item.createdOn).toLocaleDateString('en-GB', {
-  //       day: '2-digit',
-  //       month: 'short',
-  //       year: 'numeric'
-  //     }).replace(/ /g, '-')
-  //   }));
-
-
-  //   const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
-
-  //   const wscols = [
-  //     { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 180 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }
-  //   ];
-  //   ws['!cols'] = wscols;
-
-  //   const wb: XLSX.WorkBook = XLSX.utils.book_new();
-  //   XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-  //   const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-  //   const link = document.createElement('a');
-  //   link.href = URL.createObjectURL(new Blob([blobData], { type: 'application/octet-stream' }));
-  //   link.download = fileName;
-  //   link.click();
-  // }
-
-  // exportToExcel(): void {
-
-  //   const fileName = 'Mou_UploadDocument_report.xlsx';
-  //   const exportedData = this.filteredMouDocumentsData.map(item => ({
-  //     MOUId: "MOU/" + item.id,
-  //     Employee: item.facultyName,
-  //     DivisionInvolved:  this.getSchoolDivisionNames(item.schoolDivisionInvolved),
-  //     UploadedBy: item.createdBy,
-  //     ApprovalStatus: item.disapprovalReason == null && item.isApproved == 1 ? 'Approved' : item.disapprovalReason?.length > 10 && item.isApproved == 0 ? 'Disapproved' : 'Pending',
-  //     MouPartnerOrganisation: item.mouPartnerName,
-  //     UploadedOn: new Date(item.createdOn).toLocaleDateString('en-GB', {
-  //       day: '2-digit',
-  //       month: 'short',
-  //       year: 'numeric'
-  //     }).replace(/ /g, '-')
-  //   }));
-
-  //   const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
-
-  //   const wscols = [
-  //     { wpx: 100 }, { wpx: 150 }, { wpx: 200 }, { wpx: 150 }, { wpx: 100 }, { wpx: 200 }, { wpx: 100 }
-  //   ];
-  //   ws['!cols'] = wscols;
-
-  //   const wb: XLSX.WorkBook = XLSX.utils.book_new();
-  //   XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-  //   const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-  //   const link = document.createElement('a');
-  //   link.href = URL.createObjectURL(new Blob([blobData], { type: 'application/octet-stream' }));
-  //   link.download = fileName;
-  //   link.click();
-  // }
-
+ 
   formatDate(date: Date): string {
     const DateX = new Date(date).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
     return DateX;

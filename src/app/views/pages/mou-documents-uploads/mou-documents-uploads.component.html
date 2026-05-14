@@ -28,385 +28,447 @@
         </div>
 
     </div>
-    <div class="container-fluid grid-margin stretch-card">
-        <div class="card ">
-            <div class="card-body ">
-                <div class="container-fluid">
-                    <form #myForm="ngForm" (ngSubmit)="UploadDocument()">
 
 
-                        <div class="row mb-4 mt-4">
-                            <div class="col-3 "><label class=" form-label"> MOU Partner
-                                    Organisation Name </label></div>
-                            <div class="col-3">
-                                <input type="text" class="form-control w-10 text-dark" name="MouPartner"
-                                    [style]="{ width: '89%' }" autocomplete="off" placeholder="Provide MOU Partner Name"
-                                    required ngModel #mouPartner="ngModel" [(ngModel)]="MouPartner" />
-                                <div *ngIf="mouPartner.invalid && mouPartner.touched" class="themeClr">
-                                    MOU Partner Organisation Name is required.
+     <nav>
+        <div class="nav nav-tabs nav nav-tabs d-flex justify-content-center active" id="nav-tab" role="tablist">
+            <button class="btn me-5 active" id="UploadNewMou-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
+                data-bs-target="#UploadNewMou" type="button" role="tab" aria-controls="UploadNewMou"
+                aria-selected="true">Upload New MOU</button>
+
+            <button class=" btn btn-lg ms-5" id="MyAllUploadNewMou-tab" data-bs-toggle="tab"
+                style="padding: .95rem 8rem;" data-bs-target="#MyAllUploadNewMou" type="button" role="tab"
+                aria-controls="MyAllUploadNewMou" aria-selected="false">Renew Existing </button>
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <!-- Tab one contents -->
+        <div class="tab-pane fade active show" id="UploadNewMou" role="tabpanel" aria-labelledby="UploadNewMou-tab">
+            <!-- <div class="container-fluid grid-margin stretch-card"> -->
+            <div class="card ">
+                <div class="card-body ">
+                    <div class="container-fluid">
+                        <form #myForm="ngForm" (ngSubmit)="UploadDocument()">
+    
+    
+                            <div class="row mb-4 mt-4">
+                                <div class="col-3 "><label class=" form-label"> MOU Partner
+                                        Organisation Name </label></div>
+                                <div class="col-3">
+                                    <input type="text" class="form-control w-10 text-dark" name="MouPartner"
+                                        [style]="{ width: '89%' }" autocomplete="off" placeholder="Provide MOU Partner Name"
+                                        required ngModel #mouPartner="ngModel" [(ngModel)]="MouPartner" />
+                                    <div *ngIf="mouPartner.invalid && mouPartner.touched" class="themeClr">
+                                        MOU Partner Organisation Name is required.
+                                    </div>
+                                </div>
+    
+                                <div class="col-3">
+                                    <label class="form-label">SPOC Person Name <br />(MOU Partner
+                                        Organisation) </label>
+                                </div>
+                                <div class="col-3 ">
+                                    <input type="text" class="form-control" [style]="{ width: '89%' }" name="SOPCName"
+                                        autocomplete="off" placeholder="Provide SOPC Name" required ngModel
+                                        [(ngModel)]="SOPCName" #sopcName="ngModel" />
+                                    <div *ngIf="sopcName.invalid && sopcName.touched" class="themeClr">
+                                        SPOC Person Name is required.
+                                    </div>
                                 </div>
                             </div>
-
-                            <div class="col-3">
-                                <label class="form-label">SPOC Person Name <br />(MOU Partner
-                                    Organisation) </label>
-                            </div>
-                            <div class="col-3 ">
-                                <input type="text" class="form-control" [style]="{ width: '89%' }" name="SOPCName"
-                                    autocomplete="off" placeholder="Provide SOPC Name" required ngModel
-                                    [(ngModel)]="SOPCName" #sopcName="ngModel" />
-                                <div *ngIf="sopcName.invalid && sopcName.touched" class="themeClr">
-                                    SPOC Person Name is required.
+    
+                            <div class="row mb-4 mt-4">
+                                <div class="col-3">
+                                    <label class="form-label">MOU Start Date</label>
+                                </div>
+                                <div class="col-3">
+                                    <input type="date" class="form-control w-10 text-dark" name="MouStartDate"
+                                        [style]="{ width: '89%' }" autocomplete="off" placeholder="Provide Mou Start Date"
+                                        required [(ngModel)]="MouStartDate" (change)="updateMouStatus()" />
+                                    <div *ngIf="!MouStartDate" class="themeClr">
+                                        MOU Start Date is required.
+                                    </div>
+                                </div>
+    
+                                <div class="col-2">
+                                    <label class="form-label">MOU End Date </label>
+                                    <br />
+                                    Check if the Mou is Indefinite
+                                    <input type="checkbox" id="IndefiniteMou" [(ngModel)]="isIndefiniteMou"
+                                        (change)="toggleEndDate()" />
+                                </div>
+                                <div class="col-2">
+                                    <input type="date" class="form-control" [disabled]="isIndefiniteMou" name="MouEndDate"
+                                        autocomplete="off" placeholder="Provide Mou End Date" [(ngModel)]="MouEndDate"
+                                        (change)="updateMouStatus()" />
+                                    <div *ngIf="!isIndefiniteMou && !MouEndDate && MouStartDate" class="themeClr">
+                                        Mou End Date is optional.
+                                    </div>
+                                    <!-- MOU Status <p [ngStyle]="{ color: moustatus === 'Active' ? 'green' : 'red' }"> {{ moustatus }} </p>   -->
+                                </div>
+    
+                                <div class="col-2">
+                                    <!-- <label class="form-label">MOU Status</label> -->
+                                    <p [ngStyle]="{ color: moustatus === 'Active' ? 'green' : 'red' }">
+                                        <span class="text-dark">Status </span> : {{ moustatus }}
+                                    </p>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row mb-4 mt-4">
-                            <div class="col-3">
-                                <label class="form-label">MOU Start Date</label>
-                            </div>
-                            <div class="col-3">
-                                <input type="date" class="form-control w-10 text-dark" name="MouStartDate"
-                                    [style]="{ width: '89%' }" autocomplete="off" placeholder="Provide Mou Start Date"
-                                    required [(ngModel)]="MouStartDate" (change)="updateMouStatus()" />
-                                <div *ngIf="!MouStartDate" class="themeClr">
-                                    MOU Start Date is required.
+    
+                            <div class="row mb-4 mt-5">
+                                <div class="col-3">
+                                    <label class="form-label">SPOC Person Email Id <br />(MOU Partner Organisation)</label>
+                                </div>
+                                <div class="col-3 ">
+    
+                                    <input type="email" class="form-control" [style]="{ width: '89%' }" name="SOPCEmail"
+                                        autocomplete="off" placeholder="Provide SOPC Email Id" required
+                                        pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" ngModel
+                                        [(ngModel)]="SOPCEmail" #sopcEmail="ngModel" />
+                                    <div *ngIf="sopcEmail.invalid && sopcEmail.touched" class="themeClr">
+                                        <div *ngIf="sopcEmail.errors?.required">SOPC Email Id is required.</div>
+                                        <div *ngIf="sopcEmail.errors?.pattern">Invalid Email Id must be properly formatted
+                                            and end with .com or .org.</div>
+                                    </div>
+    
+    
+                                </div>
+                                <div class="col-3">
+                                    <label class="form-label">SPOC Person Phone Number <br />(MOU Partner
+                                        Organisation)</label>
+                                </div>
+                                <div class="col-3 ">
+    
+                                    <input type="number" class="form-control" [style]="{ width: '89%' }" name="SOPCNumber"
+                                        autocomplete="off" placeholder="Provide SOPC Phone Number" required ngModel
+                                        [(ngModel)]="SOPCNumber" #sopcNumber="ngModel" />
+                                    <div *ngIf="sopcNumber.invalid && sopcNumber.touched" class="themeClr">
+                                        <div *ngIf="sopcNumber.errors?.required">SPOC Person Phone Number is required.</div>
+                                    </div>
                                 </div>
                             </div>
-
-                            <div class="col-2">
-                                <label class="form-label">MOU End Date </label>
-                                <br />
-                                Check if the Mou is Indefinite
-                                <input type="checkbox" id="IndefiniteMou" [(ngModel)]="isIndefiniteMou"
-                                    (change)="toggleEndDate()" />
-                            </div>
-                            <div class="col-2">
-                                <input type="date" class="form-control" [disabled]="isIndefiniteMou" name="MouEndDate"
-                                    autocomplete="off" placeholder="Provide Mou End Date" [(ngModel)]="MouEndDate"
-                                    (change)="updateMouStatus()" />
-                                <div *ngIf="!isIndefiniteMou && !MouEndDate && MouStartDate" class="themeClr">
-                                    Mou End Date is optional.
+    
+                            <div class="row mb-4 mt-4">
+                                <div class="col-3">
+                                    <label class="form-label">MOU SPOC Name [LPU]</label>
                                 </div>
-                                <!-- MOU Status <p [ngStyle]="{ color: moustatus === 'Active' ? 'green' : 'red' }"> {{ moustatus }} </p>   -->
-                            </div>
-
-                            <div class="col-2">
-                                <!-- <label class="form-label">MOU Status</label> -->
-                                <p [ngStyle]="{ color: moustatus === 'Active' ? 'green' : 'red' }">
-                                    <span class="text-dark">Status </span> : {{ moustatus }}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="row mb-4 mt-5">
-                            <div class="col-3">
-                                <label class="form-label">SPOC Person Email Id <br />(MOU Partner Organisation)</label>
-                            </div>
-                            <div class="col-3 ">
-
-                                <input type="email" class="form-control" [style]="{ width: '89%' }" name="SOPCEmail"
-                                    autocomplete="off" placeholder="Provide SOPC Email Id" required
-                                    pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" ngModel
-                                    [(ngModel)]="SOPCEmail" #sopcEmail="ngModel" />
-                                <div *ngIf="sopcEmail.invalid && sopcEmail.touched" class="themeClr">
-                                    <div *ngIf="sopcEmail.errors?.required">SOPC Email Id is required.</div>
-                                    <div *ngIf="sopcEmail.errors?.pattern">Invalid Email Id must be properly formatted
-                                        and end with .com or .org.</div>
+                                <div class="col-3">
+                                    <input type="text" id="responsiblePerson" name="responsiblePerson" required
+                                        class="form-control col-3" [(ngModel)]="ResponsiblePerson"
+                                        [formControl]="employeeControl" placeholder="Search by name or code"
+                                        (input)="onInput()" (keydown)="onKeydown($event)" (change)="checkUIDValidity()"
+                                        (focus)="showSuggestions = true" (blur)="hideSuggestions()" />
+                                    <div class="themeClr mt-1 small"
+                                        *ngIf="employeeControl.invalid && employeeControl.touched">
+                                        LPU SPOC Name is required.
+                                    </div>
+    
+                                    <div *ngIf="showSuggestions && filteredEmployeesData.length"
+                                        class="list-group position-absolute w-30 shadow-sm z-3">
+                                        <button type="button" class="list-group-item list-group-item-action"
+                                            *ngFor="let employee of filteredEmployeesData; let i = index"
+                                            [class.active]="i === activeSuggestionIndex"
+                                            (mousedown)="selectEmployee(employee)">
+                                            {{ employee.employeeName }} ({{ employee.employeeCode }})
+                                        </button>
+                                    </div>
+                                    <div *ngIf="AssignedToUid > 0" class="text-primary mt-2 small">
+                                        Applying to UID: <strong>{{ AssignedToUid }} {{AssignedToUidName}}</strong>
+                                    </div>
                                 </div>
-
-
-                            </div>
-                            <div class="col-3">
-                                <label class="form-label">SPOC Person Phone Number <br />(MOU Partner
-                                    Organisation)</label>
-                            </div>
-                            <div class="col-3 ">
-
-                                <input type="number" class="form-control" [style]="{ width: '89%' }" name="SOPCNumber"
-                                    autocomplete="off" placeholder="Provide SOPC Phone Number" required ngModel
-                                    [(ngModel)]="SOPCNumber" #sopcNumber="ngModel" />
-                                <div *ngIf="sopcNumber.invalid && sopcNumber.touched" class="themeClr">
-                                    <div *ngIf="sopcNumber.errors?.required">SPOC Person Phone Number is required.</div>
+                                <div class="col-3">
+                                    <label class="form-label">MOU SPOC EmailId [LPU]</label>
+                                </div>
+                                <div class="col-3">
+                                    <input type="email" class="form-control" [style]="{ width: '89%' }" name="LPUSpocEmail"
+                                        id="LPUSpocEmail" autocomplete="off" placeholder="Provide SOPC Email Id" required
+                                        pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" ngModel
+                                        [(ngModel)]="LPUSpocEmail" #lpusopcEmail="ngModel" />
+                                    <div *ngIf="lpusopcEmail.invalid && lpusopcEmail.touched" class="themeClr">
+                                        <div *ngIf="lpusopcEmail.errors?.required">LPU SOPC Email Id is required.</div>
+                                        <div *ngIf="lpusopcEmail.errors?.pattern">Invalid Email Id must be properly
+                                            formatted and end with .com or
+                                            .org.</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row mb-4 mt-4">
-                            <div class="col-3">
-                                <label class="form-label">MOU SPOC Name [LPU]</label>
-                            </div>
-                            <div class="col-3">
-                                <input type="text" id="responsiblePerson" name="responsiblePerson" required
-                                    class="form-control col-3" [(ngModel)]="ResponsiblePerson"
-                                    [formControl]="employeeControl" placeholder="Search by name or code"
-                                    (input)="onInput()" (keydown)="onKeydown($event)" (change)="checkUIDValidity()"
-                                    (focus)="showSuggestions = true" (blur)="hideSuggestions()" />
-                                <div class="themeClr mt-1 small"
-                                    *ngIf="employeeControl.invalid && employeeControl.touched">
-                                    LPU SPOC Name is required.
+    
+                            <div class="row mb-4 mt-5">
+                                <div class="col-3">
+                                    <label class="form-label">School/Division Involved</label>
                                 </div>
-
-                                <div *ngIf="showSuggestions && filteredEmployeesData.length"
-                                    class="list-group position-absolute w-30 shadow-sm z-3">
-                                    <button type="button" class="list-group-item list-group-item-action"
-                                        *ngFor="let employee of filteredEmployeesData; let i = index"
-                                        [class.active]="i === activeSuggestionIndex"
-                                        (mousedown)="selectEmployee(employee)">
-                                        {{ employee.employeeName }} ({{ employee.employeeCode }})
-                                    </button>
+                                <div class="col-3 ">
+                                    <ng-select [items]="allSchoolDivisions" #ngSelectComponentStream [multiple]="true"
+                                        bindLabel="schoolDivision" [clearable]="true" [virtualScroll]="true"
+                                        placeholder="Select" (change)="changeResponsiblePlanned($event)" bindValue="id"
+                                        [hideSelected]="true" [(ngModel)]="selectedSchoolDivisions">
+                                    </ng-select>
+                                    <div *ngIf="hasSelectionError" class="themeClr">One school division is Required</div>
+    
                                 </div>
-                                <div *ngIf="AssignedToUid > 0" class="text-primary mt-2 small">
-                                    Applying to UID: <strong>{{ AssignedToUid }} {{AssignedToUidName}}</strong>
+                                <div class="col-3"><label class="form-label text-end"> Upload Document
+                                    </label>
                                 </div>
-                            </div>
-                            <div class="col-3">
-                                <label class="form-label">MOU SPOC EmailId [LPU]</label>
-                            </div>
-                            <div class="col-3">
-                                <input type="email" class="form-control" [style]="{ width: '89%' }" name="LPUSpocEmail"
-                                    id="LPUSpocEmail" autocomplete="off" placeholder="Provide SOPC Email Id" required
-                                    pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" ngModel
-                                    [(ngModel)]="LPUSpocEmail" #lpusopcEmail="ngModel" />
-                                <div *ngIf="lpusopcEmail.invalid && lpusopcEmail.touched" class="themeClr">
-                                    <div *ngIf="lpusopcEmail.errors?.required">LPU SOPC Email Id is required.</div>
-                                    <div *ngIf="lpusopcEmail.errors?.pattern">Invalid Email Id must be properly
-                                        formatted and end with .com or
-                                        .org.</div>
+                                <div class="col-3">
+                                    <input class="w-30" required type="file" id="File" name="File"
+                                        (change)="onFileSelected($event)" accept=".pdf, .doc, .docx" #fileInput="ngModel"
+                                        ngModel />
+    
+                                    <div class="col- mt-2"><span class=" themeClr"> Allowed Documents format Doc, pdf and of
+                                            Max size 3MB </span></div>
+                                </div>
+                                <div class="col-4 " style="display: none;">
+                                    <select class="form-label " id="SchoolInvolved" name="SchoolInvolved"
+                                        [(ngModel)]="SchoolInvolved">
+                                        <option selected value="0">Selected School Division</option>
+                                        <option [value]="getDivisionNameById(School)"
+                                            *ngFor="let School of selectedDivisions">
+                                            {{getDivisionNameById(School)}}
+                                        <option>
+                                    </select>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row mb-4 mt-5">
-                            <div class="col-3">
-                                <label class="form-label">School/Division Involved</label>
+                            <div class="row mb-4 mt-5 ">
+                                <div class="col-12 text-center ">
+                                    <button type="submit" [disabled]="!myForm.valid" class="btn btn-primary me-2 col-4">Save
+                                        Record</button>
+    
+                                </div>
                             </div>
-                            <div class="col-3 ">
-                                <ng-select [items]="allSchoolDivisions" #ngSelectComponentStream [multiple]="true"
-                                    bindLabel="schoolDivision" [clearable]="true" [virtualScroll]="true"
-                                    placeholder="Select" (change)="changeResponsiblePlanned($event)" bindValue="id"
-                                    [hideSelected]="true" [(ngModel)]="selectedSchoolDivisions">
-                                </ng-select>
-                                <div *ngIf="hasSelectionError" class="themeClr">One school division is Required</div>
-
-                            </div>
-                            <div class="col-3"><label class="form-label text-end"> Upload Document
-                                </label>
-                            </div>
-                            <div class="col-3">
-                                <input class="w-30" required type="file" id="File" name="File"
-                                    (change)="onFileSelected($event)" accept=".pdf, .doc, .docx" #fileInput="ngModel"
-                                    ngModel />
-
-                                <div class="col- mt-2"><span class=" themeClr"> Allowed Documents format Doc, pdf and of
-                                        Max size 3MB </span></div>
-                            </div>
-                            <div class="col-4 " style="display: none;">
-                                <select class="form-label " id="SchoolInvolved" name="SchoolInvolved"
-                                    [(ngModel)]="SchoolInvolved">
-                                    <option selected value="0">Selected School Division</option>
-                                    <option [value]="getDivisionNameById(School)"
-                                        *ngFor="let School of selectedDivisions">
-                                        {{getDivisionNameById(School)}}
-                                    <option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row mb-4 mt-5 ">
-                            <div class="col-12 text-center ">
-                                <button type="submit" [disabled]="!myForm.valid" class="btn btn-primary me-2 col-4">Save
-                                    Record</button>
-
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="MyAllUploadNewMou" role="tabpanel" aria-labelledby="MyAllUploadNewMou-tab">
+            <div class="row vh-100">
+                <ng-container *ngIf="MouDocumentsData.length > 0 ; else noRecords">
+                    <div class="col-12 stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title d-flex justify-content-center fs-4 "> MOU Uploads Details</h6>
+                                <div class="col-12 d-flex justify-content-center">
+                                    <div class="col-sm-4 ">
+                                        <div class="mb-3 ms-5">
+                                            <button (click)="exportToExcel()" class="btn btn-dark ">Export to Excel</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 ">
+                                        <select class="form-select" [(ngModel)]="statusFilter"
+                                    (change)="onStatusChange($event)">
+                                    <option value="all">All MOU</option>
+                                    <option value="active">Active</option>
+                                    <option value="expired">Expired</option>
+                                    <option value="renewed">Renewed</option>
+                                </select>
+                                    </div>
+                                    <div class="col-sm-4 ">
+                                        <input type="text" [(ngModel)]="filterText" (ngModelChange)="filterData()"
+                                            placeholder="Search by any Field Text " class="form-control" />
+                                    </div>
+                                </div>
+
+                                 <div class="row p-3 mx-5" *ngIf="statusFilter !== 'all'">
+                        <div class="col-12">
+                            <div class="d-flex gap-3 align-items-center">
+                                <span class="fw-bold me-2">Summary:</span>
+                                <!-- <span class="badge bg-secondary" [class.bg-primary]="statusFilter === 'all'">
+                                    All: {{ MouDocumentDetails.length }}
+                                </span> -->
+                                <span class="badge bg-success" [class.bg-primary]="statusFilter === 'active'">
+                                    Active: {{ getActiveCount() }}
+                                </span>
+                                <span class="badge bg-danger" [class.bg-primary]="statusFilter === 'expired'">
+                                    Expired: {{ getExpiredCount() }}
+                                </span>
+                                <span class="badge bg-danger" [class.bg-primary]="statusFilter === 'renewed'">
+                                    Renewed: {{ getRenewedCount() }}
+                                </span>
+                                <span class="badge bg-dark" *ngIf="searchQuery">
+                                    Filtered: {{ filteredMouDocumentsData.length }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                                <div *ngIf="filteredMouDocumentsData.length >0; else SeachNoRecords">
+                                    <table id="dataTableExample " class="table table-responsive">
+                                        <thead>
+                                            <tr>
+                                                <th class="form-label fs-6 ">New MOU Id </th>
+                                                <th class="form-label fs-6 ">Old MOU Id </th>
+                                                <th class="form-label fs-6 ">Renewwal </th>
+                                                <th class="form-label fs-6  ">Partner Organisation </th>
+                                                <th class="form-label fs-6 ">MOU Start Date</th>
+                                                <th class="form-label fs-6"> Mou End Date</th>
+                                                <th class="form-label fs-6 ">View Document </th>
+                                                <!-- <th class="form-label fs-6 ">New Uploads </th> -->
+                                                <!-- <th class="form-label fs-6 ">Approval Status </th> -->
+                                                <th class="form-label fs-6 ">School Involved </th>
+                                                <th class="form-label fs-6 ">SPOC Person Detail </th>
+                                                <!-- <th class="form-label fs-6 ">Mou Dates </th> -->
+                                                <th class="form-label fs-6 ">MOU Status </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <ng-container *ngFor="let DocumentRow of getRecordsForCurrentPage()">
+                                                <tr>
+                                                    <td class="fw-bold fs-6 ">
+                                                        <label class="form-label "> {{DocumentRow.newMouId}} </label>
+                                                    </td>
+    
+                                                    <td class="fw-bold fs-6 ">
+                                                        <label class="form-label  "> MOU/{{DocumentRow.id}} </label>
+                                                    </td>
+                                                         <!-- Renewal action  -->
+                                                    <td class="fw-bold fs-6 " *ngIf="DocumentRow.mouStatus == 'Expired'  && DocumentRow.renewalCount ==null ;else NotPossible">
+                                                        <a class="btn btn-dark me-4"
+                                                            (click)="openRenewModal(DocumentRow)"
+                                                            *ngIf="DocumentRow.mouStatus == 'Expired' ">
+                                                            <i class="bi bi-arrow-repeat"></i> 
+                                                        </a>
+                                                    </td>
+                                                    <ng-template #NotPossible>
+                                                        <td class="fw-bold fs-6 text-info" *ngIf="DocumentRow.renewalCount != null ;else NotPossibles"> 
+                                                            <a class="btn btn-dark me-4" (click)="OpenAllMouRenewalHistory(DocumentRow)">
+                                                                <i class="bi bi-eye"></i>
+                                                            </a>
+
+                                                        </td>
+                                                         <ng-template #NotPossibles>
+                                                        <td class="fw-bold fs-6 text-info" >
+                                                            Not Applicable
+                                                        </td>
+                                                    </ng-template>
+                                                    </ng-template>
+                                                    <td class="fw-bold fs-6 ">{{DocumentRow.mouPartnerName}} </td>
+                                                    
+                                                    <td class="fw-bold fs-6 ">{{DocumentRow.mouStartDate}} </td>
+                                                    <td class="fw-bold fs-6 ">{{DocumentRow.mouEndDate}} </td>
+                                                    
+                                                    <ng-container *ngIf="DocumentRow.filePath; else NoFile">
+                                                        <td> <a class="btn btn-dark me-2" [href]="DocumentRow.filePath" target="_blank"> <i class="bi bi-eye"></i>
+                                                            </a> </td>
+                                                    
+                                                    </ng-container>
+                                                    <ng-template #NoFile>
+                                                        <td> No Doc Uploaded </td>
+                                                    </ng-template>
+                                                    <!-- <td>
+                                                        <ng-container
+                                                            *ngIf="DocumentRow.disapprovalReason?.length >0; else NotApplicable">
+                                                            <div class="row  ">
+                                                                <div class="col-">
+                                                                    <input class="w-30" required type="file" id="FileX"
+                                                                        name="FileX"
+                                                                        (change)="onFileXSelected($event, DocumentRow.id)"
+                                                                        accept=".pdf, .doc, .docx" #fileInput />
+                                                                </div>
+                                                            </div>
+                                                            <div class="row ">
+                                                                <div class="col- ">
+                                                                    <br /><button type="submit"
+                                                                        [disabled]="!fileChosen[DocumentRow.id]"
+                                                                        class="btn btn-primary"
+                                                                        (click)="UpdateFileDocument(DocumentRow.id);">Upload
+                                                                        New
+                                                                        Document </button>
+                                                                </div>
+                                                            </div>
+                                                        </ng-container>
+                                                        <ng-template #NotApplicable>
+                                                    <td> <label class="form-label  ">Not Applicable</label></td>
+                                                    </ng-template>
+                                                    </td> -->
+    
+                                        
+                                                    <td class="fw-bold fs-6 "
+                                                        *ngIf="DocumentRow.schoolDivisionInvolved?.length>0;else NoSchool">
+                                                        <select class=" p-2 " id="SchoolInvolvedData"
+                                                            [style]="{ width: '89%' }">
+                                                            <option selected value="0">Check Involved Division</option>
+                                                            <option [value]="getDivisionNameById(schoolId)"
+                                                                *ngFor="let schoolId of DocumentRow.schoolDivisionInvolved.split(',')">
+                                                                {{getDivisionNameById(schoolId)}}
+                                                            <option>
+                                                        </select>
+                                                    </td>
+                                                    <ng-template #NoSchool>
+                                                        <td class="fw-bold fs-6 text-info">Not Applicable</td>
+                                                    </ng-template>
+                                                    <td class="fw-bold fs-6 "> {{ DocumentRow.spocName!= null &&
+                                                        DocumentRow.spocEmailId!= null && DocumentRow.spocContactNo ?
+                                                        DocumentRow.spocName + DocumentRow.spocEmailId : 'N/A'}} </td>
+    
+    
+                                                    <!-- <td class="fw-bold fs-6 "> {{ DocumentRow.mouStartDate?.length>0 ?
+                                                        DocumentRow.mouStartDate: 'NA' }} </td> -->
+                                                    <td class="fw-bold fs-6 " *ngIf="DocumentRow.renewalCount == null; else Statuss"> 
+                                                        {{ DocumentRow.mouStatus?.length>0 ? DocumentRow.mouStatus: 'NA' }}
+                                                      </td>
+                                                      <ng-template #Statuss>
+                                                        <td class="fw-bold fs-6 text-info">Renewed</td>
+                                                    </ng-template>
+
+                                                   
+ 
+                                                </tr>
+                                            </ng-container>
+                                        </tbody>
+                                    </table>
+                                    <div class="row d-flex justify-content-between mt-5 mb-3 align-items-center">
+                                        <div class="  text-end">
+                                            <mat-paginator [length]="filteredMouDocumentsData.length"
+                                                [pageSize]="recordsPerPage" [pageSizeOptions]="[5, 10, 25, 50]"
+                                                (page)="onPageChange($event)">
+                                            </mat-paginator>
+                                        </div>
+                                        <div class=" text-end">
+                                            Total Records: {{ filteredMouDocumentsData.length }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <ng-template #SeachNoRecords>
+                                    <div class="col-12 stretch-card">
+                                        <table id="dataTableExample" class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="form-label fs-6 ">MOU Id </th>
+                                                    <th class="form-label fs-6  ">Partner Organisation </th>
+                                                    <th class="form-label fs-6 ">Uploaded On</th>
+                                                    <th class="form-label "> Approval Date</th>
+                                                    <th class="form-label fs-6 ">View Document </th>
+                                                    <th class="form-label fs-6 ">New Uploads </th>
+                                                    <th class="form-label fs-6 ">Approval Status </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="7" class="text-center"> <label class="text-center fs-2 ">
+                                                            No
+                                                            Record(s) found .</label>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-template #noRecords>
+                    <div class="col-12 stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <label class="text-center fs-2  d-flex justify-content-center"> No Record(s) are
+                                    Available .</label>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
             </div>
         </div>
     </div>
-
-    <ng-container *ngIf="MouDocumentsData.length > 0 ; else noRecords">
-        <div class="col-12 stretch-card">
-            <div class="card">
-                <div class="card-body">
-                    <h6 class="card-title d-flex justify-content-center fs-4 "> MOU Uploads Details</h6>
-                    <div class="col-12 d-flex justify-content-between">
-                        <div class="col-sm-4 ">
-                            <div class="mb-3 ms-5">
-                                <button (click)="exportToExcel()" class="btn btn-dark ">Export to Excel</button>
-                            </div>
-                        </div>
-                        <div class="col-sm-4 ">
-                            <input type="text" [(ngModel)]="filterText" (ngModelChange)="filterData()"
-                                placeholder="Search by any Field Text " class="form-control" />
-                        </div>
-                    </div>
-                    <div *ngIf="filteredMouDocumentsData.length >0; else SeachNoRecords">
-                        <table id="dataTableExample " class="table table-responsive">
-                            <thead>
-                                <tr>
-                                    <th class="form-label fs-6 ">New MOU Id </th>
-                                    <th class="form-label fs-6 ">Old MOU Id </th>
-                                    <th class="form-label fs-6  ">Partner Organisation </th>
-                                    <!-- <th class="form-label fs-6 ">Uploaded On</th>
-                                        <th class="form-label "> Approval Date</th> -->
-                                    <th class="form-label fs-6 ">View Document </th>
-                                    <th class="form-label fs-6 ">New Uploads </th>
-                                    <th class="form-label fs-6 ">Approval Status </th>
-                                    <th class="form-label fs-6 ">School Involved </th>
-                                    <th class="form-label fs-6 ">SPOC Person Detail </th>
-                                    <th class="form-label fs-6 ">Mou Dates </th>
-                                    <th class="form-label fs-6 ">MOU Status </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <ng-container *ngFor="let DocumentRow of getRecordsForCurrentPage()">
-                                    <tr>
-                                        <td class="fw-bold fs-6 ">
-                                            <label class="form-label "> {{DocumentRow.newMouId?.length
-                                                <4?'Disapproved':DocumentRow.newMouId}} </label>
-                                        </td>
-
-                                        <td class="fw-bold fs-6 ">
-                                            <label class="form-label  "> MOU/{{DocumentRow.id}} </label>
-                                        </td>
-
-                                        <td class="fw-bold fs-6 ">{{DocumentRow.mouPartnerName}} </td>
-
-
-                                        <ng-container *ngIf="DocumentRow.filePath; else NoFile">
-                                            <td> <a class="btn btn-primaryme-2" [href]="DocumentRow.filePath"
-                                                    target="_blank"> View
-                                                </a> </td>
-
-                                        </ng-container>
-                                        <ng-template #NoFile>
-                                            <td> No Doc Uploaded </td>
-                                        </ng-template>
-                                        <td>
-                                            <ng-container
-                                                *ngIf="DocumentRow.disapprovalReason?.length >0; else NotApplicable">
-                                                <div class="row  ">
-                                                    <div class="col-">
-                                                        <input class="w-30" required type="file" id="FileX" name="FileX"
-                                                            (change)="onFileXSelected($event, DocumentRow.id)"
-                                                            accept=".pdf, .doc, .docx" #fileInput />
-                                                    </div>
-                                                </div>
-                                                <div class="row ">
-                                                    <div class="col- ">
-                                                        <br /><button type="submit"
-                                                            [disabled]="!fileChosen[DocumentRow.id]"
-                                                            class="btn btn-primary"
-                                                            (click)="UpdateFileDocument(DocumentRow.id);">Upload New
-                                                            Document </button>
-                                                    </div>
-                                                </div>
-                                            </ng-container>
-                                            <ng-template #NotApplicable>
-                                        <td> <label class="form-label  ">Not Applicable</label></td>
-                                        </ng-template>
-                                        </td>
-
-                                        <td *ngIf="DocumentRow.isApproved == 'True'; else OtherCheck">
-                                            <div class="fw-bold fs-6 ">Approved By {{
-                                                DocumentRow.approvedBy
-                                                }}</div>
-                                        </td>
-                                        <ng-template #OtherCheck>
-                                            <td *ngIf="DocumentRow.isApproved == 'False'; else NullValue">
-                                                <div class="fw-bold fs-6  col-8">
-                                                    {{ DocumentRow.disapprovalReason }} ... <br />
-                                                </div>
-                                            </td>
-                                            <ng-template #NullValue>
-                                                <td>
-                                                    <div class="fw-bold fs-6">Pending Approval</div>
-                                                </td>
-                                            </ng-template>
-                                        </ng-template>
-                                        <td class="fw-bold fs-6 "
-                                            *ngIf="DocumentRow.schoolDivisionInvolved?.length>0;else NoSchool">
-                                            <select class=" p-2 " id="SchoolInvolvedData" [style]="{ width: '89%' }">
-                                                <option selected value="0">Check Involved Division</option>
-                                                <option [value]="getDivisionNameById(schoolId)"
-                                                    *ngFor="let schoolId of DocumentRow.schoolDivisionInvolved.split(',')">
-                                                    {{getDivisionNameById(schoolId)}}
-                                                <option>
-                                            </select>
-                                        </td>
-                                        <ng-template #NoSchool>
-                                            <td class="fw-bold fs-6 text-info">Not Applicable</td>
-                                        </ng-template>
-                                        <td class="fw-bold fs-6 "> {{ DocumentRow.spocName!= null &&
-                                            DocumentRow.spocEmailId!= null && DocumentRow.spocContactNo ?
-                                            DocumentRow.spocName + DocumentRow.spocEmailId : 'N/A'}} </td>
-
-
-                                        <td class="fw-bold fs-6 "> {{ DocumentRow.mouStartDate?.length>0 ?
-                                            DocumentRow.mouStartDate: 'NA' }} </td>
-                                        <td class="fw-bold fs-6 "> {{ DocumentRow.mouStatus?.length>0 ?
-                                            DocumentRow.mouStatus: 'NA' }} 
-                                            
-                                        
-                              
-                                    <a class="btn btn-success me-4" (click)="openRenewModal(DocumentRow)" *ngIf="DocumentRow.mouStatus == 'Expired'">
-                                        <i class="bi bi-arrow-repeat"></i>
-                                    </a>
-                                </td>
-                                    </tr>
-                                </ng-container>
-                            </tbody>
-                        </table>
-                        <div class="row d-flex justify-content-between mt-5 mb-3 align-items-center">
-                            <div class="  text-end">
-                                <mat-paginator [length]="filteredMouDocumentsData.length" [pageSize]="recordsPerPage"
-                                    [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange($event)">
-                                </mat-paginator>
-                            </div>
-                            <div class=" text-end">
-                                Total Records: {{ filteredMouDocumentsData.length }}
-                            </div>
-                        </div>
-                    </div>
-                    <ng-template #SeachNoRecords>
-                        <div class="col-12 stretch-card">
-                            <table id="dataTableExample" class="table">
-                                <thead>
-                                    <tr>
-                                        <th class="form-label fs-6 ">MOU Id </th>
-                                        <th class="form-label fs-6  ">Partner Organisation </th>
-                                        <th class="form-label fs-6 ">Uploaded On</th>
-                                        <th class="form-label "> Approval Date</th>
-                                        <th class="form-label fs-6 ">View Document </th>
-                                        <th class="form-label fs-6 ">New Uploads </th>
-                                        <th class="form-label fs-6 ">Approval Status </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colspan="7" class="text-center"> <label class="text-center fs-2 "> No
-                                                Record(s) found .</label>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </ng-template>
-                </div>
-            </div>
-        </div>
-    </ng-container>
-    <ng-template #noRecords>
-        <div class="col-12 stretch-card">
-            <div class="card">
-                <div class="card-body">
-                    <label class="text-center fs-2  d-flex justify-content-center"> No Record(s) are
-                        Available .</label>
-                </div>
-            </div>
-        </div>
-    </ng-template>
 </div>
 
 <ng-template #loginFailed>
@@ -576,5 +638,144 @@
         <button type="button" class="btn btn-dark px-4" (click)="onSubmitModal()">
             <i class="bi bi-cloud-upload me-1"></i> {{isRenewalMode ? 'Renew MOU' : 'Save Changes'}}
         </button>
+    </div>
+</ng-template>
+
+
+
+
+<ng-template #ViewRenewedMouDetailsModal let-modal>
+    <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">{{'Renew MOU - ' + mouId + ' - Details' }}</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
+    </div>
+
+
+    <div class="table-responsive vw-80">
+        <ngx-datatable class="bootstrap table-responsive table-striped material" [rows]="renewedMouDocumentDetails"
+            [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="5"
+            [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="15">
+
+
+
+            <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.newMouId != null">
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.newMouId}}</span>
+                    </ng-container>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.id != null">
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">MOU/{{row.id}}</span>
+                    </ng-container>
+                </ng-template>
+            </ngx-datatable-column>
+
+
+            <ngx-datatable-column name="MOU Organisation" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.mouPartnerName != null">
+                        <span
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouPartnerName}}</span>
+                    </ng-container>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="MOU StartDate" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.mouStartDate != null; else NoDate">
+                        <span
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouStartDate}}</span>
+                    </ng-container>
+                    <ng-template #NoDate>
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;  color:brown">
+                            NA </span>
+                    </ng-template>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="MOU EndDate" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.mouEndDate != null; else NoName">
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouEndDate}}</span>
+                    </ng-container>
+                    <ng-template #NoName>
+                        <span *ngIf="row.mouEndDate == null && row.mouStartDate != null; "
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">Indefinite
+                        </span>
+                        <span *ngIf="row.mouEndDate == null && row.mouStartDate == null; "
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">
+                            NA </span>
+                    </ng-template>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="MOU Status" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.mouStatus != null; else noStatus">
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouStatus}}</span>
+                    </ng-container>
+                    <ng-template #noStatus>
+                        <span *ngIf="row.mouEndDate != null && row.mouStartDate != null; "
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">{{row.mouStatus}}
+                        </span>
+                        <span *ngIf="row.mouEndDate == null && row.mouStartDate == null; "
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">
+                            NA </span>
+                    </ng-template>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column *ngFor="let col of columns" [prop]="col"></ngx-datatable-column>
+
+            <ngx-datatable-column name="New Renewed MOU" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.filePath ; else NoFile">
+                       
+                        <button class="btn btn-secondary ms-3" (click)="onDownloadFile(row.newRenewalFile)"
+                            [disabled]="row.filePath<1">
+                            <i class="bi bi-download"></i>
+                        </button>
+                    </ng-container>
+                    <ng-template #NoFile>
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">No Doc
+                            Uploaded </span>
+                    </ng-template>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="MOU Document" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.filePath ; else NoFile">
+                       
+                        <button class="btn btn-secondary ms-3" (click)="onDownloadFile(row.filePath)"
+                            [disabled]="row.filePath<1">
+                            <i class="bi bi-download"></i>
+                        </button>
+                    </ng-container>
+                    <ng-template #NoFile>
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">No Doc
+                            Uploaded </span>
+                    </ng-template>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Division Involved" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.schoolDivisionInvolved?.length > 0;">
+               
+                        <ul *ngFor="let schoolId of row.schoolDivisionInvolved.split(',')"
+                            style=" list-style: none;  padding: 0;margin: 0; display: inline;">
+                            <li style=" display: inline; font-weight: 500;"> {{
+                                getDivisionNameById(schoolId) }} {{','}} </li>
+                        </ul>
+                    </ng-container>
+                </ng-template>
+            </ngx-datatable-column>
+        </ngx-datatable>
+    </div>
+
+    <div class="modal-footer justify-content-center border-0 pb-4">
+        <button type="button" class="btn btn-secondary px-4" (click)="modal.dismiss()">Close</button>
+
     </div>
 </ng-template>

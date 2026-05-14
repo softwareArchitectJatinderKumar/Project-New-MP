@@ -122,18 +122,15 @@ export class MouDocumentsReportComponent implements OnInit {
   }
 
   selectEmployee2(employee: Employee) {
-    // This updates the variables used in your console.log/HTML
     this.ResponsiblePerson = employee.employeeCode;
     this.AssignedToUid = employee.employeeCode;
     this.AssignedToUidName = employee.employeeName;
 
-    // IMPORTANT: This updates the Reactive Form state for the API
     this.mouForm.patchValue({
       lpuSpocName: employee.employeeName,
       lpuSpocUid: employee.employeeCode // This ensures the UID is captured
     });
 
-    // Update the separate search control if you are still using it
     this.employeeControl.setValue(`${employee.employeeName} (${employee.employeeCode})`);
 
     this.filteredEmployeesData = [];
@@ -211,6 +208,7 @@ export class MouDocumentsReportComponent implements OnInit {
 
 
   @ViewChild('ChangeSchoolDivisionModal') ChangeSchoolDivisionModal: TemplateRef<any>;
+  @ViewChild('ViewRenewedMouDetailsModal') ViewRenewedMouDetailsModal: TemplateRef<any>;
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
   @ViewChild('fileInput') fileInput!: ElementRef;
   isLogin: boolean = false;
@@ -242,6 +240,7 @@ export class MouDocumentsReportComponent implements OnInit {
   uploadEnabled: boolean = false;
   filterText: string = '';
   filteredMouDocumentDetails: any[] = [];
+  renewedMouDocumentDetails: any[] = [];
   Reason: any;
   searchQuery: any = '';
   statusFilter: string = 'all';
@@ -373,8 +372,7 @@ export class MouDocumentsReportComponent implements OnInit {
         if (response.item1.length > 0) {
           this.MouDocumentDetails = response.item1;
           this.showNoDataFoundMessage = false;
-          this.dataSource.data = this.MouDocumentDetails;
-
+          this.dataSource.data = this.MouDocumentDetails;         
           // Apply initial filters
           this.applyFilters();
 
@@ -386,7 +384,7 @@ export class MouDocumentsReportComponent implements OnInit {
           this.loadingIndicator = false;
 
           this.isLoginFailed = false;
-          console.log(JSON.stringify(this.MouDocumentDetails) + ' documents');
+          
         } else {
           this.dataSource.data = this.MouDocumentDetails = [];
           this.filteredMouDocumentDetails = [];
@@ -442,6 +440,8 @@ export class MouDocumentsReportComponent implements OnInit {
         return item.mouStatus === 'Active';
       } else if (this.statusFilter === 'expired') {
         return item.mouStatus === 'Expired';
+      } else if (this.statusFilter === 'renewed') {
+        return item.hasRenewal === true || item.hasRenewal === 'true';
       }
       return true;
     });
@@ -482,6 +482,11 @@ export class MouDocumentsReportComponent implements OnInit {
   getExpiredCount(): number {
     return this.MouDocumentDetails.filter(item => {
       return item.mouStatus === 'Expired';
+    }).length;
+  }
+  getRenewedCount(): number {
+    return this.MouDocumentDetails.filter(item => {
+      return item.hasRenewal === true || item.hasRenewal === 'true';
     }).length;
   }
   // filterData() {
@@ -598,52 +603,7 @@ export class MouDocumentsReportComponent implements OnInit {
     link.click();
   }
 
-
-  // exportToExcel(): void {
-  //   const fileName = 'Mou_Document_report.xlsx';
-  //   const exportedData = this.MouDocumentDetails.map(item => ({
-  //     MOUId: "MOU/" + item.id,
-  //     ' Mou Partner Organisation Name': item.mouTitle,
-  //     'Mou Start Date': item.mouStartDate,
-  //     'Mou End Date': item.mouEndDate,
-  //     'Mou Status': item.mouStatus,
-  //     // EmployeeName: item.facultyName,
-  //     // UploadedBy: item.createdBy,
-  //     'SPOC Person Name': item.spocName,
-  //     'SPOC Person Email': item.spocEmailId,
-  //     'SPOC Person Contact': item.spocContactNo,
-  //     'School Division Involved': this.getDivisionNamesByIds(item.schoolDivisionInvolved.split(',').map(Number)),
-  //     'School Division Name Of Faculty Who Uploaded ': item.mouUploadedBy,
-  //     'Date of MOU Upload at interface':  new Date(item.createdOn).toLocaleDateString('en-GB', {day: '2-digit',month: 'short',year: 'numeric'}).replace(/ /g, '-'),
-  //     'Approval Status (Approved/Rejected/Pending)': item.disapprovalReason == null && item.isApproved == 1 ? 'Approved' : item.disapprovalReason?.length > 10 && item.isApproved == 0 ? 'Disapproved' : 'Pending',
-  //     'MOU Approved /Rejected By : Faculty Name': item.mouApprovedBy==null ? 'N/A': item.mouApprovedBy,
-  //     'MOU Approved /Rejected By : Faculty UID': item.approvedBy==null ? 'N/A': item.approvedBy,
-  //     'MOU Approval/ Rejection Date ': item.approvalDate==null ? 'N/A': item.approvalDate
-  //   }));
-
-  //   const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
-
-  //   const wscols = [
-  //     { wpx: 180 }, { wpx: 180 }, { wpx: 180 }, { wpx: 180 }, { wpx: 180 }, { wpx: 200 }, { wpx: 180 }, { wpx: 180 }, { wpx: 180 }, { wpx: 180 }, { wpx: 180 }, { wpx: 180 }, { wpx: 180 }, { wpx: 180 }, { wpx: 180 }, { wpx: 180 }, { wpx: 180 }
-  //   ];
-  //   ws['!cols'] = wscols;
-
-  //   const wb: XLSX.WorkBook = XLSX.utils.book_new();
-  //   XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-  //   const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-  //   const link = document.createElement('a');
-  //   link.href = URL.createObjectURL(new Blob([blobData], { type: 'application/octet-stream' }));
-  //   link.download = fileName;
-  //   link.click();
-  // }
-
-  // formatDate(date: Date): string {
-  //   const DateX = new Date(date).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
-  //   return DateX;
-  // }
-  /**
-     * FIX: Helper to convert any date format to YYYY-MM-DD for HTML5 Input binding
-     */
+ 
   private formatDate(date: any): string {
     if (!date) return '';
     const d = new Date(date);
@@ -851,6 +811,26 @@ export class MouDocumentsReportComponent implements OnInit {
     }).catch(() => {});
   }
 
+
+  OpenAllMouRenewalHistory(row: any): void {
+    this.mouId= row.id; 
+    this.getRenewedMouDetails(row.id);
+     this.modalService.open(this.ViewRenewedMouDetailsModal, { size: 'lg', backdrop: 'static' }).result.then(() => {
+      // Modal closed
+    }).catch(() => {});
+  }
+
+ 
+
+  getRenewedMouDetails(mouId: any): void {
+    this.mouDocumentsService.GetRenewedMouDetails(mouId).subscribe((response) => {
+      if (response.item1.length > 0) {
+        this.renewedMouDocumentDetails = response.item1;
+      } else {
+        this.renewedMouDocumentDetails = [];
+      }
+    });
+  }
   // 4. Final Update Submission
   onSubmitUpdate() {
     if (this.mouForm.invalid) {
@@ -875,18 +855,7 @@ export class MouDocumentsReportComponent implements OnInit {
 
     const val = this.mouForm.getRawValue();
 
-    // // --- CONSOLE DATA BEFORE API CALL ---
-    // console.log("--- Preparing Update Payload ---");
-    // console.log("MOU ID:", val.mouId);
-    // console.log("Divisions:", val.selectedDivisions.join(','));
-    // console.log("Dates:", { Start: val.startDate, End: val.isIndefinite ? 'Indefinite' : val.endDate });
-    // console.log("Partner SPOC:", { Name: val.spocName, Email: val.spocEmail });
-    // console.log("LPU SPOC (New Fields):", {
-    //   Name: val.lpuSpocName,
-    //   UID: val.lpuSpocUid,
-    //   Email: val.lpuSpocEmail
-    // });
-    // const formValues = this.mouForm.getRawValue();
+
     const formData = new FormData();
     formData.append('Id', val.mouId);
     formData.append('SchoolInvolved', val.selectedDivisions.join(','));
@@ -1008,7 +977,7 @@ export class MouDocumentsReportComponent implements OnInit {
         this.mouDocumentsService.MouRenewalDetails(formData).subscribe({
           next: (data: any) => {
             const resultMsg = data.item1 && data.item1.length > 0 ? data.item1[0].msg : data.responseData;
-            if (resultMsg === 'success' || data.responseData !== 'FAILED') {
+            if (resultMsg === 'success' || data.responseData !== 'Failed') {
               this.updateOldMouStatus(this.mouId, 'Renewed');
             } else {
               swal.fire('Error', 'Failed to create new MOU. Please try again.', 'error');
@@ -1036,7 +1005,7 @@ export class MouDocumentsReportComponent implements OnInit {
     formData.append('MouEndDate', orig.mouEndDate);
     formData.append('MouStatus', newStatus);
     formData.append('SPOCPerson', orig.spocName);
-    formData.append('SPOCContact', orig.spocContactNo);
+    formData.append('SPOCContat', orig.spocContactNo);
     formData.append('SPOCEmail', orig.spocEmailId);
     formData.append('MouOrganisation', orig.mouPartnerName);
     formData.append('LPUSpocName', orig.lpuSpocName);
@@ -1045,7 +1014,7 @@ export class MouDocumentsReportComponent implements OnInit {
     
     this.mouDocumentsService.UpdateSchoolDivision(formData).subscribe({
       next: (data: any) => {
-        if (data.responseData === 'FAILED') {
+        if (data.responseData === 'Failed') {
           swal.fire('Warning', 'New MOU created but failed to update old MOU status to Renewed.', 'warning');
         } else {
           swal.fire('Success', 'MOU renewed successfully! Old MOU marked as Renewed.', 'success');
@@ -1074,7 +1043,7 @@ export class MouDocumentsReportComponent implements OnInit {
     formData.append('LPUSpocUID', this.AssignedToUid);
     formData.append('LPUSpocEmail', this.LPUSpocEmail);
     formData.append('MouOrganisation', MouOrganisation.length < 3 ? this.MouOrganisationPrevious : MouOrganisation);
-    console.log(this.CurrentSchool + StartDate + EndDate + Status + SPName + SPContact + SPEmail + this.AssignedToUid + this.AssignedToUidName + this.LPUSpocEmail + this.MouOrganisationPrevious + JSON.stringify(formData))
+    // console.log(this.CurrentSchool + StartDate + EndDate + Status + SPName + SPContact + SPEmail + this.AssignedToUid + this.AssignedToUidName + this.LPUSpocEmail + this.MouOrganisationPrevious + JSON.stringify(formData))
     // swal.fire({
     //   title: 'Are you sure you want to change the School?',
     //   icon: 'warning',
@@ -1096,7 +1065,7 @@ export class MouDocumentsReportComponent implements OnInit {
     //   console.log(`${key}: ${value}`);
     // });
     this.mouDocumentsService.UpdateSchoolDivision(formData).subscribe((data: any) => {
-      if (data.responseData === 'FAILED') {
+      if (data.responseData === 'Failed') {
         swal.fire(
           'No Change!',
           ' ',

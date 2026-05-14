@@ -8,10 +8,10 @@ const AUTH_API = 'https://projectsapi.lpu.in/';//'https://projectsapi.lpu.in/'; 
 const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
 const AUTH_API_LOCALs = 'https://projectsapi.lpu.in/'; //'https://localhost:7125/'; 
 const AUTH_API_LOCAs = 'https://projectsapi.lpu.in/'; //'https://localhost:7125/';  
-// const AUTH_API = 'https://localhost:7125/';//'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
-// const AUTH_API_LOCAL = 'https://localhost:7125/';
-// const AUTH_API_LOCALs = 'https://localhost:7125/'; //'https://localhost:7125/'; 
-// const AUTH_API_LOCAs = 'https://localhost:7125/'; //'https://localhost:7125/';  
+// const AUTH_API = 'https://localhost:7135/';//'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
+// const AUTH_API_LOCAL = 'https://localhost:7135/';
+// const AUTH_API_LOCALs = 'https://localhost:7135/'; //'https://localhost:7125/'; 
+// const AUTH_API_LOCAs = 'https://localhost:7135/'; //'https://localhost:7125/';  
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +24,21 @@ export class MouDocumentsService {
   fileName: string;
 
   constructor(private http: HttpClient, private storageService: StorageService) { }
+
+  // added on 14-May-26
+
+
+  GetRenewedMouDetails(Id: any): Observable<any> {
+    let authToken = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + authToken)
+      .set('Content-Type', 'application/json');
+    return this.http.get(AUTH_API+ 'api/Mou/GetRenewedMouDetails?MouId=' + Id, { headers });
+    // return this.http.get('https://localhost:7135/'+ 'api/Mou/GetRenewedMouDetails?MouId=' + Id, { headers });
+    // return this.http.get(AUTH_API + 'api/Mou/GetUIDWiseMouDocumentDetails?Uid=' + Id, { headers });
+  }
+
+
 
   GetEmployeeDetails(): Observable<any> {
     let token = this.storageService.getUser();
@@ -40,8 +55,9 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
-    return this.http.post( 'https://localhost:7135/api/Mou/MouRenewalInsertNewRecord', dataSoft, { headers }
+    return this.http.post( AUTH_API + 'api/Mou/MouRenewalInsertNewRecord', dataSoft, { headers }
     // return this.http.post( 'https://localhost:7135/api/Mou/MouRenewalInsertNewRecord', dataSoft, { headers }
+     
     );
   }
 
@@ -59,7 +75,9 @@ export class MouDocumentsService {
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
       .set('Content-Type', 'application/json');
-    return this.http.get(AUTH_API_LOCAL + 'api/Mou/GetAllUploadedDocuments', { headers }
+    return this.http.get(AUTH_API + 'api/Mou/GetAllUploadedDocuments', { headers }
+    // return this.http.get('https://localhost:7135/' + 'api/Mou/GetAllUploadedDocuments', { headers }
+    // return this.http.get(AUTH_API_LOCAL + 'api/Mou/GetAllUploadedDocuments', { headers }
     );
   }
   ApproveDocument(dataSoft: FormData): Observable<any> {
@@ -89,7 +107,9 @@ export class MouDocumentsService {
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
       .set('Content-Type', 'application/json');
-    return this.http.get(AUTH_API + 'api/Mou/GetUIDWiseMouDocumentDetails?Uid=' + Id, { headers });
+    return this.http.get(AUTH_API+ 'api/Mou/GetUIDWiseMouDocumentDetails?Uid=' + Id, { headers });
+    // return this.http.get('https://localhost:7135/'+ 'api/Mou/GetUIDWiseMouDocumentDetails?Uid=' + Id, { headers });
+    // return this.http.get(AUTH_API + 'api/Mou/GetUIDWiseMouDocumentDetails?Uid=' + Id, { headers });
   }
 
   MouActivityInsert(dataSoft: FormData): Observable<any> {

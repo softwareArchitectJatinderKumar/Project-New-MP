@@ -11,12 +11,14 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-3">                            
+                        <div class="col-sm-3">
                             <div class="mb-3">
-                                <select class="form-select" [(ngModel)]="statusFilter" (change)="onStatusChange($event)">
+                                <select class="form-select" [(ngModel)]="statusFilter"
+                                    (change)="onStatusChange($event)">
                                     <option value="all">All MOU</option>
                                     <option value="active">Active</option>
                                     <option value="expired">Expired</option>
+                                    <option value="renewed">Renewed</option>
                                 </select>
                             </div>
                         </div>
@@ -44,6 +46,9 @@
                                 <span class="badge bg-danger" [class.bg-primary]="statusFilter === 'expired'">
                                     Expired: {{ getExpiredCount() }}
                                 </span>
+                                <span class="badge bg-danger" [class.bg-primary]="statusFilter === 'renewed'">
+                                    Renewed: {{ getRenewedCount() }}
+                                </span>
                                 <span class="badge bg-dark" *ngIf="searchQuery">
                                     Filtered: {{ filteredMouDocumentDetails.length }}
                                 </span>
@@ -57,33 +62,25 @@
                             [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="5" [headerHeight]="80"
                             [rowHeight]="'auto'" [scrollbarH]="true" [limit]="15">
 
-                            <!-- <ngx-datatable-column name="LPU Spoc Name" [sortable]="false" prop="Id">
-                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
-                                    ngx-datatable-cell-template>
-                                    <ng-container *ngIf="row.lpuSpocName != null">   
-                                        <span
-                                        style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.lpuSpocName}}</span>                                     
-                                    </ng-container>                                     
+
+
+                            <ngx-datatable-column *ngIf="statusFilter=='expired'" name="Renew MOU" [sortable]="false"
+                                prop="Id">
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                    <a class="btn btn-success me-4" (click)="openRenewModal(row)">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </a>
                                 </ng-template>
                             </ngx-datatable-column>
-                            <ngx-datatable-column name="LPU SPOC UId" [sortable]="false" prop="Id">
-                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
-                                    ngx-datatable-cell-template>
-                                    <ng-container *ngIf="row.lpuSpocUID != null">   
-                                        <span
-                                        style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.lpuSpocUID}}</span>                                     
-                                    </ng-container>                                     
+
+                            <ngx-datatable-column *ngIf="statusFilter=='renewed'" name="Renewed MOU" [sortable]="false"
+                                prop="Id">
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                    <a class="btn btn-success me-4" (click)="OpenAllMouRenewalHistory(row)">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </a>
                                 </ng-template>
                             </ngx-datatable-column>
-                            <ngx-datatable-column name="LPU SPOC Email" [sortable]="false" prop="Id">
-                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
-                                    ngx-datatable-cell-template>
-                                    <ng-container *ngIf="row.lpuSpocEmail != null">   
-                                        <span
-                                        style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.lpuSpocEmail}}</span>                                     
-                                    </ng-container>                                     
-                                </ng-template>
-                            </ngx-datatable-column> -->
                             <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="Id">
                                 <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                     ngx-datatable-cell-template>
@@ -102,15 +99,7 @@
                                     </ng-container>
                                 </ng-template>
                             </ngx-datatable-column>
-                            <!-- <ngx-datatable-column name="Employee Id" [sortable]="false" prop="Id">
-                                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
-                                    ngx-datatable-cell-template>
-                                    <ng-container *ngIf="row.uid != null">   
-                                        <span
-                                        style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.uid}}</span>                                     
-                                    </ng-container>                                     
-                                </ng-template>
-                            </ngx-datatable-column> -->
+
 
                             <ngx-datatable-column name="MOU Organisation" [sortable]="false" prop="Id">
                                 <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
@@ -222,22 +211,16 @@
                                     </ng-container>
                                 </ng-template>
                             </ngx-datatable-column>
-                            
-                            <ngx-datatable-column *ngIf="statusFilter=='expired'" name="Renew MOU" [sortable]="false" prop="Id">
-                                <ng-template let-row="row" ngx-datatable-cell-template>
-                                    <a class="btn btn-success me-4" (click)="openRenewModal(row)">
-                                        <i class="bi bi-arrow-repeat"></i>
-                                    </a>
-                                </ng-template>
-                            </ngx-datatable-column>
-                 
+
+
+
                             <ngx-datatable-column name="Approval Status" [sortable]="false" prop="Id">
                                 <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                     ngx-datatable-cell-template>
                                     <ng-container
                                         *ngIf="row.isApproved == 1 || row.isApproved == 'True'; else OtherCheck">
                                         <div>Approved
-                                             
+
                                         </div>
                                     </ng-container>
                                     <ng-template #OtherCheck>
@@ -356,7 +339,7 @@
                     </div>
                     <div class="col-md-2 text-start" *ngIf="isRenewalMode">
                         <label class="small fw-bold">Renewal Remarks</label>
-                        <input type="text" class="form-control" formControlName="remarks" >
+                        <input type="text" class="form-control" formControlName="remarks">
                     </div>
                 </div>
             </div>
@@ -432,12 +415,13 @@
         <div class="card mb-4 shadow-sm" *ngIf="isRenewalMode">
             <div class="card-body py-2">
                 <label class="form-label fw-bold small">Upload New MOU Document</label>
-                <input type="file" class="form-control" (change)="onRenewFileSelected($event)" accept=".pdf,.doc,.docx" />
+                <input type="file" class="form-control" (change)="onRenewFileSelected($event)"
+                    accept=".pdf,.doc,.docx" />
                 <small class="text-muted" *ngIf="renewalFileName">{{renewalFileName}}</small>
                 <div *ngIf="renewalFileError" class="text-danger small">{{renewalFileError}}</div>
             </div>
         </div>
-        
+
         <!-- <div class="card shadow-sm border-0 bg-white">
             <div class="card-body">
                 <h6 class="text-primary fw-bold mb-3 border-bottom pb-2">
@@ -487,5 +471,296 @@
         <button type="button" class="btn btn-dark px-4" (click)="onSubmitModal()">
             <i class="bi bi-cloud-upload me-1"></i> {{isRenewalMode ? 'Renew MOU' : 'Save Changes'}}
         </button>
+    </div>
+</ng-template>
+
+
+<!-- <ng-template #ViewRenewedMouDetailsModal let-modal>
+    <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title">{{'Renew MOU - ' + mouId + ' - Details' }}</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
+    </div>
+
+
+    <div class="table-responsive">
+        <ngx-datatable class="bootstrap table-responsive table-striped material" [rows]="renewedMouDocumentDetails"
+            [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="5"
+            [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="15">
+
+
+
+            <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.newMouId != null">
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.newMouId}}</span>
+                    </ng-container>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.id != null">
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">MOU/{{row.id}}</span>
+                    </ng-container>
+                </ng-template>
+            </ngx-datatable-column>
+
+
+            <ngx-datatable-column name="MOU Organisation" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.mouPartnerName != null">
+                        <span
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouPartnerName}}</span>
+                    </ng-container>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="MOU StartDate" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.mouStartDate != null; else NoDate">
+                        <span
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouStartDate}}</span>
+                    </ng-container>
+                    <ng-template #NoDate>
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;  color:brown">
+                            NA </span>
+                    </ng-template>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="MOU EndDate" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.mouEndDate != null; else NoName">
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouEndDate}}</span>
+                    </ng-container>
+                    <ng-template #NoName>
+                        <span *ngIf="row.mouEndDate == null && row.mouStartDate != null; "
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">Indefinite
+                        </span>
+                        <span *ngIf="row.mouEndDate == null && row.mouStartDate == null; "
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">
+                            NA </span>
+                    </ng-template>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="MOU Status" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.mouStatus != null; else noStatus">
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouStatus}}</span>
+                    </ng-container>
+                    <ng-template #noStatus>
+                        <span *ngIf="row.mouEndDate != null && row.mouStartDate != null; "
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">{{row.mouStatus}}
+                        </span>
+                        <span *ngIf="row.mouEndDate == null && row.mouStartDate == null; "
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">
+                            NA </span>
+                    </ng-template>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column *ngFor="let col of columns" [prop]="col"></ngx-datatable-column>
+
+            <ngx-datatable-column name="New Renewed MOU" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.filePath ; else NoFile">
+                       
+                        <button class="btn btn-secondary ms-3" (click)="onDownloadFile(row.newRenewalFile)"
+                            [disabled]="row.filePath<1">
+                            <i class="bi bi-download"></i>
+                        </button>
+                    </ng-container>
+                    <ng-template #NoFile>
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">No Doc
+                            Uploaded </span>
+                    </ng-template>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="MOU Document" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.filePath ; else NoFile">
+                       
+                        <button class="btn btn-secondary ms-3" (click)="onDownloadFile(row.filePath)"
+                            [disabled]="row.filePath<1">
+                            <i class="bi bi-download"></i>
+                        </button>
+                    </ng-container>
+                    <ng-template #NoFile>
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">No Doc
+                            Uploaded </span>
+                    </ng-template>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Division Involved" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.schoolDivisionInvolved?.length > 0;">
+               
+                        <ul *ngFor="let schoolId of row.schoolDivisionInvolved.split(',')"
+                            style=" list-style: none;  padding: 0;margin: 0; display: inline;">
+                            <li style=" display: inline; font-weight: 500;"> {{
+                                getDivisionNameById(schoolId) }} {{','}} </li>
+                        </ul>
+                    </ng-container>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Update Details " [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.id != null">
+                        <a class="btn btn-warning me-4  " (click)="ChangeSchool(row)">
+                            
+                            <i class="bi bi-pencil-square"></i>
+                            
+                        </a>
+                    </ng-container>
+                </ng-template>
+            </ngx-datatable-column>
+
+           
+
+            
+            
+        </ngx-datatable>
+    </div>
+
+    <div class="modal-footer justify-content-center border-0 pb-4">
+        <button type="button" class="btn btn-secondary px-4" (click)="modal.dismiss()">Cancel</button>
+
+    </div>
+</ng-template> -->
+
+
+
+<ng-template #ViewRenewedMouDetailsModal let-modal>
+    <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">{{'Renew MOU - ' + mouId + ' - Details' }}</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
+    </div>
+
+
+    <div class="table-responsive vw-80">
+        <ngx-datatable class="bootstrap table-responsive table-striped material" [rows]="renewedMouDocumentDetails"
+            [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="5"
+            [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="15">
+
+
+
+            <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.newMouId != null">
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.newMouId}}</span>
+                    </ng-container>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.id != null">
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">MOU/{{row.id}}</span>
+                    </ng-container>
+                </ng-template>
+            </ngx-datatable-column>
+
+
+            <ngx-datatable-column name="MOU Organisation" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.mouPartnerName != null">
+                        <span
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouPartnerName}}</span>
+                    </ng-container>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="MOU StartDate" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.mouStartDate != null; else NoDate">
+                        <span
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouStartDate}}</span>
+                    </ng-container>
+                    <ng-template #NoDate>
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;  color:brown">
+                            NA </span>
+                    </ng-template>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="MOU EndDate" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.mouEndDate != null; else NoName">
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouEndDate}}</span>
+                    </ng-container>
+                    <ng-template #NoName>
+                        <span *ngIf="row.mouEndDate == null && row.mouStartDate != null; "
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">Indefinite
+                        </span>
+                        <span *ngIf="row.mouEndDate == null && row.mouStartDate == null; "
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">
+                            NA </span>
+                    </ng-template>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="MOU Status" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.mouStatus != null; else noStatus">
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouStatus}}</span>
+                    </ng-container>
+                    <ng-template #noStatus>
+                        <span *ngIf="row.mouEndDate != null && row.mouStartDate != null; "
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">{{row.mouStatus}}
+                        </span>
+                        <span *ngIf="row.mouEndDate == null && row.mouStartDate == null; "
+                            style="margin: auto;float: left; padding: 10px 10px 10px 10px; color:brown">
+                            NA </span>
+                    </ng-template>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column *ngFor="let col of columns" [prop]="col"></ngx-datatable-column>
+
+            <ngx-datatable-column name="New Renewed MOU" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.filePath ; else NoFile">
+                       
+                        <button class="btn btn-secondary ms-3" (click)="onDownloadFile(row.newRenewalFile)"
+                            [disabled]="row.filePath<1">
+                            <i class="bi bi-download"></i>
+                        </button>
+                    </ng-container>
+                    <ng-template #NoFile>
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">No Doc
+                            Uploaded </span>
+                    </ng-template>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="MOU Document" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.filePath ; else NoFile">
+                       
+                        <button class="btn btn-secondary ms-3" (click)="onDownloadFile(row.filePath)"
+                            [disabled]="row.filePath<1">
+                            <i class="bi bi-download"></i>
+                        </button>
+                    </ng-container>
+                    <ng-template #NoFile>
+                        <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">No Doc
+                            Uploaded </span>
+                    </ng-template>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Division Involved" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.schoolDivisionInvolved?.length > 0;">
+               
+                        <ul *ngFor="let schoolId of row.schoolDivisionInvolved.split(',')"
+                            style=" list-style: none;  padding: 0;margin: 0; display: inline;">
+                            <li style=" display: inline; font-weight: 500;"> {{
+                                getDivisionNameById(schoolId) }} {{','}} </li>
+                        </ul>
+                    </ng-container>
+                </ng-template>
+            </ngx-datatable-column>
+        </ngx-datatable>
+    </div>
+
+    <div class="modal-footer justify-content-center border-0 pb-4">
+        <button type="button" class="btn btn-secondary px-4" (click)="modal.dismiss()">Close</button>
+
     </div>
 </ng-template>
