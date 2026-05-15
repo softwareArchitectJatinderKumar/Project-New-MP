@@ -29,6 +29,14 @@ import { ColumnMode } from '@swimlane/ngx-datatable';
 })
 export class MouDocumentsUploadsComponent implements OnInit {
 
+newMouid: any;
+
+
+  getRecordsForRenewedPage(): any[] {
+    const startIndex = (this.currentPage - 1) * this.recordsPerPage;
+    const endIndex = startIndex + this.recordsPerPage;
+    return this.AllRenewedMouDetails.slice(startIndex, endIndex);
+  }
 
   // Added on 14-May-25
 
@@ -99,7 +107,11 @@ export class MouDocumentsUploadsComponent implements OnInit {
       return item.mouStatus === 'Expired';
     }).length;
   }
+  AllRenewedMouDetails :any[] = [];
   getRenewedCount(): number {
+    this.AllRenewedMouDetails = this.MouDocumentsData.filter(item => {
+      return item.renewalCount >0  || item.renewalCount != null && item.renewalCount !== undefined && item.renewalCount !== '0' && item.renewalCount !== 'null';
+    });
     return this.MouDocumentsData.filter(item => {
       return item.renewalCount >0  || item.renewalCount != null && item.renewalCount !== undefined && item.renewalCount !== '0' && item.renewalCount !== 'null';
     }).length;
@@ -138,8 +150,13 @@ export class MouDocumentsUploadsComponent implements OnInit {
 
   OpenAllMouRenewalHistory(row: any): void {
     this.mouId = row.id;
+    this.newMouid= row.newMouId;
     this.getRenewedMouDetails(row.id);
-     this.modalService.open(this.ViewRenewedMouDetailsModal, { size: 'lg', backdrop: 'static' }).result.then(() => {
+    
+     this.modalService.open(this.ViewRenewedMouDetailsModal,  { size: 'xl', windowClass: 'modal-xl' ,backdrop: 'static'} ).result.then(() => {
+      setTimeout(() => {
+    window.dispatchEvent(new Event('resize'));
+  }, 200);
       // Modal closed
     }).catch(() => { 
       window.location.reload()
@@ -433,7 +450,11 @@ initForm() {
     this.isIndefiniteMou = row.mouStatus === 'Active' && !row.mouEndDate;
     this.CurrentSchool = row.schoolDivisionInvolved;
     
-    this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'lg', backdrop: 'static' }).result.then(() => {
+    this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'xl', windowClass: 'modal-xl' ,backdrop: 'static'}).result.then(() => {
+      setTimeout(() => {
+    window.dispatchEvent(new Event('resize'));
+  }, 200);
+    // this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'lg', backdrop: 'static' }).result.then(() => {
       // Modal closed
     }).catch(() => {
 
@@ -631,6 +652,7 @@ initForm() {
         this.GetEmployeeDetails();
         this.GetAllActivities();
         this.GetEmployeeData();
+        
       },
       error: err => {
         this.LoginFailed(err);
@@ -675,7 +697,7 @@ initForm() {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
           this.Email = response.item1[0].email;
-          this.EmployeeCode =  response.item1[0].employeeCode;
+          this.EmployeeCode = response.item1[0].employeeCode;
           this.OfficialEmailId = response.item1[0].officialEmailId;
           this.ContactNoX = response.item1[0].contactNo;
           this.Department = response.item1[0].department;
@@ -928,6 +950,7 @@ initForm() {
           this.filteredMouDocumentsData = this.MouDocumentsData;
           this.dataSource.data = this.filteredMouDocumentsData;
           this.showNoDataFoundMessage = this.filteredMouDocumentsData.length === 0;
+          
           this.isLoginFailed = false;
         } else {
           this.dataSource.data = this.MouDocumentsData = [];

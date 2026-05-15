@@ -143,7 +143,7 @@
                   </ngx-datatable-column>
 
 
-                  <ngx-datatable-column *ngFor="let col of columns" [prop]="col"></ngx-datatable-column>
+                  <!-- <ngx-datatable-column *ngFor="let col of columns" [prop]="col"></ngx-datatable-column> -->
 
                   <ngx-datatable-column name="MOU Docuement Link" [sortable]="false" prop="Id">
                     <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
@@ -167,63 +167,6 @@
                     </ng-template>
                   </ngx-datatable-column>
                 </ngx-datatable>
-                <!-- <ngx-datatable class="bootstrap table table-striped material" [rows]="filteredMouActivityDocuments"
-                                [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
-                                [headerHeight]="80" rowHeight="auto">
-              
-                                <ngx-datatable-column name="New MOU Id" prop="newMouId" [width]="150">
-                                  <ng-template let-row="row" ngx-datatable-cell-template>
-                                    <span class="fw-bold">{{row.newMouId}}</span>
-                                  </ng-template>
-                                </ngx-datatable-column>
-                                
-                                <ngx-datatable-column name="Old MOU Id" prop="mouId" [width]="120">
-                                  <ng-template let-row="row" ngx-datatable-cell-template>
-                                    <span class="fw-bold">MOU/{{row.mouId}}</span>
-                                  </ng-template>
-                                </ngx-datatable-column>
-              
-                                <ngx-datatable-column name="Organization Name" prop="mouTitle" [width]="250"></ngx-datatable-column>
-              
-                                <ngx-datatable-column name="MOU Status" prop="mouStatus" [width]="100">
-                                  <ng-template let-row="row" ngx-datatable-cell-template>
-                                    <span class="badge bg-info text-white">{{row.mouStatus || 'NA'}}</span>
-                                  </ng-template>
-                                </ngx-datatable-column>
-              
-                                <ngx-datatable-column name="MOU Validity" [width]="200">
-                                  <ng-template let-row="row" ngx-datatable-cell-template>
-                                     <small>Start: {{row.mouStartDate || 'NA'}} <br>
-                                     End: {{row.mouEndDate || 'Indefinite'}}</small>
-                                  </ng-template>
-                                </ngx-datatable-column>
-              
-                                <ngx-datatable-column name="Activities" [sortable]="false">
-                                  <ng-template let-row="row" ngx-datatable-cell-template>
-                                    <button class="btn btn-sm btn-outline-dark" (click)="openActivityModal(row)">View</button>
-                                  </ng-template>
-                                </ngx-datatable-column>
-                                
-                                <ngx-datatable-column name="Actions" [sortable]="false">
-                                  <ng-template let-row="row" ngx-datatable-cell-template>
-                                    <button class="btn btn-danger btn-sm text-white" (click)="ViewAllActionTaken(row)">Details</button>
-                                  </ng-template>
-                                </ngx-datatable-column>
-              
-                                <ngx-datatable-column name="MOU Doc" [sortable]="false">
-                                  <ng-template let-row="row" ngx-datatable-cell-template>
-                                    <button *ngIf="row.filePath" class="btn btn-dark btn-sm" (click)="onSelectFile(row)">View</button>
-                                    <span *ngIf="!row.filePath" class="text-muted">No File</span>
-                                  </ng-template>
-                                </ngx-datatable-column>
-              
-                                <ngx-datatable-column name="Task" [sortable]="false">
-                                  <ng-template let-row="row" ngx-datatable-cell-template>
-                                    <button class="btn btn-primary btn-sm" (click)="onSelect(row)">Assign</button>
-                                  </ng-template>
-                                </ngx-datatable-column>
-              
-                              </ngx-datatable> -->
               </div>
               <ng-template #DataRecords>
                 <div class="text-center p-5">
@@ -364,8 +307,8 @@
                         </ng-template>
                       </ngx-datatable-column>
 
-                      <ngx-datatable-column *ngFor="let col of columnsAssigned" [prop]="col">
-                      </ngx-datatable-column>
+                      <!-- <ngx-datatable-column *ngFor="let col of columnsAssigned" [prop]="col">
+                      </ngx-datatable-column> -->
 
                     </ngx-datatable>
                   </div>

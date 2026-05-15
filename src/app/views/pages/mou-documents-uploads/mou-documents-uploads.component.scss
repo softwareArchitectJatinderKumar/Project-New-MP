@@ -1,3 +1,5 @@
+
+
   #nav-tab .btn.active {
     background-color: #FD6C04; 
   }
@@ -72,3 +74,22 @@ select {
   .dropdown-item input[type="checkbox"] {
     margin-right: 5px;
   }
+
+
+  /* Force the horizontal scroll container to fill the modal */
+.table-responsive {
+    width: 100% !important;
+    display: block;
+    overflow-x: auto;
+}
+
+/* Ensure the datatable takes up 100% of the modal body */
+ngx-datatable.bootstrap {
+    width: 100% !important;
+}
+
+/* Fix for the "Material" theme alignment */
+.ngx-datatable.material {
+    box-shadow: none;
+    border: 1px solid #dee2e6;
+}

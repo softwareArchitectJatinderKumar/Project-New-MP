@@ -31,7 +31,61 @@ interface Employee {
 })
 export class MouDocumentsReportComponent implements OnInit {
 
+  newMouId: any;
+  AllRenewedMouDetails :any[] = [];
+  
+  recordsPerPage = 5;
+  currentPage = 1;
 
+  get totalPages(): number {
+    return Math.ceil(this.AllRenewedMouDetails.length / this.recordsPerPage);
+  }
+
+  get pagesArray(): number[] {
+    return Array.from({ length: this.totalPages }, (_, index) => index + 1);
+  }
+
+  changePage(page: number): void {
+    this.currentPage = page;
+  }
+  getRecordsForCurrentPage(): any[] {
+    const startIndex = (this.currentPage - 1) * this.recordsPerPage;
+    const endIndex = startIndex + this.recordsPerPage;
+    return this.AllRenewedMouDetails.slice(startIndex, endIndex);
+  }
+
+  onPageChange(event: any): void {
+    this.currentPage = event.pageIndex + 1;
+    this.recordsPerPage = event.pageSize;
+  }
+
+    getRecordsForRenewedPage(): any[] {
+    const startIndex = (this.currentPage - 1) * this.recordsPerPage;
+    const endIndex = startIndex + this.recordsPerPage;
+    return this.AllRenewedMouDetails.slice(startIndex, endIndex);
+  }
+
+
+    filterData() {
+    const lowerCaseFilter = this.filterText.toLowerCase();
+    this.AllRenewedMouDetails = this.MouDocumentDetails.filter(item => {
+      return Object.entries(item).some(([key, val]) => {
+        if (val !== null && val !== undefined) {
+          let valueString = String(val).toLowerCase();
+
+          if (key === 'id') {
+            const numericId = Number(val); // Convert mouid to a number
+
+            if (!isNaN(numericId) && (numericId.toString().includes(lowerCaseFilter) || `mou/${numericId}`.includes(lowerCaseFilter))) {
+              return true;
+            }
+          }
+        return valueString.includes(lowerCaseFilter);
+        }
+        return false;
+      });
+    }); 
+  }
   // Logic added start on 02-Jan-26
   mouForm: FormGroup;
 
@@ -485,67 +539,14 @@ export class MouDocumentsReportComponent implements OnInit {
     }).length;
   }
   getRenewedCount(): number {
+        this.AllRenewedMouDetails = this.MouDocumentDetails.filter(item => {
+      return item.hasRenewal === true || item.hasRenewal === 'true'; 
+    });
     return this.MouDocumentDetails.filter(item => {
       return item.hasRenewal === true || item.hasRenewal === 'true';
     }).length;
   }
-  // filterData() {
-  //   const lowerCaseFilter = this.filterText.toLowerCase();
-
-  //   this.filteredMouDocumentDetails = this.MouDocumentDetails.filter(document => {
-  //     if (lowerCaseFilter.includes("approve")) {
-  //       if (lowerCaseFilter.includes("disapprove")) {
-  //         return document.isApproved || (document.disapprovalReason && document.isApproved === false);
-  //       } else {
-  //         return document.isApproved;
-  //       }
-  //     } else if (lowerCaseFilter.includes("disapprove")) {
-  //       return document.disapprovalReason && document.isApproved === false;
-  //     }
-
-  //     const mouMatch = lowerCaseFilter.match(/^mou\/(\d+)$/);
-  //     if (mouMatch) {
-  //       const mouId = parseInt(mouMatch[1], 10);
-  //       return document.id === mouId;
-  //     }
-
-  //     return Object.values(document).some(value =>
-  //       String(value).toLowerCase().includes(lowerCaseFilter)
-  //     );
-  //   });
-  // }
-
-
-  // recordsPerPage = 5;
-  // currentPage = 1;
-
-  // get totalPages(): number {
-  //   return Math.ceil(this.filteredMouDocumentDetails.length / this.recordsPerPage);
-  // }
-
-  // get pagesArray(): number[] {
-  //   return Array.from({ length: this.totalPages }, (_, index) => index + 1);
-  // }
-
-  // changePage(page: number): void {
-  //   this.currentPage = page;
-  // }
-  // getRecordsForCurrentPage(): any[] {
-  //   const startIndex = (this.currentPage - 1) * this.recordsPerPage;
-  //   const endIndex = startIndex + this.recordsPerPage;
-  //   return this.filteredMouDocumentDetails.slice(startIndex, endIndex);
-  // }
-
-  // onPageChange(event: any): void {
-  //   this.currentPage = event.pageIndex + 1;
-  //   this.recordsPerPage = event.pageSize;
-  // }
-
-  // getDivisionNameById(id: number): string {
-  //   const division = this.allSchoolDivisions.find(school => school.id === id);
-  //   return division ? division.schoolDivision : '';
-  // }
-
+ 
   getDivisionNameById(id: number): string {
     const idStr = id.toString();
     let division: SchoolDivision | undefined;
@@ -763,7 +764,10 @@ export class MouDocumentsReportComponent implements OnInit {
       // Note: Add other fields if they exist in your data object 'data'
     });
     // this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'lg', backdrop: 'static' });
-    this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'lg', backdrop: 'static' }).result.then((result) => {
+    this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'xl', backdrop: 'static' }).result.then((result) => {
+      setTimeout(() => {
+    window.dispatchEvent(new Event('resize'));
+  }, 200);
       // console.log("Modal closed" + result);
     }).catch((res) => { });
   }
@@ -806,7 +810,10 @@ export class MouDocumentsReportComponent implements OnInit {
     this.isIndefiniteMou = row.mouStatus === 'Active' && !row.mouEndDate;
     this.CurrentSchool = row.schoolDivisionInvolved;
     
-    this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'lg', backdrop: 'static' }).result.then(() => {
+    this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'xl', backdrop: 'static' }).result.then(() => {
+      setTimeout(() => {
+    window.dispatchEvent(new Event('resize'));
+  }, 200);
       // Modal closed
     }).catch(() => {});
   }
@@ -814,8 +821,12 @@ export class MouDocumentsReportComponent implements OnInit {
 
   OpenAllMouRenewalHistory(row: any): void {
     this.mouId= row.id; 
+    this.newMouId= row.newMouId; 
     this.getRenewedMouDetails(row.id);
-     this.modalService.open(this.ViewRenewedMouDetailsModal, { size: 'lg', backdrop: 'static' }).result.then(() => {
+     this.modalService.open(this.ViewRenewedMouDetailsModal, { size: 'xl', backdrop: 'static' }).result.then(() => {
+      setTimeout(() => {
+    window.dispatchEvent(new Event('resize'));
+  }, 200);
       // Modal closed
     }).catch(() => {});
   }
