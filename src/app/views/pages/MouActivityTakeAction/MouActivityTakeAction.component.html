@@ -423,10 +423,11 @@
           <form #TakeAction="ngForm" (ngSubmit)="UploadActivity()">
             <!-- Row 1: MOU Activity -->
             <div class="row d-flex justify-content-around mb-4 mt-5">
-              <div class="col-3">
+              <!-- <div class="col-3">
                 <label for="mouActivity">MOU Activity</label>
-              </div>
-              <ng-container *ngIf="ActivityDetails?.length > 0; else NewActivity">
+              </div> -->
+              <!-- on23-May-26 Removed following Row -1 as per new SRS requirements  -->
+              <!-- <ng-container *ngIf="ActivityDetails?.length > 0; else NewActivity">
                 <div class="col-3">
                   <label class="text-danger">MOU Activity {{ DocumentName }}</label>
                 </div>
@@ -459,7 +460,7 @@
                 <div class="col-3">
                   <a (click)="testClick(selectedActivityId)" class="btn btn-dark">Download Format</a>
                 </div>
-              </ng-template>
+              </ng-template> -->
             </div>
           
             <!-- Row 2: Faculty Activity Start & End Dates -->
@@ -595,7 +596,7 @@
                        name="ActivityType"> International
               </div>
             </div>
-          
+          <!--  Row -7 Participants counts  -->
             <div class="row d-flex justify-content-around mb-2 mt-2">
               <div class="col-3">
                 <label class="form-label p-3"> Participant's Count</label>

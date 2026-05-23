@@ -185,6 +185,7 @@ export class MouDocumentsService {
     //.set('Authorization', 'Bearer ' + this.Localtoken)
     return this.http.post(
       AUTH_API + 'api/Mou/MouNewActivityPlan',
+      // AUTH_API + 'api/Mou/MouNewActivityPlan',
       dataSoft,
       { headers }
     );
@@ -440,6 +441,7 @@ downloadMOUFile(fileUrl: string): Observable<Blob> {
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
     return this.http.post(
+      //  'https://localhost:7135/api/Mou/MouSendPendingReminderEmail',
       AUTH_API+ 'api/Mou/MouSendPendingReminderEmail',
       dataSoft,
       { headers }

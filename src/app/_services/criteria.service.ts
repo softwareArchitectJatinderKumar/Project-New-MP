@@ -4,13 +4,12 @@ import { Observable } from 'rxjs';
 import { StorageService } from './storage.service';
 // const AUTH_API = 'https://localhost:7125/';//'https://projectsapi.lpu.in/';
 const AUTH_API = 'https://projectsapi.lpu.in/';
-const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';//'https://localhost:7125/';
-
+const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/'; //'https://localhost:7125/';
 
 // https://localhost:7125/api/Planning/GetDivisions
 
-  import {
-     Division,
+import {
+  Division,
   Criteria,
   KeyIndicator,
   Metric,
@@ -23,69 +22,73 @@ const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';//'https://localhost:7125/'
   MetricRequest,
   RenameCriteriaRequest,
   ApiResponse,
-  UploadFileResponse
-  } from '../_model/criteria.model';
+  UploadFileResponse,
+} from '../_model/criteria.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class CriteriaService {
   private readonly baseApiUrl = AUTH_API + 'api/Planning/';
 
-  constructor(private http: HttpClient, private storageService: StorageService) { }
-GetDynamicDataList(Type: any, DivisionId: any):Observable<any>{
+  constructor(
+    private http: HttpClient,
+    private storageService: StorageService,
+  ) {}
+  GetDynamicDataList(Type: any, DivisionId: any): Observable<any> {
     let token = this.storageService.getUser();
-       let headers = new HttpHeaders()
-       .set('Authorization', 'Bearer ' + token)
-       .set('Content-Type', 'application/json'); 
-       return this.http.get(
-        //  'https://localhost:7125/api/Planning/GetDynamicDataList?Type=' + Type + '&DivisionId=' + DivisionId, 
-         AUTH_API + 'api/Planning/GetDynamicDataList?Type=' + Type + '&DivisionId=' + DivisionId, 
-        {headers}
-       );
-}
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
+    return this.http.get(
+      //  'https://localhost:7125/api/Planning/GetDynamicDataList?Type=' + Type + '&DivisionId=' + DivisionId,
+      AUTH_API +
+        'api/Planning/GetDynamicDataList?Type=' +
+        Type +
+        '&DivisionId=' +
+        DivisionId,
+      { headers },
+    );
+  }
   /**
    * Get all divisions
    */
   getDivisions(): Observable<any> {
     // return this.http.get<Division[]>(`${this.baseApiUrl}/GetDivisions`);
-      let token = this.storageService.getUser();
-        let headers = new HttpHeaders()
-        .set('Authorization', 'Bearer ' + token)
-        .set('Content-Type', 'application/json'); 
-        return this.http.get(
-          // AUTH_API + 'api/Planning/GetSchoolDivisions',
-          'https://localhost:7125/api/Planning/GetDivisions',
-         {headers}
-        );
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
+    return this.http.get(
+      // AUTH_API + 'api/Planning/GetSchoolDivisions',
+      'https://localhost:7125/api/Planning/GetDivisions',
+      { headers },
+    );
   }
 
   GetCirteriaList(Id: any): Observable<any> {
-      let token = this.storageService.getUser();
-      let headers = new HttpHeaders()
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + token)
-      .set('Content-Type', 'application/json'); 
-      return this.http.get(
-        AUTH_API + 'GetCirteriaList?DivisionId=' + Id,
-       {headers}
-      );   
-    }
+      .set('Content-Type', 'application/json');
+    return this.http.get(AUTH_API + 'GetCirteriaList?DivisionId=' + Id, {
+      headers,
+    });
+  }
 
   getCriteriasByDivision(Id: any): Observable<any> {
-     let token = this.storageService.getUser();
-        let headers = new HttpHeaders()
-        .set('Authorization', 'Bearer ' + token)
-        .set('Content-Type', 'application/json'); 
-        return this.http.get(
-          // 'https://localhost:7125/api/Planning/GetCriteriasByDivision?divisionId=36
-          AUTH_API + 'api/Planning/GetCriteriasByDivision?divisionId=' + Id,
-         {headers}
-        );
-    
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
+    return this.http.get(
+      // 'https://localhost:7125/api/Planning/GetCriteriasByDivision?divisionId=36
+      AUTH_API + 'api/Planning/GetCriteriasByDivision?divisionId=' + Id,
+      { headers },
+    );
   }
 
   /**
@@ -99,7 +102,7 @@ GetDynamicDataList(Type: any, DivisionId: any):Observable<any>{
     return this.http.get<Criteria>(
       `${this.baseApiUrl} + GetCriteriaById?id=` + criteriaId,
       // AUTH_API + 'api/Placement/GetCriteriaById?id='+criteriaId,
-      { headers }
+      { headers },
     );
   }
 
@@ -107,38 +110,58 @@ GetDynamicDataList(Type: any, DivisionId: any):Observable<any>{
    * Save new criteria
    */
   saveCriteria(criteria: CriteriaRequest): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/SaveCriteria`, criteria);
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/SaveCriteria`,
+      criteria,
+    );
   }
 
   /**
    * Rename criteria
    */
-  renameCriteria(request: RenameCriteriaRequest): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/RenameCriteria`, request);
+  renameCriteria(
+    request: RenameCriteriaRequest,
+  ): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/RenameCriteria`,
+      request,
+    );
   }
 
   /**
    * Deactivate criteria
    */
   deactivateCriteria(criteriaId: number): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/DeactivateCriteria`, { id: criteriaId });
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/DeactivateCriteria`,
+      { id: criteriaId },
+    );
   }
 
   /**
    * Activate criteria
    */
   activateCriteria(criteriaId: number): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/ActivateCriteria`, { id: criteriaId });
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/ActivateCriteria`,
+      { id: criteriaId },
+    );
   }
 
   /**
    * Upload criteria file
    */
-  uploadCriteriaFile(file: File, divisionId: number): Observable<UploadFileResponse> {
+  uploadCriteriaFile(
+    file: File,
+    divisionId: number,
+  ): Observable<UploadFileResponse> {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('divisionId', divisionId.toString());
-    return this.http.post<UploadFileResponse>(`${this.baseApiUrl}/UploadCriteriaFile`, formData);
+    return this.http.post<UploadFileResponse>(
+      `${this.baseApiUrl}/UploadCriteriaFile`,
+      formData,
+    );
   }
 
   // /**
@@ -159,7 +182,7 @@ GetDynamicDataList(Type: any, DivisionId: any):Observable<any>{
   // }
 
   // // ==================== Key Indicator Methods ====================
-  
+
   // /**
   //  * Get key indicators by division ID
   //  */
@@ -179,47 +202,71 @@ GetDynamicDataList(Type: any, DivisionId: any):Observable<any>{
   /**
    * Save key indicator
    */
-  saveKeyIndicator(indicator: KeyIndicatorRequest): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/SaveKeyIndicator`, indicator);
+  saveKeyIndicator(
+    indicator: KeyIndicatorRequest,
+  ): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/SaveKeyIndicator`,
+      indicator,
+    );
   }
 
   /**
    * Rename key indicator
    */
-  renameIndicator(indicatorId: number, desc: string, criteriaId: number): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/RenameIndicator`, {
-      indicatorId,
-      desc,
-      indicatorCriteriaId: criteriaId
-    });
+  renameIndicator(
+    indicatorId: number,
+    desc: string,
+    criteriaId: number,
+  ): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/RenameIndicator`,
+      {
+        indicatorId,
+        desc,
+        indicatorCriteriaId: criteriaId,
+      },
+    );
   }
 
   /**
    * Deactivate key indicator
    */
   deactivateIndicator(indicatorId: number): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/DeactivateIndicator`, { id: indicatorId });
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/DeactivateIndicator`,
+      { id: indicatorId },
+    );
   }
 
   /**
    * Activate key indicator
    */
   activateIndicator(indicatorId: number): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/ActivateIndicator`, { id: indicatorId });
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/ActivateIndicator`,
+      { id: indicatorId },
+    );
   }
 
   /**
    * Upload key indicators from Excel
    */
-  uploadKeyIndicatorsFile(file: File, criteriaId: number): Observable<UploadFileResponse> {
+  uploadKeyIndicatorsFile(
+    file: File,
+    criteriaId: number,
+  ): Observable<UploadFileResponse> {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('criteriaId', criteriaId.toString());
-    return this.http.post<UploadFileResponse>(`${this.baseApiUrl}/UploadKeyIndicatorsFile`, formData);
+    return this.http.post<UploadFileResponse>(
+      `${this.baseApiUrl}/UploadKeyIndicatorsFile`,
+      formData,
+    );
   }
 
   // ==================== Metric Master Methods ====================
-  
+
   /**
    * Get metrics by division ID
   //  */
@@ -240,43 +287,66 @@ GetDynamicDataList(Type: any, DivisionId: any):Observable<any>{
    * Save metric
    */
   saveMetric(metric: MetricRequest): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/SaveMetric`, metric);
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/SaveMetric`,
+      metric,
+    );
   }
 
   /**
    * Rename metric
    */
-  renameMetric(metricId: number, desc: string, category: string, indicatorId: number): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/RenameMetric`, {
-      metricId,
-      desc,
-      category,
-      indicatorId
-    });
+  renameMetric(
+    metricId: number,
+    desc: string,
+    category: string,
+    indicatorId: number,
+  ): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/RenameMetric`,
+      {
+        metricId,
+        desc,
+        category,
+        indicatorId,
+      },
+    );
   }
 
   /**
    * Deactivate metric
    */
   deactivateMetric(metricId: number): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/DeactivateMetric`, { id: metricId });
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/DeactivateMetric`,
+      { id: metricId },
+    );
   }
 
   /**
    * Activate metric
    */
   activateMetric(metricId: number): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/ActivateMetric`, { id: metricId });
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/ActivateMetric`,
+      { id: metricId },
+    );
   }
 
   /**
    * Upload metrics from Excel
    */
-  uploadMetricsFile(file: File, indicatorId: number): Observable<UploadFileResponse> {
+  uploadMetricsFile(
+    file: File,
+    indicatorId: number,
+  ): Observable<UploadFileResponse> {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('indicatorId', indicatorId.toString());
-    return this.http.post<UploadFileResponse>(`${this.baseApiUrl}/UploadMetricsFile`, formData);
+    return this.http.post<UploadFileResponse>(
+      `${this.baseApiUrl}/UploadMetricsFile`,
+      formData,
+    );
   }
 
   // /**
@@ -288,7 +358,7 @@ GetDynamicDataList(Type: any, DivisionId: any):Observable<any>{
   // }
 
   // // ==================== Metric Source Methods ====================
-  
+
   // /**
   //  * Get metric sources by metric ID
   //  */
@@ -301,25 +371,34 @@ GetDynamicDataList(Type: any, DivisionId: any):Observable<any>{
    * Save metric source
    */
   saveMetricSource(source: MetricSource): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/SaveMetricSource`, source);
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/SaveMetricSource`,
+      source,
+    );
   }
 
   /**
    * Deactivate metric source
    */
   deactivateMetricSource(sourceId: number): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/DeactivateMetricSource`, { id: sourceId });
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/DeactivateMetricSource`,
+      { id: sourceId },
+    );
   }
 
   /**
    * Activate metric source
    */
   activateMetricSource(sourceId: number): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/ActivateMetricSource`, { id: sourceId });
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/ActivateMetricSource`,
+      { id: sourceId },
+    );
   }
 
   // ==================== Metric Weightage Methods ====================
-  
+
   // /**
   //  * Get metric weightage by indicator ID
   //  */
@@ -333,12 +412,17 @@ GetDynamicDataList(Type: any, DivisionId: any):Observable<any>{
   /**
    * Save metric weightage
    */
-  saveWeightage(weightageData: MetricWeightage[]): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/SaveWeightage`, { lstUpdateData: weightageData });
+  saveWeightage(
+    weightageData: MetricWeightage[],
+  ): Observable<ApiResponse<null>> {
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/SaveWeightage`,
+      { lstUpdateData: weightageData },
+    );
   }
 
   // ==================== Miscellaneous Methods (Stages/Checklist) ====================
-  
+
   // /**
   //  * Get stages by metric ID
   //  */
@@ -351,7 +435,10 @@ GetDynamicDataList(Type: any, DivisionId: any):Observable<any>{
    * Save stage
    */
   saveStage(stage: Stage): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/SaveStage`, stage);
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/SaveStage`,
+      stage,
+    );
   }
 
   /**
@@ -366,7 +453,10 @@ GetDynamicDataList(Type: any, DivisionId: any):Observable<any>{
    * Save checklist
    */
   saveChecklist(checklist: CheckList): Observable<ApiResponse<null>> {
-    return this.http.post<ApiResponse<null>>(`${this.baseApiUrl}/SaveChecklist`, checklist);
+    return this.http.post<ApiResponse<null>>(
+      `${this.baseApiUrl}/SaveChecklist`,
+      checklist,
+    );
   }
 }
 //   /**

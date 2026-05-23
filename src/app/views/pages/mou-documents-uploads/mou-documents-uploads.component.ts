@@ -417,13 +417,13 @@ initForm() {
     this.showSuggestions = false;
     this.filteredEmployeesData = [];
     this.originalMouData = { ...row };
-    
+
     // Reset file upload fields
     this.renewalFile = null;
     this.renewalFileBase64 = null;
     this.renewalFileName = '';
     this.renewalFileError = '';
-    
+
     // Populate form with existing MOU data
     this.mouForm.patchValue({
       mouId: row.id,
@@ -439,7 +439,7 @@ initForm() {
       lpuSpocUid: row.lpuSpocUID,
       lpuSpocEmail: row.lpuSpocEmail
     });
-    
+
     // Set display variables
     this.mouId = row.id;
     this.AssignedToUid = row.lpuSpocUID;
@@ -449,12 +449,12 @@ initForm() {
     this.MouEndDate = row.mouEndDate;
     this.isIndefiniteMou = row.mouStatus === 'Active' && !row.mouEndDate;
     this.CurrentSchool = row.schoolDivisionInvolved;
-    
-    this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'xl', windowClass: 'modal-xl' ,backdrop: 'static'}).result.then(() => {
+
+    this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'xl', windowClass: 'modal-xl', backdrop: 'static' }).result.then(() => {
       setTimeout(() => {
-    window.dispatchEvent(new Event('resize'));
-  }, 200);
-    // this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'lg', backdrop: 'static' }).result.then(() => {
+        window.dispatchEvent(new Event('resize'));
+      }, 200);
+      // this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'lg', backdrop: 'static' }).result.then(() => {
       // Modal closed
     }).catch(() => {
 
