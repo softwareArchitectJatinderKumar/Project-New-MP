@@ -41,6 +41,83 @@ interface SchoolDivision {
 })
 export class MouActivityTakeActionComponent implements OnInit {
 
+
+  // added on 25-5-26 
+   Tab1statusFilter: string = 'all';
+
+   // master copy of API data - never mutate this
+   MouActionTakenDocumentsMaster: any[] = [];
+
+   // receive the new selected value (string) from ngModelChange
+   onStatusChangeTab1(value: string): void {
+     this.Tab1statusFilter = value;
+     this.applyFiltersTab1();
+   }
+
+   applyFiltersTab1(): void {
+    // Work from the master copy
+    let filtered = (this.MouActionTakenDocumentsMaster || []).slice();
+
+    // Filter by status
+    if (this.Tab1statusFilter && this.Tab1statusFilter !== 'all') {
+      const status = this.Tab1statusFilter.toLowerCase();
+      filtered = filtered.filter(item => {
+        const mouStatus = (item.mouStatus || '').toString().toLowerCase();
+        if (status === 'active') return mouStatus === 'active';
+        if (status === 'expired') return mouStatus === 'expired';
+        if (status === 'renewed') return mouStatus === 'renewed';
+        return true;
+      });
+    }
+
+    // Then apply search filter if exists
+    const query = (this.searchQuery || '').toString().trim().toLowerCase();
+    if (query) {
+      filtered = filtered.filter((item: any) => {
+        return Object.entries(item).some(([key, val]) => {
+          if (val !== null && val !== undefined) {
+            const valueString = String(val).toLowerCase();
+
+            // Special handling for mouId / id
+            if (key === 'mouId' || key === 'id') {
+              const numericId = Number(val);
+              if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
+                return true;
+              }
+            }
+
+            // General search for all other fields
+            return valueString.includes(query);
+          }
+          return false;
+        });
+      });
+    }
+
+    // update only the filtered view - keep master intact
+    this.filteredMouActionTakenDocuments = filtered;
+  }
+
+
+  getActiveCount(): number {
+    return (this.filteredMouActionTakenDocuments || []).filter(item => {
+      return (item.mouStatus || '').toString().toLowerCase() === 'active';
+    }).length;
+  }
+
+  getExpiredCount(): number {
+    return (this.filteredMouActionTakenDocuments || []).filter(item => {
+      return (item.mouStatus || '').toString().toLowerCase() === 'expired';
+    }).length;
+  }
+  getRenewedCount(): number {
+    return (this.filteredMouActionTakenDocuments || []).filter(item => {
+      return (item.mouStatus || '').toString().toLowerCase() === 'renewed';
+    }).length;
+  }
+
+
+
   @ViewChild('stageModal') stageModal: TemplateRef<any>;
   @ViewChild('divstagesHistory') divstagesHistory: TemplateRef<any>;
   @ViewChild('divstagesHistoryFiles') divstagesHistoryFiles: TemplateRef<any>;
@@ -202,7 +279,7 @@ export class MouActivityTakeActionComponent implements OnInit {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
-          this.EmployeeCode =  response.item1[0].employeeCode;
+          this.EmployeeCode = response.item1[0].employeeCode;
           this.Department = response.item1[0].department;
           this.DepartmentName = response.item1[0].departmentName;
           this.loadingIndicator = false;
@@ -227,11 +304,66 @@ export class MouActivityTakeActionComponent implements OnInit {
   }
 
 
+  // master copy for Take Action tab
+  MouActivityDocumentsMaster: any[] = [];
+  Tab1StatusFilterTakeAction: string = 'all';
+
+  onStatusChangeTakeAction(value: string): void {
+    this.Tab1StatusFilterTakeAction = value;
+    this.applyFiltersTakeAction();
+  }
+
+  applyFiltersTakeAction(): void {
+    let filtered = (this.MouActivityDocumentsMaster || []).slice();
+
+    if (this.Tab1StatusFilterTakeAction && this.Tab1StatusFilterTakeAction !== 'all') {
+      const status = this.Tab1StatusFilterTakeAction.toString().toLowerCase();
+      filtered = filtered.filter(item => {
+        const mouStatus = (item.mouStatus || '').toString().toLowerCase();
+        if (status === 'active') return mouStatus === 'active';
+        if (status === 'expired') return mouStatus === 'expired';
+        if (status === 'renewed') return mouStatus === 'renewed';
+        return true;
+      });
+    }
+
+    // If there's a searchQuery applied globally to this tab, keep parity with other filters
+    const query = (this.searchQuery || '').toString().trim().toLowerCase();
+    if (query) {
+      filtered = filtered.filter((item: any) => {
+        return Object.entries(item).some(([_, val]) => {
+          if (val !== null && val !== undefined) {
+            return String(val).toLowerCase().includes(query);
+          }
+          return false;
+        });
+      });
+    }
+
+    this.filteredMouActivityDocuments = filtered;
+  }
+
+  getActiveCountTakeAction(): number {
+    return (this.filteredMouActivityDocuments || []).filter(item => (item.mouStatus || '').toString().toLowerCase() === 'active').length;
+  }
+  getExpiredCountTakeAction(): number {
+    return (this.filteredMouActivityDocuments || []).filter(item => (item.mouStatus || '').toString().toLowerCase() === 'expired').length;
+  }
+  getRenewedCountTakeAction(): number {
+    return (this.filteredMouActivityDocuments || []).filter(item => (item.mouStatus || '').toString().toLowerCase() === 'renewed').length;
+  }
+
+
+
   GetAllMouDocumentsForActions(): void {
     this.mouDocumentsService.MouDocumentstoTakeAction(this.EmployeeCode).subscribe({
       next: response => {
         if (response.item1.length > 0) {
-          this.filteredMouActivityDocuments = this.MouActivityDocuments = response.item1;          
+          // keep master copy and apply filters
+          this.MouActivityDocumentsMaster = response.item1;
+          this.MouActivityDocuments = response.item1;
+          this.applyFiltersTakeAction();
+
           this.dataSource.data = this.MouActivityDocuments;
           this.loadingIndicator = false;
           this.columns = []; this.headHtmlData = [];
@@ -241,7 +373,7 @@ export class MouActivityTakeActionComponent implements OnInit {
           this.columns.push()
           this.loadingIndicator = false;
         } else {
-          this.dataSource.data = this.MouActivityDocuments = [];
+          this.dataSource.data = this.MouActivityDocuments = this.filteredMouActivityDocuments = this.MouActivityDocumentsMaster = [];
           this.showNoDataFoundMessage = true;
         }
       },
@@ -348,7 +480,7 @@ export class MouActivityTakeActionComponent implements OnInit {
 
   // Debugging: Check selected value
   onSessionChange(event: any) {
-    console.log('Selected Session ID:', event.target.value);
+    // console.log('Selected Session ID:', event.target.value);
   }
 
   // End 29-jan-25 changes
@@ -457,24 +589,9 @@ export class MouActivityTakeActionComponent implements OnInit {
     });
   }
   searchData() {
-    const query = this.searchQuery.trim().toLowerCase();
-    this.filteredMouActionTakenDocuments = this.MouActionTakenDocuments.filter(item => {
-      return Object.entries(item).some(([key, val]) => {
-        if (val !== null && val !== undefined) {
-          let valueString = String(val).toLowerCase();
-  
-          if (key === 'mouId') {
-            const numericId = Number(val); // Convert mouid to a number
-            
-            if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
-              return true;
-            }
-          }
-          return valueString.includes(query);
-        }
-        return false;
-      });
-    });
+    // search should update the filtered view respecting current status filter and session
+    // searchQuery already bound; simply re-run applyFiltersTab1
+    this.applyFiltersTab1();
   }
 
   GetAllActivities(): void {
@@ -567,7 +684,7 @@ export class MouActivityTakeActionComponent implements OnInit {
     }
 
     const wscols = [
-      { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }
+      { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }, { wpx: 200 }
     ];
     ws['!cols'] = wscols;
 
@@ -718,9 +835,12 @@ export class MouActivityTakeActionComponent implements OnInit {
     this.mouDocumentsService.MouActionsTakenData(this.EmployeeCode, this.selectedPlannerSession).subscribe({
       next: response => {
         if (response.item1.length > 0) {
-          this.filteredMouActionTakenDocuments = this.MouActionTakenDocuments = response.item1;
-          this.dataSource.data = this.MouActionTakenDocuments;           
-   
+          // keep a master copy and then apply current filters to populate filtered view
+          this.MouActionTakenDocumentsMaster = response.item1;
+          this.MouActionTakenDocuments = response.item1; // optional legacy reference
+          this.applyFiltersTab1();
+
+          this.dataSource.data = this.MouActionTakenDocuments;
           this.columns = []; this.headHtmlData = [];
           this.headHtmlData = this.MouActionTakenDocuments[0];
           this.columns = Object.keys(this.MouActionTakenDocuments[0]);
@@ -731,7 +851,7 @@ export class MouActivityTakeActionComponent implements OnInit {
           this.showNoDataFoundMessage = false;
 
         } else {
-          this.dataSource.data =   this.filteredMouActionTakenDocuments = this.MouActionTakenDocuments = [];
+          this.dataSource.data =   this.filteredMouActionTakenDocuments = this.MouActionTakenDocuments = this.MouActionTakenDocumentsMaster = [];
           this.showNoDataFoundMessage = true;
         }
          // Delay hiding the loader for 2.5 seconds
@@ -740,7 +860,7 @@ export class MouActivityTakeActionComponent implements OnInit {
         }, 2500);
       },
       error: err => {
-        this.dataSource.data =   this.filteredMouActionTakenDocuments = this.MouActionTakenDocuments = [];
+        this.dataSource.data =   this.filteredMouActionTakenDocuments = this.MouActionTakenDocuments = this.MouActionTakenDocumentsMaster = [];
         this.showNoDataFoundMessage = true;
         setTimeout(() => {
           this.loadingIndicator = false;          

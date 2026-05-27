@@ -197,7 +197,7 @@ debugger;
   changeCollab(event:any){
   debugger;
   let aa = event;
-  console.log(JSON.stringify(aa));
+  // console.log(JSON.stringify(aa));
   this.getActivityByAoC(aa);
 
 
@@ -209,7 +209,7 @@ debugger;
     this.viewdescription=data[0]['forwardUserRemarks'];
     this.modalService.open(this.viewDescModal, {size: 'sm'}).result.then((result) => {
 
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => {});
 
   }

@@ -732,10 +732,10 @@ export class StudentFormComponent implements OnInit {
       // console.log("Docs " + JSON.stringify(document));
       if (document) {
         this.FeesPaidStatus = 'Received the Payment ';
-        console.log('No document found with DocumentName="Fees Paid" and isApproved=true.' + this.FeesPaidStatus);
+        // console.log('No document found with DocumentName="Fees Paid" and isApproved=true.' + this.FeesPaidStatus);
       } else {
         this.FeesPaidStatus = 'Pending Payment ';
-        console.log('No document found with DocumentName="Fees Paid" and isApproved=true.' + this.FeesPaidStatus);
+        // console.log('No document found with DocumentName="Fees Paid" and isApproved=true.' + this.FeesPaidStatus);
       }
 
 

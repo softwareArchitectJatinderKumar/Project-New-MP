@@ -40,7 +40,7 @@ export class MouActivityActionPlanComponent implements OnInit {
     const selectedId = event.target.value;
     this.selectedSchoolDivision = selectedId;
     // alert('Selected School Division ID: ' + this.selectedSchoolDivision);
-    console.log('Selected School Division ID:', JSON.stringify(this.MouActivityDocumentsMaster) + 'Division selected '+ this.selectedSchoolDivision);
+    // console.log('Selected School Division ID:', JSON.stringify(this.MouActivityDocumentsMaster) + 'Division selected '+ this.selectedSchoolDivision);
    let filtered = this.MouActivityDocumentsMaster.filter(item => {
       if (this.selectedSchoolDivision === '-1') {
         return false;
@@ -394,7 +394,7 @@ export class MouActivityActionPlanComponent implements OnInit {
 
 
   openRenewModal(row: any): void {
-    console.log('openRenewModal called for MOU ID:', JSON.stringify(row));
+    // console.log('openRenewModal called for MOU ID:', JSON.stringify(row));
      this.isRenewalMode = true;
      this.showSuggestions = false;
      this.filteredEmployeesData = [];
@@ -727,7 +727,7 @@ export class MouActivityActionPlanComponent implements OnInit {
         });
       });
     }
-    console.log(  "ALL RECORDS " + this.filteredMouActivityAssignedOthers.length);
+    // console.log(  "ALL RECORDS " + this.filteredMouActivityAssignedOthers.length);
     // this.filteredMouActivityAssignedMeMaster = filtered;
     this.filteredMouActivityAssignedOthers = filtered;
   }
@@ -900,7 +900,7 @@ export class MouActivityActionPlanComponent implements OnInit {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
-          this.EmployeeCode ='31930';// response.item1[0].employeeCode; // // Hardcoded as per original
+          this.EmployeeCode = response.item1[0].employeeCode; // // Hardcoded as per original
           this.ContactNoX = response.item1[0].contactNo;
           this.Department = response.item1[0].department;
           this.DepartmentName = response.item1[0].departmentName;
@@ -955,7 +955,7 @@ export class MouActivityActionPlanComponent implements OnInit {
   reloadGrid2() {
     this.selectedPlannerSession = "0";
     this.searchTextTab2 = "";
-    this.GetAllActivtiesAssigned('0', '0');
+    this.GetAllActivtiesAssigned(this.EmployeeCode, '0');
   }
   GetAllActivtiesAssigned(IdCode: any, sessionId: any): void {
     this.loadingIndicator = true;
@@ -971,6 +971,7 @@ export class MouActivityActionPlanComponent implements OnInit {
           this.filteredMouActivityAssignedMe.sort((a, b) => b.id - a.id); // Assuming ID exists, mostly checks createdOn usually
           this.setupColumns(this.MouActivityAssignedMeMaster[0], 'assigned');
           this.showNoDataFoundMessage = false;
+          // console.log(JSON.stringify(this.filteredMouActivityAssignedMe) + "Assigned To Me Records: ");
         } else {
           this.MouActivityAssignedMeMaster = [];
           this.filteredMouActivityAssignedMe = [];
@@ -989,13 +990,13 @@ export class MouActivityActionPlanComponent implements OnInit {
   reloadGrid() {
     this.selectedPlannerSession = "0";
     this.searchTextTab3 = "";
-    this.GetOthersActivtiesAssigned('0', '0');
+    this.GetOthersActivtiesAssigned(this.EmployeeCode, '0');
   }
   // TAB 3 DATA
 
   GetOthersActivtiesAssigned(IdCode: any, sessionId: any): void {
     this.loadingIndicator = true;
-    this.mouDocumentsService.GetAllActivitiesAssignedwithSession('0', sessionId).subscribe({
+    this.mouDocumentsService.GetAllActivitiesAssignedwithSession('0', '0').subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.MouActivityAssignedOthersMaster = response.item1;
@@ -1316,8 +1317,8 @@ export class MouActivityActionPlanComponent implements OnInit {
     if (element) element.hidden = true;
   }
 
-  private showAlert(title: string, icon: 'success' | 'error') {
-    swal.fire({ title, icon }).then(() => window.location.reload());
+  private showAlert(title: string, icon: 'success' | 'error', reload: boolean = false) {
+    swal.fire({ title, icon }).then(() => { if (reload) window.location.reload(); });
   }
 
   removeNumberPrefix(activityDetails: string): string {
@@ -1340,7 +1341,9 @@ export class MouActivityActionPlanComponent implements OnInit {
   MouPartner: any;
   allMouActionTakenDetails: any;
 
-
+  // Added: per-row state for Reminder button
+  reminderDisabled: { [key: string]: boolean } = {};
+  reminderSending: { [key: string]: boolean } = {};
 
   onDownloadFile(remoteUrl: string): void {
     swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
@@ -1380,6 +1383,18 @@ export class MouActivityActionPlanComponent implements OnInit {
       return;
     }
 
+    const key = String(rows?.id ?? rows?.mouId ?? '');
+
+    // Prevent duplicate sends / respect previous success
+    if (this.reminderSending[key]) {
+      return;
+    }
+    if (this.reminderDisabled[key]) {
+      // already sent successfully earlier
+      return;
+    }
+
+    this.reminderSending[key] = true;
 
     this.MouidX = rows?.mouId ?? '';
     const uid = rows?.uid ?? '';
@@ -1393,10 +1408,11 @@ export class MouActivityActionPlanComponent implements OnInit {
 
     this.ActivityDetailsX = rows?.activityDetails ?? '';
     this.RemarksX = rows?.remarks ?? '';
-
+// alert(rows.id)
     const formData = new FormData();
 
     formData.append('MouId', this.MouidX);
+    formData.append('Id', rows.id); // Ensure MouId is included if needed by API
     formData.append('Uid', uid);
     formData.append('Remarks', this.RemarksX);
     formData.append('StartDate', this.StartDateX);
@@ -1406,25 +1422,41 @@ export class MouActivityActionPlanComponent implements OnInit {
     formData.append('ActionAssignedBy', AssignedBy);
     formData.append('ActivityDetails', this.ActivityDetailsX);
 
+    //   formData.forEach((value, key) => {
+    //   console.log(`${key}: ${value}`);
+    // });
+
+
     this.mouDocumentsService.MouReminderEmail(formData).subscribe({
       next: (data: any) => {
 
         const result = data?.item1?.[0]?.msg;
         if (result === 'Successfully' || result === 'success') {
+          // mark disabled for this row on success
+          this.reminderDisabled[key] = true;
           this.showAlert('Reminder Email Sent Successfully!', 'success');
         } else if (result === 'failed') {
+          // keep enabled on failure
+          this.reminderDisabled[key] = false;
           this.showAlert('Failed to Send Email!', 'error');
-        }
-        else {
+        } else {
+          this.reminderDisabled[key] = false;
           this.showAlert('Sending Email Failed', 'error');
         }
 
       },
       error: (err) => {
         console.error('API Error:', err);
-        // this.showAlert('Something went wrong', 'error');
+        // keep enabled on error
+        this.reminderDisabled[key] = false;
+        this.showAlert('Something went wrong', 'error');
       },
-      complete: () => this.clearFields()
+      complete: () => {
+        // reset sending flag; if success we keep disabled true
+        this.reminderSending[key] = false;
+        this.clearFields();
+        this.reloadGrid2();
+      }
     });
   }
 
@@ -1476,5 +1508,4 @@ export class MouActivityActionPlanComponent implements OnInit {
       complete: () => this.clearFields()
     });
   }
-
 }

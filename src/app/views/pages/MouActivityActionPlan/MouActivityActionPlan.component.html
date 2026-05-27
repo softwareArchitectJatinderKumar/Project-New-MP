@@ -322,6 +322,13 @@
                       [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50"
                       [limit]="10" [headerHeight]="80" rowHeight="auto">
 
+                      <!-- <ngx-datatable-column name="New ReminderEmailSentOn" [sortable]="true" prop="reminderEmailSentOn">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <ng-container *ngIf="row.reminderEmailSentOn != null">
+                            <span class="fw-bold ps-2">{{ row.reminderEmailSentOn }}</span>
+                          </ng-container>
+                        </ng-template>
+                      </ngx-datatable-column> -->
                       <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="Id">
                         <ng-template let-row="row" ngx-datatable-cell-template>
                           <ng-container *ngIf="row.mouId != null">
@@ -330,6 +337,13 @@
                         </ng-template>
                       </ngx-datatable-column>
 
+                      <!-- <ngx-datatable-column name=" Id" [sortable]="false" prop="Id">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <ng-container *ngIf="row.id != null">
+                            <span class="fw-bold ps-2"> {{ row.id }}</span>
+                          </ng-container>
+                        </ng-template>
+                      </ngx-datatable-column> -->
                       <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id">
                         <ng-template let-row="row" ngx-datatable-cell-template>
                           <ng-container *ngIf="row.mouId != null">
@@ -368,8 +382,11 @@
 
                               <ng-template #ReminderEmails>
                                 <!-- <p><strong>Send Reminder Email</strong></p> -->
-                                <button type="button" class="btn btn-danger" (click)="ReminderEmailTab2(row)">
-                                  <i class="bi bi-envelope-exclamation"> </i>
+                                <button type="button" [disabled]="row.reminderEmailSentOn != null " class="btn btn-danger" (click)="ReminderEmailTab2(row)"
+                                         
+                                        >
+                                  <!-- Send Reminder -->
+                                              <i class="bi bi-file-earmark-text"></i>
                                 </button>
                               </ng-template>
                             </div>
@@ -567,7 +584,6 @@
                         [width]="150"></ngx-datatable-column>
 
                     </ngx-datatable>
-
                   </div>
                 </ng-container>
 

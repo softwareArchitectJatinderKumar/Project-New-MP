@@ -407,7 +407,7 @@ export class MouActivityUploadComponent implements OnInit {
         if (response.item1.length > 0) {
           this.MouActivityData = response.item1;
           this.filteredMouActivityData =  this.MouActivityData  ;
-          console.log(this.filteredMouActivityData)
+          // console.log(this.filteredMouActivityData)
           this.dataSource.data = this.filteredMouActivityData;
           this.showNoDataFoundMessage = this.filteredMouActivityData.length === 0;
           this.isLoginFailed = false;

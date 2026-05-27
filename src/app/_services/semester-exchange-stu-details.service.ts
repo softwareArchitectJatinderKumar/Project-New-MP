@@ -90,7 +90,7 @@ export class SemesterExchangeStuDetailsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       // .set('Authorization', 'Bearer ' + authToken)
-      .set('Authorization', 'Bearer ' + this.authToken)
+      .set('Authorization', 'Bearer ' + authToken)
       .set('Content-Type', 'application/json');
     return this.http.get(
       AUTH_API + 'api/SemesterExchangeStudent/GetAllApplicationDetails',

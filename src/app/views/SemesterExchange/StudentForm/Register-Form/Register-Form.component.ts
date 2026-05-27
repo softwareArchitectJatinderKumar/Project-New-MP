@@ -473,7 +473,7 @@ export class RegisterFormcomponent implements OnInit {
                 gradeFcount++;
               }
             }
-            console.log(gradeFcount + ' subjects with Grade F found.' + this.GradeFcount);
+            // console.log(gradeFcount + ' subjects with Grade F found.' + this.GradeFcount);
           }
         },
         error: err => this.LoginFailed(err)

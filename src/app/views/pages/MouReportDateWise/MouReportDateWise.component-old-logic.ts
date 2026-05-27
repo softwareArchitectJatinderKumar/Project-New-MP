@@ -310,7 +310,7 @@ export class MouReportDateWiseComponent implements OnInit {
           this.MouDataColumns = Object.keys(this.MouData[0]);
 
           this.filteredMouDocumentsLists = this.MouDocumentsLists = data.item1;
-          console.log(JSON.stringify(this.filteredMouDocumentsLists))
+          // console.log(JSON.stringify(this.filteredMouDocumentsLists))
           this.dataSources.data = this.MouDocumentsLists;
           this.loadingIndicator = false;
           this.columns = []; this.headHtmlData = [];
@@ -335,7 +335,7 @@ export class MouReportDateWiseComponent implements OnInit {
       },
       complete: () => {
         this.dataShowing = true;
-        console.log('Data fetching complete');
+        // console.log('Data fetching complete');
         this.isLoading = false;
         this.isLoginFailed=false;
       }

@@ -575,7 +575,7 @@ MarksPlus2: any;Percetnages:any;
           this.ProgramCode = this.StudentDetailsWithMarks[0].officialCode;
           this.SectionCode = this.StudentDetailsWithMarks[0].section;
           this.SchoolId = this.StudentDetailsWithMarks[0].schoolId;
-        console.log("CGPA"+JSON.stringify(this.StudentDetailsWithMarks))
+        // console.log("CGPA"+JSON.stringify(this.StudentDetailsWithMarks))
            this.GradeFcount = 0; // Reset count
               for (const item of this.StudentDetailsWithMarks) {
                 const gradeStr = item.grade?.toUpperCase();

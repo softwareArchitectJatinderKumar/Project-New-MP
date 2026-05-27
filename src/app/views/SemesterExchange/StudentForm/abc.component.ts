@@ -511,14 +511,14 @@ export class abcStudentFormComponent implements OnInit {
 
     if (this.SemesterExchangeRegistration.valid) {
       this.isLoading = true;
-      console.log('Final Form Data:', this.SemesterExchangeRegistration.value);
+      // console.log('Final Form Data:', this.SemesterExchangeRegistration.value);
       // Actual API call to save the data (e.g., this.ServicesSM.saveApplication(this.SemesterExchangeRegistration.value).subscribe(...))
       setTimeout(() => {
         this.isLoading = false;
         swal.fire('Success', 'Application Submitted Successfully!', 'success');
       }, 2000);
     } else {
-      console.log('Form is invalid. Review errors.');
+      // console.log('Form is invalid. Review errors.');
       // Navigate to the first invalid step
       for (let i = 1; i <= this.totalSteps; i++) {
         if (!this.isStepValid(i)) {

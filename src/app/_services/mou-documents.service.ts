@@ -363,7 +363,8 @@ export class MouDocumentsService {
       .set('Authorization', 'Bearer ' + authToken)
       .set('Content-Type', 'application/json');
     return this.http.get(
-      AUTH_API + 'api/Mou/GetAllActivitiesAssignedwithSession?Uid=' + EmployeeCode + '&SessionId=' + SessionId,
+       AUTH_API + 'api/Mou/GetAllActivitiesAssignedwithSession?Uid=' + EmployeeCode + '&SessionId=' + SessionId,
+      // 'https://localhost:7135/api/Mou/GetAllActivitiesAssignedwithSession?Uid=' + EmployeeCode + '&SessionId=' + SessionId,
 
       { headers }
     );
