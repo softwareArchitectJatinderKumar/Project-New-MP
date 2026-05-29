@@ -33,6 +33,153 @@ interface SchoolDivision {
   standalone: false
 })
 export class MouActivityActionPlanComponent implements OnInit {
+  resetTab1Filters(): void {
+
+  // Reset dropdowns
+  this.selectedSchoolDivision = '0';
+  this.Tab1statusFilter = 'all';
+
+  // Reset search
+  this.searchTextTab1 = '';
+  this.searchQuery = '';
+
+  // Reload all records
+  this.filteredMouActivityDocuments = [
+    ...this.MouActivityDocumentsMaster
+  ];
+}
+
+  applyCombinedFiltersTab1(): void {
+
+  let filtered = [...this.MouActivityDocumentsMaster];
+
+ 
+  if (this.selectedSchoolDivision === '-1') {
+
+    filtered = [];
+
+  } else if (this.selectedSchoolDivision !== '0') {
+
+    filtered = filtered.filter(item => {
+
+      if (!item.schoolDivisionInvolved) {
+        return false;
+      }
+
+      return item.schoolDivisionInvolved
+        .split(',')
+        .map((id: string) => id.trim())
+        .includes(this.selectedSchoolDivision);
+
+    });
+  }
+
+  // =========================
+  // Filter By MOU Status
+  // =========================
+  filtered = filtered.filter(item => {
+
+    if (this.Tab1statusFilter === 'all') {
+      return true;
+    }
+
+    if (this.Tab1statusFilter === 'active') {
+      return item.mouStatus === 'Active';
+    }
+
+    if (this.Tab1statusFilter === 'expired') {
+      return item.mouStatus === 'Expired' && item.renewalCount == 0;
+    }
+
+    if (this.Tab1statusFilter === 'renewed') {
+      return item.renewalCount > 0 ||
+        (
+          item.renewalCount !== null &&
+          item.renewalCount !== undefined &&
+          item.renewalCount !== '0' &&
+          item.renewalCount !== 'null'
+        );
+    }
+
+    return true;
+  });
+
+  // =========================
+  // Search Filter
+  // =========================
+  const query = this.searchTextTab1?.trim().toLowerCase();
+
+  if (query) {
+
+    filtered = filtered.filter(item => {
+
+      return Object.entries(item).some(([key, val]) => {
+
+        if (val !== null && val !== undefined) {
+
+          const valueString = String(val).toLowerCase();
+
+          // Special handling for MOU ID
+          if (key === 'id') {
+
+            const numericId = Number(val);
+
+            if (
+              !isNaN(numericId) &&
+              (
+                numericId.toString().includes(query) ||
+                `mou/${numericId}`.includes(query)
+              )
+            ) {
+              return true;
+            }
+          }
+
+          return valueString.includes(query);
+        }
+
+        return false;
+      });
+    });
+  }
+
+  // Final Bind
+  this.filteredMouActivityDocuments = filtered;
+}
+
+
+getActiveCount(): number {
+
+  return this.filteredMouActivityDocuments.filter(item => {
+    return item.mouStatus === 'Active';
+  }).length;
+
+}
+
+getExpiredCount(): number {
+
+  return this.filteredMouActivityDocuments.filter(item => {
+    return item.mouStatus === 'Expired' &&
+           item.renewalCount == 0;
+  }).length;
+
+}
+
+getRenewedCount(): number {
+
+  return this.filteredMouActivityDocuments.filter(item => {
+
+    return item.renewalCount > 0 ||
+      (
+        item.renewalCount !== null &&
+        item.renewalCount !== undefined &&
+        item.renewalCount !== '0' &&
+        item.renewalCount !== 'null'
+      );
+
+  }).length;
+
+}
   // added on 23-MAy-26 
   selectedSchoolDivision: any = '0';
 
@@ -563,22 +710,22 @@ export class MouActivityActionPlanComponent implements OnInit {
   }
 
 
-  getActiveCount(): number {
-    return this.MouActivityDocumentsMaster.filter(item => {
-      return item.mouStatus === 'Active';
-    }).length;
-  }
+  // getActiveCount(): number {
+  //   return this.MouActivityDocumentsMaster.filter(item => {
+  //     return item.mouStatus === 'Active';
+  //   }).length;
+  // }
 
-  getExpiredCount(): number {
-    return this.MouActivityDocumentsMaster.filter(item => {
-      return item.mouStatus === 'Expired';
-    }).length;
-  }
-  getRenewedCount(): number {
-    return this.MouActivityDocumentsMaster.filter(item => {
-      return item.renewalCount > 0 || item.renewalCount != null && item.renewalCount !== undefined && item.renewalCount !== '0' && item.renewalCount !== 'null';
-    }).length;
-  }
+  // getExpiredCount(): number {
+  //   return this.MouActivityDocumentsMaster.filter(item => {
+  //     return item.mouStatus === 'Expired';
+  //   }).length;
+  // }
+  // getRenewedCount(): number {
+  //   return this.MouActivityDocumentsMaster.filter(item => {
+  //     return item.renewalCount > 0 || item.renewalCount != null && item.renewalCount !== undefined && item.renewalCount !== '0' && item.renewalCount !== 'null';
+  //   }).length;
+  // }
 
   OpenAllMouRenewalHistory(row: any): void {
     this.mouId = row.id;

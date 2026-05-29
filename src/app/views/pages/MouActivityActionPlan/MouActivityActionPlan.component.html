@@ -44,6 +44,12 @@
         <div class="col-12 stretch-card">
           <div class="card">
             <div class="card-body">
+              <!-- <div class="row d-flex justify-content-start p-3 mx-5" >
+                 <div class="col-sm-3">
+                  <input [(ngModel)]="searchTextTab1" (keyup)="filterTab1()" type="text" class="form-control"
+                    placeholder="Search" />
+                </div>
+              </div> -->
               <div class="row d-flex justify-content-center p-3 mx-5">
                 <div class="col-sm-3">
                   <button (click)="exportTab1()" class="btn btn-dark"
@@ -58,7 +64,8 @@
 
              
                   <select class="form-select fs-5 text-danger" [(ngModel)]="selectedSchoolDivision"
-                    (change)="setSchoolDivision($event)">
+                    >
+                    <!-- (change)="setSchoolDivision($event)"> -->
                     <option value="-1" selected>Select School Division</option>
                     <option value="0">All Divisions</option>
                     <option *ngFor="let division of allSchoolDivisions" [value]="division.id">{{ division.schoolDivision }}
@@ -66,7 +73,8 @@
                   </select>
                 </div>
                 <div class="col-sm-3 ">
-                  <select class="form-select" [(ngModel)]="Tab1statusFilter" (change)="onStatusChangeTab1($event)">
+                  <select class="form-select" [(ngModel)]="Tab1statusFilter" >
+                  <!-- <select class="form-select" [(ngModel)]="Tab1statusFilter" (change)="onStatusChangeTab1($event)"> -->
                     <option value="all">All MOU</option>
                     <option value="active">Active</option>
                     <option value="expired">Expired</option>
@@ -74,8 +82,17 @@
                   </select>
                 </div>
                 <div class="col-sm-3">
-                  <input [(ngModel)]="searchTextTab1" (keyup)="filterTab1()" type="text" class="form-control"
-                    placeholder="Search" />
+                  <button class="btn btn-danger mx-5 me-4 "   [disabled]="selectedSchoolDivision == '0'
+                 || selectedSchoolDivision == '-1'
+                 || Tab1statusFilter == 'all'" (click)="applyCombinedFiltersTab1()">
+                    Apply Filter
+                  </button><button class="btn btn-dark" (click)="resetTab1Filters()" *ngIf="(selectedSchoolDivision != '-1' && selectedSchoolDivision != '0')
+                              || Tab1statusFilter != 'all'
+                              || searchTextTab1">
+                    Reset
+                  </button>
+                  <!-- <input [(ngModel)]="searchTextTab1" (keyup)="filterTab1()" type="text" class="form-control"
+                                    placeholder="Search" /> -->
                 </div>
               </div>
                 <div class="row p-3 mx-5">
