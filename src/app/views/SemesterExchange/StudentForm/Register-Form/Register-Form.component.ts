@@ -238,6 +238,7 @@ export class RegisterFormcomponent implements OnInit {
   }
 
   getToken(loginId: any): void {     
+   
     this.authService.loginTemp(loginId).subscribe({
       next: data => {
         this.storageService.saveUser(data);
