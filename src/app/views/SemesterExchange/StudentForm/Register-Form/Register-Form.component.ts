@@ -24,11 +24,85 @@ import { start } from 'repl';
   styleUrls: ['./NewLogicForm.component.scss']
 })
 export class RegisterFormcomponent implements OnInit {
+
+
+  // Logic added on 5-June-26
+
+   // add counselling authorities list
+    counsellingAuthorities = [
+        { index: 1, name: 'Suraj', uid: '33333' },
+        { index: 2, name: 'Rupali', uid: '30922' },
+        { index: 3, name: 'Divya', uid: '34923' }
+    ];
+
+    // computed flag
+   get showCounsellingAuthority(): boolean {
+        if (!this.courseName) return false;
+     const matches = [
+       'School of Computer Science Engineering',
+       'Mittal School of Business',
+       'School of Computer Application',
+       'School of Electronics and Electric Engineering	',
+       'School of Mechanical Engineering',
+       'School of Design (Fashion Design & Technology)',
+       'School of Liberal and Creative Art (Journalism and Mass Communication)',
+       'School of Law',
+       'School of Hotel Management and Tourism		',
+       'School of Bio Engineering and Biosciences',
+       'School of Chemical Engineering and Physical Sciences',
+       'School of Design (Interior & Product Design)',
+       'School of Liberal and Creative Art (Fine Arts)',
+       'School of Allied Medical Sciences				',
+       'School of Civil Engineering ',
+       'LIE (Department of Education)/LSE (Department of Education)',
+       'LIE (Department of Physical Education)',
+       'Lovely School of Architecture & Design',
+       'School of Agriculture',
+       'School of Design (Multimedia)',
+       'School of Liberal and Creative Art (Film,Theatre and Music)',
+       'School of Liberal and Creative Art (Social Sciences & Languages)',
+
+     ];
+
+        const normalize = (s: string) => (s || '').toLowerCase().replace(/[^\w\s]/g, ' ');
+        const courseNorm = normalize(this.courseName);
+
+        // direct phrase match
+        for (const m of matches) {
+            if (m && courseNorm.includes(normalize(m).trim())) {
+                return true;
+            }
+        }
+
+        // token intersection: consider any meaningful word (length > 2)
+        const courseTokens = new Set(courseNorm.split(/\s+/).filter(t => t.length > 2));
+        for (const m of matches) {
+            const matchTokens = normalize(m).split(/\s+/).filter(t => t.length > 2);
+            for (const tok of matchTokens) {
+                if (courseTokens.has(tok)) return true;
+            }
+        }
+
+        return false;
+    }
+
+ updateCounsellingAuthorityValidator() {
+        const control = this.form.get('CounsellingAuthority');
+        if (!control) return;
+        if (this.showCounsellingAuthority) {
+            control.setValidators([Validators.required]);
+        } else {
+            control.clearValidators();
+            control.setValue('');
+        }
+        control.updateValueAndValidity();
+    }
+
   // State Flags
   isLoading: boolean = false;
   loginFailed: boolean = false;
   isEligible: boolean = false; // Controls visibility of the main wizard
-  currentStep: number = 1;
+  currentStep: number = 0;
 
   // Forms
   eligibilityForm!: FormGroup; // New form for the initial check
@@ -196,6 +270,10 @@ export class RegisterFormcomponent implements OnInit {
     );
     this.setupConditionalValidators();
     this.subscribeToFormChanges();
+
+     if (!this.form.get('CounsellingAuthority')) {
+            this.form.addControl('CounsellingAuthority', this.fb.control(''));
+        }
   }
 
   checkEligibility(): void {
@@ -250,7 +328,7 @@ export class RegisterFormcomponent implements OnInit {
             this.loginFailed = false;
             this.buildMainForm();
             this.getStudentDetail();
-           
+              
         }
       },
       error: () => { this.stopLoader(); this.loginFailed = true; }
@@ -272,6 +350,9 @@ export class RegisterFormcomponent implements OnInit {
             this.CurrentTerm = stuData.currentTerm;
             this.studentStatus = stuData.studentStatus;
             this.form.get('EmailId')?.setValue(stuData.studentEmail || this.eligibilityForm.get('email')?.value);
+
+
+             this.updateCounsellingAuthorityValidator();
 
             this.checkApplicationStatusBeforeEligibility();
           } else {
@@ -662,9 +743,17 @@ export class RegisterFormcomponent implements OnInit {
     formData.append("RelativeRelation", formValue.RelativeRelation || 'NA'); // Added RelativeRelation
     formData.append("HasRelativeDetails", formValue.HasRelativeDetails || 'NA'); // Added HasRelativeDetails
 
-    // formData.forEach((value, key) => {
-    //   console.log(`${key}: ${value}`);
-    // });
+      // if counselling authority is required / selected, attach full object
+        if (this.showCounsellingAuthority && this.form.value.CounsellingAuthority) {
+            const sel = this.counsellingAuthorities.find(a => a.uid === this.form.value.CounsellingAuthority);
+            if (sel) {
+                 formData.append("counsellingAuthority",  sel.uid );
+            }
+        }
+
+    formData.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
     this.servicesSM.SemesterExchangeNewRegistrationForm(formData)
       .pipe(
         finalize(() => this.isLoading = false)
