@@ -6,8 +6,8 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import {  FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ArchwizardModule } from 'angular-archwizard';
 import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
-import { DynamicDashboardComponent } from './NEwChanges2/DynamicDashboard.component';
-import { RoleFilterPipe } from './NEwChanges2/role-filter.pipe';
+import { DynamicDashboardComponent } from './DynamicDashboard/DynamicDashboard.component';
+import { RoleFilterPipe } from './DynamicDashboard/role-filter.pipe';
 const routes: Routes = [
   {
     path: '',
