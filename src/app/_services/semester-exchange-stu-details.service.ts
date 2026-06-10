@@ -389,8 +389,8 @@ export class SemesterExchangeStuDetailsService {
       // .set('Authorization', 'Bearer ' + authToken)
       .set('Authorization', 'Bearer ' + authToken)
     return this.http.post(
-      //  'https://localhost:7125/api/SemesterExchangeStudent/SemesterExchangeNewRegistration', dataSoft, { headers });
-      AUTH_API + 'api/SemesterExchangeStudent/SemesterExchangeNewRegistration', dataSoft, { headers });
+       'https://localhost:7135/api/SemesterExchangeStudent/SemesterExchangeNewRegistration', dataSoft, { headers });
+      // AUTH_API + 'api/SemesterExchangeStudent/SemesterExchangeNewRegistration', dataSoft, { headers });
   }
 
   //2 a Student Dashboard Get data 
@@ -428,8 +428,21 @@ export class SemesterExchangeStuDetailsService {
       })
     };
     return this.http.get<any>(`${this.baseUrl}api/SemesterExchangeStudent/AllSemesterExchangeApplication`, httpOptions);
+    // return this.http.get<any>(`${this.baseUrl}api/SemesterExchangeStudent/GetSemesterExchangeStudentDetails`, httpOptions);
   }
 
+
+    getAllApplicationsforHOD(): Observable<any> {
+    var authToken = this.storageService.getUser();
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${authToken}`
+        // 'Authorization': `Bearer ${authToken}`
+      })
+    };
+    return this.http.get<any>(`${AUTH_API_LOCAL}api/SemesterExchangeStudent/GetSemesterExchangeApplicationForHOD?UserId=${'0'}`, httpOptions);
+    // return this.http.get<any>(`${this.baseUrl}api/SemesterExchangeStudent/GetSemesterExchangeStudentDetails`, httpOptions);
+  }
   SendApproveRequest(dataSoft: FormData): Observable<any> {
     var authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
