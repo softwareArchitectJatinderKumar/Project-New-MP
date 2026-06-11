@@ -390,7 +390,7 @@ export class EditApplicationComponent implements OnInit {
   ProgramCode: any;
   SectionCode: any;
   studentStatus: any;
-
+DealingHod:any;
   ContactNo: any;
   getStudentDetail(): void {
     this.isLoading = true;
@@ -408,9 +408,11 @@ export class EditApplicationComponent implements OnInit {
             this.CurrentTerm = stuData.currentTerm;
             this.studentStatus = stuData.studentStatus;
             this.ProgramCode = stuData.programCode
-
+       
+           
             this.getApplicationDetails(this.RegistrationNo === null ? '' : this.RegistrationNo);
             this.getStuDetailsWithImage(this.RegistrationNo);
+
 
           } else {
             this.LoginFailed('Student data not found');
@@ -478,6 +480,9 @@ export class EditApplicationComponent implements OnInit {
     this.form.disable(); // Disable form fields initially
   }
   EmailId: any;
+  CounsellingAuthority:any;
+  DealingHodId:any;
+  DealingFaculty:any;
   /** ------------------- Load existing application ------------------- */
   getApplicationDetails(regNo: string): void {
     this.isLoading = true;
@@ -494,7 +499,11 @@ export class EditApplicationComponent implements OnInit {
             return; // Stop further execution in this path
           }
           this.stuApplication = response.item1[0];
-          this.LockedStatus = this.stuApplication.isLocked;
+           console.log(JSON.stringify(this.stuApplication));
+          this.CounsellingAuthority = this.stuApplication.counsellingAuthority;
+          this.DealingHodId = this.stuApplication.dealingHODId;
+          this.DealingFaculty = this.stuApplication.dealingFaculty;
+          this.LockedStatus = this.DealingHodId?.length>0? true:false;
           if (this.LockedStatus) {
             this.currentStep === 5;
             this.moveNextStep();

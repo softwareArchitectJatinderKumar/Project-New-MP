@@ -12,25 +12,34 @@
     <div class="col-md-12 grid-margin stretch-card mb-3">
         <div class="card">
             <div class="card-body">
-                <div class="row align-items-center mb-4 border-bottom pb-3">
-                    <div class="col-md-3">
-                        <h5 class=" m-0 ms-4">Dashboard</h5>
-                    </div>
-                
-                    <div class="col-md-5 d-flex align-items-center gap-4">
-                        <div class="text-secondary ">
-                            <strong class="text-dark">Status:</strong>
-                            <i [class]="LockedStatus ? 'text-success' : 'text-warning'">
-                                {{ LockedStatus ? 'Approved' : 'Pending' }}
-                            </i>
-                        </div>
-                
-                        <div class="text-secondary ">
+                <div class="row d-flex justify-content-center align-items-center mb-4 border-bottom pb-3">                   
+                 
+                        <div class="col-md-2  text-end ">
                             <strong class="text-dark">Application ID:</strong>
                            <i [class]="'text-success'"> {{ ApplicationId }}</i>
                         </div>
-                    </div>
                 
+                    <div class="col-md-2 text-end">
+                        <div class="text-muted">
+                              <strong class="text-dark">Counsellor :</strong>
+                           <i [class]="'text-success'"> {{ CounsellingAuthority }}</i>
+                        </div>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <div class="text-muted">
+                               <strong class="text-dark">Faculty :</strong>
+                           <i [class]="'text-success'"> {{ DealingFaculty }}</i>
+                        </div>
+                    </div>
+                       <div class="col-md-2  text-end">
+                        <div class="text-secondary ">
+                            <strong class="text-dark">Status:</strong>
+                            <i [class]="LockedStatus ? 'text-success' : 'text-warning'">
+                                {{ LockedStatus ? 'Approved' : 'Pending' }} 
+                            </i>
+                        </div>
+                
+                    </div>
                     <div class="col-md-2 text-end">
                         <div class="text-muted">
                             Hi, <strong class="text-info">{{ studentDetailsWithImage?.studentName }}</strong>
@@ -48,7 +57,7 @@
                     </div>
                 </div>
                 
-                <div class="row align-items-center mb-3">
+                <div class="row align-items-center justify-content-center mb-3">
                     <div class="col-md-3">
                         <h5 class="m-0 ms-4">University Preferences:</h5>
                     </div>
