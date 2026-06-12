@@ -1047,7 +1047,7 @@ getRenewedCount(): number {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
-          this.EmployeeCode = response.item1[0].employeeCode; // // Hardcoded as per original
+          this.EmployeeCode =  response.item1[0].employeeCode; // // Hardcoded as per original
           this.ContactNoX = response.item1[0].contactNo;
           this.Department = response.item1[0].department;
           this.DepartmentName = response.item1[0].departmentName;
@@ -1441,12 +1441,13 @@ getRenewedCount(): number {
     const exportedData = data.map(item => ({
       NewMOUId: item.newMouId ?? 'N/A',
       OldMOUId: "MOU/" + item.mouId,
+      MouStatus: item.mouStatus,
       'Name of Mou Organisation': item.mouTitle,
       'Uploaded By': item.createdBy ?? 'N/A',
       'SPOC Name': item.spocName ?? 'N/A',
       'SPOC Email': item.spocEmailId ?? 'N/A',
       'SPOC Contact': item.spocContactNo ?? 'N/A',
-      'Status': item.isApproved == 1 ? 'Approved' : 'Pending',
+      'Action Status': item.isApproved == 1 ? 'Approved' : 'Pending',
       'Approval Date': item.approvalDate ?? 'N/A',
       'Start': item.mouStartDate, 'End': item.mouEndDate,
       'Link': item.filePath

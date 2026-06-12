@@ -717,7 +717,7 @@ export class MouActivityTakeActionComponent implements OnInit {
     formData.append('CompletedDate', this.CompletedDate);
     formData.append('FilePath', this.fileName);
     formData.append('File', this.FileData);
-    formData.append('DocumentName', this.DocumentName=='undefined' || this.DocumentName==null ? this.Activity : this.DocumentName);
+    formData.append('DocumentName', this.DocumentName ? this.DocumentName : this.Activity);
     formData.append('Remarks', this.Remarks);
     formData.append('MouStatus', this.MouStatus);
     formData.append('SessionId', this.sessionId);

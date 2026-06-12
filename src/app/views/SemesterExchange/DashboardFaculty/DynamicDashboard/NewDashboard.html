@@ -145,7 +145,7 @@
                        AND EmployeeCode ≠ HOW_CODE
          Actions: Add Remarks | Forward to HOD | View Remarks
     ════════════════════════════════════════════════════════════════════════════ -->
-    <ng-container *ngIf="isdealingFaculty">
+    <ng-container *ngIf="isdealingFaculty && !isHOD ">
         <h5 class="text-primary fw-bold mb-3">
             <i class="bi bi-person-workspace me-2"></i>Faculty Dashboard
             <span class="badge bg-secondary ms-2">{{ (AllFacultyApplications | roleFilter:'_isFaculty').length }} students</span>

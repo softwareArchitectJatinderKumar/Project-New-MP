@@ -198,6 +198,7 @@ export class MouDocumentsService {
     //.set('Authorization', 'Bearer ' + this.Localtoken)
     return this.http.post(
       AUTH_API + 'api/Mou/MouActivityActionTakenInsert',
+      // AUTH_API + 'api/Mou/MouActivityActionTakenInsert',
       dataSoft,
       { headers }
     );

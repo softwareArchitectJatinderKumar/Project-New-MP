@@ -346,7 +346,7 @@ export class DynamicDashboardComponent implements OnInit {
           const emp = response.item1[0];
           this.EmployeeDetails  = emp;
           this.EmployeeName     = emp.employeeName;
-          this.EmployeeCode     = '22413';// String(emp.employeeCode).trim();
+          this.EmployeeCode     = '34923';// String(emp.employeeCode).trim();
           this.ContactNoX       = emp.contactNo;
           this.Department       = emp.department;
           this.DepartmentName   = emp.departmentName;
@@ -537,7 +537,8 @@ export class DynamicDashboardComponent implements OnInit {
     // ── Raise global role flags from the finalised per-row values ────────────
     this.AllApplications.forEach(app => {
       if (app._isCounsellor) this.isDealingAuthority = true;
-      if (app._isFaculty)    this.isdealingFaculty   = true;
+      if (app._isFaculty)    
+        this.isdealingFaculty   = true;
       if (app._isHOD)        this.isHOD              = true;
       if (app._isHoW)        this.isHoW              = true;
     });
@@ -586,38 +587,38 @@ export class DynamicDashboardComponent implements OnInit {
       a => a._isCounsellor || a._isFaculty || a._isHoW  
     );
   }
-private buildPageTitle(): void {
-  // Role display order: Faculty > Counsellor > HOD > HoW
-  // isDealingAuthority is only true when the employee is a pure Counsellor
-  // (no Faculty rows), so no special suppression is needed here.
-  const roleMap: Record<string, string> = {
-    isdealingFaculty:   'Faculty',
-    isDealingAuthority: 'Counsellor',
-    isHOD:              'HOD',
-    isHoW:              'HoW',
-  };
+// private buildPageTitle(): void {
+//   // Role display order: Faculty > Counsellor > HOD > HoW
+//   // isDealingAuthority is only true when the employee is a pure Counsellor
+//   // (no Faculty rows), so no special suppression is needed here.
+//   const roleMap: Record<string, string> = {
+//     isdealingFaculty:   'Faculty',
+//     isDealingAuthority: 'Counsellor',
+//     isHOD:              'HOD',
+//     isHoW:              'HoW',
+//   };
 
-  const activeRoles = Object.keys(roleMap)
-    .filter(key => (this as any)[key])
-    .map(key => roleMap[key]);
+//   const activeRoles = Object.keys(roleMap)
+//     .filter(key => (this as any)[key])
+//     .map(key => roleMap[key]);
 
-  this.pageTitle = activeRoles.length
-    ? `** ${activeRoles.join(' | ')} Dashboard **`
-    : 'Dashboard';
-  this.title.setTitle(this.pageTitle);
-}
-  // private buildPageTitle(): void {
-  //   var roles: any='';
-  //   if (this.isDealingAuthority) roles='Counsellor';
-  //   if (this.isHOD)             roles='HOD';
-  //   if (this.isHoW)              roles='HoW';    
-  //   if (this.isdealingFaculty)   roles='Faculty';
+//   this.pageTitle = activeRoles.length
+//     ? `** ${activeRoles.join(' | ')} Dashboard **`
+//     : 'Dashboard';
+//   this.title.setTitle(this.pageTitle);
+// }
+  private buildPageTitle(): void {
+    var roles: any='';
+    if (this.isDealingAuthority) roles='Counsellor';
+    if (this.isdealingFaculty)   roles='Faculty';
+    if (this.isHOD)             roles='HOD';
+    if (this.isHoW)              roles='HoW';    
 
-  //   this.pageTitle = roles.length
-  //     ? `** ${roles} Dashboard **`
-  //     : 'Dashboard';
-  //   this.title.setTitle(this.pageTitle);
-  // }
+    this.pageTitle = roles.length
+      ? `** ${roles} Dashboard **`
+      : 'Dashboard';
+    this.title.setTitle(this.pageTitle);
+  }
 
   // ── HOD Tab Switching ─────────────────────────────────────────────────────────
 

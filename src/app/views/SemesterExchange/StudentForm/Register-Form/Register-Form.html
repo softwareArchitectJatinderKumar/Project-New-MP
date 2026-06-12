@@ -114,7 +114,29 @@
 
                 <section *ngIf="currentStep === 1" class="step-section">
                     <div class="row g-3">
-
+                        <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                                <div class="card section">
+                                    <div class="card-header">Dealing Counsellor Details</div>
+                                    <div class="card-body">
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Select Counselling Authority <span
+                                                        class="text-danger">*</span></label>
+                                                <select class="form-select" formControlName="CounsellingAuthority">
+                                                    <option value="">Select Authority</option>
+                                                    <option *ngFor="let a of counsellingAuthorities" [value]="a.uid">
+                                                        #{{a.index}} {{a.name}} UID {{a.uid}}
+                                                    </option>
+                                                </select>
+                                                <div class="text-danger small"
+                                                    *ngIf="(form.get('CounsellingAuthority')?.touched || isSubmitted) && form.get('CounsellingAuthority')?.invalid">
+                                                    Required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         
                         <div class="col-md-6 col-lg-10 mx-auto mb-3">
                             <div class="card section">
@@ -754,28 +776,29 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title text-primary">Step 5: Review & Submit</h4>
-                                <div *ngIf="showCounsellingAuthority" class="col-md-12 col-lg-10 mx-auto mb-3">
-                            <div class="card section">
-                                <div class="card-header">Dealing Counsellor Details</div>
-                                <div class="card-body">
-                                    <div class="row mt-2">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Select Counselling Authority <span class="text-danger">*</span></label>
-                                            <select class="form-select" formControlName="CounsellingAuthority">
-                                                <option value="">Select Authority</option>
-                                                <option *ngFor="let a of counsellingAuthorities" [value]="a.uid">
-                                                    #{{a.index}} {{a.name}} UID {{a.uid}}
-                                                </option>
-                                            </select>
-                                            <div class="text-danger small"
-                                                *ngIf="(form.get('CounsellingAuthority')?.touched || isSubmitted) && form.get('CounsellingAuthority')?.invalid">
-                                                Required
+                            <div *ngIf="showCounsellingAuthority" class="col-md-12 col-lg-10 mx-auto mb-3">
+                                <div class="card section">
+                                    <div class="card-header">Dealing Counsellor Details</div>
+                                    <div class="card-body">
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Select Counselling Authority <span
+                                                        class="text-danger">*</span></label>
+                                                <select class="form-select" formControlName="CounsellingAuthority">
+                                                    <option value="">Select Authority</option>
+                                                    <option *ngFor="let a of counsellingAuthorities" [value]="a.uid">
+                                                        #{{a.index}} {{a.name}} UID {{a.uid}}
+                                                    </option>
+                                                </select>
+                                                <div class="text-danger small"
+                                                    *ngIf="(form.get('CounsellingAuthority')?.touched || isSubmitted) && form.get('CounsellingAuthority')?.invalid">
+                                                    Required
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                             <div class="row g-3">
                                 <div class="col-md-12 col-lg-10 mx-auto mb-3">
                                     <div class="card section">
