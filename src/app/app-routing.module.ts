@@ -42,17 +42,34 @@ const routes: Routes = [
       // { path: 'newStudentPortal/:LoginName', redirectTo: 'newSemesterExchangeRegistration/:LoginName', pathMatch: 'full' },
       { path: 'stuPotal/:LoginName', redirectTo: 'NewWay-Register/:LoginName', pathMatch: 'full' },
       // { path: 'SMAdmin/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
-      { path: 'DashboardDIAHOD/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
-      { path: 'DashboardHOW/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
-      { path: 'DashboardHOD/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
+
       {
-        path: 'SMAdmin/:LoginName',
-        loadChildren: () => import('./views/SemesterExchange/DealingUserDashboard/NewLogic/CounsellorDashboard.module').then(m => m.CounsellorDashboardModule),
+        path: 'CounsellorDashboard/:LoginName',
+        loadChildren: () => import('./views/SemesterExchange/CounsellorDashboardNew/CounsellorDashboard.module').then(m => m.CounsellorDashboardModule),
       },
+      
       {
         path: 'FacultyDashboard/:LoginName',
-        loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule),
+        loadChildren: () => import('./views/SemesterExchange/FacultyDashboardNew/DealingDashboard.module').then(m => m.FacultyDashboardNewModule),
+        // loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule),
       },
+
+       { path: 'DashboardHOD/:LoginName',         
+        loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule)  
+        // redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' 
+      },
+
+
+      { path: 'DashboardHOW/:LoginName', 
+        loadChildren: () => import('./views/SemesterExchange/HowDashboardNew/HowDashboards.module').then(m => m.HowDashboardsModule)  
+      },
+
+
+      { path: 'DashboardDIAHOD/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
+      // { path: 'DashboardHOW/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
+    
+     
+    
       {
         path: 'NewWay-Register/:LoginName', // Registeration-Form/c085f2e914a7b87faaf04df70801c7de74cc7fa78fa89978e4c5279c35331d13f781301cbdd1b14bf6c9fbd5e0582291
         loadChildren: () => import('./views/SemesterExchange/StudentForm/Register-Form/RegisterForm.module').then(m => m.RegisterFormModule),
@@ -388,7 +405,8 @@ const routes: Routes = [
       //   component: CriteriaMasterComponent
       //   // loadChildren:()=> import('./views/pages/UMS-Angular/CriteriaMaster/criteria-master.module').then(m=> m.CriteriaMasterModule)
       // },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+     
+      // { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       // { path: '**', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

@@ -19,8 +19,7 @@ import { finalize } from 'rxjs';
 import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
 
 // ─── Interfaces ───────────────────────────────────────────────────────────────
- 
-interface Application {
+ interface Application {
   // Core identity
   applicationId: string;
   registrationNo: string;
@@ -46,7 +45,6 @@ interface Application {
   isForwardedtoHOW: string;     // 1 / NULL
 
   // Role columns
-  dealingUid: string;   // Counsellor emp code
   dealingAuthority: string;   // Counsellor emp code
   dealingFaculty: string;     // Faculty emp code (NULL until forwarded)
   dealingHODId: string;       // Fixed: 28243 (NULL until forwarded to HOD)
@@ -76,7 +74,7 @@ interface AuthorityRemarks {
   counsellingRemarks: string;
   counsellingStatus: string;
   counsellingDate: string;
-
+  dealingUId: string;
   // Faculty interview remarks
   dealingUserInterviewRemarks: string;
   facultyRemarks: string;
@@ -86,9 +84,7 @@ interface AuthorityRemarks {
   dealingHODInterviewRemarks: string;
   hodRemarks: string;
   isForwardtoHOD: string;
-  dealingHow:any;
-  approvalRemarks:any;
-dealingUId:any;
+
   // HoW remarks
   dealingHowRemarks: string;
   howRemarks: string;
@@ -126,17 +122,9 @@ interface AggregatedRemarks {
   forwardedToHoW: boolean;
   // Approval
   approvalRemarks: string;
-  // Evaluation
-  academicsMarks: string;
-  communicationSkillsMarks: string;
-  attitudeMarks: string;
-  extraCurricularMarks: string;
-  knowledgeMarks: string;
-  totalMarks: string;
-  evaluationComments: string;
-  evaluationBy: string;
+  // Evaluation fields are intentionally omitted here —
+  // they are rendered per-row via selectedRemarksEvaluations instead.
 }
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
 @Component({
@@ -152,27 +140,23 @@ export class CounsellorDashboardComponent implements OnInit {
   isLoginFailed = false;
 
   AllApplications: Application[] = [];
-  AllFacultyApplications: Application[] = [];
   AllAuthorityApplications: Application[] = [];
-  AllHODApplications: Application[] = [];
-  AllHOWApplications: Application[] = [];
 
   AllAuthorityRemarks: AuthorityRemarks[] = [];
 
  
   visibleApplications: Application[] = [];
 
-  hodMyApplications: Application[] = [];
-
-  hodAllApplications: Application[] = [];
-  AllApprovedApplications: Application[] = [];
 
   selectedRemarks: AggregatedRemarks | null = null;
 
   selectedRemarksCallerRole: 'counsellor'  = 'counsellor';
 
  
+ 
+  selectedRemarksEvaluations: AuthorityRemarks[] = [];
 
+   
   ColumnMode = ColumnMode;
   loadingIndicator = false;
   private readonly minLoadingTime = 1000;
@@ -302,7 +286,7 @@ export class CounsellorDashboardComponent implements OnInit {
           const emp = response.item1[0];
           this.EmployeeDetails  = emp;
           this.EmployeeName     = emp.employeeName;
-          this.EmployeeCode     = '34923';// String(emp.employeeCode).trim();
+          this.EmployeeCode     = '33333';// String(emp.employeeCode).trim();
           this.ContactNoX       = emp.contactNo;
           this.Department       = emp.department;
           this.DepartmentName   = emp.departmentName;
@@ -337,7 +321,6 @@ export class CounsellorDashboardComponent implements OnInit {
       error: err => this.LoginFailed(err),
     });
   }
-
   private getAllAuthorityRemarks(): void {
     this.loadingIndicator = true;
     const startTime = Date.now();
@@ -352,24 +335,7 @@ export class CounsellorDashboardComponent implements OnInit {
       error: err => this.LoginFailed(err),
     });
   }
-
- 
-  private GetAllApplicationsforHOD(): void {
-    this.loadingIndicator = true;
-    const startTime = Date.now();
-
-    this.studentService.getAllApplicationsforHOD().pipe(
-      finalize(() => this.stopLoader(startTime))
-    ).subscribe({
-      next: response => {
-        this.hodAllApplications = Array.isArray(response?.item1) ? response.item1 : [];
-        this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0);
-        this.cd.detectChanges();
-      },
-      error: err => this.LoginFailed(err),
-    });
-  }
- 
+  
   private enrichAndFilterApplications(): void {
     this.AllApplications = this.AllApplications || [];
 
@@ -713,62 +679,138 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
     });
   }
  
-  viewAllRemarks(
-  row: Application,
-  callerRole: 'counsellor' = 'counsellor'
-): void {
-  this.selectedRemarksCallerRole = callerRole;
+//   viewAllRemarks(
+//   row: Application,
+//   callerRole: 'counsellor' = 'counsellor'
+// ): void {
+//   this.selectedRemarksCallerRole = callerRole;
 
-  // Find the matching remarks row safely (fallback to undefined for new applications)
-  const r = this.AllAuthorityRemarks?.find(
-    x => x.registrationNo === row.registrationNo
-  );
+//   // Find the matching remarks row safely (fallback to undefined for new applications)
+//   const r = this.AllAuthorityRemarks?.find(
+//     x => x.registrationNo === row.registrationNo
+//   );
 
-  this.selectedRemarks = {
-    registrationNo: row.registrationNo,
-    applicationId:  row.applicationId || r?.applicationId || '',
+//   this.selectedRemarks = {
+//     registrationNo: row.registrationNo,
+//     applicationId:  row.applicationId || r?.applicationId || '',
 
-    // 1. Counselling — Maps to API columns: CounsellingRemarks, CounsellingDate, CounsellingStatus
-    counsellingRemarks: r?.counsellingRemarks || r?.counsellingRemarks || row.counsellingRemarks || '',
-    counsellingDate:    r?.counsellingDate    || r?.counsellingDate    || row.counsellingDate    || '',
-    counsellingDone:    this.isTrue(r?.counsellingStatus ?? r?.counsellingStatus ?? row.counsellingStatus),
+//     // 1. Counselling — Maps to API columns: CounsellingRemarks, CounsellingDate, CounsellingStatus
+//     counsellingRemarks: r?.counsellingRemarks || r?.counsellingRemarks || row.counsellingRemarks || '',
+//     counsellingDate:    r?.counsellingDate    || r?.counsellingDate    || row.counsellingDate    || '',
+//     counsellingDone:    this.isTrue(r?.counsellingStatus ?? r?.counsellingStatus ?? row.counsellingStatus),
 
-    // 2. Faculty / Interview Remarks — Maps to API columns: FacultyRemarks, DealingUserInterviewRemarks
-    facultyRemarks:
-      r?.facultyRemarks || r?.facultyRemarks || r?.dealingUserInterviewRemarks || r?.dealingUserInterviewRemarks || '',
+//     // 2. Faculty / Interview Remarks — Maps to API columns: FacultyRemarks, DealingUserInterviewRemarks
+//     facultyRemarks:
+//       r?.facultyRemarks || r?.facultyRemarks || r?.dealingUserInterviewRemarks || r?.dealingUserInterviewRemarks || '',
 
-    // 3. HOD Remarks & Forwarding Status — Maps to API columns: HODRemarks, DealingHODRemarks, DealingHODInterviewRemarks
-    hodRemarks:      r?.hodRemarks || r?.hodRemarks || r?.dealingHODRemarks || r?.dealingHODRemarks || r?.dealingHODInterviewRemarks || r?.dealingHODInterviewRemarks || '',
-    forwardedToHOD:  this.isTrue(r?.isForwardtoHOD ?? r?.isForwardtoHOD ?? row.isForwardtoHOD),
+//     // 3. HOD Remarks & Forwarding Status — Maps to API columns: HODRemarks, DealingHODRemarks, DealingHODInterviewRemarks
+//     hodRemarks:      r?.hodRemarks || r?.hodRemarks || r?.dealingHODRemarks || r?.dealingHODRemarks || r?.dealingHODInterviewRemarks || r?.dealingHODInterviewRemarks || '',
+//     forwardedToHOD:  this.isTrue(r?.isForwardtoHOD ?? r?.isForwardtoHOD ?? row.isForwardtoHOD),
 
-    // 4. HoW Remarks & Forwarding Status — Maps to API columns: HOWRemarks, DealingHowRemarks, DealingHow
-    howRemarks:      r?.howRemarks || r?.howRemarks || r?.dealingHowRemarks || r?.dealingHowRemarks || r?.dealingHow || r?.dealingHow || '',
-    forwardedToHoW:  this.isTrue(r?.isForwardedtoHOW ?? r?.isForwardedtoHOW ?? row.isForwardedtoHOW),
+//     // 4. HoW Remarks & Forwarding Status — Maps to API columns: HOWRemarks, DealingHowRemarks, DealingHow
+//     howRemarks:      r?.howRemarks || r?.howRemarks || r?.dealingHowRemarks || r?.dealingHowRemarks || r?.dealingHow || r?.dealingHow || '',
+//     forwardedToHoW:  this.isTrue(r?.isForwardedtoHOW ?? r?.isForwardedtoHOW ?? row.isForwardedtoHOW),
 
-    // 5. Final Status Actions
-    approvalRemarks: r?.approvalRemarks || r?.approvalRemarks || row.approvalRemarks || '',
+//     // 5. Final Status Actions
+//     approvalRemarks: r?.approvalRemarks || r?.approvalRemarks || row.approvalRemarks || '',
 
-    // 6. Evaluation metrics breakdowns — Maps directly to the uppercase/PascalCase keys in your API data
-    academicsMarks:           r?.academicsMarks           || r?.academicsMarks           || '',
-    communicationSkillsMarks: r?.communicationSkillsMarks || r?.communicationSkillsMarks || '',
-    attitudeMarks:            r?.attitudeMarks            || r?.attitudeMarks            || '',
-    extraCurricularMarks:     r?.extraCurricularMarks     || r?.extraCurricularMarks     || '',
-    knowledgeMarks:           r?.knowledgeMarks           || r?.knowledgeMarks           || '',
-    totalMarks:               r?.totalMarks               || r?.totalMarks               || '',
-    evaluationComments:       r?.comments                 || r?.comments                 || '',
-    evaluationBy:             r?.dealingUId               || r?.dealingUId               || ''
-  } as any;
+//     // 6. Evaluation metrics breakdowns — Maps directly to the uppercase/PascalCase keys in your API data
+//     academicsMarks:           r?.academicsMarks           || r?.academicsMarks           || '',
+//     communicationSkillsMarks: r?.communicationSkillsMarks || r?.communicationSkillsMarks || '',
+//     attitudeMarks:            r?.attitudeMarks            || r?.attitudeMarks            || '',
+//     extraCurricularMarks:     r?.extraCurricularMarks     || r?.extraCurricularMarks     || '',
+//     knowledgeMarks:           r?.knowledgeMarks           || r?.knowledgeMarks           || '',
+//     totalMarks:               r?.totalMarks               || r?.totalMarks               || '',
+//     evaluationComments:       r?.comments                 || r?.comments                 || '',
+//     evaluationBy:             r?.dealingUId               || r?.dealingUId               || ''
+//   } as any;
 
-  // Render trigger configuration
-  this.currentModalRef = this.modalService.open(this.ViewRemarksModal, {
-    size: 'xl', 
-    backdrop: 'static', 
-    keyboard: false,
-  });
+//   // Render trigger configuration
+//   this.currentModalRef = this.modalService.open(this.ViewRemarksModal, {
+//     size: 'xl', 
+//     backdrop: 'static', 
+//     keyboard: false,
+//   });
   
-  this.currentModalRef.result.catch(() => {});
-  this.cd.detectChanges();
-}
+//   this.currentModalRef.result.catch(() => {});
+//   this.cd.detectChanges();
+// }
+
+
+  viewAllRemarks(
+    row: Application,
+    callerRole: 'counsellor' = 'counsellor'
+  ): void {
+    this.selectedRemarksCallerRole = callerRole;
+
+    // ── Collect ALL remarks rows for this registration number ────────────────
+    const allRows: AuthorityRemarks[] = this.AllAuthorityRemarks?.filter(
+      x => x.registrationNo === row.registrationNo
+    ) ?? [];
+
+    // First row drives the shared header fields (counselling, HOD, HoW etc.)
+    const first = allRows[0];
+
+    // ── Build AggregatedRemarks (shared fields only — no evaluation data) ────
+    this.selectedRemarks = first
+      ? {
+          registrationNo: row.registrationNo,
+          applicationId:  row.applicationId || first.applicationId || '',
+
+          // Counselling
+          counsellingRemarks: first.counsellingRemarks || row.counsellingRemarks || '',
+          counsellingDate:    first.counsellingDate    || row.counsellingDate    || '',
+          counsellingDone:    this.isTrue(first.counsellingStatus ?? row.counsellingStatus),
+
+          // Faculty / Interview
+          facultyRemarks:
+            first.facultyRemarks || first.dealingUserInterviewRemarks || '',
+
+          // HOD
+          hodRemarks:      first.hodRemarks || first.dealingHODRemarks || first.dealingHODInterviewRemarks || '',
+          forwardedToHOD:  this.isTrue(first.isForwardtoHOD  ?? row.isForwardtoHOD),
+
+          // HoW
+          howRemarks:      first.howRemarks || first.dealingHowRemarks || '',
+          forwardedToHoW:  this.isTrue(first.isForwardedtoHOW ?? row.isForwardedtoHOW),
+
+          // Approval / Rejection
+          approvalRemarks: first.ApprovalRemarks || row.approvalRemarks || '',
+        }
+      : {
+          // No remarks row at all — still show the modal with inline app data
+          registrationNo:  row.registrationNo,
+          applicationId:   row.applicationId  || '',
+          counsellingRemarks: row.counsellingRemarks || '',
+          counsellingDate:    row.counsellingDate    || '',
+          counsellingDone:    this.isTrue(row.counsellingStatus),
+          facultyRemarks:     '',
+          hodRemarks:         '',
+          forwardedToHOD:     this.isTrue(row.isForwardtoHOD),
+          howRemarks:         '',
+          forwardedToHoW:     this.isTrue(row.isForwardedtoHOW),
+          approvalRemarks:    row.approvalRemarks || '',
+        };
+
+    // ── All rows → one evaluation card each in the modal ────────────────────
+    // Keep every row that has at least one evaluation mark populated.
+    this.selectedRemarksEvaluations = allRows.filter(
+      r => r.academicsMarks != null && r.academicsMarks !== ''
+    );
+
+    // ── Open modal ───────────────────────────────────────────────────────────
+    this.currentModalRef = this.modalService.open(this.ViewRemarksModal, {
+      size: 'xl',
+      backdrop: 'static',
+      keyboard: false,
+    });
+    this.currentModalRef.result.catch(() => {});
+    this.cd.detectChanges();
+  }
+
+
+
+
 //   viewAllRemarks(
 //   row: Application,
 //   callerRole: 'counsellor'  = 'counsellor'

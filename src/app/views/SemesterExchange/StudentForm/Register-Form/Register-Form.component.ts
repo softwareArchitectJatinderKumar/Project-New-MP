@@ -38,54 +38,7 @@ export class RegisterFormcomponent implements OnInit {
     // computed flag
    get showCounsellingAuthority(): boolean {
         return true;
-    //     if (!this.School) return false;
-    //     // if (!this.courseName) return false;
-    //  const matches = [
-    //    'School of Computer Science Engineering',
-    //    'Mittal School of Business',
-    //    'School of Computer Application',
-    //   //  'School of Electronics and Electric Engineering	',
-    //   //  'School of Mechanical Engineering',
-    //   //  'School of Design (Fashion Design & Technology)',
-    //   //  'School of Liberal and Creative Art (Journalism and Mass Communication)',
-    //   //  'School of Law',
-    //   //  'School of Hotel Management and Tourism		',
-    //   //  'School of Bio Engineering and Biosciences',
-    //   //  'School of Chemical Engineering and Physical Sciences',
-    //   //  'School of Design (Interior & Product Design)',
-    //   //  'School of Liberal and Creative Art (Fine Arts)',
-    //   //  'School of Allied Medical Sciences				',
-    //   //  'School of Civil Engineering ',
-    //   //  'LIE (Department of Education)/LSE (Department of Education)',
-    //   //  'LIE (Department of Physical Education)',
-    //   //  'Lovely School of Architecture & Design',
-    //   //  'School of Agriculture',
-    //   //  'School of Design (Multimedia)',
-    //   //  'School of Liberal and Creative Art (Film,Theatre and Music)',
-    //   //  'School of Liberal and Creative Art (Social Sciences & Languages)',
-
-    //  ];
-
-    //     const normalize = (s: string) => (s || '').toLowerCase().replace(/[^\w\s]/g, ' ');
-    //     const schoolNorm = normalize(this.School);
-
-    //     // direct phrase match
-    //     for (const m of matches) {
-    //         if (m && schoolNorm.includes(normalize(m).trim())) {
-    //             return true;
-    //         }
-    //     }
-
-    //     // token intersection: consider any meaningful word (length > 2)
-    //     const schoolTokens = new Set(schoolNorm.split(/\s+/).filter(t => t.length > 2));
-    //     for (const m of matches) {
-    //         const matchTokens = normalize(m).split(/\s+/).filter(t => t.length > 2);
-    //         for (const tok of matchTokens) {
-    //             if (schoolTokens.has(tok)) return true;
-    //         }
-    //     }
-
-    //     return false;
+    
     }
 
  updateCounsellingAuthorityValidator() {
@@ -343,7 +296,7 @@ export class RegisterFormcomponent implements OnInit {
         next: response => {
           if (response.item1 && response.item1.length > 0) {
             const stuData = response.item1[0];
-            console.log(JSON.stringify(stuData));
+            // console.log(JSON.stringify(stuData));
             this.studentName = stuData.studentName;
             this.ContactNo = stuData.studentMobile;
             this.RegistrationNo = stuData.registerationNumber;

@@ -20,30 +20,7 @@ import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
 
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
-/**
- * Matches the columns returned by getAllApplications() and
- * getAllApplicationsforHOD() (GetSemesterExchangeApplicationForHOD).
- *
- * Column-to-role mapping (confirmed from live data):
- *
- *  DealingAuthority  – Employee code of the COUNSELLOR for that student.
- *                      Multiple counsellors exist (30922, 31859, 33333 …).
- *                      NULL means no counsellor assigned yet.
- *
- *  DealingFaculty    – Employee code of the FACULTY the counsellor forwarded to.
- *                      NULL until the counsellor explicitly forwards.
- *
- *  DealingHODId      – Fixed system-wide HOD code (28243).
- *                      Non-null means the application has been sent to HOD.
- *
- *  DealingHow        – Fixed system-wide HoW code (12160).
- *                      Non-null means the HOD has forwarded to HoW.
- *
- *  IsForwardtoHOD    – 1 when counsellor has forwarded to HOD.
- *  IsForwardedtoHOW  – 1 when HOD has forwarded to HoW.
- *  CounsellingStatus – 1 = counselled, 0 = not yet counselled.
- *  CounsellingRemarks / CounsellingDate – set by counsellor.
- */
+ 
 interface Application {
   // Core identity
   applicationId: string;
@@ -89,11 +66,7 @@ interface Application {
   _isHoW: boolean;
 }
 
-/**
- * Matches the remarks row returned by getAllRemarks().
- * The HOD Tab XX data already embeds CounsellingRemarks inline.
- * AllAuthorityRemarks covers evaluation and interview remarks.
- */
+ 
 interface AuthorityRemarks {
   registrationNo: string;
   applicationId: string;
@@ -103,7 +76,7 @@ interface AuthorityRemarks {
   counsellingRemarks: string;
   counsellingStatus: string;
   counsellingDate: string;
-
+  dealingUId: string;
   // Faculty interview remarks
   dealingUserInterviewRemarks: string;
   facultyRemarks: string;
@@ -151,15 +124,8 @@ interface AggregatedRemarks {
   forwardedToHoW: boolean;
   // Approval
   approvalRemarks: string;
-  // Evaluation
-  academicsMarks: string;
-  communicationSkillsMarks: string;
-  attitudeMarks: string;
-  extraCurricularMarks: string;
-  knowledgeMarks: string;
-  totalMarks: string;
-  evaluationComments: string;
-  evaluationBy: string;
+  // Evaluation fields are intentionally omitted here —
+  // they are rendered per-row via selectedRemarksEvaluations instead.
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -202,8 +168,19 @@ export class DynamicDashboardComponent implements OnInit {
   hodAllApplications: Application[] = [];
   AllApprovedApplications: Application[] = [];
 
-  /** Currently selected remarks object (bound to the View Remarks modal). */
+  /**
+   * Shared / header fields for the View Remarks modal.
+   * Counselling, Faculty, HOD, HoW and Approval remarks shown once.
+   */
   selectedRemarks: AggregatedRemarks | null = null;
+
+  /**
+   * All AuthorityRemarks rows for the selected registrationNo.
+   * Each row represents one evaluator's marks — rendered as separate cards
+   * in the modal so multiple evaluations for the same applicationId are all
+   * visible.
+   */
+  selectedRemarksEvaluations: AuthorityRemarks[] = [];
 
   /**
    * Role of the user who triggered viewAllRemarks().
@@ -346,7 +323,7 @@ export class DynamicDashboardComponent implements OnInit {
           const emp = response.item1[0];
           this.EmployeeDetails  = emp;
           this.EmployeeName     = emp.employeeName;
-          this.EmployeeCode     = '34923';// String(emp.employeeCode).trim();
+          this.EmployeeCode     = '1107';// String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
           this.ContactNoX       = emp.contactNo;
           this.Department       = emp.department;
           this.DepartmentName   = emp.departmentName;
@@ -378,7 +355,7 @@ export class DynamicDashboardComponent implements OnInit {
         this.AllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | ''; }) => app.dealingFaculty==this.EmployeeCode);
         this.AllAuthorityApplications =  response.item1.filter((app: { dealingAuthority: string | ''; }) => app.dealingAuthority==this.EmployeeCode);
         this.AllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | ''; }) => app.dealingHODId==this.EmployeeCode && app.isForwardtoHOD=='1');
-        this.AllHOWApplications = response.item1.filter((app: { dealingHow: string | ''; isForwardedtoHOW: string | ''; }) => app.dealingHow==this.EmployeeCode && app.isForwardedtoHOW=='1');  
+        this.AllHOWApplications = response.item1.filter((app: { dealingHow: string | ''; isForwardedtoHOW: string | ''; }) => app.dealingHow==this.EmployeeCode  );  
          this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0);
         this.enrichAndFilterApplications();
       },
@@ -401,12 +378,7 @@ export class DynamicDashboardComponent implements OnInit {
     });
   }
 
-  /**
-   * HOD Tab (XX) — uses the dedicated endpoint
-   * GetSemesterExchangeApplicationForHOD() which returns ALL applications
-   * with extended columns (DealingAuthority, CounsellingRemarks, etc.).
-   * Called only once the HOD role is confirmed.
-   */
+  
   private GetAllApplicationsforHOD(): void {
     this.loadingIndicator = true;
     const startTime = Date.now();
@@ -424,57 +396,7 @@ export class DynamicDashboardComponent implements OnInit {
   }
 
   // ── Role Enrichment & Filtering ───────────────────────────────────────────────
-
-  /**
-   * ─── Column → Role mapping (confirmed from live API data) ───────────────────
-   *
-   *  DealingAuthority  – per-application Counsellor employee code.
-   *                      Multiple counsellors exist (30922, 31859, 33333 …).
-   *                      NULL = not yet assigned.
-   *
-   *  DealingFaculty    – per-application Faculty employee code.
-   *                      NULL until the counsellor forwards.
-   *
-   *  DealingHODId      – per-application HOD employee code.
-   *                      NOT a fixed system-wide code — confirmed values include
-   *                      22413, 28243, 31309. Set when isForwardtoHOD = true.
-   *
-   *  DealingHow        – per-application HoW employee code.
-   *                      NULL until HOD forwards to HoW.
-   *
-   * ─── Key insight from live data (empCode 31309) ─────────────────────────────
-   *
-   *  A single employee can hold MULTIPLE roles across different applications:
-   *    • App 2: DealingHODId = 31309  → HOD for that application
-   *    • App 3: DealingAuthority = 31309 AND DealingHODId = 31309
-   *             → Counsellor AND HOD for that application
-   *    • App 4: DealingHODId = 31309  → HOD for that application
-   *
-   *  The OLD winner-takes-all priority (HOD > HoW > Faculty > Counsellor)
-   *  caused the Faculty/Counsellor dashboard to never render because the
-   *  global isHOD flag was raised first, swallowing all other roles.
-   *
-   * ─── Fix: ALL role flags are independent booleans ───────────────────────────
-   *
-   *  Each flag is raised independently. buildVisibleApplications() and the HTML
-   *  template show EVERY dashboard for which the user has at least one row.
-   *  This means a user who is HOD on some apps AND Counsellor on others sees
-   *  BOTH the HOD section and the Counsellor section simultaneously.
-   *
-   * ─── Per-row filter rules (per requirements) ────────────────────────────────
-   *
-   *  Counsellor row  : DealingAuthority === empCode
-   *                    AND DealingHODId  !== empCode  (not acting as HOD on this row)
-   *                    AND DealingHow    !== empCode  (not acting as HoW on this row)
-   *
-   *  Faculty row     : DealingFaculty   === empCode
-   *                    AND DealingHODId  !== empCode
-   *                    AND DealingHow    !== empCode
-   *
-   *  HOD row         : DealingHODId     === empCode
-   *
-   *  HoW row         : DealingHow       === empCode
-   */
+ 
   private enrichAndFilterApplications(): void {
     this.AllApplications = this.AllApplications || [];
 
@@ -486,9 +408,7 @@ export class DynamicDashboardComponent implements OnInit {
     this.isdealingFaculty   = false;
     this.isDealingAuthority = false;
 
-    // ── Pass 1: compute raw per-row flags; detect whether employee has any Faculty rows ──
-    // We must complete a full scan first before applying the Faculty-wins-over-Counsellor
-    // priority rule, because that decision depends on the aggregate across ALL rows.
+ 
     let hasFacultyRows = false;
 
     this.AllApplications = this.AllApplications.map(app => {
@@ -517,17 +437,20 @@ export class DynamicDashboardComponent implements OnInit {
       app._isHOD = emp !== null && hodId === emp;
 
       // HoW row: DealingHow === empCode
-      app._isHoW = emp !== null && how === emp;
+      app._isHoW = emp !== null && how === emp && hodId !== emp; // HoW role is exclusive of HOD role
+
+         app._isHoW =
+        emp !== null &&
+        authority !== emp &&
+        hodId !== emp &&
+        how   == emp;
 
       if (app._isFaculty) hasFacultyRows = true;
 
       return app;
     });
 
-    // ── Pass 2: apply Faculty-wins-over-Counsellor priority rule ────────────
-    // Business rule: if this employee has ANY Faculty rows across the dataset,
-    // suppress all their Counsellor rows so only ONE dashboard renders.
-    // HOD and HoW are independent roles and are never suppressed by this rule.
+ 
     if (hasFacultyRows) {
       this.AllApplications.forEach(app => {
         if (app._isCounsellor) { app._isCounsellor = false; }
@@ -548,65 +471,23 @@ export class DynamicDashboardComponent implements OnInit {
     this.cd.detectChanges();
   }
 
-  /**
-   * Trims a value and returns null if it is empty, 'NULL', 'null', or undefined.
-   */
   private normalise(val: any): string | null {
     if (val === null || val === undefined) return null;
     const s = String(val).trim();
     return (s === '' || s.toLowerCase() === 'null') ? null : s;
   }
 
-  /**
-   * Populate display lists for EVERY role the user holds.
-   *
-   * Because a single employee can be HOD on some applications and Counsellor
-   * (or Faculty) on others, ALL four lists are populated independently.
-   * The HTML template renders each dashboard section conditionally — if the
-   * user has rows in more than one list, they see more than one section.
-   *
-   *  hodMyApplications   – rows where _isHOD  (shown in HOD Tab I)
-   *  hodAllApplications  – from dedicated API  (shown in HOD Tab II)
-   *  visibleApplications – union of _isHoW + _isFaculty + _isCounsellor rows
-   *                        (each role block in the template filters its own subset)
-   *
-   * The template uses *ngIf per role and filters [rows] inline so each grid
-   * only shows rows that belong to it.
-   */
   private buildVisibleApplications(): void {
-    // HOD section — rows where isForwardtoHOD is truthy
     this.hodMyApplications = this.AllApplications.filter(a => this.isTrue(a.isForwardtoHOD));
-    // HOD Tab II — dedicated API (only call if HOD role is active)
     if (this.isHOD) {
       this.GetAllApplicationsforHOD();
     }
 
-    // Single visibleApplications list holds ALL non-HOD rows for this user.
-    // The template then filters per role using the per-row flags.
     this.visibleApplications = this.AllApplications.filter(
       a => a._isCounsellor || a._isFaculty || a._isHoW  
     );
   }
-// private buildPageTitle(): void {
-//   // Role display order: Faculty > Counsellor > HOD > HoW
-//   // isDealingAuthority is only true when the employee is a pure Counsellor
-//   // (no Faculty rows), so no special suppression is needed here.
-//   const roleMap: Record<string, string> = {
-//     isdealingFaculty:   'Faculty',
-//     isDealingAuthority: 'Counsellor',
-//     isHOD:              'HOD',
-//     isHoW:              'HoW',
-//   };
-
-//   const activeRoles = Object.keys(roleMap)
-//     .filter(key => (this as any)[key])
-//     .map(key => roleMap[key]);
-
-//   this.pageTitle = activeRoles.length
-//     ? `** ${activeRoles.join(' | ')} Dashboard **`
-//     : 'Dashboard';
-//   this.title.setTitle(this.pageTitle);
-// }
+ 
   private buildPageTitle(): void {
     var roles: any='';
     if (this.isDealingAuthority) roles='Counsellor';
@@ -631,8 +512,13 @@ export class DynamicDashboardComponent implements OnInit {
 
   GetStudentApplication(application: Application): void {
     if (this.LoginName && application.registrationNo) {
+      var Role = '';
+      if (application._isHOD) Role = 'HOD';
+      else if (application._isHoW) Role = 'HoW';
+      else if (application._isFaculty) Role = 'Faculty';
+      else if (application._isCounsellor) Role = 'Counsellor';
       this.router.navigateByUrl(
-        `ApplicationDetails/${this.LoginName}/${application.registrationNo}/Faculty`
+        `ApplicationDetails/${this.LoginName}/${application.registrationNo}/${Role}`
       );
     } else {
       Swal.fire('Navigation Error', 'Login name or registration number is missing.', 'error');
@@ -730,53 +616,29 @@ export class DynamicDashboardComponent implements OnInit {
       }
     });
   }
-ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
-  const label = userAction === 'Hod' ? 'HOD' : 'Head of Wing';
-  const staticUid = '28243'; // Hardcoded fallback processor code
 
-  Swal.fire({
-    title: `Forward to ${label}`,
-    text: `Are you sure you want to forward this application to the designated ${label}?`,
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, Forward',
-    cancelButtonText: 'Cancel',
-    allowOutsideClick: () => !Swal.isLoading()
-  }).then(result => {
-    if (result.isConfirmed) {
-      const fd = new FormData();
-      fd.append('RegistrationNo', application.registrationNo);
-      fd.append('HODUID', staticUid); // Automatically injects the static tracking value
-      fd.append('UserAction', userAction);
-      
-      this.sendForwardRequest(fd);
-    }
-  });
-}
-  // ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
-  //   const label = userAction === 'Hod' ? 'HOD' : 'Head of Wing';
-  //   Swal.fire({
-  //     title: `Forward to ${label}`,
-  //     input: 'text',
-  //     inputPlaceholder: `Enter ${label} Employee Code...`,
-  //     showCancelButton: true,
-  //     confirmButtonText: 'Forward',
-  //     showLoaderOnConfirm: true,
-  //     preConfirm: uid => {
-  //       if (!uid) Swal.showValidationMessage('Employee Code is required!');
-  //       return uid;
-  //     },
-  //     allowOutsideClick: () => !Swal.isLoading(),
-  //   }).then(result => {
-  //     if (result.isConfirmed && result.value) {
-  //       const fd = new FormData();
-  //       fd.append('RegistrationNo', application.registrationNo);
-  //       fd.append('HODUID', result.value);
-  //       fd.append('UserAction', userAction);
-  //       this.sendForwardRequest(fd);
-  //     }
-  //   });
-  // }
+  ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
+    const label = userAction === 'Hod' ? 'HOD' : 'How';
+    const staticUid = userAction === 'Hod' ? '28243' : '1107';
+
+    Swal.fire({
+      title: `Forward to ${label}`,
+      text: `Are you sure you want to forward this application to the designated ${label}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Forward',
+      cancelButtonText: 'Cancel',
+      allowOutsideClick: () => !Swal.isLoading()
+    }).then(result => {
+      if (result.isConfirmed) {
+        const fd = new FormData();
+        fd.append('RegistrationNo', application.registrationNo);
+        fd.append('HODUID', staticUid);
+        fd.append('UserAction', userAction);
+        this.sendForwardRequest(fd);
+      }
+    });
+  }
 
   private sendForwardRequest(formData: FormData): void {
     this.loadingIndicator = true;
@@ -823,6 +685,7 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
       }
     });
   }
+
   assignFaculty(application: Application): void {
     Swal.fire({
       title: 'Assign Faculty',
@@ -940,15 +803,6 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
     this.loadingIndicator = true;
     const startTime = Date.now();
 
-    /**
-     * SP: pUpdateSECounsellingRemarks
-     * Action = 'Counsellor' → routes to CounsellingRemarks column.
-     * The SP appends server-side: ISNULL(CounsellingRemarks,'') + @FormattedRemarks
-     * where @FormattedRemarks includes a timestamp + LoginName header.
-     * Frontend sends ONLY the new text — no client-side concatenation needed.
-     * Success response: { Msg: 'Success', ReturnId: '<ApplicationId>' }
-     * Failure response: { Msg: 'Failed: ...', ReturnId: -1 }
-     */
     const fd = new FormData();
     fd.append('ApplicationId',      this.ApplicationId  || '');
     fd.append('CounsellingRemarks', this.CounsellingRemarksForm.value.Comments.trim());
@@ -996,15 +850,6 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
     this.loadingIndicator = true;
     const startTime = Date.now();
 
-    /**
-     * SP: pUpdateSECounsellingRemarks
-     * Action = 'Faculty' → routes to DealingUidRemarks column.
-     * The SP appends server-side with a timestamp + LoginName header:
-     *   DealingUidRemarks = ISNULL(DealingUidRemarks,'') + @FormattedRemarks
-     * Frontend sends ONLY the new text — the SP owns the append logic.
-     * Success response: { Msg: 'Success', ReturnId: '<ApplicationId>' }
-     * Failure response: { Msg: 'Failed: ...', ReturnId: -1 }
-     */
     const fd = new FormData();
     fd.append('ApplicationId',      this.ApplicationId  || '');
     fd.append('CounsellingRemarks', this.AddRemarksForm.value.Comments.trim());
@@ -1019,7 +864,6 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
           Swal.fire('Success!', 'Remarks Saved Successfully', 'success')
             .then(() => this.currentModalRef?.close());
         } else {
-          // Display the SP failure message directly so the user knows what went wrong
           Swal.fire('Error!', msg || 'Some Technical Issue Occurred', 'error');
         }
       },
@@ -1030,135 +874,92 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
   // ── Unified View Remarks Modal ────────────────────────────────────────────────
 
   /**
-   * Builds AggregatedRemarks for the selected row by joining on RegistrationNo
-   * across AllAuthorityRemarks (and the inline counselling fields on the row),
-   * then opens the unified View Remarks modal.
-   *
-   * All remark types shown in one modal:
-   *   – Counselling Remarks (from counsellor, date included)
-   *   – Faculty / Interview Remarks
-   *   – HOD Remarks
-   *   – HoW Remarks
-   *   – Approval / Rejection Remarks
-   *   – Evaluation Marks breakdown
-   */
-  /**
    * Opens the unified View Remarks modal.
    *
+   * Strategy:
+   *  – selectedRemarks       → AggregatedRemarks built from the FIRST matching
+   *                            AuthorityRemarks row (shared fields: counselling,
+   *                            faculty, HOD, HoW, approval).  Shown once.
+   *  – selectedRemarksEvaluations → ALL AuthorityRemarks rows for this
+   *                            registrationNo.  Each row = one evaluator card
+   *                            in the modal, so multiple evaluations (e.g.
+   *                            applicationId 10 appears twice with different
+   *                            marks) are ALL visible.
+   *
    * @param row        The application row that was clicked.
-   * @param callerRole Role of the user opening the modal:
-   *                   'counsellor' → Evaluation Marks section is hidden  (req #3/#4)
-   *                   'faculty' | 'hod' | 'how' → Evaluation Marks are shown
+   * @param callerRole 'counsellor' → Evaluation section hidden (req #3/#4)
+   *                   'faculty' | 'hod' | 'how' → Evaluation section shown
    */
-
   viewAllRemarks(
-  row: Application,
-  callerRole: 'counsellor' | 'faculty' | 'hod' | 'how' = 'counsellor'
-): void {
-  this.selectedRemarksCallerRole = callerRole;
+    row: Application,
+    callerRole: 'counsellor' | 'faculty' | 'hod' | 'how' = 'counsellor'
+  ): void {
+    this.selectedRemarksCallerRole = callerRole;
 
-  // Find the matching remarks row safely (fallback to undefined for new applications)
-  const r = this.AllAuthorityRemarks?.find(
-    x => x.registrationNo === row.registrationNo
-  );
+    // ── Collect ALL remarks rows for this registration number ────────────────
+    const allRows: AuthorityRemarks[] = this.AllAuthorityRemarks?.filter(
+      x => x.registrationNo === row.registrationNo
+    ) ?? [];
 
-  this.selectedRemarks = {
-    registrationNo: row.registrationNo,
-    applicationId:  row.applicationId || r?.applicationId || '',
+    // First row drives the shared header fields (counselling, HOD, HoW etc.)
+    const first = allRows[0];
 
-    // 1. Counselling — Inline application row fields map to table flags
-    counsellingRemarks: r?.counsellingRemarks || row.counsellingRemarks || '',
-    counsellingDate:    r?.counsellingDate    || row.counsellingDate    || '',
-    counsellingDone:    this.isTrue(r?.counsellingStatus ?? row.counsellingStatus ),
+    // ── Build AggregatedRemarks (shared fields only — no evaluation data) ────
+    this.selectedRemarks = first
+      ? {
+          registrationNo: row.registrationNo,
+          applicationId:  row.applicationId || first.applicationId || '',
 
-    // 2. Faculty / Interview Remarks
-    facultyRemarks:
-      r?.facultyRemarks || r?.dealingUserInterviewRemarks  || '',
+          // Counselling
+          counsellingRemarks: first.counsellingRemarks || row.counsellingRemarks || '',
+          counsellingDate:    first.counsellingDate    || row.counsellingDate    || '',
+          counsellingDone:    this.isTrue(first.counsellingStatus ?? row.counsellingStatus),
 
-    // 3. HOD Remarks & Forwarding Status
-    hodRemarks:      r?.hodRemarks || r?.dealingHODRemarks || r?.dealingHODInterviewRemarks   || '',
-    forwardedToHOD:  this.isTrue(r?.isForwardtoHOD ?? row.isForwardtoHOD),
+          // Faculty / Interview
+          facultyRemarks:
+            first.facultyRemarks || first.dealingUserInterviewRemarks || '',
 
-    // 4. HoW Remarks & Forwarding Status (Mapped to structural columns 3 & 11)
-    howRemarks:      r?.howRemarks || r?.dealingHowRemarks || r?.dealingHowRemarks ||  '',
-    forwardedToHoW:  this.isTrue(r?.isForwardedtoHOW   ?? row.isForwardedtoHOW),
+          // HOD
+          hodRemarks:      first.hodRemarks || first.dealingHODRemarks || first.dealingHODInterviewRemarks || '',
+          forwardedToHOD:  this.isTrue(first.isForwardtoHOD  ?? row.isForwardtoHOD),
 
-    // 5. Final Status Actions
-    approvalRemarks: r?.ApprovalRemarks   || row.approvalRemarks || '',
+          // HoW
+          howRemarks:      first.howRemarks || first.dealingHowRemarks || '',
+          forwardedToHoW:  this.isTrue(first.isForwardedtoHOW ?? row.isForwardedtoHOW),
 
-    // 6. Evaluation metrics breakdowns
-    academicsMarks:           r?.academicsMarks            || '',
-    communicationSkillsMarks: r?.communicationSkillsMarks  || '',
-    attitudeMarks:            r?.attitudeMarks             || '',
-    extraCurricularMarks:     r?.extraCurricularMarks      || '',
-    knowledgeMarks:           r?.knowledgeMarks            || '',
-    totalMarks:               r?.totalMarks                || '',
-    evaluationComments:       r?.comments                  || '',
-    evaluationBy:             r?.remarksBy                 || '',
-  } as any;
+          // Approval / Rejection
+          approvalRemarks: first.ApprovalRemarks || row.approvalRemarks || '',
+        }
+      : {
+          // No remarks row at all — still show the modal with inline app data
+          registrationNo:  row.registrationNo,
+          applicationId:   row.applicationId  || '',
+          counsellingRemarks: row.counsellingRemarks || '',
+          counsellingDate:    row.counsellingDate    || '',
+          counsellingDone:    this.isTrue(row.counsellingStatus),
+          facultyRemarks:     '',
+          hodRemarks:         '',
+          forwardedToHOD:     this.isTrue(row.isForwardtoHOD),
+          howRemarks:         '',
+          forwardedToHoW:     this.isTrue(row.isForwardedtoHOW),
+          approvalRemarks:    row.approvalRemarks || '',
+        };
 
-  // Render trigger configuration
-  this.currentModalRef = this.modalService.open(this.ViewRemarksModal, {
-    size: 'xl', 
-    backdrop: 'static', 
-    keyboard: false,
-  });
-  
-  this.currentModalRef.result.catch(() => {});
-  this.cd.detectChanges();
-}
-  // viewAllRemarks(
-  //   row: Application,
-  //   callerRole: 'counsellor' | 'faculty' | 'hod' | 'how' = 'counsellor'
-  // ): void {
-  //   this.selectedRemarksCallerRole = callerRole;
+    // ── All rows → one evaluation card each in the modal ────────────────────
+    // Keep every row that has at least one evaluation mark populated.
+    this.selectedRemarksEvaluations = allRows.filter(
+      r => r.academicsMarks != null && r.academicsMarks !== ''
+    );
 
-  //   // Find the matching remarks row (may be undefined for new applications)
-  //   const r = this.AllAuthorityRemarks.find(
-  //     x => x.registrationNo === row.registrationNo
-  //   );
-
-  //   this.selectedRemarks = {
-  //     registrationNo: row.registrationNo,
-  //     applicationId:  row.applicationId,
-
-  //     // Counselling — inline on the application row AND in remarks table
-  //     counsellingRemarks: r?.counsellingRemarks || row.counsellingRemarks || '',
-  //     counsellingDate:    r?.counsellingDate    || row.counsellingDate    || '',
-  //     counsellingDone:    this.isTrue(r?.counsellingStatus ?? row.counsellingStatus),
-
-  //     // Faculty interview remarks
-  //     facultyRemarks:
-  //       r?.dealingUserInterviewRemarks || r?.facultyRemarks || '',
-
-  //     // HOD remarks
-  //     hodRemarks:      r?.dealingHODRemarks || r?.hodRemarks || r?.dealingHODInterviewRemarks || '',
-  //     forwardedToHOD:  this.isTrue(r?.isForwardtoHOD  ?? row.isForwardtoHOD),
-
-  //     // HoW remarks
-  //     howRemarks:     r?.dealingHowRemarks || r?.howRemarks || '',
-  //     forwardedToHoW: this.isTrue(r?.isForwardedtoHOW ?? row.isForwardedtoHOW),
-
-  //     // Approval / rejection
-  //     approvalRemarks: r?.ApprovalRemarks || row.approvalRemarks || '',
-
-  //     // Evaluation
-  //     academicsMarks:           r?.academicsMarks           || '',
-  //     communicationSkillsMarks: r?.communicationSkillsMarks || '',
-  //     attitudeMarks:            r?.attitudeMarks            || '',
-  //     extraCurricularMarks:     r?.extraCurricularMarks     || '',
-  //     knowledgeMarks:           r?.knowledgeMarks           || '',
-  //     totalMarks:               r?.totalMarks               || '',
-  //     evaluationComments:       r?.comments                 || '',
-  //     evaluationBy:             r?.remarksBy                || '',
-  //   } as any;
-
-  //   this.currentModalRef = this.modalService.open(this.ViewRemarksModal, {
-  //     size: 'xl', backdrop: 'static', keyboard: false,
-  //   });
-  //   this.currentModalRef.result.catch(() => {});
-  //   this.cd.detectChanges();
-  // }
+    // ── Open modal ───────────────────────────────────────────────────────────
+    this.currentModalRef = this.modalService.open(this.ViewRemarksModal, {
+      size: 'xl',
+      backdrop: 'static',
+      keyboard: false,
+    });
+    this.currentModalRef.result.catch(() => {});
+    this.cd.detectChanges();
+  }
 
   /** Returns true if any remark type has content for this row. */
   hasAnyRemarks(row: Application): boolean {
@@ -1227,7 +1028,6 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
     this.cd.detectChanges();
   }
 }
-
 // import {
 //   ChangeDetectionStrategy,
 //   ChangeDetectorRef,
@@ -1396,11 +1196,17 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
 
 // @Component({
 //   selector: 'app-DynamicDashboard',
-//   templateUrl: './DynamicDashboard.component.html',
+//   templateUrl: './NewDashboard.html',
 //   styleUrls: ['../DashboardFaculty.component.css'],
 //   changeDetection: ChangeDetectionStrategy.OnPush,
 // })
 // export class DynamicDashboardComponent implements OnInit {
+
+
+
+
+
+  
 
 //   // ── UI / State ───────────────────────────────────────────────────────────────
 //   pageTitle = 'Dashboard';
@@ -1408,6 +1214,10 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
 
 //   /** Raw list from getAllApplications() */
 //   AllApplications: Application[] = [];
+//   AllFacultyApplications: Application[] = [];
+//   AllAuthorityApplications: Application[] = [];
+//   AllHODApplications: Application[] = [];
+//   AllHOWApplications: Application[] = [];
 
 //   /** Raw remarks list from getAllRemarks() */
 //   AllAuthorityRemarks: AuthorityRemarks[] = [];
@@ -1572,7 +1382,7 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
 //           const emp = response.item1[0];
 //           this.EmployeeDetails  = emp;
 //           this.EmployeeName     = emp.employeeName;
-//           this.EmployeeCode     = '28243';// String(emp.employeeCode).trim();
+//           this.EmployeeCode     = '1107';// String(emp.employeeCode).trim();
 //           this.ContactNoX       = emp.contactNo;
 //           this.Department       = emp.department;
 //           this.DepartmentName   = emp.departmentName;
@@ -1595,12 +1405,17 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
 //     this.loadingIndicator = true;
 //     const startTime = Date.now();
 
-//     this.studentService.getAllApplications().pipe(
+//     this.studentService.getAllApplicationsforHOD().pipe(
 //       finalize(() => this.stopLoader(startTime))
 //     ).subscribe({
 //       next: response => {
 //         this.AllApplications = Array.isArray(response?.item1) ? response.item1 : [];
-//         // console.log(JSON.stringify(this.AllApplications, null, 2));
+
+//         this.AllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | ''; }) => app.dealingFaculty==this.EmployeeCode);
+//         this.AllAuthorityApplications =  response.item1.filter((app: { dealingAuthority: string | ''; }) => app.dealingAuthority==this.EmployeeCode);
+//         this.AllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | ''; }) => app.dealingHODId==this.EmployeeCode && app.isForwardtoHOD=='1');
+//         this.AllHOWApplications = response.item1.filter((app: { dealingHow: string | ''; isForwardedtoHOW: string | ''; }) => app.dealingHow==this.EmployeeCode  );  
+//          this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0);
 //         this.enrichAndFilterApplications();
 //       },
 //       error: err => this.LoginFailed(err),
@@ -1608,6 +1423,7 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
 //   }
 
 //   private getAllAuthorityRemarks(): void {
+//     // alert(0);
 //     this.loadingIndicator = true;
 //     const startTime = Date.now();
 
@@ -1616,18 +1432,15 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
 //     ).subscribe({
 //       next: response => {
 //         this.AllAuthorityRemarks = Array.isArray(response?.item1) ? response.item1 : [];
+//         // alert(JSON.stringify(this.AllAuthorityRemarks));
+//         console.log(JSON.stringify(this.AllAuthorityRemarks));
 //         this.cd.detectChanges();
 //       },
 //       error: err => this.LoginFailed(err),
 //     });
 //   }
 
-//   /**
-//    * HOD Tab (XX) — uses the dedicated endpoint
-//    * GetSemesterExchangeApplicationForHOD() which returns ALL applications
-//    * with extended columns (DealingAuthority, CounsellingRemarks, etc.).
-//    * Called only once the HOD role is confirmed.
-//    */
+  
 //   private GetAllApplicationsforHOD(): void {
 //     this.loadingIndicator = true;
 //     const startTime = Date.now();
@@ -1637,8 +1450,7 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
 //     ).subscribe({
 //       next: response => {
 //         this.hodAllApplications = Array.isArray(response?.item1) ? response.item1 : [];
-//         // this.AllApprovedApplications =  response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0) ;
-//         this.AllApprovedApplications = this.hodAllApplications.filter( (app: any) => app.approvedUniversity && app.approvedUniversity.trim().length > 0 );
+//         this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0);
 //         this.cd.detectChanges();
 //       },
 //       error: err => this.LoginFailed(err),
@@ -1646,57 +1458,7 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
 //   }
 
 //   // ── Role Enrichment & Filtering ───────────────────────────────────────────────
-
-//   /**
-//    * ─── Column → Role mapping (confirmed from live API data) ───────────────────
-//    *
-//    *  DealingAuthority  – per-application Counsellor employee code.
-//    *                      Multiple counsellors exist (30922, 31859, 33333 …).
-//    *                      NULL = not yet assigned.
-//    *
-//    *  DealingFaculty    – per-application Faculty employee code.
-//    *                      NULL until the counsellor forwards.
-//    *
-//    *  DealingHODId      – per-application HOD employee code.
-//    *                      NOT a fixed system-wide code — confirmed values include
-//    *                      22413, 28243, 31309. Set when isForwardtoHOD = true.
-//    *
-//    *  DealingHow        – per-application HoW employee code.
-//    *                      NULL until HOD forwards to HoW.
-//    *
-//    * ─── Key insight from live data (empCode 31309) ─────────────────────────────
-//    *
-//    *  A single employee can hold MULTIPLE roles across different applications:
-//    *    • App 2: DealingHODId = 31309  → HOD for that application
-//    *    • App 3: DealingAuthority = 31309 AND DealingHODId = 31309
-//    *             → Counsellor AND HOD for that application
-//    *    • App 4: DealingHODId = 31309  → HOD for that application
-//    *
-//    *  The OLD winner-takes-all priority (HOD > HoW > Faculty > Counsellor)
-//    *  caused the Faculty/Counsellor dashboard to never render because the
-//    *  global isHOD flag was raised first, swallowing all other roles.
-//    *
-//    * ─── Fix: ALL role flags are independent booleans ───────────────────────────
-//    *
-//    *  Each flag is raised independently. buildVisibleApplications() and the HTML
-//    *  template show EVERY dashboard for which the user has at least one row.
-//    *  This means a user who is HOD on some apps AND Counsellor on others sees
-//    *  BOTH the HOD section and the Counsellor section simultaneously.
-//    *
-//    * ─── Per-row filter rules (per requirements) ────────────────────────────────
-//    *
-//    *  Counsellor row  : DealingAuthority === empCode
-//    *                    AND DealingHODId  !== empCode  (not acting as HOD on this row)
-//    *                    AND DealingHow    !== empCode  (not acting as HoW on this row)
-//    *
-//    *  Faculty row     : DealingFaculty   === empCode
-//    *                    AND DealingHODId  !== empCode
-//    *                    AND DealingHow    !== empCode
-//    *
-//    *  HOD row         : DealingHODId     === empCode
-//    *
-//    *  HoW row         : DealingHow       === empCode
-//    */
+ 
 //   private enrichAndFilterApplications(): void {
 //     this.AllApplications = this.AllApplications || [];
 
@@ -1708,25 +1470,28 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
 //     this.isdealingFaculty   = false;
 //     this.isDealingAuthority = false;
 
+ 
+//     let hasFacultyRows = false;
+
 //     this.AllApplications = this.AllApplications.map(app => {
 //       const authority = this.normalise(app.dealingAuthority);
 //       const faculty   = this.normalise(app.dealingFaculty);
 //       const hodId     = this.normalise(app.dealingHODId);
 //       const how       = this.normalise(app.dealingHow);
 
-//       // ── Per-row flags ────────────────────────────────────────────────────────
+//       // Counsellor row: DealingAuthority === empCode
+//       //   AND not acting as HOD or HoW on this same row
 //       app._isCounsellor =
 //         emp !== null &&
 //         authority === emp &&
 //         hodId !== emp &&
 //         how   !== emp;
 
-//           // Faculty row: DealingFaculty === empCode
-//   //              AND this row's HOD/HoW is someone else
+//       // Faculty row: DealingFaculty === empCode
+//       //   AND not acting as HOD or HoW on this same row
 //       app._isFaculty =
 //         emp !== null &&
 //         faculty === emp &&
-//         authority !== emp &&
 //         hodId !== emp &&
 //         how   !== emp;
 
@@ -1736,20 +1501,25 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
 //       // HoW row: DealingHow === empCode
 //       app._isHoW = emp !== null && how === emp;
 
-    
-//       // Counsellor row: DealingAuthority === empCode
-//       //                 AND this row's HOD/HoW is someone else
-//       //                 (if empCode IS the HOD for this row, that row shows in
-//       //                  the HOD grid — not duplicated in Counsellor grid)
-  
-
-//       // Raise global flags independently — ALL matching roles are shown
-//       if (app._isCounsellor) this.isDealingAuthority = true;
-//       if (app._isFaculty)    this.isdealingFaculty   = true;
-//       if (app._isHOD)        this.isHOD              = true;
-//       if (app._isHoW)        this.isHoW              = true;
+//       if (app._isFaculty) hasFacultyRows = true;
 
 //       return app;
+//     });
+
+ 
+//     if (hasFacultyRows) {
+//       this.AllApplications.forEach(app => {
+//         if (app._isCounsellor) { app._isCounsellor = false; }
+//       });
+//     }
+
+//     // ── Raise global role flags from the finalised per-row values ────────────
+//     this.AllApplications.forEach(app => {
+//       if (app._isCounsellor) this.isDealingAuthority = true;
+//       if (app._isFaculty)    
+//         this.isdealingFaculty   = true;
+//       if (app._isHOD)        this.isHOD              = true;
+//       if (app._isHoW)        this.isHoW              = true;
 //     });
 
 //     this.buildPageTitle();
@@ -1757,71 +1527,35 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
 //     this.cd.detectChanges();
 //   }
 
-//   /**
-//    * Trims a value and returns null if it is empty, 'NULL', 'null', or undefined.
-//    */
 //   private normalise(val: any): string | null {
 //     if (val === null || val === undefined) return null;
 //     const s = String(val).trim();
 //     return (s === '' || s.toLowerCase() === 'null') ? null : s;
 //   }
 
-//   /**
-//    * Populate display lists for EVERY role the user holds.
-//    *
-//    * Because a single employee can be HOD on some applications and Counsellor
-//    * (or Faculty) on others, ALL four lists are populated independently.
-//    * The HTML template renders each dashboard section conditionally — if the
-//    * user has rows in more than one list, they see more than one section.
-//    *
-//    *  hodMyApplications   – rows where _isHOD  (shown in HOD Tab I)
-//    *  hodAllApplications  – from dedicated API  (shown in HOD Tab II)
-//    *  visibleApplications – union of _isHoW + _isFaculty + _isCounsellor rows
-//    *                        (each role block in the template filters its own subset)
-//    *
-//    * The template uses *ngIf per role and filters [rows] inline so each grid
-//    * only shows rows that belong to it.
-//    */
 //   private buildVisibleApplications(): void {
-//     // HOD section — rows where DealingHODId === empCode
-//     this.hodMyApplications = this.AllApplications.filter(a => a.isForwardtoHOD=='1' );
+//     this.hodMyApplications = this.AllApplications.filter(a => this.isTrue(a.isForwardtoHOD));
 //     if (this.isHOD) {
 //       this.GetAllApplicationsforHOD();
 //     }
 
-//     // Single visibleApplications list holds ALL non-HOD rows for this user.
-//     // The template then filters per role using the per-row flags.
 //     this.visibleApplications = this.AllApplications.filter(
 //       a => a._isCounsellor || a._isFaculty || a._isHoW  
 //     );
 //   }
-// private buildPageTitle(): void {
-//   const roleMap: Record<string, string> = {
-//     isDealingAuthority: 'Counsellor',
-//     isHOD: 'HOD',
-//     isHoW: 'HoW',
-//     isdealingFaculty: 'Faculty'
-//   };
+ 
+//   private buildPageTitle(): void {
+//     var roles: any='';
+//     if (this.isDealingAuthority) roles='Counsellor';
+//     if (this.isdealingFaculty)   roles='Faculty';
+//     if (this.isHOD)             roles='HOD';
+//     if (this.isHoW)              roles='HoW';    
 
-//   // Find the first active role key where the component property evaluates to true
-//   const activeRoleKey = Object.keys(roleMap).find(key => (this as any)[key]);
-//   const roleName = activeRoleKey ? roleMap[activeRoleKey] : '';
-
-//   this.pageTitle = roleName ? `** ${roleName} Dashboard **` : 'Dashboard';
-//   this.title.setTitle(this.pageTitle);
-// }
-//   // private buildPageTitle(): void {
-//   //   var roles: any='';
-//   //   if (this.isDealingAuthority) roles='Counsellor';
-//   //   if (this.isHOD)             roles='HOD';
-//   //   if (this.isHoW)              roles='HoW';    
-//   //   if (this.isdealingFaculty)   roles='Faculty';
-
-//   //   this.pageTitle = roles.length
-//   //     ? `** ${roles} Dashboard **`
-//   //     : 'Dashboard';
-//   //   this.title.setTitle(this.pageTitle);
-//   // }
+//     this.pageTitle = roles.length
+//       ? `** ${roles} Dashboard **`
+//       : 'Dashboard';
+//     this.title.setTitle(this.pageTitle);
+//   }
 
 //   // ── HOD Tab Switching ─────────────────────────────────────────────────────────
 
@@ -1834,8 +1568,13 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
 
 //   GetStudentApplication(application: Application): void {
 //     if (this.LoginName && application.registrationNo) {
+//       var Role = '';
+//       if (application._isHOD) Role = 'HOD';
+//       else if (application._isHoW) Role = 'HoW';
+//       else if (application._isFaculty) Role = 'Faculty';
+//       else if (application._isCounsellor) Role = 'Counsellor';
 //       this.router.navigateByUrl(
-//         `ApplicationDetails/${this.LoginName}/${application.registrationNo}/Faculty`
+//         `ApplicationDetails/${this.LoginName}/${application.registrationNo}/${Role}`
 //       );
 //     } else {
 //       Swal.fire('Navigation Error', 'Login name or registration number is missing.', 'error');
@@ -2055,6 +1794,7 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
 //   // ── Evaluation Remarks ────────────────────────────────────────────────────────
 
 //   UploadEvaluationRemarks(application: Application, remarksBy: string): void {
+//     alert(remarksBy);
 //     this.RegistrationNo = application.registrationNo;
 //     this.ApplicationId  = application.applicationId;
 //     this.RemarksBy      = remarksBy;
@@ -2252,58 +1992,115 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
 //    *                   'counsellor' → Evaluation Marks section is hidden  (req #3/#4)
 //    *                   'faculty' | 'hod' | 'how' → Evaluation Marks are shown
 //    */
+
 //   viewAllRemarks(
-//     row: Application,
-//     callerRole: 'counsellor' | 'faculty' | 'hod' | 'how' = 'counsellor'
-//   ): void {
-//     this.selectedRemarksCallerRole = callerRole;
+//   row: Application,
+//   callerRole: 'counsellor' | 'faculty' | 'hod' | 'how' = 'counsellor'
+// ): void {
+//   this.selectedRemarksCallerRole = callerRole;
 
-//     // Find the matching remarks row (may be undefined for new applications)
-//     const r = this.AllAuthorityRemarks.find(
-//       x => x.registrationNo === row.registrationNo
-//     );
+//   // Find the matching remarks row safely (fallback to undefined for new applications)
+//   const r = this.AllAuthorityRemarks?.find(
+//     x => x.registrationNo === row.registrationNo
+//   );
 
-//     this.selectedRemarks = {
-//       registrationNo: row.registrationNo,
-//       applicationId:  row.applicationId,
+//   this.selectedRemarks = {
+//     registrationNo: row.registrationNo,
+//     applicationId:  row.applicationId || r?.applicationId || '',
 
-//       // Counselling — inline on the application row AND in remarks table
-//       counsellingRemarks: r?.counsellingRemarks || row.counsellingRemarks || '',
-//       counsellingDate:    r?.counsellingDate    || row.counsellingDate    || '',
-//       counsellingDone:    this.isTrue(r?.counsellingStatus ?? row.counsellingStatus),
+//     // 1. Counselling — Inline application row fields map to table flags
+//     counsellingRemarks: r?.counsellingRemarks || row.counsellingRemarks || '',
+//     counsellingDate:    r?.counsellingDate    || row.counsellingDate    || '',
+//     counsellingDone:    this.isTrue(r?.counsellingStatus ?? row.counsellingStatus ),
 
-//       // Faculty interview remarks
-//       facultyRemarks:
-//         r?.dealingUserInterviewRemarks || r?.facultyRemarks || '',
+//     // 2. Faculty / Interview Remarks
+//     facultyRemarks:
+//       r?.facultyRemarks || r?.dealingUserInterviewRemarks  || '',
 
-//       // HOD remarks
-//       hodRemarks:      r?.dealingHODRemarks || r?.hodRemarks || r?.dealingHODInterviewRemarks || '',
-//       forwardedToHOD:  this.isTrue(r?.isForwardtoHOD  ?? row.isForwardtoHOD),
+//     // 3. HOD Remarks & Forwarding Status
+//     hodRemarks:      r?.hodRemarks || r?.dealingHODRemarks || r?.dealingHODInterviewRemarks   || '',
+//     forwardedToHOD:  this.isTrue(r?.isForwardtoHOD ?? row.isForwardtoHOD),
 
-//       // HoW remarks
-//       howRemarks:     r?.dealingHowRemarks || r?.howRemarks || '',
-//       forwardedToHoW: this.isTrue(r?.isForwardedtoHOW ?? row.isForwardedtoHOW),
+//     // 4. HoW Remarks & Forwarding Status (Mapped to structural columns 3 & 11)
+//     howRemarks:      r?.howRemarks || r?.dealingHowRemarks || r?.dealingHowRemarks ||  '',
+//     forwardedToHoW:  this.isTrue(r?.isForwardedtoHOW   ?? row.isForwardedtoHOW),
 
-//       // Approval / rejection
-//       approvalRemarks: r?.ApprovalRemarks || row.approvalRemarks || '',
+//     // 5. Final Status Actions
+//     approvalRemarks: r?.ApprovalRemarks   || row.approvalRemarks || '',
 
-//       // Evaluation
-//       academicsMarks:           r?.academicsMarks           || '',
-//       communicationSkillsMarks: r?.communicationSkillsMarks || '',
-//       attitudeMarks:            r?.attitudeMarks            || '',
-//       extraCurricularMarks:     r?.extraCurricularMarks     || '',
-//       knowledgeMarks:           r?.knowledgeMarks           || '',
-//       totalMarks:               r?.totalMarks               || '',
-//       evaluationComments:       r?.comments                 || '',
-//       evaluationBy:             r?.remarksBy                || '',
-//     } as any;
+//     // 6. Evaluation metrics breakdowns
+//     academicsMarks:           r?.academicsMarks            || '',
+//     communicationSkillsMarks: r?.communicationSkillsMarks  || '',
+//     attitudeMarks:            r?.attitudeMarks             || '',
+//     extraCurricularMarks:     r?.extraCurricularMarks      || '',
+//     knowledgeMarks:           r?.knowledgeMarks            || '',
+//     totalMarks:               r?.totalMarks                || '',
+//     evaluationComments:       r?.comments                  || '',
+//     evaluationBy:             r?.remarksBy                 || '',
+//   } as any;
 
-//     this.currentModalRef = this.modalService.open(this.ViewRemarksModal, {
-//       size: 'xl', backdrop: 'static', keyboard: false,
-//     });
-//     this.currentModalRef.result.catch(() => {});
-//     this.cd.detectChanges();
-//   }
+//   // Render trigger configuration
+//   this.currentModalRef = this.modalService.open(this.ViewRemarksModal, {
+//     size: 'xl', 
+//     backdrop: 'static', 
+//     keyboard: false,
+//   });
+  
+//   this.currentModalRef.result.catch(() => {});
+//   this.cd.detectChanges();
+// }
+//   // viewAllRemarks(
+//   //   row: Application,
+//   //   callerRole: 'counsellor' | 'faculty' | 'hod' | 'how' = 'counsellor'
+//   // ): void {
+//   //   this.selectedRemarksCallerRole = callerRole;
+
+//   //   // Find the matching remarks row (may be undefined for new applications)
+//   //   const r = this.AllAuthorityRemarks.find(
+//   //     x => x.registrationNo === row.registrationNo
+//   //   );
+
+//   //   this.selectedRemarks = {
+//   //     registrationNo: row.registrationNo,
+//   //     applicationId:  row.applicationId,
+
+//   //     // Counselling — inline on the application row AND in remarks table
+//   //     counsellingRemarks: r?.counsellingRemarks || row.counsellingRemarks || '',
+//   //     counsellingDate:    r?.counsellingDate    || row.counsellingDate    || '',
+//   //     counsellingDone:    this.isTrue(r?.counsellingStatus ?? row.counsellingStatus),
+
+//   //     // Faculty interview remarks
+//   //     facultyRemarks:
+//   //       r?.dealingUserInterviewRemarks || r?.facultyRemarks || '',
+
+//   //     // HOD remarks
+//   //     hodRemarks:      r?.dealingHODRemarks || r?.hodRemarks || r?.dealingHODInterviewRemarks || '',
+//   //     forwardedToHOD:  this.isTrue(r?.isForwardtoHOD  ?? row.isForwardtoHOD),
+
+//   //     // HoW remarks
+//   //     howRemarks:     r?.dealingHowRemarks || r?.howRemarks || '',
+//   //     forwardedToHoW: this.isTrue(r?.isForwardedtoHOW ?? row.isForwardedtoHOW),
+
+//   //     // Approval / rejection
+//   //     approvalRemarks: r?.ApprovalRemarks || row.approvalRemarks || '',
+
+//   //     // Evaluation
+//   //     academicsMarks:           r?.academicsMarks           || '',
+//   //     communicationSkillsMarks: r?.communicationSkillsMarks || '',
+//   //     attitudeMarks:            r?.attitudeMarks            || '',
+//   //     extraCurricularMarks:     r?.extraCurricularMarks     || '',
+//   //     knowledgeMarks:           r?.knowledgeMarks           || '',
+//   //     totalMarks:               r?.totalMarks               || '',
+//   //     evaluationComments:       r?.comments                 || '',
+//   //     evaluationBy:             r?.remarksBy                || '',
+//   //   } as any;
+
+//   //   this.currentModalRef = this.modalService.open(this.ViewRemarksModal, {
+//   //     size: 'xl', backdrop: 'static', keyboard: false,
+//   //   });
+//   //   this.currentModalRef.result.catch(() => {});
+//   //   this.cd.detectChanges();
+//   // }
 
 //   /** Returns true if any remark type has content for this row. */
 //   hasAnyRemarks(row: Application): boolean {

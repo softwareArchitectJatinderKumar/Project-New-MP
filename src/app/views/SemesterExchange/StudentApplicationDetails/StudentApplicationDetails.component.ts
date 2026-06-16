@@ -97,8 +97,11 @@ export class StudentApplicationDetailsComponent implements OnInit {
     if (this.Role === 'Student') {
     this.router.navigateByUrl('StudentDashboard/' + this.LoginName + '/' + this.RegistrationNo);
   }
-  else{
-  this.router.navigateByUrl('FacultyDashboard' + '/' + this.LoginName);
+  // else if (this.Role === 'Faculty') {
+  // this.router.navigateByUrl('FacultyDashboard' + '/' + this.LoginName);
+  // }
+  else if (this.Role === 'HoW' || this.Role === 'HOD' || this.Role === 'Counsellor' || this.Role === 'Faculty') {
+  this.router.navigateByUrl('DashboardHOD' + '/' + this.LoginName);
   }
   }
   Visit(): void{

@@ -1,0 +1,196 @@
+.application-list-container {
+    margin: 24px;
+    font-family: 'Inter', sans-serif;
+  }
+  ngx-datatable {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 12px;
+  }
+  .btn {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    user-select: none;
+    transition: background-color 0.25s ease;
+  }
+  .icon-btn {
+    background-color: #3f51b5;
+    color: white;
+  }
+  .icon-btn:disabled {
+    background-color: #9fa8da;
+    cursor: not-allowed;
+  }
+  .icon-btn:hover:not(:disabled) {
+    background-color: #303f9f;
+  }
+  .approve-btn {
+    background-color: #4caf50;
+    color: white;
+    margin-right: 8px;
+  }
+  .approve-btn:hover {
+    background-color: #388e3c;
+  }
+  .disapprove-btn {
+    background-color: #f44336;
+    color: white;
+  }
+  .disapprove-btn:hover {
+    background-color: #d32f2f;
+  }
+
+
+  .full-page-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999; /* very high to overlay all content */
+  }
+  .loader-spinner {
+    background: #222;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .spin-icon {
+    animation: spin 1.5s linear infinite;
+    color: #61dafb;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg);}
+    100% { transform: rotate(360deg);}
+  }
+
+
+  .badge {
+    font-weight: 600;
+    padding: 0.4em 0.6em;
+    font-size: 0.85rem;
+    border-radius: 0.5rem;
+  }
+  
+  /* Optional: override Bootstrap colors slightly (optional) */
+  .bg-success {
+    background-color: #28a745 !important;
+    color: #fff !important;
+  }
+  
+  .bg-danger {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+  }
+  
+  .bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529 !important; 
+  }
+  
+  /* Highlight row on hover (unchanged) */
+  .table-responsive tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table th {
+    background-color: #343a40;
+    color: white;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.table-bordered {
+    border: 1px solid #dee2e6;
+}
+
+.table-bordered th,
+.table-bordered td {
+    border: 1px solid #dee2e6;
+}
+
+.thead-dark th {
+    background-color: #343a40;
+    border-color: #454d55;
+}
+
+/* Button styling for the actions column */
+.d-flex.flex-wrap {
+    gap: 0.25rem;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* Loading spinner styles */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+.btn-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Full page loader */
+.full-page-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loader-spinner {
+    text-align: center;
+}
+
+.spin-icon {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
