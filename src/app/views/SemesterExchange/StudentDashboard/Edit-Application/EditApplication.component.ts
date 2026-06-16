@@ -8,6 +8,24 @@ import { AuthService } from 'src/app/_services/auth.service';
 import { StorageService } from 'src/app/_services/storage.service';
 import { countries } from '../../countries-list';
 
+// Optional: Define an interface to enforce type safety for your rows
+interface StageDetailRow {
+  stage: number;
+  id: number;
+  documentName: string;
+  forAdmin: number;
+  sampleFormat: any;
+  stageName: string;
+  fileName?: string;  // Track the string name for UI display
+  fileObject?: File;  // Track the raw file for API uploads
+  file?: File;  // Track the raw file for API uploads
+  fileData: any ;
+  isUploading?: boolean;
+  isUploaded?: boolean;
+  document: any;
+}
+
+
 interface DocumentField {
   key: string;
   label: string;
@@ -21,6 +39,131 @@ interface DocumentField {
   styleUrls: ['./edit-application.component.scss']
 })
 export class EditApplicationComponent implements OnInit {
+
+
+
+  onStageFilePicked(event: any, index: number): void {
+  const target = event.target as HTMLInputElement;
+  let file: File | null = (target.files as FileList)[0] || null;
+
+  if (!file) return;
+
+  // 1. File Size Validation (3MB threshold)
+  if (file.size > 3148576) {
+    Swal.fire({
+      title: 'File size exceeds 3MB. Please upload a smaller file.',
+      text: 'Invalid File size',
+      icon: 'warning'
+    });
+    target.value = '';
+    return;
+  }
+
+  // 2. Filename Sanitization Regex Check
+  const fileNameRegex = /^[a-zA-Z0-9._-]+$/;
+  let finalFile: File = file;
+  let finalFileName: string = file.name;
+
+  if (!fileNameRegex.test(file.name)) {
+    // Replace illegal characters with an underscore
+    finalFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    
+    // Instantiate a fresh sanitised File object binary
+    finalFile = new File([file], finalFileName, { type: file.type });
+
+    // Sync back sanitized file instance directly to the HTML DOM input collection elements
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(finalFile);
+    target.files = dataTransfer.files;
+  }
+
+  // 3. Persist values to tracking array index state
+  this.StagesDetail[index].fileName = finalFileName;
+  this.StagesDetail[index].fileObject = finalFile; // CRITICAL: Saved as binary File for FormData use
+  this.StagesDetail[index].isUploaded = false;     // Clear state flag for new upload cycles
+
+  // 4. (Optional) FileReader base64 mapping if you still need it elsewhere for localized image previews
+  const reader = new FileReader();
+  reader.readAsDataURL(finalFile);
+  reader.onload = () => {
+    const base64String = reader.result as string;
+    const splitArray = base64String.split(',');
+    // Keep base64 encoded payload separate if required, without overwriting our binary fileObject reference
+    this.StagesDetail[index].fileData = splitArray[1]; 
+  };
+}
+ 
+
+  downloadStageFile(index: number, event: Event): void {
+    event.preventDefault();
+    const targetRow = this.StagesDetail[index];
+    if (targetRow.fileObject) {
+      const fileUrl = URL.createObjectURL(targetRow.fileObject);
+      const hiddenAnchor = document.createElement('a');
+      hiddenAnchor.href = fileUrl;
+      hiddenAnchor.download = targetRow.fileName || 'download';
+      document.body.appendChild(hiddenAnchor);
+      hiddenAnchor.click();
+      document.body.removeChild(hiddenAnchor);
+      URL.revokeObjectURL(fileUrl);
+    }
+  }
+
+   onSelectFileX(a: any) {
+    let aa = a;
+    window.open(this.LocalserverUrl+  aa, '_blank');
+    // window.open(this.serverUrl+  aa, '_blank');
+  }
+
+
+  uploadStageDocumentRow(index: number): void {
+  const row = this.StagesDetail[index];
+  
+  // Guard check ensuring binary data asset exists
+  if (!row.fileObject) {
+    Swal.fire('Error', 'Please select a valid file first.', 'error');
+    return;
+  }
+
+  row.isUploading = true;
+
+  // Instantiate standard form payload multipart stream wrapper
+  const formData = new FormData();
+
+  // 'File' parameter mapping key configuration matching C# target specifications
+  formData.append('File', row.fileObject, row.fileName);
+
+  // Bind accompanying plain metadata tracking primitives strings matching your .NET target schema properties
+  formData.append('ApplicationId', this.ApplicationId);
+  formData.append('DocumentName', row.documentName);
+  formData.append('Stage', row.stage.toString());
+  formData.append('StageName', row.stageName.trim());
+  formData.append('FileData', row.fileData);
+
+  // Execute unified service callback pipeline
+  this.ServicesSM.addSECheckListDocuments(formData).subscribe({
+    next: (response) => {
+      row.isUploading = false;
+      row.isUploaded = true;
+      Swal.fire('Success', `${row.documentName} uploaded successfully!`, 'success');
+    },
+    error: (err) => {
+      row.isUploading = false;
+      Swal.fire('Upload Failed', `Could not upload document row target context.`, 'error');
+      console.error('API Error Response Logging:', err);
+    }
+  });
+}
+  
+
+
+
+
+
+
+
+
+
   LockedStatus: any; // added on 26-dec-25
   form!: FormGroup;
   isLoading = false;
@@ -28,7 +171,7 @@ export class EditApplicationComponent implements OnInit {
   currentStep = 0;
 
   RegistrationNo: string;
-  ApplicationId: string | null = null;
+  ApplicationId: string ;
   stuApplication: any = null;
 
   isEditingStep: boolean[] = [false, false, false, false, false];
@@ -342,6 +485,7 @@ export class EditApplicationComponent implements OnInit {
         } else {
           this.getStudentDetail();
           this.buildForm();
+          this.getStagesDetails();
         }
       },
       error: (err: any) => this.loginFailed(err)
@@ -366,8 +510,32 @@ export class EditApplicationComponent implements OnInit {
     this.router.navigate(['stuPotal', this.LoginName]);
   }
 
+  StagesDetail: StageDetailRow[] = [];
 
+  getStagesDetails(): void {
+    this.ServicesSM.GetAllCheckListDocs().subscribe({
+      next: (response: any) => {
+        const data = response.item1 || [];
+        this.StagesDetail = response.item1;
+      },
+      error: () => {
 
+      }
+    });
+  }
+  
+  StageDocumentData: StageDetailRow[]=[];
+  getStageDocumentDetails(): void {
+    this.ServicesSM.GetStage2DocumentDetails(+this.ApplicationId).subscribe({
+      next: (response: any) => {
+        const data = response.item1 || [];
+        this.StageDocumentData = response.item1;
+      },
+      error: () => {
+
+      }
+    });
+  }
 
 
   getUniversityDetails(): void {
@@ -499,11 +667,11 @@ DealingHod:any;
             return; // Stop further execution in this path
           }
           this.stuApplication = response.item1[0];
-           console.log(JSON.stringify(this.stuApplication));
           this.CounsellingAuthority = this.stuApplication.counsellingAuthority;
           this.DealingHodId = this.stuApplication.dealingHODId;
           this.DealingFaculty = this.stuApplication.dealingFaculty;
-          this.LockedStatus = this.DealingHodId?.length>0? true:false;
+          this.LockedStatus = this.stuApplication.isLocked ==='True'? true:false;
+          // this.LockedStatus = this.DealingHodId?.length>0? true:false;
           if (this.LockedStatus) {
             this.currentStep === 5;
             this.moveNextStep();
@@ -568,6 +736,7 @@ DealingHod:any;
 
 
           this.populateDocumentFieldsFromApp();
+          this.getStageDocumentDetails();
 
         } finally {
           const elapsed = Date.now() - start;
@@ -1055,7 +1224,7 @@ DealingHod:any;
   }
   serverUrl = 'https://files.lpu.in/umsweb/DIA/SemesterExchangedocuments/';
 
-
+  LocalserverUrl='http://172.19.2.52/umsweb/webftp/SemesterExchangedocuments/'
 
 
   Onsubmit(): void {
@@ -1141,6 +1310,8 @@ DealingHod:any;
     this.courseRows.splice(index, 1);
   }
 
+ 
+
   onCourseFilePicked(event: any, index: number): void {
     const target = event.target as HTMLInputElement;
     const file = (target.files as FileList)[0] || null;
@@ -1159,8 +1330,23 @@ DealingHod:any;
       this.courseRows[index].file = f;
       this.courseRows[index].fileName = f.name;
       this.courseRows[index].fileData = base64;
+
+      this.StagesDetail[index].fileName = f.name;
+      this.StagesDetail[index].file = f;
+      this.StagesDetail[index].fileData = base64;
+
     };
     reader.readAsDataURL(f);
+
+    //  if (target.files && target.files.length > 0) {
+    //   const selectedFile = target.files[0];
+
+    //   // Update the target row with file details
+    //   this.StagesDetail[index].fileName = selectedFile.name;
+    //   this.StagesDetail[index].fileObject = selectedFile;
+      
+    //   console.log(`File selected for row ${index}:`, selectedFile.name);
+    // }
   }
 
   downloadCourseFile(index: number, evt: Event) {

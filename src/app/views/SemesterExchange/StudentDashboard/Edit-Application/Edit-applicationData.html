@@ -195,7 +195,8 @@
                          <ng-container *ngIf="LockedStatus">
                         <!-- <span class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-none': true }"> -->
                             <!-- <button type="button" class="btn btn-success " [ngClass]="{ 'bg-success': true }" -->
-                                <button type="button" class="btn me-5 active" data-bs-toggle="tab" style="padding: .95rem 8rem;" (click)="moveNextStep()">Course Mapping </button>
+                                <!-- <button type="button" class="btn me-5 active" data-bs-toggle="tab" style="padding: .95rem 8rem;" (click)="moveNextStep()">Course Mapping </button> -->
+                                <button type="button" class="btn me-5 active" data-bs-toggle="tab" style="padding: .95rem 8rem;" (click)="moveNextStep()">Stage - II  </button>
                         <!-- </span> -->
                         <br/>
                         <!-- <span class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-none': true }"> -->
@@ -223,8 +224,74 @@
         
 
         <!-- New Task For Course mapping pending -->
-          <section *ngIf="currentStep === 5" class="step-section">
-            <div class="d-flex justify-content-between align-items-center mb-2">
+        <section *ngIf="currentStep === 5" class="step-section">
+
+
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Stage Name</th>
+                            <th>Document Name</th>
+                            <th>Uploaded Document</th>
+                             
+                        </tr>
+                    </thead>
+                    <tbody *ngIf="StageDocumentData.length>0; else: DocumentData">
+                        <tr *ngFor="let row of StageDocumentData; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ row.stageName }}</td>
+                            <td>{{ row.documentName }}</td>
+                            <td>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <button class="btn btn-dark" (click)="onSelectFileX(row.document)">
+                                         <i class="bi bi-file-earmark-text"></i>
+                                    </button>
+                                    <!-- <a *ngIf="row.document" href="#" class="btn btn-outline-secondary btn-sm text-nowrap"
+                                        (click)="onSelectFileX(row.document)">
+                                        Download: {{ row.document }}
+                                    </a> -->
+                                </div>
+                            </td>
+                             
+                        </tr>
+                    </tbody>
+                    <ng-template #DocumentData>
+                        <tbody  >
+                        <tr *ngFor="let row of StagesDetail; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ row.stageName }}</td>
+                            <td>{{ row.documentName }}</td>
+                            <td>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <input type="file" class="form-control form-control-sm"
+                                        (change)="onStageFilePicked($event, i)" />
+            
+                                    <a *ngIf="row.fileName" href="#" class="btn btn-outline-secondary btn-sm text-nowrap"
+                                        (click)="downloadStageFile(i, $event)">
+                                        Download: {{ row.fileName }}
+                                    </a>
+                                </div>
+                            </td>
+                            <td>
+                                <button *ngIf="!row.isUploaded" class="btn btn-primary btn-sm"
+                                    [disabled]="!row.fileObject || row.isUploading" (click)="uploadStageDocumentRow(i)">
+                                    <span *ngIf="row.isUploading" class="spinner-border spinner-border-sm me-1"></span>
+                                    {{ row.isUploading ? 'Uploading...' : 'Upload' }}
+                                </button>
+            
+                                <span *ngIf="row.isUploaded" class="badge bg-success p-2">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Saved
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                    </ng-template>
+                </table>
+            </div>
+
+            <!-- <div class="d-flex justify-content-between align-items-center mb-2">
                 <h3 class="text-info m-0">Course Covered & Uploads</h3>
                 <div>
                     <button class="btn btn-success me-2" (click)="addCourseRow()">Add Row</button>
@@ -239,19 +306,17 @@
                     <thead class="table-light">
                         <tr>
                             <th>#</th>
-                            <th>Course Name</th>
-                            <th>Course Code</th>
-                            <th>Hours</th>
+                            <th>Stage Name</th>
+                            <th>Document Name</th>                            
                             <th>Upload Document</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let row of courseRows; let i = index">
+                        <tr *ngFor="let row of StagesDetail; let i = index">
                             <td>{{ i + 1 }}</td>
-                            <td><input class="form-control" [(ngModel)]="row.courseName" name="courseName{{i}}" /></td>
-                            <td><input class="form-control" [(ngModel)]="row.courseCode" name="courseCode{{i}}" /></td>
-                            <td><input type="number" min="0" class="form-control" [(ngModel)]="row.hours" name="hours{{i}}" />
+                            <td><input class="form-control" [(ngModel)]="row.stageName" name="stageName{{i}}" /></td>                            
+                            <td><input class="form-control" [(ngModel)]="row.documentName" name="documentName{{i}}" /></td>                                                        
                             </td>
                             <td>
                                 <div class="d-flex gap-2 align-items-center">
@@ -267,7 +332,7 @@
                     </tbody>
                 </table>
             </div>
-        
+         -->
         </section>
 
         <div class="col-md-12 grid-margin stretch-card mb-3">

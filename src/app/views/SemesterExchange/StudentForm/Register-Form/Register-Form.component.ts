@@ -112,6 +112,7 @@ export class RegisterFormcomponent implements OnInit {
     { value: '2 to 4 Lakhs', label: '2 to 4 Lakhs' },
     { value: '4 to 6 Lakhs', label: '4 to 6 Lakhs' },
     { value: '6 to 8 Lakhs', label: '6 to 8 Lakhs' },
+    { value: '8 to 10 Lakhs', label: '8 to 10 Lakhs' },
   ];
 
 

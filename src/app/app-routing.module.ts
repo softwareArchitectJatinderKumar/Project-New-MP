@@ -43,31 +43,6 @@ const routes: Routes = [
       { path: 'stuPotal/:LoginName', redirectTo: 'NewWay-Register/:LoginName', pathMatch: 'full' },
       // { path: 'SMAdmin/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
 
-      {
-        path: 'CounsellorDashboard/:LoginName',
-        loadChildren: () => import('./views/SemesterExchange/CounsellorDashboardNew/CounsellorDashboard.module').then(m => m.CounsellorDashboardModule),
-      },
-      
-      {
-        path: 'FacultyDashboard/:LoginName',
-        loadChildren: () => import('./views/SemesterExchange/FacultyDashboardNew/DealingDashboard.module').then(m => m.FacultyDashboardNewModule),
-        // loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule),
-      },
-
-       { path: 'DashboardHOD/:LoginName',         
-        loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule)  
-        // redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' 
-      },
-
-
-      { path: 'DashboardHOW/:LoginName', 
-        loadChildren: () => import('./views/SemesterExchange/HowDashboardNew/HowDashboards.module').then(m => m.HowDashboardsModule)  
-      },
-
-
-      { path: 'DashboardDIAHOD/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
-      // { path: 'DashboardHOW/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
-    
      
     
       {
@@ -99,6 +74,58 @@ const routes: Routes = [
       //   path: 'DashboardHOW/:LoginName',
       //   loadChildren: () => import('./views/SemesterExchange/HOWDashboard/HOWDashboard.module').then(m => m.HOWDashboardModule),
       // },
+
+
+
+
+
+
+ {
+        path: 'CounsellorDashboard/:LoginName',
+        loadChildren: () => import('./views/SemesterExchange/CounsellorDashboardNew/CounsellorDashboard.module').then(m => m.CounsellorDashboardModule),
+      },
+      
+      {
+        path: 'FacultyDashboard/:LoginName',
+        loadChildren: () => import('./views/SemesterExchange/FacultyDashboardNew/DealingDashboard.module').then(m => m.FacultyDashboardNewModule),
+        // loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule),
+      },
+
+       { path: 'DashboardHOD/:LoginName',         
+        loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule)  
+        // redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' 
+      },
+
+
+      { path: 'DashboardHOW/:LoginName', 
+        loadChildren: () => import('./views/SemesterExchange/HowDashboardNew/HowDashboards.module').then(m => m.HowDashboardsModule)  
+      },
+
+
+      { path: 'DashboardDIAHOD/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
+      // { path: 'DashboardHOW/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
+    
+     
+
+ {
+        path: 'ApplicationDetails/:LoginName/:RegistrationNo/:Role',
+        loadChildren: () => import('./views/SemesterExchange/StudentApplicationDetails/StudentApplicationDetails.module').then(m => m.StudentApplicationDetailsModule),
+      },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       // 6-Sep-25 Starts
       {
         path: 'HODAdminPanel/:loginName',
@@ -123,11 +150,7 @@ const routes: Routes = [
       //   path: 'DashboardDIAHOD/:LoginName',
       //   loadChildren: () => import('./views/SemesterExchange/DealingUserDashboard/DealingUserDashboard.module').then(m => m.DealingUserDashboardModule),
       // },
-      {
-        path: 'ApplicationDetails/:LoginName/:RegistrationNo/:Role',
-        loadChildren: () => import('./views/SemesterExchange/StudentApplicationDetails/StudentApplicationDetails.module').then(m => m.StudentApplicationDetailsModule),
-      },
-
+     
       // Added on 27-Feb-25
       {
         path: 'JournalAdmin/:loginName',
@@ -405,7 +428,7 @@ const routes: Routes = [
       //   component: CriteriaMasterComponent
       //   // loadChildren:()=> import('./views/pages/UMS-Angular/CriteriaMaster/criteria-master.module').then(m=> m.CriteriaMasterModule)
       // },
-     
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       // { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       // { path: '**', redirectTo: 'dashboard', pathMatch: 'full' }
     ]

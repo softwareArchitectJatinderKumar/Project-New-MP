@@ -231,91 +231,227 @@ get isReadyForPrint(): boolean {
    * Dynamically filters fields in the review UI based on user's choices.
    */
   public getFilteredFormSections() {
-    // Read the current state of form controls
-    const fundingType = this.studentForm?.get('isSelfFunded')?.value; 
-    const visaRejected = this.studentForm?.get('isVisaRejected')?.value;
-    const englishTestType = this.studentForm?.get('englishTestType')?.value;
-    const relativeName = this.studentForm?.get('relativeName')?.value;
-    const passportStatus = this.studentForm?.get('passportStatus')?.value;
-    const isSelfFunded = this.studentForm?.get('isSelfFunded')?.value;
+  const fundingType = this.studentForm?.get('isSelfFunded')?.value;
+  const visaRejected = this.studentForm?.get('isVisaRejected')?.value;
+  const englishTestType = this.studentForm?.get('englishTestType')?.value;
+ 
+  const passportStatus = this.studentForm?.get('passportStatus')?.value;
 
-    return this.formSections.map(section => {
-        // 1. Sponsor Details: Hide contact fields if funded by Self/Parent
-        if (section.label === 'Sponsor Details') {
-            const isSelfOrParentFunded = ['Self', 'Parent'].includes(fundingType);
-            if (isSelfOrParentFunded) {
-                // Keep only 'isSelfFunded'
-                const filteredKeys = section.keys.filter(key => key === 'isSelfFunded');
-                return { ...section, keys: filteredKeys };
-            }
-        }
-        
-        // 2. Visa Details: Hide reason/country if visa was NOT rejected
-        if (section.label === 'Visa Details') {
-            const isVisaNotRejected = visaRejected === 'No';
-            if (isVisaNotRejected) {
-                // Keep only 'isVisaRejected'
-                const filteredKeys = section.keys.filter(key => key === 'isVisaRejected');
-                return { ...section, keys: filteredKeys };
-            }
-        }
+const relativeName = this.studentForm?.get('relativeName')?.value;
+const relativeRelation = this.studentForm?.get('relativeRelation')?.value;
+const relativeCountry = this.studentForm?.get('relativeCountry')?.value;
+  return this.formSections.map(section => {
 
-        // 3. English Test Details: Hide score details if test is not given/required/applied
-        if (section.label === 'English Test Details') {
-            const isScoresNotApplicable = ['NotRequried', 'NotGiven', 'Applied'].includes(englishTestType);
-            if (isScoresNotApplicable) {
-                // Keep only 'englishTestType'
-                const filteredKeys = section.keys.filter(key => key === 'englishTestType');
-                return { ...section, keys: filteredKeys };
-            }
-        }
-        // 4. Relative at Abroad: Hide Relative details if No Relative is not  'relativeName', 'relativeRelation', 'relativeCountry'
-        if (section.label === 'Relative at Abroad') {
-            const isScoresNotApplicable = relativeName == null || relativeName=='';//.includes(relativeName);
-            if (isScoresNotApplicable) {
-                // Keep only 'englishTestType'
-                const filteredKeys = section.keys.filter(key => key === 'relativeName');
-                return { ...section, keys: filteredKeys };
-            }
-        }
-        //5. Relative at Abroad: Hide Passport Details if Passport status is null or no  
-        if (section.label === 'Passport Details') {
-            const ispassportStatus = passportStatus == 'No' || passportStatus== null;//.includes(relativeName);
-            if (ispassportStatus) {
-                // Keep only 'passportStatus'
-                const filteredKeys = section.keys.filter(key => key === 'passportStatus');
-                return { ...section, keys: filteredKeys };
-            }
-        }
-        //6. Relative at Abroad: Hide Sponsor Details if No Sponsor Details is found
-        if (section.label === 'Sponsor Details') {
-            const isSelfFundedStatus = isSelfFunded == 'NA' || isSelfFunded== null || isSelfFunded.length == 2;//.includes(relativeName);
-            if (isSelfFundedStatus) {
-                // Keep only 'passportStatus'
-                const filteredKeys = section.keys.filter(key => key === 'isSelfFunded');
-                return { ...section, keys: filteredKeys };
-            }
-        }
+    // 1. Sponsor Details
+    if (section.label === 'Sponsor Details') {
 
-        // Return all other sections and fields as is
-        return section;
-    });
+      // Remove isSelfFunded field from Sponsor Details in all cases
+      let filteredKeys = section.keys.filter(
+        key => key !== 'isSelfFunded'
+      );
+
+      // If funding is Self or Parent, hide entire sponsor information
+      if (['Self', 'Parent'].includes(fundingType)) {
+        filteredKeys = [];
+      }
+
+      return {
+        ...section,
+        keys: filteredKeys
+      };
+    }
+
+    // 2. Visa Details
+    if (section.label === 'Visa Details' && visaRejected === 'No') {
+      return {
+        ...section,
+        keys: section.keys.filter(key => key === 'isVisaRejected')
+      };
+    }
+
+    // 3. English Test Details
+    // if (
+    //   section.label === 'English Test Details' &&
+    //   ['NotRequried', 'NotGiven', 'Applied'].includes(englishTestType)
+    // ) {
+    //   return {
+    //     ...section,
+    //     keys: section.keys.filter(key => key === 'englishTestType')
+    //   };
+    // }
+
+    // new changes
+
+    if (section.label === 'English Test Details') {
+
+  const isScoreNotApplicable =
+    ['NotRequried', 'NotRequired', 'NotGiven', 'Applied']
+      .includes(englishTestType);
+
+  if (isScoreNotApplicable) {
+
+    const fieldsToHide = [
+      'speakingScore',
+      'readingScore',
+      'writingScore',
+      'listeningScore',
+      'overallScore',
+      'englishTestYear'
+    ];
+
+    return {
+      ...section,
+      keys: section.keys.filter(
+        key => !fieldsToHide.includes(key)
+      )
+    };
   }
+}
+
+
+    // 4. Relative at Abroad
+   if (section.label === 'Relative at Abroad') {
+
+    const isRelativeNotApplicable =
+      (!relativeName || relativeName === 'NA') &&
+      (!relativeRelation || relativeRelation === 'NA') &&
+      (!relativeCountry || relativeCountry === 'NA');
+
+    if (isRelativeNotApplicable) {
+      return {
+        ...section,
+        keys: ['relativeNotApplicable']
+      };
+    }
+}
+
+    // 5. Passport Details
+    if (section.label === 'Passport Details') {
+
+      const filteredKeys = section.keys.filter(
+        key => key !== 'passportStatus'
+      );
+
+      return {
+        ...section,
+        keys: filteredKeys
+      };
+    }
+
+    // if (
+    //   section.label === 'Passport Details' &&
+    //   (!passportStatus || passportStatus === 'No')
+    // ) {
+    //   return {
+    //     ...section,
+    //     keys: section.keys.filter(key => key === 'passportStatus')
+    //   };
+    // }
+
+    return section;
+  });
+}
+  // public getFilteredFormSections() {
+  //   // Read the current state of form controls
+  //   const fundingType = this.studentForm?.get('isSelfFunded')?.value; 
+  //   const visaRejected = this.studentForm?.get('isVisaRejected')?.value;
+  //   const englishTestType = this.studentForm?.get('englishTestType')?.value;
+  //   const relativeName = this.studentForm?.get('relativeName')?.value;
+  //   const passportStatus = this.studentForm?.get('passportStatus')?.value;
+  //   const isSelfFunded = this.studentForm?.get('isSelfFunded')?.value;
+
+  //   return this.formSections.map(section => {
+  //       // 1. Sponsor Details: Hide contact fields if funded by Self/Parent
+  //       if (section.label === 'Sponsor Details') {
+  //           const isSelfOrParentFunded = ['Self', 'Parent'].includes(fundingType);
+  //           if (isSelfOrParentFunded) {
+  //               // Keep only 'isSelfFunded'
+  //               const filteredKeys = section.keys.filter(key => key === 'isSelfFunded');
+  //               return { ...section, keys: filteredKeys };
+  //           }
+  //       }
+        
+  //       // 2. Visa Details: Hide reason/country if visa was NOT rejected
+  //       if (section.label === 'Visa Details') {
+  //           const isVisaNotRejected = visaRejected === 'No';
+  //           if (isVisaNotRejected) {
+  //               // Keep only 'isVisaRejected'
+  //               const filteredKeys = section.keys.filter(key => key === 'isVisaRejected');
+  //               return { ...section, keys: filteredKeys };
+  //           }
+  //       }
+
+  //       // 3. English Test Details: Hide score details if test is not given/required/applied
+  //       if (section.label === 'English Test Details') {
+  //           const isScoresNotApplicable = ['NotRequried', 'NotGiven', 'Applied'].includes(englishTestType);
+  //           if (isScoresNotApplicable) {
+  //               // Keep only 'englishTestType'
+  //               const filteredKeys = section.keys.filter(key => key === 'englishTestType');
+  //               return { ...section, keys: filteredKeys };
+  //           }
+  //       }
+  //       // 4. Relative at Abroad: Hide Relative details if No Relative is not  'relativeName', 'relativeRelation', 'relativeCountry'
+  //       if (section.label === 'Relative at Abroad') {
+  //           const isScoresNotApplicable = relativeName == null || relativeName=='';//.includes(relativeName);
+  //           if (isScoresNotApplicable) {
+  //               // Keep only 'englishTestType'
+  //               const filteredKeys = section.keys.filter(key => key === 'relativeName');
+  //               return { ...section, keys: filteredKeys };
+  //           }
+  //       }
+  //       //5. Relative at Abroad: Hide Passport Details if Passport status is null or no  
+  //       if (section.label === 'Passport Details') {
+  //           const ispassportStatus = passportStatus == 'No' || passportStatus== null;//.includes(relativeName);
+  //           if (ispassportStatus) {
+  //               // Keep only 'passportStatus'
+  //               const filteredKeys = section.keys.filter(key => key === 'passportStatus');
+  //               return { ...section, keys: filteredKeys };
+  //           }
+  //       }
+  //       //6. Relative at Abroad: Hide Sponsor Details if No Sponsor Details is found
+  //       if (section.label === 'Sponsor Details') {
+  //           const isSelfFundedStatus = isSelfFunded == 'NA' || isSelfFunded== null || isSelfFunded.length == 2;//.includes(relativeName);
+  //           if (isSelfFundedStatus) {
+  //               // Keep only 'passportStatus'
+  //               const filteredKeys = section.keys.filter(key => key === 'isSelfFunded');
+  //               return { ...section, keys: filteredKeys };
+  //           }
+  //       }
+
+  //       // Return all other sections and fields as is
+  //       return section;
+  //   });
+  // }
   
   /**
    * Cleans up PascalCase/camelCase form control names for display.
    */
-  beautifyLabel(label: string): string {
-    return label
-      .replace(/([A-Z])/g, ' $1')
-      .replace(/_/g, ' ')
-      .replace(/\b\w/g, char => char.toUpperCase())
-      .replace('Id', 'ID')
-      .replace('No', 'No.')
-      .replace('Upto', 'Up To')
-      .replace('Whatsapp', 'WhatsApp')
-      .trim();
+beautifyLabel(label: string): string {
+
+  const customLabels: Record<string, string> = {
+    isVisaRejected: 'Visa Status'
+  };
+
+  if (customLabels[label]) {
+    return customLabels[label];
   }
+
+
+   if (label === 'relativeNotApplicable') {
+    return 'Relative at Abroad';
+  }
+
+
+  return label
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, char => char.toUpperCase())
+    .replace('Id', 'ID')
+    .replace('No', 'No.')
+    .replace('Upto', 'Up To')
+    .replace('Whatsapp', 'WhatsApp')
+    .trim();
+}
 
   convertImageData(imageData: string): string {
     return `data:image/jpeg;base64,${imageData}`;

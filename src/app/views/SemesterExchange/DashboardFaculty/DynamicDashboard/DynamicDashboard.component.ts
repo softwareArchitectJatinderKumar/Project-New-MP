@@ -51,7 +51,7 @@ interface Application {
   dealingFaculty: string;     // Faculty emp code (NULL until forwarded)
   dealingHODId: string;       // Fixed: 28243 (NULL until forwarded to HOD)
   dealingHow: string;         // Fixed: 12160 (NULL until forwarded to HoW)
-
+  dealingUId: string;        // Fixed: 12160 (NULL until forwarded to HoW)
   // HOD Tab XX extras (returned by GetSemesterExchangeApplicationForHOD)
   countryName: string;
   applyingOption: string;
@@ -124,6 +124,7 @@ interface AggregatedRemarks {
   forwardedToHoW: boolean;
   // Approval
   approvalRemarks: string;
+  dealingUId: string;
   // Evaluation fields are intentionally omitted here —
   // they are rendered per-row via selectedRemarksEvaluations instead.
 }
@@ -323,7 +324,7 @@ export class DynamicDashboardComponent implements OnInit {
           const emp = response.item1[0];
           this.EmployeeDetails  = emp;
           this.EmployeeName     = emp.employeeName;
-          this.EmployeeCode     = '1107';// String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
+          this.EmployeeCode     = '28243';// String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
           this.ContactNoX       = emp.contactNo;
           this.Department       = emp.department;
           this.DepartmentName   = emp.departmentName;
@@ -593,16 +594,39 @@ export class DynamicDashboardComponent implements OnInit {
 
   // ── Forwarding ────────────────────────────────────────────────────────────────
 
-  ForwardToFaculty(application: Application): void {
+  ForwardToCounsellor(application: Application): void {
     Swal.fire({
-      title: 'Forward to Faculty',
+      title: 'Forward To Counsellor ',
       input: 'text',
-      inputPlaceholder: 'Enter Faculty Employee Code...',
+      inputPlaceholder: 'Enter Employee Code...',
       showCancelButton: true,
       confirmButtonText: 'Forward',
       showLoaderOnConfirm: true,
       preConfirm: uid => {
-        if (!uid) Swal.showValidationMessage('Faculty Employee Code is required!');
+        if (!uid) Swal.showValidationMessage('Employee Code is required!');
+        return uid;
+      },
+      allowOutsideClick: () => !Swal.isLoading(),
+    }).then(result => {
+      if (result.isConfirmed && result.value) {
+        const fd = new FormData();
+        fd.append('RegistrationNo', application.registrationNo);
+        fd.append('HODUID', result.value);
+        fd.append('UserAction', 'AssignCounsellor');
+        this.sendForwardRequest(fd);
+      }
+    });
+  }
+  ForwardToFaculty(application: Application): void {
+    Swal.fire({
+      title: 'Forward ',
+      input: 'text',
+      inputPlaceholder: 'Enter Employee Code...',
+      showCancelButton: true,
+      confirmButtonText: 'Forward',
+      showLoaderOnConfirm: true,
+      preConfirm: uid => {
+        if (!uid) Swal.showValidationMessage('Employee Code is required!');
         return uid;
       },
       allowOutsideClick: () => !Swal.isLoading(),
@@ -909,7 +933,7 @@ export class DynamicDashboardComponent implements OnInit {
       ? {
           registrationNo: row.registrationNo,
           applicationId:  row.applicationId || first.applicationId || '',
-
+          dealingUId:    first.dealingUId || row.dealingUId || '',
           // Counselling
           counsellingRemarks: first.counsellingRemarks || row.counsellingRemarks || '',
           counsellingDate:    first.counsellingDate    || row.counsellingDate    || '',
@@ -934,6 +958,7 @@ export class DynamicDashboardComponent implements OnInit {
           // No remarks row at all — still show the modal with inline app data
           registrationNo:  row.registrationNo,
           applicationId:   row.applicationId  || '',
+          dealingUId:     '',
           counsellingRemarks: row.counsellingRemarks || '',
           counsellingDate:    row.counsellingDate    || '',
           counsellingDone:    this.isTrue(row.counsellingStatus),
@@ -951,6 +976,8 @@ export class DynamicDashboardComponent implements OnInit {
       r => r.academicsMarks != null && r.academicsMarks !== ''
     );
 
+    // alert(JSON.stringify(this.selectedRemarksEvaluations));
+    console.log(JSON.stringify(this.selectedRemarksEvaluations));
     // ── Open modal ───────────────────────────────────────────────────────────
     this.currentModalRef = this.modalService.open(this.ViewRemarksModal, {
       size: 'xl',
