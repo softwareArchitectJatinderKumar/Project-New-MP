@@ -136,9 +136,11 @@ export class EditApplicationComponent implements OnInit {
   // Bind accompanying plain metadata tracking primitives strings matching your .NET target schema properties
   formData.append('ApplicationId', this.ApplicationId);
   formData.append('DocumentName', row.documentName);
+  formData.append('FileName', row.documentName);
   formData.append('Stage', row.stage.toString());
   formData.append('StageName', row.stageName.trim());
   formData.append('FileData', row.fileData);
+  formData.append('RegistrationNo', this.RegistrationNo);
 
   // Execute unified service callback pipeline
   this.ServicesSM.addSECheckListDocuments(formData).subscribe({
@@ -251,6 +253,7 @@ export class EditApplicationComponent implements OnInit {
     { value: '2 to 4 Lakhs', label: '2 to 4 Lakhs' },
     { value: '4 to 6 Lakhs', label: '4 to 6 Lakhs' },
     { value: '6 to 8 Lakhs', label: '6 to 8 Lakhs' },
+    { value: '8 to 10 Lakhs', label: '8 to 10 Lakhs' },
   ];
 
   stepLabels = [
@@ -391,77 +394,216 @@ export class EditApplicationComponent implements OnInit {
   /** ------------------- Validation Helper (NEW) ------------------- */
   // Checks only the required fields relevant to the current step's data.
   // This bypasses the global 'form.invalid' issue.
+
   isCurrentStepValid(step: number): boolean {
-    if (!this.form) return false;
 
-    // A map of unconditionally required field names for each step.
-    const fieldsToValidate: Record<number, string[]> = {
-      // Step 1: Contact & Relative Details
-      1: ['EmailId', 'CountryName', 'WhatsAppNo', 'PhoneNumber', 'ParentContact', 'HasRelativeDetails'],
+  if (!this.form) {
+    return false;
+  }
 
-      // Step 2: University Preferences
-      2: ['ApplyingOption', 'UniversityOption1', 'UniversityOption2', 'UniversityOption3'],
+  // STEP 1
+  if (step === 1) {
 
-      // Step 3: Passport / Visa / English / Sponsor
-      // 'AcceptPolicy' is a global requirement, so it must be valid for the final update (Step 3).
-      3: ['PassportStatus', 'IsVisaRejected', 'EnglishTestType', 'SponsorType', 'AvailableFunds', 'AcceptPolicy'],
-    };
+    const requiredFields = [
+      'EmailId',
+      'CountryName',
+      'WhatsAppNo',
+      'PhoneNumber',
+      'ParentContact',
+      'HasRelativeDetails'
+    ];
 
-    const fields = fieldsToValidate[step];
-    if (!fields) return true; // Step 0 or 4 has no required field validation here
+    for (const field of requiredFields) {
+      const value = this.form.get(field)?.value;
 
-    // Check primary required fields
-    for (const fieldName of fields) {
-      const control = this.form.get(fieldName);
-
-      if (control && control.invalid) {
-        // Allow the button to be enabled for Steps 1 & 2 even if the 'AcceptPolicy' is the only thing invalid,
-        // as the user won't be able to fix it until Step 3.
-        if ((step === 1 || step === 2) && fieldName === 'AcceptPolicy') continue;
+      if (value === null || value === undefined || value === '') {
         return false;
       }
     }
 
-    // --- Check conditional required fields (Must be manually checked since no dynamic validators are used) ---
+    // Relative details only when required
+    if (this.form.get('HasRelativeDetails')?.value === 'Yes') {
 
-    // Conditional Relative details check (Step 1)
-    if (step === 1) {
-      const hasRelativeDetails = this.form.get('HasRelativeDetails')?.value;
-      if (hasRelativeDetails === 'Yes' && (!this.form.get('RelativeName')?.value || !this.form.get('RelativeRelation')?.value || !this.form.get('RelativeCountryName')?.value)) {
+      if (
+        !this.form.get('RelativeName')?.value ||
+        !this.form.get('RelativeRelation')?.value ||
+        !this.form.get('RelativeCountryName')?.value
+      ) {
         return false;
       }
-    }
-
-    // Conditional Passport/Visa/English checks (Step 3)
-    if (step === 3) {
-      const passportStatus = this.form.get('PassportStatus')?.value;
-      const isVisaRejected = this.form.get('IsVisaRejected')?.value;
-      const englishTestType = this.form.get('EnglishTestType')?.value;
-      // const testDate = this.form.get('TestDate')?.value;
-      const englishTestYear = this.form.get('EnglishTestYear')?.value;
-
-      // Passport details required if status is 'Yes'
-      if (passportStatus === 'Yes' && (!this.form.get('PassportNumber')?.value || !this.form.get('PassportIssueDate')?.value || !this.form.get('PassportValidUpto')?.value)) {
-        return false;
-      }
-
-      // Visa rejection details required if rejected is 'Yes'
-      if (isVisaRejected === 'Yes' && (!this.form.get('VisaRejectedReason')?.value || !this.form.get('VisaRejectedCountry')?.value)) {
-        return false;
-      }
-      // English test details required if appeared is 'Appeared'
-      // Also add a basic check for 4-digit year format
-      if (englishTestType === 'Appeared' && (!this.form.get('TestName')?.value || !englishTestYear || !/^\d{4}$/.test(String(englishTestYear)))) {
-        return false;
-      }
-      // // English test details required if appeared is 'Appeared'
-      // if (englishTestType === 'Appeared' && (!this.form.get('TestName')?.value || !testDate)) {
-      //     return false;
-      // }
     }
 
     return true;
   }
+
+  // STEP 2
+  if (step === 2) {
+
+    const requiredFields = [
+      'ApplyingOption',
+      'UniversityOption1',
+      'UniversityOption2',
+      'UniversityOption3'
+    ];
+
+    for (const field of requiredFields) {
+      const value = this.form.get(field)?.value;
+
+      if (value === null || value === undefined || value === '') {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  // STEP 3
+  if (step === 3) {
+
+    const requiredFields = [
+      'PassportStatus',
+      'IsVisaRejected',
+      'EnglishTestType',
+      'SponsorType',
+      'AvailableFunds'
+      // Removed AcceptPolicy
+    ];
+
+    for (const field of requiredFields) {
+
+      const value = this.form.get(field)?.value;
+
+      if (
+        value === null ||
+        value === undefined ||
+        value === ''
+      ) {
+        return false;
+      }
+    }
+
+    // Passport validation
+    if (this.form.get('PassportStatus')?.value === 'Yes') {
+
+      if (
+        !this.form.get('PassportNumber')?.value ||
+        !this.form.get('PassportIssueDate')?.value ||
+        !this.form.get('PassportValidUpto')?.value
+      ) {
+        return false;
+      }
+    }
+
+    // Visa validation
+    if (this.form.get('IsVisaRejected')?.value === 'Yes') {
+
+      if (
+        !this.form.get('VisaRejectedReason')?.value ||
+        !this.form.get('VisaRejectedCountry')?.value
+      ) {
+        return false;
+      }
+    }
+
+    // English test validation
+    if (this.form.get('EnglishTestType')?.value === 'Appeared') {
+
+      const year = this.form.get('EnglishTestYear')?.value;
+
+      if (
+        !this.form.get('TestName')?.value ||
+        !year ||
+        !/^\d{4}$/.test(String(year))
+      ) {
+        return false;
+      }
+    }
+
+    // Applied validation (if your business rule requires test name)
+    if (this.form.get('EnglishTestType')?.value === 'Applied') {
+
+      if (!this.form.get('TestName')?.value) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  return true;
+}
+
+  // isCurrentStepValid(step: number): boolean {
+  //   if (!this.form) return false;
+
+  //   // A map of unconditionally required field names for each step.
+  //   const fieldsToValidate: Record<number, string[]> = {
+  //     // Step 1: Contact & Relative Details
+  //     1: ['EmailId', 'CountryName', 'WhatsAppNo', 'PhoneNumber', 'ParentContact', 'HasRelativeDetails'],
+
+  //     // Step 2: University Preferences
+  //     2: ['ApplyingOption', 'UniversityOption1', 'UniversityOption2', 'UniversityOption3'],
+
+  //     // Step 3: Passport / Visa / English / Sponsor
+  //     // 'AcceptPolicy' is a global requirement, so it must be valid for the final update (Step 3).
+  //     3: ['PassportStatus', 'IsVisaRejected', 'EnglishTestType', 'SponsorType', 'AvailableFunds', 'AcceptPolicy'],
+  //   };
+
+  //   const fields = fieldsToValidate[step];
+  //   if (!fields) return true; // Step 0 or 4 has no required field validation here
+
+  //   // Check primary required fields
+  //   for (const fieldName of fields) {
+  //     const control = this.form.get(fieldName);
+
+  //     if (control && control.invalid) {
+  //       // Allow the button to be enabled for Steps 1 & 2 even if the 'AcceptPolicy' is the only thing invalid,
+  //       // as the user won't be able to fix it until Step 3.
+  //       if ((step === 1 || step === 2) && fieldName === 'AcceptPolicy') continue;
+  //       return false;
+  //     }
+  //   }
+
+  //   // --- Check conditional required fields (Must be manually checked since no dynamic validators are used) ---
+
+  //   // Conditional Relative details check (Step 1)
+  //   if (step === 1) {
+  //     const hasRelativeDetails = this.form.get('HasRelativeDetails')?.value;
+  //     if (hasRelativeDetails === 'Yes' && (!this.form.get('RelativeName')?.value || !this.form.get('RelativeRelation')?.value || !this.form.get('RelativeCountryName')?.value)) {
+  //       return false;
+  //     }
+  //   }
+
+  //   // Conditional Passport/Visa/English checks (Step 3)
+  //   if (step === 3) {
+  //     const passportStatus = this.form.get('PassportStatus')?.value;
+  //     const isVisaRejected = this.form.get('IsVisaRejected')?.value;
+  //     const englishTestType = this.form.get('EnglishTestType')?.value;
+  //     // const testDate = this.form.get('TestDate')?.value;
+  //     const englishTestYear = this.form.get('EnglishTestYear')?.value;
+
+  //     // Passport details required if status is 'Yes'
+  //     if (passportStatus === 'Yes' && (!this.form.get('PassportNumber')?.value || !this.form.get('PassportIssueDate')?.value || !this.form.get('PassportValidUpto')?.value)) {
+  //       return false;
+  //     }
+
+  //     // Visa rejection details required if rejected is 'Yes'
+  //     if (isVisaRejected === 'Yes' && (!this.form.get('VisaRejectedReason')?.value || !this.form.get('VisaRejectedCountry')?.value)) {
+  //       return false;
+  //     }
+  //     // English test details required if appeared is 'Appeared'
+  //     // Also add a basic check for 4-digit year format
+  //     if (englishTestType === 'Appeared' && (!this.form.get('TestName')?.value || !englishTestYear || !/^\d{4}$/.test(String(englishTestYear)))) {
+  //       return false;
+  //     }
+  //     // // English test details required if appeared is 'Appeared'
+  //     // if (englishTestType === 'Appeared' && (!this.form.get('TestName')?.value || !testDate)) {
+  //     //     return false;
+  //     // }
+  //   }
+
+  //   return true;
+  // }
   LoginName: any; isLoginFailed: any = false;
   ngOnInit(): void {
     // registrationNo might be passed in route params (like other file)    
@@ -1224,7 +1366,7 @@ DealingHod:any;
   }
   serverUrl = 'https://files.lpu.in/umsweb/DIA/SemesterExchangedocuments/';
 
-  LocalserverUrl='http://172.19.2.52/umsweb/webftp/SemesterExchangedocuments/'
+  LocalserverUrl='http://172.19.2.52/umsweb/webftp/DIA/SemesterExchangedocuments/'
 
 
   Onsubmit(): void {

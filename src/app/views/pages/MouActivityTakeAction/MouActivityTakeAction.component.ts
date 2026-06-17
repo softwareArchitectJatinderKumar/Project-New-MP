@@ -42,6 +42,95 @@ interface SchoolDivision {
 export class MouActivityTakeActionComponent implements OnInit {
 
 
+  // added on 17-06-26
+
+ 
+ 
+selectedDocuments: string[] = [];
+
+activityDocuments: { [key: string]: string[] } = {
+
+  'Research publication': [
+    'Research Paper',
+    'Conference Certificate',
+    'Conference Brochure'
+  ],
+
+  'Project ': [
+    'Project Report',
+    'List of Students'
+  ],
+
+  'Academic exchange': [
+    'Appointment Letter',
+    'Activity Report',
+    'Photographs'
+  ],
+
+  'Student exchange ': [
+    'Letter of Acceptance',
+    'Course Completion Certificate',
+    'Student Registration Numbers'
+  ],
+
+  'Guest lecture ': [
+    'Event Report',
+    'Participant List',
+    'Photographs'
+  ],
+
+  'Workshop ': [
+    'Workshop Report',
+    'Attendance Sheet',
+    'Photographs'
+  ],
+
+  'Internship ': [
+    'Internship Certificate',
+    'Student Registration Number'
+  ],
+
+  'On job Training (OJT) ': [
+    'Offer Letter',
+    'Joining Letter',
+    'Student Registration Number'
+  ],
+
+  'Co-Supervision ': [
+    'Research Paper',
+    'NOC',
+    'Undertaking'
+  ],
+
+  'Related to SDG ': [
+    'Activity Report',
+    'Supporting Documents'
+  ],
+
+  'Conference': [
+    'Conference Certificate',
+    'Conference Brochure',
+    'Photographs'
+  ],
+
+  'Others': [
+    'Supporting Documents'
+  ]
+};
+
+onActivityChange(activityTitle: string): void {
+
+  this.selectedDocuments =
+    this.activityDocuments[activityTitle] || [];
+
+}
+
+
+
+
+  // ended logic for 17-06-26
+
+
   // added on 25-5-26 
    Tab1statusFilter: string = 'all';
 
@@ -181,7 +270,7 @@ export class MouActivityTakeActionComponent implements OnInit {
 
   TableData: any = []; Arr = Array; TableDataCreatedBy: any = []; form: FormGroup; partnerNamesMap: { [key: number]: string } = {};
   selectedId: number | undefined; partnerName: string | undefined; mouActivity: any; CompletedDate: any; endDate: any; EmployeeDetails: any;
-  EmployeeCode: any; Department: any; EmployeeName: any; ContactNoX: any; ServerUrl: any; mouActivities: MouActivity[] = []; selectedActivityId: number;
+  EmployeeCode: any; Department: any; EmployeeName: any; ContactNoX: any; ServerUrl: any; mouActivities: MouActivity[] = []; selectedActivityId: number=0;
   ResponsiblePerson: any = ''; ColumnMode = ColumnMode; columns: any; headHtmlData: any[] = [];
 
   MouActionTakenDocuments: any[] = []; filteredMouActionTakenDocuments: any[] = [];
@@ -279,7 +368,7 @@ export class MouActivityTakeActionComponent implements OnInit {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
-          this.EmployeeCode = response.item1[0].employeeCode;
+          this.EmployeeCode = '11840';// response.item1[0].employeeCode; //11840
           this.Department = response.item1[0].department;
           this.DepartmentName = response.item1[0].departmentName;
           this.loadingIndicator = false;
@@ -468,7 +557,7 @@ export class MouActivityTakeActionComponent implements OnInit {
       next: response => {
         if (response.item1 ) {
           this.Activities = response.item1;  
-          // console.log(JSON.stringify(this.items))
+          console.log(JSON.stringify(this.Activities))
         }
       }
     })
@@ -486,6 +575,10 @@ export class MouActivityTakeActionComponent implements OnInit {
   // End 29-jan-25 changes
   MouStatus: any; // 28-jan-25
   onSelect(a: any) {
+
+    this.selectedActivityId = 0;
+this.selectedDocuments = [];
+
     let aa = a;
     // alert(JSON.stringify(aa))
     this.mouId = aa['mouId']

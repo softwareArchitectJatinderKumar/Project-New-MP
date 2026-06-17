@@ -352,12 +352,9 @@
                             <i class="bi bi-clipboard-check me-1"></i>Submit Evaluation
                         </button>
                         <!-- c) Accept -->
-                        <button class="btn btn-success btn-sm me-1 mb-1"
-                            (click)="acceptApplication(row)" 
-                            [disabled]="row.approvedUniversity?.length > 0"
-                            >
-                            <i class="bi bi-check-circle me-1"></i>Accept  
-                        </button>
+                        <button type="button" class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)" [disabled]="row.isLocked ">
+                        <i class="bi bi-check-circle me-1"></i>Accept
+                    </button>
                         <!-- /* [disabled]="row.approvedUniversity!='null'" */ -->
                         <!-- /* [disabled]="approvalLabel(row.isApproved) !== 'Pending'"> */ -->
                         <!-- d) Reject -->
@@ -655,9 +652,7 @@
                         <i class="bi bi-clipboard-check me-1"></i>Submit Evaluation
                     </button>
                     <!-- d) Accept -->
-                    <button class="btn btn-success btn-sm me-1 mb-1"
-                        (click)="acceptApplication(row)"
-                        >
+                    <button type="button" class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)">
                         <i class="bi bi-check-circle me-1"></i>Accept
                     </button>
                     <!-- d) Reject -->
@@ -845,10 +840,10 @@
                             App #{{ evalRow.applicationId }}
                         </span> -->
                         <!-- Total marks pill -->
-                        <span class="badge ms-auto"
+                        <!-- <span class="badge ms-auto"
                             [ngClass]="evalRow.totalMarks ? 'bg-success' : 'bg-light text-secondary border'">
                             {{ evalRow.totalMarks ? 'Total: ' + evalRow.totalMarks : 'Pending' }}
-                        </span>
+                        </span> -->
                     </div>
 
                     <div class="card-body">
@@ -880,14 +875,14 @@
                             </div>
                             <div class="col">
                                 <div class="border rounded p-2">
-                                    <div class="fw-bold text-muted small">Knowledge</div>
+                                    <div class="fw-bold text-muted small">Knowledge of Country/University</div>
                                     <div class="fs-5 fw-bold">{{ evalRow.knowledgeMarks || '—' }}</div>
                                 </div>
                             </div>
                             <div class="col">
-                                <div class="border rounded p-2 bg-success bg-opacity-10">
+                                <div class="border rounded p-2 bg-opacity-10">
                                     <div class="fw-bold text-success small">Total</div>
-                                    <div class="fs-4 fw-bold text-info">{{ evalRow.totalMarks || '—' }}</div>
+                                    <div class="fs-4 fw-bold text-dark">{{ evalRow.totalMarks || '—' }}</div>
                                 </div>
                             </div>
                         </div>
@@ -1222,6 +1217,78 @@
                     <i class="bi bi-save me-1"></i>Save Remarks
                 </button>
             </div>
+        </form>
+    </div>
+</ng-template>
+
+<!-- ─── Add Remarks Modal (Faculty) ──────────────────────────────────────── -->
+<ng-template #AcceptModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">
+            <i class="bi bi-pencil-square me-2"></i>
+            Accept Application
+        </h5>
+
+        <button type="button"
+                class="btn-close"
+                (click)="modal.dismiss()">
+        </button>
+    </div>
+
+    <div class="modal-body">
+        <form [formGroup]="AcceptForm" (ngSubmit)="submitAcceptForm()" novalidate>    
+            <div class="row mb-3">    
+                <div class="col-md-6">
+                    <label class="form-label"> Application ID: </label>    
+                    <input type="text" class="form-control" [value]="this.selectedId" disabled />
+                </div>    
+                <div class="col-md-6">
+                    <label class="form-label"> Registration Number: </label>    
+                    <input type="text" class="form-control" [value]="this.selectedRegNo" disabled />
+                </div>    
+            </div>
+    
+            <div class="mb-3">
+                <label class="form-label"> Select University <span class="text-danger">*</span>
+                </label>
+    
+                <select class="form-select" formControlName="UniversitySelected">
+    
+                    <option value=""> Select University </option>
+    
+                    <option *ngIf="UniversityOption1" [value]="UniversityOption1">
+                        {{ UniversityOption1 }}
+                    </option>
+    
+                    <option *ngIf="UniversityOption2" [value]="UniversityOption2">
+                        {{ UniversityOption2 }}
+                    </option>
+    
+                    <option *ngIf="UniversityOption3" [value]="UniversityOption3">
+                        {{ UniversityOption3 }}
+                    </option>
+    
+                </select>
+    
+                <div class="text-danger small mt-1" *ngIf="
+                         addUniversitySelectedFormControls['UniversitySelected']?.invalid &&
+                         (addUniversitySelectedFormControls['UniversitySelected']?.touched ||
+                          addUniversitySelectedFormControls['UniversitySelected']?.dirty)">
+                    University Selection is required.
+                </div>
+            </div>
+    
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
+                    Cancel
+                </button>
+    
+                <button type="submit" class="btn btn-success" [disabled]="AcceptForm.invalid">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Accept Application
+                </button>
+            </div>
+
         </form>
     </div>
 </ng-template>

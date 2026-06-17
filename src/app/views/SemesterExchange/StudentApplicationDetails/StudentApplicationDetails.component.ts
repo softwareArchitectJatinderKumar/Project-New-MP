@@ -423,24 +423,19 @@ const relativeCountry = this.studentForm?.get('relativeCountry')?.value;
   //   });
   // }
   
-  /**
-   * Cleans up PascalCase/camelCase form control names for display.
-   */
 beautifyLabel(label: string): string {
 
   const customLabels: Record<string, string> = {
-    isVisaRejected: 'Visa Status'
+    isVisaRejected: 'Is Visa Rejected?'
   };
 
   if (customLabels[label]) {
     return customLabels[label];
   }
 
-
-   if (label === 'relativeNotApplicable') {
+  if (label === 'relativeNotApplicable') {
     return 'Relative at Abroad';
   }
-
 
   return label
     .replace(/([A-Z])/g, ' $1')
@@ -452,6 +447,32 @@ beautifyLabel(label: string): string {
     .replace('Whatsapp', 'WhatsApp')
     .trim();
 }
+// beautifyLabel(label: string): string {
+
+//   const customLabels: Record<string, string> = {
+//     isVisaRejected: 'Visa Status'
+//   };
+
+//   if (customLabels[label]) {
+//     return customLabels[label];
+//   }
+
+
+//    if (label === 'relativeNotApplicable') {
+//     return 'Relative at Abroad';
+//   }
+
+
+//   return label
+//     .replace(/([A-Z])/g, ' $1')
+//     .replace(/_/g, ' ')
+//     .replace(/\b\w/g, char => char.toUpperCase())
+//     .replace('Id', 'ID')
+//     .replace('No', 'No.')
+//     .replace('Upto', 'Up To')
+//     .replace('Whatsapp', 'WhatsApp')
+//     .trim();
+// }
 
   convertImageData(imageData: string): string {
     return `data:image/jpeg;base64,${imageData}`;

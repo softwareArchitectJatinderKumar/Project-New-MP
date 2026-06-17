@@ -78,114 +78,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="row align-items-center mb-4">
-                    <div class="col-md-3 ms-4">
-                        <h3 class="text-info m-0">My Dashboard</h3>
-                    </div>
-                
-                    <div class="col-md-4 d-flex align-items-center gap-2">
-                        <span class="badge rounded-pill bg-info fs-6">
-                            Application Status:
-                        </span>
-                        <span class="badge rounded-pill fs-6" [class.bg-success]="LockedStatus" [class.bg-warning]="!LockedStatus"
-                            [class.text-dark]="!LockedStatus">
-                            {{ LockedStatus ? 'Approved' : 'Pending' }}
-                        </span>
-                        <span class="badge rounded-pill bg-info fs-6 ms-3">
-                            ID: {{ ApplicationId }}
-                        </span>
-                    </div>
-                
-                    <div class="col-md-2 text-end">
-                        <span class="fs-5 me-2">Hi!</span>
-                        <span class="badge rounded-pill bg-info fs-6">
-                            {{studentDetailsWithImage?.studentName}}
-                        </span>
-                    </div>
-                
-                    <div class="col-md-2 text-center">
-                        <div *ngIf="StudentImage; else placeholderImg">
-                            <img [src]="StudentImage" alt="Student Image" class="img-fluid rounded-circle border border-3 border-info"
-                                style="width: 80px; height: 80px; object-fit: cover;">
-                        </div>
-                        <ng-template #placeholderImg>
-                            <img src="https://placehold.co/80x80" alt="No Image"
-                                class="rounded-circle border border-3 border-secondary" />
-                        </ng-template>
-                    </div>
-                </div>
-                
-                <div class="row align-items-center mb-3">
-                    <div class="col-md-3 ms-4">
-                        <h3 class="text-info m-0">University Preferences:</h3>
-                    </div>
-                
-                    <div class="col-md-8 d-flex gap-3">
-                        <span class="badge rounded-pill bg-info fs-6">
-                            1. {{ this.stuApplication.universityOption1 }}
-                        </span>
-                        <span class="badge rounded-pill bg-info fs-6">
-                            2. {{ this.stuApplication.universityOption2 }}
-                        </span>
-                        <span class="badge rounded-pill bg-info fs-6">
-                            3. {{ this.stuApplication.universityOption3 }}
-                        </span>
-                    </div>
-                </div> -->
-                    <!-- <div class="d-flex justify-content- align-items-center mb-3">
-                    <div class="col-md-3 ms-4">
-                        <h3 class="text-info m-0">My Dashboard</h3>
-                    </div>
-                    <div class="col-md-3 ms-0">
-                        <span class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-info': true }"> Application Status:
-                        </span>            
-                        <span [ngClass]="'badge rounded-pill step-badge fs-6 ms-2'"
-                            [style.background-color]="LockedStatus ? '#28a745' : '#ffc107'" style="color: #000 !important;">
-                            {{ LockedStatus ? 'Approved' : 'Pending' }}
-                        </span>            
-                        <span class="ms-5 badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-info': true }">
-                              Application Id:  {{ ApplicationId }} 
-                          </span>
-                    </div>
-                    <div class="col-md-3 me-3 text-end">
-                        <span class="text-end fs-5 me-3"> Hi! </span> <span
-                            [ngClass]="'fs-5 badge rounded-pill step-badge bg-info'">
-                            {{studentDetailsWithImage?.studentName}}
-                        </span>
-                    </div>
-                    <div class="col-md-3 text-center">
-                        <div *ngIf="StudentImage else placeholderImg">
-                            <img alt="Student Image" class="img-fluid rounded-circle border border-3 border-primary"
-                                [src]="StudentImage" style="width: 90px; height: 90px; object-fit: cover;">
-                        </div>
-                        <ng-template #placeholderImg>
-                            <img src="https://placehold.co/150x150" alt="No Image" class="img-thumbnail"
-                                style="max-width:150px; max-height:150px; object-fit:cover;" />
-                        </ng-template>
-                    </div>                            
-                </div>
-                <div class="d-flex justify-content- align-items-center mb-3">
-                    <div class="col-md-3 ms-4">
-                        <h3 class="text-info m-0">University Preferences: </h3>
-                    </div>
-                    <div class="col-md-2 ms-0">
-                      
-                        <span [ngClass]="'badge rounded-pill step-badge fs-6 ms-2'"
-                            [style.background-color]="LockedStatus ? '#28a745' : '#ffc107'" style="color: #000 !important;">
-                            {{ this.stuApplication.universityOption1 }}
-                        </span>            
-                    </div>
-                    <div class="col-md-3 me-3 ">
-                        <span [ngClass]="'fs-5 badge rounded-pill step-badge bg-info'">
-                            {{this.stuApplication.universityOption2}}
-                        </span>
-                    </div>
-                    <div class="col-md-3 ">
-                        <span [ngClass]="'fs-5 badge rounded-pill step-badge bg-info'">
-                            {{this.stuApplication.universityOption3}}
-                        </span>
-                    </div>                            
-                </div> -->
+
                 </div>
             </div>
         </div>
@@ -218,14 +111,13 @@
                 <div class="nav nav-tabs d-flex justify-content-center active" id="nav-tab" role="tablist">
                     <button class="btn me-5 active" id="AssignActivities-tab" data-bs-toggle="tab"
                         style="padding: .95rem 8rem;" data-bs-target="#AssignActivities" type="button" role="tab"
-                        (click)="moveNextStep()">Course Mapping
-                    </button>
+                        (click)="moveNextStep()">Stage - II </button>
 
 
 
                     <button class="btn btn-lg ms-5" id="MyAllAssignActivities-tab" data-bs-toggle="tab"
                         style="padding: .95rem 8rem;" data-bs-target="#MyAllAssignActivities" type="button" role="tab"
-                        (click)="moveNextStep()">Stage - II </button>
+                        (click)="moveNextStep()">Course Mapping </button>
 
                     <button class="btn btn-lg ms-5" id="OthersAllAssignActivities-tab" data-bs-toggle="tab"
                         style="padding: .95rem 8rem;" data-bs-target="#OthersAllAssignActivities" type="button"
@@ -264,9 +156,9 @@
                                                                 <i class="bi bi-file-earmark-text"></i>
                                                             </button>
                                                             <!-- <a *ngIf="row.document" href="#" class="btn btn-outline-secondary btn-sm text-nowrap"
-                                                    (click)="onSelectFileX(row.document)">
-                                                    Download: {{ row.document }}
-                                                </a> -->
+                                                                (click)="onSelectFileX(row.document)">
+                                                                Download: {{ row.document }}
+                                                            </a> -->
                                                         </div>
                                                     </td>
 
@@ -318,8 +210,9 @@
                 <div class="tab-pane fade" id="MyAllAssignActivities" role="tabpanel">
                     <div class="row vh-100">
                         <div class="col-12 stretch-card">
-                            <div class="card">
-                                <div class="card-body">
+                            <div class="card pe-none opacity-60">
+                                <div class="card-body " >
+
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <h3 class="text-info m-0">Course Covered & Uploads</h3>
                                         <div>
@@ -329,26 +222,30 @@
                                                 [disabled]="isSavingCourses || courseRows.length===0">Save All</button>
                                         </div>
                                     </div>
+
+
                                     <div class="table-responsive">
                                         <table class="table table-bordered">
                                             <thead class="table-light">
                                                 <tr>
                                                     <th>#</th>
-                                                    <th>Stage Name</th>
-                                                    <th>Document Name</th>
+                                                    <th>Course Name</th>
+                                                    <th>Course Code</th>
+                                                    <th>Hours</th>
                                                     <th>Upload Document</th>
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr *ngFor="let row of StagesDetail; let i = index">
+                                                <tr *ngFor="let row of courseRows; let i = index">
                                                     <td>{{ i + 1 }}</td>
-                                                    <td><input class="form-control" [(ngModel)]="row.stageName"
-                                                            name="stageName{{i}}" />
+                                                    <td><input class="form-control" [(ngModel)]="row.courseName"
+                                                            name="courseName{{i}}" /></td>
+                                                    <td><input class="form-control" [(ngModel)]="row.courseCode"
+                                                            name="courseCode{{i}}" /></td>
+                                                    <td><input type="number" min="0" class="form-control"
+                                                            [(ngModel)]="row.hours" name="hours{{i}}" />
                                                     </td>
-                                                    <td><input class="form-control" [(ngModel)]="row.documentName"
-                                                            name="documentName{{i}}" /></td>
-
                                                     <td>
                                                         <div class="d-flex gap-2 align-items-center">
                                                             <input type="file"
@@ -897,8 +794,8 @@
                                     </div>
                                 </div>
 
-                                <div *ngIf="form.get('SponsorType')?.value != 'Parent' || form.get('SponsorType')?.value != 'Parents' || form.get('SponsorType')?.value == 'NA'  "
-                                    class="col-md-12">
+                                <div *ngIf=" form.get('SponsorType')?.value !== 'Parent' && form.get('SponsorType')?.value !== 'Parents' " class="col-md-12">
+                                <!-- <div *ngIf="form.get('SponsorType')?.value != 'Parent' || form.get('SponsorType')?.value != 'Parents' || form.get('SponsorType')?.value == 'NA'  " class="col-md-12"> -->
                                     <div class="row mt-2">
                                         <div class="col-md-6">
                                             <label class="form-label">Sponsor Name *</label>
@@ -936,7 +833,7 @@
                     <button type="button" class="btn btn-danger" *ngIf="isEditingStep[3]"
                         (click)="cancelEdit(3)">Cancel</button>
                     <button type="button" class="btn btn-success" *ngIf="isEditingStep[3]" (click)="updateStep(3)"
-                        [disabled]="!isCurrentStepValid(3)">Update</button>
+                        >Update</button>
                     <button type="button" class="btn btn-primary" *ngIf="!isEditingStep[3]" (click)="nextStep()"
                         [disabled]="isEditingStep[3]">Next</button>
                 </div>
@@ -966,7 +863,7 @@
                                         <div class="d-flex align-items-center gap-2"
                                             *ngIf="stuApplication?.feesProofFileName.length>0; ">
                                             <a class="btn icon-btn"
-                                                [attr.href]="stuApplication?.feesProofFileName ? (serverUrl + stuApplication.feesProofFileName) : null"
+                                                [attr.href]="stuApplication?.feesProofFileName ? (LocalserverUrl + stuApplication.feesProofFileName) : null"
                                                 [class.disabled]="!stuApplication?.feesProofFileName"
                                                 [attr.target]="stuApplication?.feesProofFileName ? '_blank' : null"
                                                 title="View Resume Document"
@@ -986,7 +883,7 @@
                                         <div class="d-flex align-items-center gap-2"
                                             *ngIf="stuApplication?.resumeFileName.length>0; ">
                                             <a class="btn icon-btn"
-                                                [attr.href]="stuApplication?.resumeFileName ? (serverUrl + stuApplication.resumeFileName) : null"
+                                                [attr.href]="stuApplication?.resumeFileName ? (LocalserverUrl + stuApplication.resumeFileName) : null"
                                                 [class.disabled]="!stuApplication?.resumeFileName"
                                                 [attr.target]="stuApplication?.resumeFileName ? '_blank' : null"
                                                 title="View Resume Document"
@@ -1006,7 +903,7 @@
                                         <div class="d-flex align-items-center gap-2"
                                             *ngIf="stuApplication?.consentLetterFileName.length>0; ">
                                             <a class="btn icon-btn"
-                                                [attr.href]="stuApplication?.consentLetterFileName ? (serverUrl + stuApplication.consentLetterFileName) : null"
+                                                [attr.href]="stuApplication?.consentLetterFileName ? (LocalserverUrl + stuApplication.consentLetterFileName) : null"
                                                 [class.disabled]="!stuApplication?.consentLetterFileName"
                                                 [attr.target]="stuApplication?.consentLetterFileName ? '_blank' : null"
                                                 title="View Resume Document"
@@ -1037,7 +934,7 @@
                                         <div class="d-flex align-items-center gap-2"
                                             *ngIf="stuApplication?.passportFileName.length>0;">
                                             <a class="btn icon-btn"
-                                                [attr.href]="stuApplication?.passportFileName ? (serverUrl + stuApplication.passportFileName) : null"
+                                                [attr.href]="stuApplication?.passportFileName ? (LocalserverUrl + stuApplication.passportFileName) : null"
                                                 [class.disabled]="!stuApplication?.passportFileName"
                                                 [attr.target]="stuApplication?.passportFileName ? '_blank' : null"
                                                 title="View Resume Document"
@@ -1054,14 +951,14 @@
                                     <div class="col-md-4 mb-3">
                                         <label class="form-label fw-semibold">English Test Proof</label>
                                         <div class="d-flex align-items-center gap-2"
-                                            *ngIf="stuApplication?.englishProofFileName?.length>0;">
+                                            *ngIf="stuApplication?.englishTestDocumentFile?.length>0;">
                                             <a class="btn icon-btn"
-                                                [attr.href]="stuApplication?.englishProofFileName ? (serverUrl + stuApplication.englishProofFileName) : null"
-                                                [class.disabled]="!stuApplication?.englishProofFileName"
-                                                [attr.target]="stuApplication?.englishProofFileName ? '_blank' : null"
+                                                [attr.href]="stuApplication?.englishTestDocumentFile ? (LocalserverUrl + stuApplication.englishTestDocumentFile) : null"
+                                                [class.disabled]="!stuApplication?.englishTestDocumentFile"
+                                                [attr.target]="stuApplication?.englishTestDocumentFile ? '_blank' : null"
                                                 title="View Resume Document"
-                                                [attr.aria-disabled]="!stuApplication?.englishProofFileName"
-                                                tabindex="{{stuApplication?.englishProofFileName ? 0 : -1}}">
+                                                [attr.aria-disabled]="!stuApplication?.englishTestDocumentFile"
+                                                tabindex="{{stuApplication?.englishTestDocumentFile ? 0 : -1}}">
                                                 <span class="material-icons md-18">description</span>View Uploaded
                                             </a>
                                         </div>

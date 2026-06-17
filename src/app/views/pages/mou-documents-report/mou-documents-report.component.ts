@@ -846,23 +846,47 @@ export class MouDocumentsReportComponent implements OnInit {
   onSubmitUpdate() {
     if (this.mouForm.invalid) {
       this.mouForm.markAllAsTouched();
-      
-      // Build list of invalid fields for user feedback
+
       const invalidFields: string[] = [];
       const controls = this.mouForm.controls;
+
       for (const name in controls) {
-        if (controls[name].invalid) {
+        if (name !== 'remarks' && controls[name].invalid) {
           invalidFields.push(name);
         }
       }
-      
-      swal.fire({
-        title: 'Validation Error',
-        html: `<p>Please fill in all required fields:</p><ul class="text-start">${invalidFields.map(f => `<li>${this.getFieldDisplayName(f)}</li>`).join('')}</ul>`,
-        icon: 'error'
-      });
-      return;
+
+      if (invalidFields.length > 0) {
+        swal.fire({
+          title: 'Validation Error',
+          html: `<p>Please fill in all required fields:</p>
+             <ul class="text-start">
+               ${invalidFields.map(f => `<li>${this.getFieldDisplayName(f)}</li>`).join('')}
+             </ul>`,
+          icon: 'error'
+        });
+        return;
+      }
     }
+    // if (this.mouForm.invalid) {
+    //   this.mouForm.markAllAsTouched();
+      
+    //   // Build list of invalid fields for user feedback
+    //   const invalidFields: string[] = [];
+    //   const controls = this.mouForm.controls;
+    //   for (const name in controls) {
+    //     if (controls[name].invalid ) {
+    //       invalidFields.push(name);
+    //     }
+    //   }
+      
+    //   swal.fire({
+    //     title: 'Validation Error',
+    //     html: `<p>Please fill in all required fields:</p><ul class="text-start">${invalidFields.map(f => `<li>${this.getFieldDisplayName(f)}</li>`).join('')}</ul>`,
+    //     icon: 'error'
+    //   });
+    //   return;
+    // }
 
     const val = this.mouForm.getRawValue();
 
@@ -909,7 +933,7 @@ export class MouDocumentsReportComponent implements OnInit {
       const invalidFields: string[] = [];
       const controls = this.mouForm.controls;
       for (const name in controls) {
-        if (controls[name].invalid) {
+        if (controls[name].invalid ) {
           invalidFields.push(name);
         }
       }

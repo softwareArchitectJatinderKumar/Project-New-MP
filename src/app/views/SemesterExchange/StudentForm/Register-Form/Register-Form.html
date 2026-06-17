@@ -496,9 +496,14 @@
                                             <div *ngIf="englishTestNames.includes(form.get('TestName')?.value)">
                                             </div>
 
-                                            <div
-                                                *ngIf="form.get('EnglishTestType')?.value === 'Appeared' && form.get('TestDate')?.value < PresentDate">
-                                                <label class="form-label">English Test Score Card </label>
+                                            <div *ngIf="form.get('EnglishTestType')?.value === 'Appeared' && form.get('TestDate')?.value < PresentDate">
+                                                <!-- <label class="form-label">English Test Score Card </label> -->
+                                                <label class="form-label"> English Test Score Card
+                                                    <span *ngIf="form.get('EnglishTestType')?.value === 'Applied'
+                                                      || form.get('EnglishTestType')?.value === 'Appeared'" class="text-danger">
+                                                        *
+                                                    </span>
+                                                </label>
                                                 <div class="row mt-2">
                                                     <div class="col-md-4">
                                                         <label class="form-label">Listening Score</label>
@@ -590,8 +595,7 @@
                                         </div>
                                     </div>
 
-                                    <div
-                                        *ngIf="form.get('SponsorType')?.value === 'Other'">
+                                    <div *ngIf="form.get('SponsorType')?.value === 'Other'">
                                         <div class="row mt-2">
                                             <div class="col-md-6">
                                                 <label class="form-label">Sponsor Name *</label>
@@ -737,15 +741,25 @@
 
                                     <hr>
                                     <div class="mb-3">
-                                        <label class="form-label">English Test Score Card </label>
-                                        <input type="file" class="form-control" (change)="onEnglishFileSelected($event)"
-                                            accept=".pdf,.jpg,.jpeg,.png" />
-                                        <!-- <input type="file" class="form-control" (change)="onFileSelected($event, 'english', 'EnglishDocumentPath')" accept=".pdf,.jpg,.jpeg,.png" /> -->
+                                        <label class="form-label">English Test Score Card 
 
-                                        <div class="text-danger small"
-                                            *ngIf="(form.get('EnglishDocumentPath')?.touched || isSubmitted) && form.get('EnglishDocumentPath')?.invalid">
-                                            English Test document is required as you confirmed taking a test.
+                                             <span *ngIf="form.get('EnglishTestType')?.value === 'Applied' || form.get('EnglishTestType')?.value === 'Appeared'"
+                                                class="text-danger">*</span>
+                                        </label>
+                                        <input type="file" class="form-control" (change)="onEnglishFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png" />
+                                        <!-- <input type="file" class="form-control" (change)="onFileSelected($event, 'english', 'EnglishDocumentPath')" accept=".pdf,.jpg,.jpeg,.png" /> -->
+                                    
+                                        <!-- <div class="text-danger small"
+                                                                                *ngIf="(form.get('EnglishDocumentPath')?.touched || isSubmitted) && form.get('EnglishDocumentPath')?.invalid">
+                                                                                English Test document is required as you confirmed taking a test.
+                                                                            </div> -->
+                                        <div class="text-danger small" *ngIf="(form.get('EnglishDocumentPath')?.touched || isSubmitted)
+                                                 && form.get('EnglishDocumentPath')?.invalid">
+                                    
+                                            English Proof Document is mandatory when
+                                            English Test Status is Applied or Appeared.
                                         </div>
+                                    
                                         <div class="small mt-1" *ngIf="EnglishProofFileName">Uploaded: <strong>{{
                                                 EnglishProofFileName }}</strong></div>
                                     </div>

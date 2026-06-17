@@ -615,7 +615,7 @@
                 <label class="form-label p-3">Select Activity Category</label>
               </div>
               <div class="col-3">
-                <select class="form-control" [(ngModel)]="Activity" name="Activity" required>
+                <select class="form-control" [(ngModel)]="Activity" name="Activity" required  (ngModelChange)="onActivityChange($event)">
                   <option value="">Select Activity</option>
                   <option *ngFor="let item of Activities" [value]="item.activityTitle">{{ item.activityTitle }}</option>
                 </select>
@@ -635,6 +635,26 @@
                        id="ActivityTypeInternational"
                        [(ngModel)]="selectedActivityType"
                        name="ActivityType"> International
+              </div>
+
+              <div *ngIf="selectedDocuments.length > 0" class="alert alert-danger mt-2">
+                <strong>Type of Documents Required:</strong>
+              
+                <ul class="mb-0 mt-2 ">
+                  <li *ngFor="let doc of selectedDocuments">
+                    {{ doc }}
+                  </li>
+                </ul>
+              
+                <div class="mt-2">
+                  <strong>No. of Documents Required:</strong>
+                  {{ selectedDocuments.length }}
+                </div>
+                <div class="alert alert-danger mb-0 p-2">
+                  <strong>Note:</strong>
+                  In case the number of required supporting documents exceeds two, kindly merge all documents into a single ZIP file
+                  and upload the ZIP file as a consolidated attachment.
+                </div>
               </div>
             </div>
           <!--  Row -7 Participants counts  -->

@@ -389,8 +389,8 @@ export class SemesterExchangeStuDetailsService {
       // .set('Authorization', 'Bearer ' + authToken)
       .set('Authorization', 'Bearer ' + authToken)
     return this.http.post(
-       'https://localhost:7135/api/SemesterExchangeStudent/SemesterExchangeNewRegistration', dataSoft, { headers });
-      // AUTH_API + 'api/SemesterExchangeStudent/SemesterExchangeNewRegistration', dataSoft, { headers });
+      //  'https://localhost:7135/api/SemesterExchangeStudent/SemesterExchangeNewRegistration', dataSoft, { headers });
+      AUTH_API + 'api/SemesterExchangeStudent/SemesterExchangeNewRegistration', dataSoft, { headers });
   }
 
   //2 a Student Dashboard Get data 

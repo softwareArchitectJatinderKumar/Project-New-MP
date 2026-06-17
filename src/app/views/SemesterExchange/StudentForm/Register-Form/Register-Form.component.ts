@@ -804,10 +804,39 @@ export class RegisterFormcomponent implements OnInit {
     this.form.get('EnglishTestType')!.valueChanges.subscribe(() => this.updateEnglishScoreValidators());
     this.form.get('TestDate')!.valueChanges.subscribe(() => this.updateEnglishScoreValidators());
 
+    // this.form.get('SponsorType')!.valueChanges.subscribe(val => {
+    //   const controls = ['SponsorName', 'SponsorRelation'];
+    //   controls.forEach(c => this.toggleRequiredValidator(c, val === 'Other'));
+    // });
+
+
     this.form.get('SponsorType')!.valueChanges.subscribe(val => {
-      const controls = ['SponsorName', 'SponsorRelation'];
-      controls.forEach(c => this.toggleRequiredValidator(c, val === 'Other'));
+
+  const requiredControls = [
+    'SponsorName',
+    'SponsorRelation'
+  ];
+
+  requiredControls.forEach(c =>
+    this.toggleRequiredValidator(c, val === 'Other')
+  );
+
+  if (val === 'Parents') {
+
+    this.form.patchValue({
+      SponsorName: '',
+      SponsorRelation: '',
+      SponsorContact: '',
+      SponsorEmail: ''
     });
+
+    ['SponsorName', 'SponsorRelation', 'SponsorContact', 'SponsorEmail']
+      .forEach(ctrl => {
+        this.form.get(ctrl)?.clearValidators();
+        this.form.get(ctrl)?.updateValueAndValidity();
+      });
+  }
+});
   }
 
   private toggleRequiredValidator(controlName: string, required: boolean): void {
@@ -816,21 +845,96 @@ export class RegisterFormcomponent implements OnInit {
     control.updateValueAndValidity();
   }
 
-  private updateEnglishScoreValidators(): void {
-    const englishTestType = this.form.get('EnglishTestType')?.value;
-    const testDateStr = this.form.get('TestDate')?.value;
-    const englishDoc = this.form.get('EnglishDocumentPath')!;
-    const scoreControls = ['ListeningScore', 'SpeakingScore', 'ReadingScore', 'WritingScore', 'OverallScore', 'EnglishTestYear'];
+  // private updateEnglishScoreValidators(): void {
+  //   const englishTestType = this.form.get('EnglishTestType')?.value;
+  //   const testDateStr = this.form.get('TestDate')?.value;
+  //   const englishDoc = this.form.get('EnglishDocumentPath')!;
+  //   const scoreControls = ['ListeningScore', 'SpeakingScore', 'ReadingScore', 'WritingScore', 'OverallScore', 'EnglishTestYear'];
 
-    let shouldRequireScores = false;
-    if (englishTestType === 'Appeared' && testDateStr) {
+  //   let shouldRequireScores = false;
+  //   if (englishTestType === 'Appeared' && testDateStr) {
+  //     const testDate = new Date(testDateStr);
+  //     const today = new Date();
+  //     const testDateOnly = new Date(testDate.getFullYear(), testDate.getMonth(), testDate.getDate());
+  //     const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  //   }
+  // }
+
+
+
+  private updateEnglishScoreValidators(): void {
+
+  const englishTestType = this.form.get('EnglishTestType')?.value;
+  const englishDoc = this.form.get('EnglishDocumentPath');
+
+  if (!englishDoc) return;
+
+  // English Proof compulsory for Applied / Appeared
+  if (englishTestType === 'Applied' || englishTestType === 'Appeared') {
+    englishDoc.setValidators([Validators.required]);
+  } else {
+    englishDoc.clearValidators();
+    englishDoc.setValue('');
+    this.EnglishProofFileName = '';
+    this.EnglishProofDocumentPath = '';
+  }
+
+  englishDoc.updateValueAndValidity();
+
+  const scoreControls = [
+    'TestName',
+    'TestDate',
+    'ListeningScore',
+    'SpeakingScore',
+    'ReadingScore',
+    'WritingScore',
+    'OverallScore'
+  ];
+
+  if (englishTestType === 'Appeared') {
+
+    this.toggleRequiredValidator('TestName', true);
+    this.toggleRequiredValidator('TestDate', true);
+
+    const testDateStr = this.form.get('TestDate')?.value;
+
+    if (testDateStr) {
+
       const testDate = new Date(testDateStr);
       const today = new Date();
-      const testDateOnly = new Date(testDate.getFullYear(), testDate.getMonth(), testDate.getDate());
-      const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
+      const testDateOnly = new Date(
+        testDate.getFullYear(),
+        testDate.getMonth(),
+        testDate.getDate()
+      );
+
+      const todayDateOnly = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate()
+      );
+
+      const requireScores = testDateOnly < todayDateOnly;
+
+      [
+        'ListeningScore',
+        'SpeakingScore',
+        'ReadingScore',
+        'WritingScore',
+        'OverallScore'
+      ].forEach(c => this.toggleRequiredValidator(c, requireScores));
     }
+  } else {
+
+    scoreControls.forEach(c => {
+      const ctrl = this.form.get(c);
+      ctrl?.clearValidators();
+      ctrl?.updateValueAndValidity();
+    });
   }
+}
   CountryCode: string; UniversityOption1: string = ''; UniversityOption2: string = ''; UniversityOption3: string = '';
   stuData: any;
   canProceedToNext(step: number): boolean {
@@ -858,6 +962,17 @@ export class RegisterFormcomponent implements OnInit {
       if (this.form.get('IsVisaRejected')?.value === 'Yes' && this.form.get('VisaRejectedReason')?.invalid) return false;
     }
     if (step === 2 && this.form.get('SponsorType')?.value === 'Other' && this.form.get('SponsorName')?.invalid) return false;
+
+    if (step === 4) {
+  const englishType = this.form.get('EnglishTestType')?.value;
+
+  if (
+      (englishType === 'Applied' || englishType === 'Appeared')
+      && this.form.get('EnglishDocumentPath')?.invalid
+     ) {
+      return false;
+  }
+}
 
     return true;
   }
