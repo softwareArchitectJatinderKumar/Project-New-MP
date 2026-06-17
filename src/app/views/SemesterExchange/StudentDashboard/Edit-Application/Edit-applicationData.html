@@ -9,74 +9,76 @@
 
 <div class="container-fluid mt-4" id="StudentDashboard" *ngIf="!isLoginFailed ;  else ErrorApplication">
     <div class="student-registration container-fluid py-4">
-    <div class="col-md-12 grid-margin stretch-card mb-3">
-        <div class="card">
-            <div class="card-body">
-                <div class="row d-flex justify-content-center align-items-center mb-4 border-bottom pb-3">                   
-                 
+        <div class="col-md-12 grid-margin stretch-card mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row d-flex justify-content-center align-items-center mb-4 border-bottom pb-3">
+
                         <div class="col-md-2  text-end ">
                             <strong class="text-dark">Application ID:</strong>
-                           <i [class]="'text-success'"> {{ ApplicationId }}</i>
+                            <i [class]="'text-success'"> {{ ApplicationId }}</i>
                         </div>
-                
-                    <div class="col-md-2 text-end">
-                        <div class="text-muted">
-                              <strong class="text-dark">Counsellor :</strong>
-                           <i [class]="'text-success'"> {{ CounsellingAuthority }}</i>
-                        </div>
-                    </div>
-                    <div class="col-md-2 text-end">
-                        <div class="text-muted">
-                               <strong class="text-dark">Faculty :</strong>
-                           <i [class]="'text-success'"> {{ DealingFaculty }}</i>
-                        </div>
-                    </div>
-                       <div class="col-md-2  text-end">
-                        <div class="text-secondary ">
-                            <strong class="text-dark">Status:</strong>
-                            <i [class]="LockedStatus ? 'text-success' : 'text-warning'">
-                                {{ LockedStatus ? 'Approved' : 'Pending' }} 
-                            </i>
-                        </div>
-                
-                    </div>
-                    <div class="col-md-2 text-end">
-                        <div class="text-muted">
-                            Hi, <strong class="text-info">{{ studentDetailsWithImage?.studentName }}</strong>
-                        </div>
-                    </div>
-                
-                    <div class="col-md-2 text-center">
-                        <div *ngIf="StudentImage; else placeholderImg">
-                            <img [src]="StudentImage" alt="Student Image" class="img-thumbnail rounded-circle border-info"
-                                style="width: 110px; height: 110px; object-fit: cover;">
-                        </div>
-                        <ng-template #placeholderImg>
-                            <div class="bg-light rounded-circle border d-inline-block" style="width: 110px; height: 110px;"></div>
-                        </ng-template>
-                    </div>
-                </div>
-                
-                <div class="row align-items-center justify-content-center mb-3">
-                    <div class="col-md-3">
-                        <h5 class="m-0 ms-4">University Preferences:</h5>
-                    </div>
-                
-                    <div class="col-md-9">
-                        <div class="d-flex gap-2">
-                            <div class="border rounded px-3 py-1 bg-light text-dark shadow-sm">
-                                1. {{ stuApplication.universityOption1 }}
-                            </div>
-                            <div class="border rounded px-3 py-1 bg-light text-dark shadow-sm">
-                                2. {{ stuApplication.universityOption2 }}
-                            </div>
-                            <div class="border rounded px-3 py-1 bg-light text-dark shadow-sm">
-                                3. {{ stuApplication.universityOption3 }}
+
+                        <div class="col-md-2 text-end">
+                            <div class="text-muted">
+                                <strong class="text-dark">Counsellor :</strong>
+                                <i [class]="'text-success'"> {{ CounsellingAuthority }}</i>
                             </div>
                         </div>
+                        <div class="col-md-2 text-end">
+                            <div class="text-muted">
+                                <strong class="text-dark">Faculty :</strong>
+                                <i [class]="'text-success'"> {{ DealingFaculty }}</i>
+                            </div>
+                        </div>
+                        <div class="col-md-2  text-end">
+                            <div class="text-secondary ">
+                                <strong class="text-dark">Status:</strong>
+                                <i [class]="LockedStatus ? 'text-success' : 'text-warning'">
+                                    {{ LockedStatus ? 'Approved' : 'Pending' }}
+                                </i>
+                            </div>
+
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <div class="text-muted">
+                                Hi, <strong class="text-info">{{ studentDetailsWithImage?.studentName }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 text-center">
+                            <div *ngIf="StudentImage; else placeholderImg">
+                                <img [src]="StudentImage" alt="Student Image"
+                                    class="img-thumbnail rounded-circle border-info"
+                                    style="width: 110px; height: 110px; object-fit: cover;">
+                            </div>
+                            <ng-template #placeholderImg>
+                                <div class="bg-light rounded-circle border d-inline-block"
+                                    style="width: 110px; height: 110px;"></div>
+                            </ng-template>
+                        </div>
                     </div>
-                </div>
-                <!-- <div class="row align-items-center mb-4">
+
+                    <div class="row align-items-center justify-content-center mb-3">
+                        <div class="col-md-3">
+                            <h5 class="m-0 ms-4">University Preferences:</h5>
+                        </div>
+
+                        <div class="col-md-9">
+                            <div class="d-flex gap-2">
+                                <div class="border rounded px-3 py-1 bg-light text-dark shadow-sm">
+                                    1. {{ stuApplication.universityOption1 }}
+                                </div>
+                                <div class="border rounded px-3 py-1 bg-light text-dark shadow-sm">
+                                    2. {{ stuApplication.universityOption2 }}
+                                </div>
+                                <div class="border rounded px-3 py-1 bg-light text-dark shadow-sm">
+                                    3. {{ stuApplication.universityOption3 }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="row align-items-center mb-4">
                     <div class="col-md-3 ms-4">
                         <h3 class="text-info m-0">My Dashboard</h3>
                     </div>
@@ -130,7 +132,7 @@
                         </span>
                     </div>
                 </div> -->
-                <!-- <div class="d-flex justify-content- align-items-center mb-3">
+                    <!-- <div class="d-flex justify-content- align-items-center mb-3">
                     <div class="col-md-3 ms-4">
                         <h3 class="text-info m-0">My Dashboard</h3>
                     </div>
@@ -184,28 +186,16 @@
                         </span>
                     </div>                            
                 </div> -->
+                </div>
             </div>
         </div>
-    </div>
         <div class="col-md-12 grid-margin stretch-card mb-3">
             <div class="card">
                 <div class="card-body">
-        
+
                     <div class="d-flex align-items-center justify-content-start flex-wrap gap-3">
-                         <ng-container *ngIf="LockedStatus">
-                        <!-- <span class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-none': true }"> -->
-                            <!-- <button type="button" class="btn btn-success " [ngClass]="{ 'bg-success': true }" -->
-                                <!-- <button type="button" class="btn me-5 active" data-bs-toggle="tab" style="padding: .95rem 8rem;" (click)="moveNextStep()">Course Mapping </button> -->
-                                <button type="button" class="btn me-5 active" data-bs-toggle="tab" style="padding: .95rem 8rem;" (click)="moveNextStep()">Stage - II  </button>
-                        <!-- </span> -->
-                        <br/>
-                        <!-- <span class="badge rounded-pill step-badge fs-6" [ngClass]="{ 'bg-none': true }"> -->
-                            <!-- <button type="button" class="btn btn-success "  [ngClass]="{ 'bg-success': true }"></button> -->
-                             <button type="button"class="btn me-5 " data-bs-toggle="tab" style="padding: .95rem 8rem;"
-                                (click)="GetStudentApplication(this.RegistrationNo)">View Application </button>
-                        <!-- </span> -->
-                        </ng-container>
-                      
+
+
                         <ng-container *ngIf="!LockedStatus">
                             <ng-container *ngFor="let label of stepLabels; let i = index">
                                 <div class="step" [class.active]="i === currentStep" [class.past]="i < currentStep">
@@ -221,172 +211,231 @@
                 </div>
             </div>
         </div>
-        
 
-        <!-- New Task For Course mapping pending -->
         <section *ngIf="currentStep === 5" class="step-section">
 
+            <nav>
+                <div class="nav nav-tabs d-flex justify-content-center active" id="nav-tab" role="tablist">
+                    <button class="btn me-5 active" id="AssignActivities-tab" data-bs-toggle="tab"
+                        style="padding: .95rem 8rem;" data-bs-target="#AssignActivities" type="button" role="tab"
+                        (click)="moveNextStep()">Course Mapping
+                    </button>
 
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead class="table-light">
-                        <tr>
-                            <th>#</th>
-                            <th>Stage Name</th>
-                            <th>Document Name</th>
-                            <th>Uploaded Document</th>
-                             
-                        </tr>
-                    </thead>
-                    <tbody *ngIf="StageDocumentData.length>0; else: DocumentData">
-                        <tr *ngFor="let row of StageDocumentData; let i = index">
-                            <td>{{ i + 1 }}</td>
-                            <td>{{ row.stageName }}</td>
-                            <td>{{ row.documentName }}</td>
-                            <td>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn btn-dark" (click)="onSelectFileX(row.document)">
-                                         <i class="bi bi-file-earmark-text"></i>
-                                    </button>
-                                    <!-- <a *ngIf="row.document" href="#" class="btn btn-outline-secondary btn-sm text-nowrap"
-                                        (click)="onSelectFileX(row.document)">
-                                        Download: {{ row.document }}
-                                    </a> -->
-                                </div>
-                            </td>
-                             
-                        </tr>
-                    </tbody>
-                    <ng-template #DocumentData>
-                        <tbody  >
-                        <tr *ngFor="let row of StagesDetail; let i = index">
-                            <td>{{ i + 1 }}</td>
-                            <td>{{ row.stageName }}</td>
-                            <td>{{ row.documentName }}</td>
-                            <td>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <input type="file" class="form-control form-control-sm"
-                                        (change)="onStageFilePicked($event, i)" />
-            
-                                    <a *ngIf="row.fileName" href="#" class="btn btn-outline-secondary btn-sm text-nowrap"
-                                        (click)="downloadStageFile(i, $event)">
-                                        Download: {{ row.fileName }}
-                                    </a>
-                                </div>
-                            </td>
-                            <td>
-                                <button *ngIf="!row.isUploaded" class="btn btn-primary btn-sm"
-                                    [disabled]="!row.fileObject || row.isUploading" (click)="uploadStageDocumentRow(i)">
-                                    <span *ngIf="row.isUploading" class="spinner-border spinner-border-sm me-1"></span>
-                                    {{ row.isUploading ? 'Uploading...' : 'Upload' }}
-                                </button>
-            
-                                <span *ngIf="row.isUploaded" class="badge bg-success p-2">
-                                    <i class="bi bi-check-circle-fill me-1"></i> Saved
-                                </span>
-                            </td>
-                        </tr>
-                    </tbody>
-                    </ng-template>
-                </table>
-            </div>
 
-            <!-- <div class="d-flex justify-content-between align-items-center mb-2">
-                <h3 class="text-info m-0">Course Covered & Uploads</h3>
-                <div>
-                    <button class="btn btn-success me-2" (click)="addCourseRow()">Add Row</button>
-                    <button class="btn btn-primary" (click)="saveAllCourseCovered()"
-                        [disabled]="isSavingCourses || courseRows.length===0">Save All</button>
+
+                    <button class="btn btn-lg ms-5" id="MyAllAssignActivities-tab" data-bs-toggle="tab"
+                        style="padding: .95rem 8rem;" data-bs-target="#MyAllAssignActivities" type="button" role="tab"
+                        (click)="moveNextStep()">Stage - II </button>
+
+                    <button class="btn btn-lg ms-5" id="OthersAllAssignActivities-tab" data-bs-toggle="tab"
+                        style="padding: .95rem 8rem;" data-bs-target="#OthersAllAssignActivities" type="button"
+                        role="tab" (click)="GetStudentApplication(this.RegistrationNo)">View Application </button>
+                </div>
+            </nav>
+            <div class="tab-content" id="nav-tabContent">
+
+                <div class="tab-pane fade active show" id="AssignActivities" role="tabpanel">
+                    <div class="row vh-100">
+                        <div class="col-12 stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+
+
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Stage Name</th>
+                                                    <th>Document Name</th>
+                                                    <th>Uploaded Document</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody *ngIf="StageDocumentData.length>0; else: DocumentData">
+                                                <tr *ngFor="let row of StageDocumentData; let i = index">
+                                                    <td>{{ i + 1 }}</td>
+                                                    <td>{{ row.stageName }}</td>
+                                                    <td>{{ row.documentName }}</td>
+                                                    <td>
+                                                        <div class="d-flex gap-2 align-items-center">
+                                                            <button class="btn btn-dark"
+                                                                (click)="onSelectFileX(row.document)">
+                                                                <i class="bi bi-file-earmark-text"></i>
+                                                            </button>
+                                                            <!-- <a *ngIf="row.document" href="#" class="btn btn-outline-secondary btn-sm text-nowrap"
+                                                    (click)="onSelectFileX(row.document)">
+                                                    Download: {{ row.document }}
+                                                </a> -->
+                                                        </div>
+                                                    </td>
+
+                                                </tr>
+                                            </tbody>
+                                            <ng-template #DocumentData>
+                                                <tbody>
+                                                    <tr *ngFor="let row of StagesDetail; let i = index">
+                                                        <td>{{ i + 1 }}</td>
+                                                        <td>{{ row.stageName }}</td>
+                                                        <td>{{ row.documentName }}</td>
+                                                        <td>
+                                                            <div class="d-flex gap-2 align-items-center">
+                                                                <input type="file" class="form-control form-control-sm"
+                                                                    (change)="onStageFilePicked($event, i)" />
+
+                                                                <a *ngIf="row.fileName" href="#"
+                                                                    class="btn btn-outline-secondary btn-sm text-nowrap"
+                                                                    (click)="downloadStageFile(i, $event)">
+                                                                    Download: {{ row.fileName }}
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <button *ngIf="!row.isUploaded"
+                                                                class="btn btn-primary btn-sm"
+                                                                [disabled]="!row.fileObject || row.isUploading"
+                                                                (click)="uploadStageDocumentRow(i)">
+                                                                <span *ngIf="row.isUploading"
+                                                                    class="spinner-border spinner-border-sm me-1"></span>
+                                                                {{ row.isUploading ? 'Uploading...' : 'Upload' }}
+                                                            </button>
+
+                                                            <span *ngIf="row.isUploaded" class="badge bg-success p-2">
+                                                                <i class="bi bi-check-circle-fill me-1"></i> Saved
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </ng-template>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="MyAllAssignActivities" role="tabpanel">
+                    <div class="row vh-100">
+                        <div class="col-12 stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h3 class="text-info m-0">Course Covered & Uploads</h3>
+                                        <div>
+                                            <button class="btn btn-success me-2" (click)="addCourseRow()">Add
+                                                Row</button>
+                                            <button class="btn btn-primary" (click)="saveAllCourseCovered()"
+                                                [disabled]="isSavingCourses || courseRows.length===0">Save All</button>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Stage Name</th>
+                                                    <th>Document Name</th>
+                                                    <th>Upload Document</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let row of StagesDetail; let i = index">
+                                                    <td>{{ i + 1 }}</td>
+                                                    <td><input class="form-control" [(ngModel)]="row.stageName"
+                                                            name="stageName{{i}}" />
+                                                    </td>
+                                                    <td><input class="form-control" [(ngModel)]="row.documentName"
+                                                            name="documentName{{i}}" /></td>
+
+                                                    <td>
+                                                        <div class="d-flex gap-2 align-items-center">
+                                                            <input type="file"
+                                                                (change)="onCourseFilePicked($event, i)" />
+                                                            <a *ngIf="row.fileName" href="#"
+                                                                class="btn btn-outline-secondary btn-sm"
+                                                                (click)="downloadCourseFile(i, $event)">{{ row.fileName
+                                                                }}</a>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-danger btn-sm"
+                                                            (click)="removeCourseRow(i)">Remove</button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        
-        
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead class="table-light">
-                        <tr>
-                            <th>#</th>
-                            <th>Stage Name</th>
-                            <th>Document Name</th>                            
-                            <th>Upload Document</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let row of StagesDetail; let i = index">
-                            <td>{{ i + 1 }}</td>
-                            <td><input class="form-control" [(ngModel)]="row.stageName" name="stageName{{i}}" /></td>                            
-                            <td><input class="form-control" [(ngModel)]="row.documentName" name="documentName{{i}}" /></td>                                                        
-                            </td>
-                            <td>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <input type="file" (change)="onCourseFilePicked($event, i)" />
-                                    <a *ngIf="row.fileName" href="#" class="btn btn-outline-secondary btn-sm"
-                                        (click)="downloadCourseFile(i, $event)">{{ row.fileName }}</a>
-                                </div>
-                            </td>
-                            <td>
-                                <button class="btn btn-danger btn-sm" (click)="removeCourseRow(i)">Remove</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-         -->
+
         </section>
 
         <div class="col-md-12 grid-margin stretch-card mb-3">
             <div class="card">
-                <div class="card-body">        
+                <div class="card-body">
                     <section *ngIf="currentStep === 0" class="step-section">
                         <div class="row g-3">
-                            <div class="d-flex justify-content-center "> 
-                                <button type="button" class="btn btn-primary m-3"   (click)="nextStep()" >Next</button>
-                                
+                            <div class="d-flex justify-content-center ">
+                                <button type="button" class="btn btn-primary m-3" (click)="nextStep()">Next</button>
+
                             </div>
                             <div class="col-md-6 col-lg-10 mx-auto mb-3">
                                 <div class="card section">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <span>Academic Information</span>
                                     </div>
-                                    <div class="card-body" >
+                                    <div class="card-body">
                                         <div class="row mt-2">
                                             <div class="col-md-6 ">
                                                 <label class="form-label">Student Name</label>
-                                                <input type="text" class="form-control" [value]="studentName" readonly [disabled]="true" />
+                                                <input type="text" class="form-control" [value]="studentName" readonly
+                                                    [disabled]="true" />
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label">Registration Number</label>                         
-                                                 <input type="text" class="form-control" [value]="RegistrationNo" readonly [disabled]="true" /> 
+                                                <label class="form-label">Registration Number</label>
+                                                <input type="text" class="form-control" [value]="RegistrationNo"
+                                                    readonly [disabled]="true" />
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label">Program </label>                         
-                                                 <input type="text" class="form-control" [value]="courseName" readonly [disabled]="true" /> 
+                                                <label class="form-label">Program </label>
+                                                <input type="text" class="form-control" [value]="courseName" readonly
+                                                    [disabled]="true" />
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label">Current Year </label>                         
-                                                 <input type="text" class="form-control" [value]="CurrentYear" readonly [disabled]="true" /> 
+                                                <label class="form-label">Current Year </label>
+                                                <input type="text" class="form-control" [value]="CurrentYear" readonly
+                                                    [disabled]="true" />
                                             </div>
                                         </div>
-        
+
                                         <div class="row mt-2">
                                             <div class="col-md-6 ">
                                                 <label class="form-label">Overall Score</label>
-                                                <input type="text" class="form-control" [value]="cgpa" readonly [disabled]="true" />
+                                                <input type="text" class="form-control" [value]="cgpa" readonly
+                                                    [disabled]="true" />
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label">Program</label>                         
-                                                 <input type="text" class="form-control" [value]="ProgramCode" readonly [disabled]="true" /> 
+                                                <label class="form-label">Program</label>
+                                                <input type="text" class="form-control" [value]="ProgramCode" readonly
+                                                    [disabled]="true" />
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label">Section </label>                         
-                                                 <input type="text" class="form-control" [value]="SectionCode" readonly [disabled]="true" /> 
+                                                <label class="form-label">Section </label>
+                                                <input type="text" class="form-control" [value]="SectionCode" readonly
+                                                    [disabled]="true" />
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label">Current Term</label>                         
-                                                 <input type="text" class="form-control" [value]="CurrentTerm" readonly [disabled]="true" /> 
+                                                <label class="form-label">Current Term</label>
+                                                <input type="text" class="form-control" [value]="CurrentTerm" readonly
+                                                    [disabled]="true" />
                                             </div>
-                                        </div>    
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -400,12 +449,12 @@
                 <div class="row g-3">
                     <div class="d-flex justify-content-center ">
                         <button type="button" class="btn btn-secondary m-3" (click)="prevStep()">Back</button>
-                        <button type="button" class="btn btn-sm btn-danger m-3" *ngIf="!isEditingStep[1] && !LockedStatus"
-                            (click)="startEdit(1)">Edit</button>
+                        <button type="button" class="btn btn-sm btn-danger m-3"
+                            *ngIf="!isEditingStep[1] && !LockedStatus" (click)="startEdit(1)">Edit</button>
                         <button type="button" class="btn btn-danger m-3" *ngIf="isEditingStep[1]"
                             (click)="cancelEdit(1)">Cancel</button>
-                        <button type="button" class="btn btn-success m-3" *ngIf="isEditingStep[1]" (click)="updateStep(1)"
-                            [disabled]="!isCurrentStepValid(1)">Update</button>
+                        <button type="button" class="btn btn-success m-3" *ngIf="isEditingStep[1]"
+                            (click)="updateStep(1)" [disabled]="!isCurrentStepValid(1)">Update</button>
                         <button type="button" class="btn btn-primary m-3" *ngIf="!isEditingStep[1]" (click)="nextStep()"
                             [disabled]="isEditingStep[1]">Next</button>
                     </div>
@@ -418,18 +467,20 @@
                                 <div class="row mt-2">
                                     <div class="col-md-6 ">
                                         <label class="form-label">Email Id *</label>
-                                         <input type="text"class="form-control" [value]="form.get('EmailId')?.value" readonly [disabled]="true" />
+                                        <input type="text" class="form-control" [value]="form.get('EmailId')?.value"
+                                            readonly [disabled]="true" />
                                     </div>
                                     <div class="col-md-6">
-                                         <!-- <label class="form-label">Email Id *</label>
+                                        <!-- <label class="form-label">Email Id *</label>
                                         <input class="col-md-4 form-control" formControlName="EmailId" />  -->
                                     </div>
                                 </div>
-            
+
                                 <div class="row mt-2">
                                     <div class="col-md-6">
                                         <label class="form-label">Country *</label>
-                                        <select class="form-select" formControlName="CountryName" [disabled]="!isEditingStep[1]">
+                                        <select class="form-select" formControlName="CountryName"
+                                            [disabled]="!isEditingStep[1]">
                                             <option value="">Select country</option>
                                             <option *ngFor="let c of countries" [value]="c.name">{{ c.name }}</option>
                                         </select>
@@ -438,21 +489,23 @@
                                             Required
                                         </div>
                                     </div>
-            
+
                                     <div class="col-md-6">
                                         <label class="form-label">WhatsApp Number *</label>
-                                        <input class="form-control" formControlName="WhatsAppNo" [readonly]="!isEditingStep[1]" />
+                                        <input class="form-control" formControlName="WhatsAppNo"
+                                            [readonly]="!isEditingStep[1]" />
                                         <div class="text-danger small"
                                             *ngIf="(form.get('WhatsAppNo')?.touched || isSubmitted) && form.get('WhatsAppNo')?.invalid">
                                             Required / invalid
                                         </div>
                                     </div>
                                 </div>
-            
+
                                 <div class="row mt-2">
                                     <div class="col-md-6">
                                         <label class="form-label">Phone Number *</label>
-                                        <input class="form-control" formControlName="PhoneNumber" [readonly]="!isEditingStep[1]" />
+                                        <input class="form-control" formControlName="PhoneNumber"
+                                            [readonly]="!isEditingStep[1]" />
                                         <div class="text-danger small"
                                             *ngIf="(form.get('PhoneNumber')?.touched || isSubmitted) && form.get('PhoneNumber')?.invalid">
                                             Required / invalid
@@ -468,11 +521,11 @@
                                         </div>
                                     </div>
                                 </div>
-            
+
                             </div>
                         </div>
                     </div>
-            
+
                     <div class="col-md-12 col-lg-10 mx-auto mb-3">
                         <div class="card section">
                             <div class="card-header d-flex justify-content-between align-items-center">
@@ -493,7 +546,7 @@
                                             Required
                                         </div>
                                     </div>
-            
+
                                     <div *ngIf="form.get('HasRelativeDetails')?.value === 'Yes'" class="col-md-12">
                                         <div class="row mt-2">
                                             <div class="col-md-6">
@@ -511,7 +564,7 @@
                                                 </select>
                                             </div>
                                         </div>
-            
+
                                         <div class="row mt-2">
                                             <div class="col-md-6">
                                                 <label class="form-label">Relation *</label>
@@ -524,7 +577,7 @@
                                                     [readonly]="!isEditingStep[1]" />
                                             </div>
                                         </div>
-            
+
                                         <div class="row mt-2">
                                             <div class="col-md-6">
                                                 <label class="form-label">Phone (optional)</label>
@@ -537,11 +590,12 @@
                             </div>
                         </div>
                     </div>
-            
+
                 </div>
-            
+
                 <div class="d-flex justify-content-between mt-3">
-                    <button type="button" class="btn btn-danger" *ngIf="isEditingStep[1]" (click)="cancelEdit(1)">Cancel</button>
+                    <button type="button" class="btn btn-danger" *ngIf="isEditingStep[1]"
+                        (click)="cancelEdit(1)">Cancel</button>
                     <button type="button" class="btn btn-success" *ngIf="isEditingStep[1]" (click)="updateStep(1)"
                         [disabled]="!isCurrentStepValid(1)">Update</button>
                     <button type="button" class="btn btn-primary" *ngIf="!isEditingStep[1]" (click)="nextStep()"
@@ -552,11 +606,13 @@
             <section *ngIf="currentStep === 2" class="step-section">
                 <div class="row g-3">
                     <div class="d-flex justify-content-center mt-4">
-                        <button type="button" class="btn btn-sm btn-danger m-3" *ngIf="!isEditingStep[2] && !LockedStatus" (click)="startEdit(2)">Edit</button>
+                        <button type="button" class="btn btn-sm btn-danger m-3"
+                            *ngIf="!isEditingStep[2] && !LockedStatus" (click)="startEdit(2)">Edit</button>
                         <button type="button" class="btn btn-secondary m-3" (click)="prevStep()">Back</button>
-                        <button type="button" class="btn btn-danger m-3" *ngIf="isEditingStep[2]" (click)="cancelEdit(2)">Cancel</button>
-                        <button type="button" class="btn btn-success m-3" *ngIf="isEditingStep[2]" (click)="updateStep(2)"
-                            [disabled]="!isCurrentStepValid(2)">Update</button>
+                        <button type="button" class="btn btn-danger m-3" *ngIf="isEditingStep[2]"
+                            (click)="cancelEdit(2)">Cancel</button>
+                        <button type="button" class="btn btn-success m-3" *ngIf="isEditingStep[2]"
+                            (click)="updateStep(2)" [disabled]="!isCurrentStepValid(2)">Update</button>
                         <button type="button" class="btn btn-primary m-3" *ngIf="!isEditingStep[2]" (click)="nextStep()"
                             [disabled]="isEditingStep[2]">Next</button>
                     </div>
@@ -570,7 +626,8 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label class="form-label">Applying For *</label>
-                                        <select class="form-select" formControlName="ApplyingOption" [disabled]="!isEditingStep[2]">
+                                        <select class="form-select" formControlName="ApplyingOption"
+                                            [disabled]="!isEditingStep[2]">
                                             <option value="">Select</option>
                                             <option value="Spring (Jan to May Intake)">Spring (Jan to May Intake)
                                             </option>
@@ -578,11 +635,12 @@
                                         </select>
                                     </div>
                                 </div>
-                    
+
                                 <div class="row mt-2">
                                     <div class="col-md-4">
                                         <label class="form-label">Preference 1 *</label>
-                                        <select class="form-select" formControlName="UniversityOption1" [disabled]="!isEditingStep[2]">
+                                        <select class="form-select" formControlName="UniversityOption1"
+                                            [disabled]="!isEditingStep[2]">
                                             <option value="">Select University</option>
                                             <option *ngFor="let u of uniData" [value]="u.universityName">{{
                                                 u.universityName }}</option>
@@ -590,17 +648,19 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Preference 2 *</label>
-                                        <select class="form-select" formControlName="UniversityOption2" [disabled]="!isEditingStep[2]">
+                                        <select class="form-select" formControlName="UniversityOption2"
+                                            [disabled]="!isEditingStep[2]">
                                             <option value="">Select University</option>
                                             <option *ngFor="let u of uniData" [value]="u.universityName"
                                                 [disabled]="u.universityName === form.get('UniversityOption1')?.value">
                                                 {{ u.universityName }}</option>
-                    
+
                                         </select>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">Preference 3 *</label>
-                                        <select class="form-select" formControlName="UniversityOption3" [disabled]="!isEditingStep[2]">
+                                        <select class="form-select" formControlName="UniversityOption3"
+                                            [disabled]="!isEditingStep[2]">
                                             <option value="">Select University</option>
                                             <option *ngFor="let u of uniData" [value]="u.universityName"
                                                 [disabled]="u.universityName === form.get('UniversityOption1')?.value || u.universityName === form.get('UniversityOption2')?.value">
@@ -608,12 +668,12 @@
                                         </select>
                                     </div>
                                 </div>
-                    
+
                             </div>
                         </div>
                     </div>
 
-                        <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                    <div class="col-md-12 col-lg-10 mx-auto mb-3">
                         <div class="card section">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <span>Passport Details</span>
@@ -673,12 +733,14 @@
             <section *ngIf="currentStep === 3" class="step-section">
                 <div class="row g-3">
                     <div class="d-flex justify-content-center m-4">
-                        <button type="button" class="btn btn-lg btn-danger  m-3" *ngIf="!isEditingStep[3] && !LockedStatus" (click)="startEdit(3)">Edit</button>
-                  
+                        <button type="button" class="btn btn-lg btn-danger  m-3"
+                            *ngIf="!isEditingStep[3] && !LockedStatus" (click)="startEdit(3)">Edit</button>
+
                         <button type="button" class="btn btn-secondary m-3" (click)="prevStep()">Back</button>
-                        <button type="button" class="btn btn-danger m-3" *ngIf="isEditingStep[3]" (click)="cancelEdit(3)">Cancel</button>
-                        <button type="button" class="btn btn-success m-3" *ngIf="isEditingStep[3]" (click)="updateStep(3)"
-                            [disabled]="!isCurrentStepValid(3)">Update</button>
+                        <button type="button" class="btn btn-danger m-3" *ngIf="isEditingStep[3]"
+                            (click)="cancelEdit(3)">Cancel</button>
+                        <button type="button" class="btn btn-success m-3" *ngIf="isEditingStep[3]"
+                            (click)="updateStep(3)" [disabled]="!isCurrentStepValid(3)">Update</button>
                         <button type="button" class="btn btn-primary m-3" *ngIf="!isEditingStep[3]" (click)="nextStep()"
                             [disabled]="isEditingStep[3]">Next</button>
                     </div>
@@ -883,56 +945,62 @@
             <section *ngIf="currentStep === 4 " class="step-section">
                 <div class="row g-3">
                     <div class="d-flex justify-content-center m-4">
-                        <button type="button" class="btn btn-lg btn-danger m-3" *ngIf="!isEditingStep[4] && !LockedStatus" (click)="startEdit(4)">Edit</button>
-                             <button type="button" class="btn btn-danger m-3" *ngIf="isEditingStep[4]" (click)="cancelEdit(4)">Cancel</button>
+                        <button type="button" class="btn btn-lg btn-danger m-3"
+                            *ngIf="!isEditingStep[4] && !LockedStatus" (click)="startEdit(4)">Edit</button>
+                        <button type="button" class="btn btn-danger m-3" *ngIf="isEditingStep[4]"
+                            (click)="cancelEdit(4)">Cancel</button>
                         <button type="button" class="btn btn-secondary m-3" (click)="prevStep()">Back</button>
                         <button type="button" class="btn btn-success m-3" *ngIf="isEditingStep[4]" (click)="Onsubmit()"
                             [disabled]="!isCurrentStepValid(4)">Update</button>
                     </div>
-                
+
                     <div class="col-md-12 col-lg-10 mx-auto mb-3">
                         <div class="card section">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <span>Document(s) -I  </span>
+                                <span>Document(s) -I </span>
                             </div>
                             <div class="card-body" [class.disabled-form]="!isEditingStep[4]">
                                 <div class="row mt-2">
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold">Fees Proof Document</label>
-                                        <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.feesProofFileName.length>0; ">
+                                        <div class="d-flex align-items-center gap-2"
+                                            *ngIf="stuApplication?.feesProofFileName.length>0; ">
                                             <a class="btn icon-btn"
                                                 [attr.href]="stuApplication?.feesProofFileName ? (serverUrl + stuApplication.feesProofFileName) : null"
                                                 [class.disabled]="!stuApplication?.feesProofFileName"
                                                 [attr.target]="stuApplication?.feesProofFileName ? '_blank' : null"
-                                                title="View Resume Document" [attr.aria-disabled]="!stuApplication?.feesProofFileName"
+                                                title="View Resume Document"
+                                                [attr.aria-disabled]="!stuApplication?.feesProofFileName"
                                                 tabindex="{{stuApplication?.feesProofFileName ? 0 : -1}}">
                                                 <span class="material-icons md-18">description</span> View Uploaded
                                             </a>
                                         </div>
                                         <div>
-                                            <input type="file" (change)="onFileSelectedFeesProof($event)" [disabled]="!isEditingStep[4]"
-                                                class="form-control" required />
+                                            <input type="file" (change)="onFileSelectedFeesProof($event)"
+                                                [disabled]="!isEditingStep[4]" class="form-control" required />
                                             <br />
                                         </div>
                                     </div>
                                     <div class="col-md-4 mb-3">
                                         <label class="form-label fw-semibold">Resume Document</label>
-                                        <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.resumeFileName.length>0; ">
+                                        <div class="d-flex align-items-center gap-2"
+                                            *ngIf="stuApplication?.resumeFileName.length>0; ">
                                             <a class="btn icon-btn"
                                                 [attr.href]="stuApplication?.resumeFileName ? (serverUrl + stuApplication.resumeFileName) : null"
                                                 [class.disabled]="!stuApplication?.resumeFileName"
                                                 [attr.target]="stuApplication?.resumeFileName ? '_blank' : null"
-                                                title="View Resume Document" [attr.aria-disabled]="!stuApplication?.resumeFileName"
+                                                title="View Resume Document"
+                                                [attr.aria-disabled]="!stuApplication?.resumeFileName"
                                                 tabindex="{{stuApplication?.resumeFileName ? 0 : -1}}">
                                                 <span class="material-icons md-18">description</span>View Uploaded
                                             </a>
                                         </div>
                                         <div>
-                                            <input type="file" (change)="onFileSelectedResumeFile($event)" [disabled]="!isEditingStep[4]"
-                                                class="form-control" required /><br />
+                                            <input type="file" (change)="onFileSelectedResumeFile($event)"
+                                                [disabled]="!isEditingStep[4]" class="form-control" required /><br />
                                         </div>
                                     </div>
-                    
+
                                     <div class="col-md-4 mb-3">
                                         <label class="form-label fw-semibold">Consent Letter</label>
                                         <div class="d-flex align-items-center gap-2"
@@ -941,14 +1009,15 @@
                                                 [attr.href]="stuApplication?.consentLetterFileName ? (serverUrl + stuApplication.consentLetterFileName) : null"
                                                 [class.disabled]="!stuApplication?.consentLetterFileName"
                                                 [attr.target]="stuApplication?.consentLetterFileName ? '_blank' : null"
-                                                title="View Resume Document" [attr.aria-disabled]="!stuApplication?.consentLetterFileName"
+                                                title="View Resume Document"
+                                                [attr.aria-disabled]="!stuApplication?.consentLetterFileName"
                                                 tabindex="{{stuApplication?.consentLetterFileName ? 0 : -1}}">
                                                 <span class="material-icons md-18">description</span>View Uploaded
                                             </a>
                                         </div>
                                         <div>
-                                            <input type="file" (change)="onFileSelectedConsentLetter($event)" [disabled]="!isEditingStep[4]"
-                                                class="form-control" required /><br />
+                                            <input type="file" (change)="onFileSelectedConsentLetter($event)"
+                                                [disabled]="!isEditingStep[4]" class="form-control" required /><br />
                                         </div>
                                     </div>
                                 </div>
@@ -958,26 +1027,28 @@
                     <div class="col-md-12 col-lg-10 mx-auto mb-3">
                         <div class="card section">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <span>Document(s) - II  </span>
+                                <span>Document(s) - II </span>
                             </div>
                             <div class="card-body" [class.disabled-form]="!isEditingStep[4]">
                                 <div class="row mt-2">
 
                                     <div class="col-md-4 mb-3">
                                         <label class="form-label fw-semibold">Passport File</label>
-                                        <div class="d-flex align-items-center gap-2" *ngIf="stuApplication?.passportFileName.length>0;">
+                                        <div class="d-flex align-items-center gap-2"
+                                            *ngIf="stuApplication?.passportFileName.length>0;">
                                             <a class="btn icon-btn"
                                                 [attr.href]="stuApplication?.passportFileName ? (serverUrl + stuApplication.passportFileName) : null"
                                                 [class.disabled]="!stuApplication?.passportFileName"
                                                 [attr.target]="stuApplication?.passportFileName ? '_blank' : null"
-                                                title="View Resume Document" [attr.aria-disabled]="!stuApplication?.passportFileName"
+                                                title="View Resume Document"
+                                                [attr.aria-disabled]="!stuApplication?.passportFileName"
                                                 tabindex="{{stuApplication?.passportFileName ? 0 : -1}}">
                                                 <span class="material-icons md-18">description</span>View Uploaded
                                             </a>
                                         </div>
                                         <div>
-                                            <input type="file" (change)="onFileSelectedPassportFile($event)" [disabled]="!isEditingStep[4]"
-                                                class="form-control" required /><br />
+                                            <input type="file" (change)="onFileSelectedPassportFile($event)"
+                                                [disabled]="!isEditingStep[4]" class="form-control" required /><br />
                                         </div>
                                     </div>
                                     <div class="col-md-4 mb-3">
@@ -988,14 +1059,15 @@
                                                 [attr.href]="stuApplication?.englishProofFileName ? (serverUrl + stuApplication.englishProofFileName) : null"
                                                 [class.disabled]="!stuApplication?.englishProofFileName"
                                                 [attr.target]="stuApplication?.englishProofFileName ? '_blank' : null"
-                                                title="View Resume Document" [attr.aria-disabled]="!stuApplication?.englishProofFileName"
+                                                title="View Resume Document"
+                                                [attr.aria-disabled]="!stuApplication?.englishProofFileName"
                                                 tabindex="{{stuApplication?.englishProofFileName ? 0 : -1}}">
                                                 <span class="material-icons md-18">description</span>View Uploaded
                                             </a>
                                         </div>
                                         <div>
-                                            <input type="file" (change)="onFileSelectedEnglishProof($event)" [disabled]="!isEditingStep[4]"
-                                                class="form-control" required /><br />
+                                            <input type="file" (change)="onFileSelectedEnglishProof($event)"
+                                                [disabled]="!isEditingStep[4]" class="form-control" required /><br />
                                         </div>
                                     </div>
                                 </div>
@@ -1007,25 +1079,21 @@
                         <button type="button" class="btn btn-success" *ngIf="isEditingStep[4]" (click)="Onsubmit()"
                             [disabled]="!isCurrentStepValid(4)">Update</button>
                     </div>
-                
+
                 </div>
             </section>
-
-
-
-
         </form>
     </div>
 </div>
 <ng-template #ErrorApplication>
-  <div class="text-center" *ngIf="isLoginFailed==true">
-    <h3 class="text-center fs-2 m-5 text-danger pt-5 "> Error in User Login . </h3>
-    <div class="row mt-4 mb-4">
-      <div class="col-sm-12 text-center">
-        <div class="mb-3 p-4">
-          <Label class="form-label fs-4 text-danger ">Unauthorise Access.</Label>
+    <div class="text-center" *ngIf="isLoginFailed==true">
+        <h3 class="text-center fs-2 m-5 text-danger pt-5 "> Error in User Login . </h3>
+        <div class="row mt-4 mb-4">
+            <div class="col-sm-12 text-center">
+                <div class="mb-3 p-4">
+                    <Label class="form-label fs-4 text-danger ">Unauthorise Access.</Label>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </ng-template>
