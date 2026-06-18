@@ -298,6 +298,7 @@ export class DynamicDashboardComponent implements OnInit {
 
   /** Active tab for HOD view. */
   hodActiveTab: 'my' | 'all' | 'allApproved' = 'my';
+  howActiveTab: 'my' | 'allApproved' = 'my';
 
   ColumnMode = ColumnMode;
   loadingIndicator = false;
@@ -435,7 +436,7 @@ export class DynamicDashboardComponent implements OnInit {
           const emp = response.item1[0];
           this.EmployeeDetails  = emp;
           this.EmployeeName     = emp.employeeName;
-          this.EmployeeCode     = '28243';// String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
+          this.EmployeeCode     =  String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
           this.ContactNoX       = emp.contactNo;
           this.Department       = emp.department;
           this.DepartmentName   = emp.departmentName;
@@ -467,7 +468,7 @@ export class DynamicDashboardComponent implements OnInit {
         this.AllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | ''; }) => app.dealingFaculty==this.EmployeeCode);
         this.AllAuthorityApplications =  response.item1.filter((app: { dealingAuthority: string | ''; }) => app.dealingAuthority==this.EmployeeCode);
         this.AllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | '';  isLocked: string | ''; }) => app.dealingHODId==this.EmployeeCode && app.isForwardtoHOD=='1' && app.isLocked != 'True');
-        this.AllHOWApplications = response.item1.filter((app: { dealingHow: string | ''; isForwardedtoHOW: string | ''; }) => app.dealingHow==this.EmployeeCode  );  
+        this.AllHOWApplications = response.item1.filter((app: { dealingHow: string | ''; isForwardedtoHOW: string | ''; isLocked: string | ''; }) => app.dealingHow==this.EmployeeCode && app.isForwardedtoHOW=='1'  );  
          this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0);
         this.enrichAndFilterApplications();
       },
@@ -621,6 +622,13 @@ export class DynamicDashboardComponent implements OnInit {
 
   switchHodTab(tab: 'my' | 'all'| 'allApproved'): void {
     this.hodActiveTab = tab;
+    this.cd.detectChanges();
+  }
+
+    // ── HOW Tab Switching ─────────────────────────────────────────────────────────
+
+  switchHowTab(tab: 'my' |  'allApproved'): void {
+    this.howActiveTab = tab;
     this.cd.detectChanges();
   }
 

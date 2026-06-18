@@ -34,10 +34,10 @@ interface IFormattedApiResponse {
 
 
 
-const AUTH_API = 'https://localhost:7135/'; //'https://projectsapi.lpu.in/';
-const AUTH_API_LOCAL = 'https://localhost:7135/'; //'https://localhost:7125/';
-// const AUTH_API = 'https://projectsapi.lpu.in/';
-// const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
+// const AUTH_API = 'https://localhost:7135/'; //'https://projectsapi.lpu.in/';
+// const AUTH_API_LOCAL = 'https://localhost:7135/'; //'https://localhost:7125/';
+const AUTH_API = 'https://projectsapi.lpu.in/';
+const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
 @Injectable({
   providedIn: 'root'
 })
@@ -389,7 +389,6 @@ export class SemesterExchangeStuDetailsService {
       // .set('Authorization', 'Bearer ' + authToken)
       .set('Authorization', 'Bearer ' + authToken)
     return this.http.post(
-      //  'https://localhost:7135/api/SemesterExchangeStudent/SemesterExchangeNewRegistration', dataSoft, { headers });
       AUTH_API + 'api/SemesterExchangeStudent/SemesterExchangeNewRegistration', dataSoft, { headers });
   }
 
