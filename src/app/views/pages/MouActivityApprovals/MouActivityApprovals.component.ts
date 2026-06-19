@@ -50,6 +50,7 @@ export class MouActivityApprovalsComponent implements OnInit {
   ServerUrl: any;
   ResponsiblePerson: any = ''; ColumnMode = ColumnMode; columns: any; headHtmlData: any[] = []; responsiblePerson: string = '';
   searchQuery: any;
+  
   DocumentName: string;
 
 
@@ -281,12 +282,7 @@ GetAllUploadsDetails(SessionId: any): void {
   // }
  
   search() {
-    // const query = this.searchQuery.toLowerCase();
-    // this.filteredMouActivityData = this.MouActivityData.filter(item => {
-    //   return Object.values(item).some(val =>
-    //     String(val).toLowerCase().includes(query)
-    //   );
-    // });
+   
     const query = this.searchQuery.trim().toLowerCase();
     // console.log(JSON.stringify(this.MouActivityData))
     this.filteredMouActivityData = this.MouActivityData.filter(item => {

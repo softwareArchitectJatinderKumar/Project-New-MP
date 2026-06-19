@@ -17,7 +17,7 @@ import { ColumnMode } from '@swimlane/ngx-datatable';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { finalize } from 'rxjs';
 import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
-
+import * as XLSX from 'xlsx';
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
  
@@ -43,13 +43,15 @@ interface Application {
   counsellingDate: string;
 
   // Forwarding
-  isForwardtoHOD: string;     
-  isForwardedtoHOW: string;   
-  // Role columns  dealingAuthority: string;   
-  dealingFaculty: string;     
-  dealingHODId: string;       
-  dealingHow: string;         
+  isForwardtoHOD: string;       // 1 / NULL
+  isForwardedtoHOW: string;     // 1 / NULL
 
+  // Role columns
+  dealingAuthority: string;   // Counsellor emp code
+  dealingFaculty: string;     // Faculty emp code (NULL until forwarded)
+  dealingHODId: string;       // Fixed: 28243 (NULL until forwarded to HOD)
+  dealingHow: string;         // Fixed: 12160 (NULL until forwarded to HoW)
+  dealingUId: string;        // Fixed: 12160 (NULL until forwarded to HoW)
   // HOD Tab XX extras (returned by GetSemesterExchangeApplicationForHOD)
   countryName: string;
   applyingOption: string;
@@ -62,6 +64,7 @@ interface Application {
   _isFaculty: boolean;
   _isHOD: boolean;
   _isHoW: boolean;
+
 }
 
  
@@ -122,6 +125,7 @@ interface AggregatedRemarks {
   forwardedToHoW: boolean;
   // Approval
   approvalRemarks: string;
+  dealingUId: string;
   // Evaluation fields are intentionally omitted here —
   // they are rendered per-row via selectedRemarksEvaluations instead.
 }
@@ -129,12 +133,158 @@ interface AggregatedRemarks {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 @Component({
-  selector: 'app-HODDashboardNew',
-  templateUrl: './HODDashboardNew.html',
-  styleUrls: ['./HODDashboardNew.css'],
+  selector: 'app-DynamicDashboard',
+  templateUrl: './NewDashboard.html',
+  styleUrls: ['../DashboardFaculty.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HODDashboardNew implements OnInit {
+export class DynamicDashboardComponent implements OnInit {
+
+
+  searchQuery: any;
+    search() {
+   
+    const query = this.searchQuery.trim().toLowerCase();
+    // console.log(JSON.stringify(this.MouActivityData))
+    this.FilterAllHODApplications = this.AllHODApplications.filter(item => {
+      return Object.entries(item).some(([key, val]) => {
+        if (val !== null && val !== undefined) {
+          let valueString = String(val).toLowerCase();
+   
+          return valueString.includes(query);
+        }
+        return false;
+      });
+    });
+  }
+  searchQuery2: any;
+    search2() {
+   
+    const query = this.searchQuery2.trim().toLowerCase();
+    
+    this.FilterAllApplications = this.AllApplications.filter(item => {
+      return Object.entries(item).some(([key, val]) => {
+        if (val !== null && val !== undefined) {
+          let valueString = String(val).toLowerCase();
+   
+          return valueString.includes(query);
+        }
+        return false;
+      });
+    });
+  }
+
+  exportToExcel(data: any[]): void {
+    const fileName = 'SemesterExchange-Report.xlsx'; 
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    XLSX.writeFile(wb, fileName);
+  }
+
+  // added on 17-6-26 
+    AcceptForm!: FormGroup;
+
+    UniversitySelected: any;
+    UniversityOption1: any; 
+    UniversityOption2: any; 
+    UniversityOption3: any; 
+    selectedId: any;
+    selectedRegNo:any;
+
+    selectedApplication:any;
+
+ acceptApplication(application: Application): void {
+
+  this.selectedApplication = application;
+
+  this.selectedId = application.applicationId;
+  this.selectedRegNo = application.registrationNo;
+
+  this.AcceptForm.reset();
+
+  this.modalService.open(this.AcceptModal, {
+    size: 'lg',
+    backdrop: 'static'
+  });
+}
+
+ submitAcceptForm(): void {
+
+  if (this.AcceptForm.invalid) {
+    this.AcceptForm.markAllAsTouched();
+    return;
+  }
+
+  this.loadingIndicator = true;
+  const startTime = Date.now();
+
+  const fd = new FormData();
+
+  fd.append(
+    'RegistrationNo',
+    this.selectedApplication.registrationNo
+  );
+
+  fd.append(
+    'UniversitySelected',
+    this.AcceptForm.get('UniversitySelected')?.value
+  );
+
+  fd.append('Action', 'Accept');
+
+  this.studentService.SendApproveRequest(fd)
+    .pipe(
+      finalize(() => this.stopLoader(startTime))
+    )
+    .subscribe({
+      next: (data: any) => {
+
+        const msg = data?.item1?.[0]?.msg;
+
+        if (msg === 'Approved') {
+
+          Swal.fire(
+            'Success!',
+            'Application accepted successfully!',
+            'success'
+          ).then(() => {
+
+            this.modalService.dismissAll();
+
+            this.getSEAllApplications();
+          });
+
+        } else if (msg === 'Disapproved') {
+
+          Swal.fire(
+            'No Change!',
+            'The application status was not changed.',
+            'info'
+          );
+
+        } else {
+
+          Swal.fire(
+            'Error!',
+            'Failed to accept application.',
+            'error'
+          );
+        }
+      },
+
+      error: () => {
+
+        Swal.fire(
+          'Error!',
+          'An error occurred while trying to accept the application.',
+          'error'
+        );
+      }
+    });
+}
+
+
 
   // ── UI / State ───────────────────────────────────────────────────────────────
   pageTitle = 'Dashboard';
@@ -142,7 +292,12 @@ export class HODDashboardNew implements OnInit {
 
   /** Raw list from getAllApplications() */
   AllApplications: Application[] = [];
+  FilterAllApplications: Application[] = [];
+  AllFacultyApplications: Application[] = [];
+  AllAuthorityApplications: Application[] = [];
   AllHODApplications: Application[] = [];
+  FilterAllHODApplications: Application[] = [];
+  AllHOWApplications: Application[] = [];
 
   /** Raw remarks list from getAllRemarks() */
   AllAuthorityRemarks: AuthorityRemarks[] = [];
@@ -169,13 +324,24 @@ export class HODDashboardNew implements OnInit {
    */
   selectedRemarks: AggregatedRemarks | null = null;
 
- 
+  /**
+   * All AuthorityRemarks rows for the selected registrationNo.
+   * Each row represents one evaluator's marks — rendered as separate cards
+   * in the modal so multiple evaluations for the same applicationId are all
+   * visible.
+   */
   selectedRemarksEvaluations: AuthorityRemarks[] = [];
 
-  
-  selectedRemarksCallerRole:   'hod'   = 'hod';
+  /**
+   * Role of the user who triggered viewAllRemarks().
+   * 'counsellor' → Evaluation section is HIDDEN in the modal  (req #3/#4)
+   * 'faculty' | 'hod' | 'how' → Evaluation section is SHOWN
+   */
+  selectedRemarksCallerRole: 'counsellor' | 'faculty' | 'hod' | 'how' = 'counsellor';
 
+  /** Active tab for HOD view. */
   hodActiveTab: 'my' | 'all' | 'allApproved' = 'my';
+  howActiveTab: 'my' | 'allApproved' = 'my';
 
   ColumnMode = ColumnMode;
   loadingIndicator = false;
@@ -186,8 +352,12 @@ export class HODDashboardNew implements OnInit {
   CounsellingRemarksForm!: FormGroup;
   AddRemarksForm!: FormGroup;
 
+
   // ── Global role flags ────────────────────────────────────────────────────────
+  isDealingAuthority = false;   // Counsellor
+  isdealingFaculty   = false;   // Faculty
   isHOD              = false;
+  isHoW              = false;
 
   // ── Employee info ────────────────────────────────────────────────────────────
   EmployeeCode: string | null = null;
@@ -214,6 +384,7 @@ export class HODDashboardNew implements OnInit {
   @ViewChild('CounsellingRemarksModal') CounsellingRemarksModal!: TemplateRef<any>;
   @ViewChild('AddRemarksModal')        AddRemarksModal!: TemplateRef<any>;
   @ViewChild('ViewRemarksModal')       ViewRemarksModal!: TemplateRef<any>;
+  @ViewChild('AcceptModal')       AcceptModal!: TemplateRef<any>;
 
   private currentModalRef: NgbModalRef | null = null;
 
@@ -253,20 +424,26 @@ export class HODDashboardNew implements OnInit {
 
   private initializeForms(): void {
     this.EvaluationForm = this.fb.group({
-      AcademicsMarks:           [null, [Validators.required, Validators.min(0), Validators.max(100)]],
-      CommunicationSkillsMarks: [null, [Validators.required, Validators.min(0), Validators.max(100)]],
-      AttitudeMarks:            [null, [Validators.required, Validators.min(0), Validators.max(100)]],
-      ExtraCurricularMarks:     [null, [Validators.required, Validators.min(0), Validators.max(100)]],
-      KnowledgeMarks:           [null, [Validators.required, Validators.min(0), Validators.max(100)]],
+      AcademicsMarks:           [null, [Validators.required, Validators.min(0), Validators.max(10)]],
+      CommunicationSkillsMarks: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
+      AttitudeMarks:            [null, [Validators.required, Validators.min(0), Validators.max(10)]],
+      ExtraCurricularMarks:     [null, [Validators.required, Validators.min(0), Validators.max(10)]],
+      KnowledgeMarks:           [null, [Validators.required, Validators.min(0), Validators.max(10)]],
       Comments: [''],
     });
 
     this.CounsellingRemarksForm = this.fb.group({
       Comments: ['', Validators.required],
     });
+    this.EvaluationForm = this.fb.group({
+      Comments: ['', Validators.required],
+    });
 
     this.AddRemarksForm = this.fb.group({
       Comments: ['', Validators.required],
+    });
+    this.AcceptForm = this.fb.group({
+      UniversitySelected: ['', Validators.required],
     });
   }
 
@@ -305,7 +482,7 @@ export class HODDashboardNew implements OnInit {
           const emp = response.item1[0];
           this.EmployeeDetails  = emp;
           this.EmployeeName     = emp.employeeName;
-          this.EmployeeCode     = String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
+          this.EmployeeCode     = '28243';// String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
           this.ContactNoX       = emp.contactNo;
           this.Department       = emp.department;
           this.DepartmentName   = emp.departmentName;
@@ -334,7 +511,10 @@ export class HODDashboardNew implements OnInit {
       next: response => {
         this.AllApplications = Array.isArray(response?.item1) ? response.item1 : [];
 
-        this.AllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | ''; }) => app.dealingHODId==this.EmployeeCode && app.isForwardtoHOD=='1');
+        this.AllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | ''; }) => app.dealingFaculty==this.EmployeeCode);
+        this.AllAuthorityApplications =  response.item1.filter((app: { dealingAuthority: string | ''; }) => app.dealingAuthority==this.EmployeeCode);
+        this.AllHODApplications =  this.FilterAllHODApplications= response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | '';  isLocked: string | ''; }) => app.dealingHODId==this.EmployeeCode && app.isForwardtoHOD=='1' && app.isLocked != 'True');
+        this.AllHOWApplications = response.item1.filter((app: { dealingHow: string | ''; isForwardedtoHOW: string | ''; isLocked: string | ''; }) => app.dealingHow==this.EmployeeCode && app.isForwardedtoHOW=='1'  );  
          this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0);
         this.enrichAndFilterApplications();
       },
@@ -383,21 +563,66 @@ export class HODDashboardNew implements OnInit {
 
     // Reset all global role flags
     this.isHOD              = false;
+    this.isHoW              = false;
+    this.isdealingFaculty   = false;
+    this.isDealingAuthority = false;
 
  
     let hasFacultyRows = false;
 
-    this.AllApplications = this.AllApplications.map(app => {
+    this.AllApplications = this.FilterAllApplications =  this.AllApplications.map(app => {
+      const authority = this.normalise(app.dealingAuthority);
+      const faculty   = this.normalise(app.dealingFaculty);
       const hodId     = this.normalise(app.dealingHODId);
+      const how       = this.normalise(app.dealingHow);
+
+      this.UniversityOption1 = this.normalise(app.universityOption1);
+      this.UniversityOption2 = this.normalise(app.universityOption2);
+      this.UniversityOption3 = this.normalise(app.universityOption3);
+      
+      // Counsellor row: DealingAuthority === empCode
+      //   AND not acting as HOD or HoW on this same row
+      app._isCounsellor =
+        emp !== null &&
+        authority === emp &&
+        hodId !== emp &&
+        how   !== emp;
+
+      // Faculty row: DealingFaculty === empCode
+      //   AND not acting as HOD or HoW on this same row
+      app._isFaculty =
+        emp !== null &&
+        faculty === emp &&
+        hodId !== emp &&
+        how   !== emp;
+
+      // HOD row: DealingHODId === empCode
       app._isHOD = emp !== null && hodId === emp;
+
+      // HoW row: DealingHow === empCode
+      app._isHoW = emp !== null && how === emp && hodId !== emp; // HoW role is exclusive of HOD role
+
+      app._isHoW =         emp !== null &&        authority !== emp &&        hodId !== emp &&        how == emp;
+
+
+      if (app._isFaculty) hasFacultyRows = true;
+
       return app;
     });
 
-  
+ 
+    if (hasFacultyRows) {
+      this.AllApplications.forEach(app => {
+        if (app._isCounsellor) { app._isCounsellor = false; }
+      });
+    }
 
     // ── Raise global role flags from the finalised per-row values ────────────
     this.AllApplications.forEach(app => {
+      if (app._isCounsellor) this.isDealingAuthority = true;
+      if (app._isFaculty)    this.isdealingFaculty   = true;
       if (app._isHOD)        this.isHOD              = true;
+      if (app._isHoW)        this.isHoW              = true;
     });
 
     this.buildPageTitle();
@@ -416,12 +641,19 @@ export class HODDashboardNew implements OnInit {
     if (this.isHOD) {
       this.GetAllApplicationsforHOD();
     }
- 
+
+    this.visibleApplications = this.AllApplications.filter(
+      a => a._isCounsellor || a._isFaculty || a._isHoW  
+    );
   }
  
   private buildPageTitle(): void {
     var roles: any='';
-    if (this.isHOD)             roles='HOD';
+    if (this.isDealingAuthority) roles='Counsellor';
+    else if (this.isdealingFaculty)   roles='Faculty';
+    else if (this.isHOD)             roles='HOD';
+    else if (this.isHoW)              roles='HoW';    
+    else if(!this.isdealingFaculty || !this.isdealingFaculty || !this.isHOD || !this.isHoW ) roles='Semester Exchange Admin'
 
     this.pageTitle = roles.length
       ? `** ${roles} Dashboard **`
@@ -436,12 +668,22 @@ export class HODDashboardNew implements OnInit {
     this.cd.detectChanges();
   }
 
+    // ── HOW Tab Switching ─────────────────────────────────────────────────────────
+
+  switchHowTab(tab: 'my' |  'allApproved'): void {
+    this.howActiveTab = tab;
+    this.cd.detectChanges();
+  }
+
   // ── Navigation ────────────────────────────────────────────────────────────────
 
   GetStudentApplication(application: Application): void {
     if (this.LoginName && application.registrationNo) {
       var Role = '';
       if (application._isHOD) Role = 'HOD';
+      else if (application._isHoW) Role = 'HoW';
+      else if (application._isFaculty) Role = 'Faculty';
+      else if (application._isCounsellor) Role = 'Counsellor';
       this.router.navigateByUrl(
         `ApplicationDetails/${this.LoginName}/${application.registrationNo}/${Role}`
       );
@@ -452,23 +694,29 @@ export class HODDashboardNew implements OnInit {
 
   // ── Accept / Reject ───────────────────────────────────────────────────────────
 
-  acceptApplication(application: Application): void {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'Do you want to accept this application?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, Accept!',
-      cancelButtonText: 'No, Cancel',
-    }).then(result => {
-      if (result.isConfirmed) {
-        const fd = new FormData();
-        fd.append('RegistrationNo', application.registrationNo);
-        fd.append('Action', 'Accept');
-        this.handleStatusChange(fd, 'Accept');
-      }
-    });
-  }
+  // acceptApplication(application: Application): void {
+
+  //   this.cd.detectChanges();
+  //   this.modalService.open(this.AcceptModal, { size: 'lg' }).result.then((result) => {
+  //     // console.log("Modal closed" + result);
+  //     window.location.reload();
+  //   }).catch((res) => { });
+  //   // Swal.fire({
+  //   //   title: 'Are you sure?',
+  //   //   text: 'Do you want to accept this application?',
+  //   //   icon: 'question',
+  //   //   showCancelButton: true,
+  //   //   confirmButtonText: 'Yes, Accept!',
+  //   //   cancelButtonText: 'No, Cancel',
+  //   // }).then(result => {
+  //   //   if (result.isConfirmed) {
+  //   //     const fd = new FormData();
+  //   //     fd.append('RegistrationNo', application.registrationNo);
+  //   //     fd.append('Action', 'Accept');
+  //   //     this.handleStatusChange(fd, 'Accept');
+  //   //   }
+  //   // });
+  // }
 
   disapproveApplication(application: Application): void {
     Swal.fire({
@@ -518,16 +766,39 @@ export class HODDashboardNew implements OnInit {
 
   // ── Forwarding ────────────────────────────────────────────────────────────────
 
-  ForwardToFaculty(application: Application): void {
+  ForwardToCounsellor(application: Application): void {
     Swal.fire({
-      title: 'Forward to Faculty',
+      title: 'Forward To Counsellor ',
       input: 'text',
-      inputPlaceholder: 'Enter Faculty Employee Code...',
+      inputPlaceholder: 'Enter Employee Code...',
       showCancelButton: true,
       confirmButtonText: 'Forward',
       showLoaderOnConfirm: true,
       preConfirm: uid => {
-        if (!uid) Swal.showValidationMessage('Faculty Employee Code is required!');
+        if (!uid) Swal.showValidationMessage('Employee Code is required!');
+        return uid;
+      },
+      allowOutsideClick: () => !Swal.isLoading(),
+    }).then(result => {
+      if (result.isConfirmed && result.value) {
+        const fd = new FormData();
+        fd.append('RegistrationNo', application.registrationNo);
+        fd.append('HODUID', result.value);
+        fd.append('UserAction', 'AssignCounsellor');
+        this.sendForwardRequest(fd);
+      }
+    });
+  }
+  ForwardToFaculty(application: Application): void {
+    Swal.fire({
+      title: 'Forward To Faculty',
+      input: 'text',
+      inputPlaceholder: 'Enter Employee Code...',
+      showCancelButton: true,
+      confirmButtonText: 'Forward',
+      showLoaderOnConfirm: true,
+      preConfirm: uid => {
+        if (!uid) Swal.showValidationMessage('Employee Code is required!');
         return uid;
       },
       allowOutsideClick: () => !Swal.isLoading(),
@@ -640,7 +911,6 @@ export class HODDashboardNew implements OnInit {
   // ── Evaluation Remarks ────────────────────────────────────────────────────────
 
   UploadEvaluationRemarks(application: Application, remarksBy: string): void {
-    alert(remarksBy);
     this.RegistrationNo = application.registrationNo;
     this.ApplicationId  = application.applicationId;
     this.RemarksBy      = remarksBy;
@@ -655,48 +925,95 @@ export class HODDashboardNew implements OnInit {
     this.cd.detectChanges();
   }
 
-  submitEvaluationForm(): void {
-    this.isEvaluationFormSubmitted = true;
-    if (this.EvaluationForm.invalid) {
-      Swal.fire('Validation Error', 'Please fill in all required fields correctly.', 'error');
-      return;
-    }
+submitEvaluationForm(): void {
+  this.isEvaluationFormSubmitted = true;
 
-    this.loadingIndicator = true;
-    const startTime = Date.now();
-    const v = this.EvaluationForm.value;
-    const total = +v.AcademicsMarks + +v.CommunicationSkillsMarks +
-                  +v.AttitudeMarks  + +v.ExtraCurricularMarks + +v.KnowledgeMarks;
-
-    const fd = new FormData();
-    fd.append('RegistrationNo',           this.RegistrationNo || '');
-    fd.append('AcademicsMarks',           v.AcademicsMarks);
-    fd.append('CommunicationSkillsMarks', v.CommunicationSkillsMarks);
-    fd.append('AttitudeMarks',            v.AttitudeMarks);
-    fd.append('ExtraCurricularMarks',     v.ExtraCurricularMarks);
-    fd.append('KnowledgeMarks',           v.KnowledgeMarks);
-    fd.append('TotalMarks',               total.toString());
-    fd.append('Comments',                 v.Comments || '');
-    fd.append('RemarksBy',               this.RemarksBy || 'Unknown');
-    fd.append('DealingUId',               this.EmployeeCode || 'Unknown');
-
-    this.ServicesSM.StudentEvalutionAddNew(fd).pipe(
-      finalize(() => this.stopLoader(startTime))
-    ).subscribe({
-      next: (data: any) => {
-        const code = data?.item1?.[0]?.returnData;
-        if (code > 0) {
-          Swal.fire('Success!', 'Evaluation Marks Updated Successfully', 'success')
-            .then(() => this.currentModalRef?.close());
-        } else if (code === '-1') {
-          Swal.fire('Info', 'Evaluation Marks Already Uploaded', 'info')
-            .then(() => this.currentModalRef?.close());
-        }
-      },
-      error: () => Swal.fire('Error!', 'Unable to complete the request. Please try again later.', 'error'),
+  if (this.EvaluationForm.invalid) {
+    Swal.fire(
+      'Validation Error',
+      'Please fill in all required fields correctly.',
+      'error'
+    ).then(() => {
+      window.location.reload();
     });
+    return;
   }
 
+  this.loadingIndicator = true;
+  const startTime = Date.now();
+
+  const v = this.EvaluationForm.value;
+  const total = +v.AcademicsMarks + +v.CommunicationSkillsMarks +
+                +v.AttitudeMarks + +v.ExtraCurricularMarks +
+                +v.KnowledgeMarks;
+
+  const fd = new FormData();
+  fd.append('RegistrationNo', this.RegistrationNo || '');
+  fd.append('AcademicsMarks', v.AcademicsMarks);
+  fd.append('CommunicationSkillsMarks', v.CommunicationSkillsMarks);
+  fd.append('AttitudeMarks', v.AttitudeMarks);
+  fd.append('ExtraCurricularMarks', v.ExtraCurricularMarks);
+  fd.append('KnowledgeMarks', v.KnowledgeMarks);
+  fd.append('TotalMarks', total.toString());
+  fd.append('Comments', v.Comments || '');
+  fd.append('RemarksBy', this.RemarksBy || 'Unknown');
+  fd.append('DealingUId', this.EmployeeCode || 'Unknown');
+
+  this.ServicesSM.StudentEvalutionAddNew(fd)
+    .pipe(
+      finalize(() => this.stopLoader(startTime))
+    )
+    .subscribe({
+      next: (data: any) => {
+
+        const code = data?.item1?.[0]?.returnData;
+
+        if (code > 0) {
+
+          Swal.fire(
+            'Success!',
+            'Evaluation Marks Updated Successfully',
+            'success'
+          ).then(() => {
+            this.currentModalRef?.close();
+            window.location.reload();
+          });
+
+        } else if (code === '-1' || code === -1) {
+
+          Swal.fire(
+            'Info',
+            'Evaluation Marks Already Uploaded',
+            'info'
+          ).then(() => {
+            this.currentModalRef?.close();
+            window.location.reload();
+          });
+
+        } else {
+
+          Swal.fire(
+            'Error!',
+            'Unable to complete the request.',
+            'error'
+          ).then(() => {
+            window.location.reload();
+          });
+
+        }
+      },
+
+      error: () => {
+        Swal.fire(
+          'Error!',
+          'Unable to complete the request. Please try again later.',
+          'error'
+        ).then(() => {
+          window.location.reload();
+        });
+      }
+    });
+}
   // ── Counselling Remarks (Counsellor submits) ──────────────────────────────────
 
   submitCounsellingRemarks(application: Application): void {
@@ -794,14 +1111,32 @@ export class HODDashboardNew implements OnInit {
       },
       error: () => Swal.fire('Error!', 'Unable to complete the request. Please try again later.', 'error'),
     });
+
+    
   }
 
   // ── Unified View Remarks Modal ────────────────────────────────────────────────
 
- 
+  /**
+   * Opens the unified View Remarks modal.
+   *
+   * Strategy:
+   *  – selectedRemarks       → AggregatedRemarks built from the FIRST matching
+   *                            AuthorityRemarks row (shared fields: counselling,
+   *                            faculty, HOD, HoW, approval).  Shown once.
+   *  – selectedRemarksEvaluations → ALL AuthorityRemarks rows for this
+   *                            registrationNo.  Each row = one evaluator card
+   *                            in the modal, so multiple evaluations (e.g.
+   *                            applicationId 10 appears twice with different
+   *                            marks) are ALL visible.
+   *
+   * @param row        The application row that was clicked.
+   * @param callerRole 'counsellor' → Evaluation section hidden (req #3/#4)
+   *                   'faculty' | 'hod' | 'how' → Evaluation section shown
+   */
   viewAllRemarks(
     row: Application,
-    callerRole:   'hod' = 'hod'
+    callerRole: 'counsellor' | 'faculty' | 'hod' | 'how' = 'counsellor'
   ): void {
     this.selectedRemarksCallerRole = callerRole;
 
@@ -818,7 +1153,7 @@ export class HODDashboardNew implements OnInit {
       ? {
           registrationNo: row.registrationNo,
           applicationId:  row.applicationId || first.applicationId || '',
-
+          dealingUId:    first.dealingUId || row.dealingUId || '',
           // Counselling
           counsellingRemarks: first.counsellingRemarks || row.counsellingRemarks || '',
           counsellingDate:    first.counsellingDate    || row.counsellingDate    || '',
@@ -840,8 +1175,10 @@ export class HODDashboardNew implements OnInit {
           approvalRemarks: first.ApprovalRemarks || row.approvalRemarks || '',
         }
       : {
+          // No remarks row at all — still show the modal with inline app data
           registrationNo:  row.registrationNo,
           applicationId:   row.applicationId  || '',
+          dealingUId:     '',
           counsellingRemarks: row.counsellingRemarks || '',
           counsellingDate:    row.counsellingDate    || '',
           counsellingDone:    this.isTrue(row.counsellingStatus),
@@ -853,11 +1190,13 @@ export class HODDashboardNew implements OnInit {
           approvalRemarks:    row.approvalRemarks || '',
         };
 
- 
+    // ── All rows → one evaluation card each in the modal ────────────────────
+    // Keep every row that has at least one evaluation mark populated.
     this.selectedRemarksEvaluations = allRows.filter(
       r => r.academicsMarks != null && r.academicsMarks !== ''
     );
 
+    // alert(JSON.stringify(this.selectedRemarksEvaluations));
     // ── Open modal ───────────────────────────────────────────────────────────
     this.currentModalRef = this.modalService.open(this.ViewRemarksModal, {
       size: 'xl',
@@ -885,7 +1224,9 @@ export class HODDashboardNew implements OnInit {
 
   // ── Helpers ───────────────────────────────────────────────────────────────────
 
-
+  /**
+   * Normalises truthy DB values: 1, '1', 'True', true → true.
+   */
   isTrue(val: any): boolean {
     if (val === null || val === undefined) return false;
     const s = String(val).trim().toLowerCase();
@@ -922,6 +1263,7 @@ export class HODDashboardNew implements OnInit {
   get evaluationFormControls()       { return this.EvaluationForm.controls; }
   get counsellingRemarksFormControls(){ return this.CounsellingRemarksForm.controls; }
   get addRemarksFormControls()       { return this.AddRemarksForm.controls; }
+  get addUniversitySelectedFormControls()       { return this.AcceptForm.controls; }
 
   // ── Error Helper ──────────────────────────────────────────────────────────────
 

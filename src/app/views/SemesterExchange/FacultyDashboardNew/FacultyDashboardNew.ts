@@ -300,7 +300,7 @@ export class FacultyDashboardNew implements OnInit {
           const emp = response.item1[0];
           this.EmployeeDetails  = emp;
           this.EmployeeName     = emp.employeeName;
-          this.EmployeeCode     =   String(emp.employeeCode).trim();
+          this.EmployeeCode     = String(emp.employeeCode).trim();
           this.ContactNoX       = emp.contactNo;
           this.Department       = emp.department;
           this.DepartmentName   = emp.departmentName;

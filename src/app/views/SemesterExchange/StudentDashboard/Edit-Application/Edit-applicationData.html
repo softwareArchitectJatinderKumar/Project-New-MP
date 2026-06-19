@@ -22,13 +22,13 @@
                         <div class="col-md-2 text-end">
                             <div class="text-muted">
                                 <strong class="text-dark">Counsellor :</strong>
-                                <i [class]="'text-success'"> {{ CounsellingAuthority }}</i>
+                                <i [class]="'text-success'"> {{ CounsellingAuthorityName }}</i>
                             </div>
                         </div>
                         <div class="col-md-2 text-end">
                             <div class="text-muted">
                                 <strong class="text-dark">Faculty :</strong>
-                                <i [class]="'text-success'"> {{ DealingFaculty }}</i>
+                                <i [class]="'text-success'"> {{ DealingFacultyName }}</i>
                             </div>
                         </div>
                         <div class="col-md-2  text-end">
@@ -211,7 +211,7 @@
                     <div class="row vh-100">
                         <div class="col-12 stretch-card">
                             <div class="card pe-none opacity-60">
-                                <div class="card-body " >
+                                <div class="card-body ">
 
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <h3 class="text-info m-0">Course Covered & Uploads</h3>
@@ -770,6 +770,8 @@
                         <div class="card section">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <span>Sponsor Details</span>
+                                {{form.get('SponsorType')?.value}} - {{form.get('sponsorType')?.value}} -
+                                {{form.get('SponsorName')?.value}}
                                 <!-- <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[3]" (click)="startEdit(3)">Edit</button> -->
                             </div>
                             <div class="card-body" [class.disabled-form]="!isEditingStep[3]">
@@ -794,8 +796,9 @@
                                     </div>
                                 </div>
 
-                                <div *ngIf=" form.get('SponsorType')?.value !== 'Parent' && form.get('SponsorType')?.value !== 'Parents' " class="col-md-12">
-                                <!-- <div *ngIf="form.get('SponsorType')?.value != 'Parent' || form.get('SponsorType')?.value != 'Parents' || form.get('SponsorType')?.value == 'NA'  " class="col-md-12"> -->
+                                <div *ngIf="form.get('sponsorType')?.value === 'Other' || form.get('sponsorType')?.value === 'Others'" class="col-md-12">
+
+                                    
                                     <div class="row mt-2">
                                         <div class="col-md-6">
                                             <label class="form-label">Sponsor Name *</label>
@@ -832,8 +835,8 @@
                     <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
                     <button type="button" class="btn btn-danger" *ngIf="isEditingStep[3]"
                         (click)="cancelEdit(3)">Cancel</button>
-                    <button type="button" class="btn btn-success" *ngIf="isEditingStep[3]" (click)="updateStep(3)"
-                        >Update</button>
+                    <button type="button" class="btn btn-success" *ngIf="isEditingStep[3]"
+                        (click)="updateStep(3)">Update</button>
                     <button type="button" class="btn btn-primary" *ngIf="!isEditingStep[3]" (click)="nextStep()"
                         [disabled]="isEditingStep[3]">Next</button>
                 </div>

@@ -368,7 +368,7 @@ onActivityChange(activityTitle: string): void {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
-          this.EmployeeCode = '11840';// response.item1[0].employeeCode; //11840
+          this.EmployeeCode = response.item1[0].employeeCode; //11840
           this.Department = response.item1[0].department;
           this.DepartmentName = response.item1[0].departmentName;
           this.loadingIndicator = false;

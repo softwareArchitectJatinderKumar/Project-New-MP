@@ -53,6 +53,28 @@ export class StudentApplicationDetailsComponent implements OnInit {
     { label: 'Sponsor Details', keys: ['isSelfFunded', 'sponsorName', 'sponsorRelation', 'sponsorContact', 'sponsorEmail'] },
     { label: 'Financial & Declaration', keys: ['availableFunds']}//, 'acceptPolicy'] }    
   ];
+//   formSections = [
+//   { label: 'Personal Details', keys: ['applicationId', 'registrationNo', 'emailId', 'countryName', 'whatsAppNo', 'phoneNumber', 'parentContact'] },
+//   { label: 'University Preferences', keys: ['applyingOption', 'universityOption1', 'universityOption2', 'universityOption3'] },
+//   { label: 'Relative at Abroad', keys: ['relativeName', 'relativeRelation', 'relativeCountry'] },
+//   { label: 'Passport Details', keys: ['passportStatus', 'passportNumber', 'passportIssueDate', 'passportValidUpto'] },
+//   { label: 'Visa Details', keys: ['isVisaRejected', 'visaRejectedReason', 'visaRejectedCountry'] },
+//   { label: 'English Test Details', keys: ['englishTestType', 'speakingScore', 'listeningScore', 'readingScore', 'writingScore', 'overallScore', 'englishTestYear'] },
+
+//   // Modified Section
+//   {
+//     label: 'Sponsor Details',
+//     keys: [
+//       'sponsorType',
+//       'sponsorName',
+//       'sponsorRelation',
+//       'sponsorContact',
+//       'sponsorEmail'
+//     ]
+//   },
+
+//   { label: 'Financial & Declaration', keys: ['availableFunds'] }
+// ];
   
   // Document links for display
   documentUploads = [
@@ -230,127 +252,129 @@ get isReadyForPrint(): boolean {
   /**
    * Dynamically filters fields in the review UI based on user's choices.
    */
-  public getFilteredFormSections() {
-  const fundingType = this.studentForm?.get('isSelfFunded')?.value;
-  const visaRejected = this.studentForm?.get('isVisaRejected')?.value;
-  const englishTestType = this.studentForm?.get('englishTestType')?.value;
- 
-  const passportStatus = this.studentForm?.get('passportStatus')?.value;
+  // public getFilteredFormSections() {
+  //   const fundingType = this.studentForm?.get('isSelfFunded')?.value;
+  //   const visaRejected = this.studentForm?.get('isVisaRejected')?.value;
+  //   const englishTestType = this.studentForm?.get('englishTestType')?.value;
 
-const relativeName = this.studentForm?.get('relativeName')?.value;
-const relativeRelation = this.studentForm?.get('relativeRelation')?.value;
-const relativeCountry = this.studentForm?.get('relativeCountry')?.value;
-  return this.formSections.map(section => {
+  //   const passportStatus = this.studentForm?.get('passportStatus')?.value;
 
-    // 1. Sponsor Details
-    if (section.label === 'Sponsor Details') {
+  //   const relativeName = this.studentForm?.get('relativeName')?.value;
+  //   const relativeRelation = this.studentForm?.get('relativeRelation')?.value;
+  //   const relativeCountry = this.studentForm?.get('relativeCountry')?.value;
+  //   return this.formSections.map(section => {
 
-      // Remove isSelfFunded field from Sponsor Details in all cases
-      let filteredKeys = section.keys.filter(
-        key => key !== 'isSelfFunded'
-      );
+  //     // 1. Sponsor Details
+  //     if (section.label === 'Sponsor Details') {
 
-      // If funding is Self or Parent, hide entire sponsor information
-      if (['Self', 'Parent'].includes(fundingType)) {
-        filteredKeys = [];
-      }
+  //       // Remove isSelfFunded field from Sponsor Details in all cases
+  //       let filteredKeys = section.keys.filter(
+  //         key => key !== 'isSelfFunded'
+  //       );
 
-      return {
-        ...section,
-        keys: filteredKeys
-      };
-    }
+  //       // If funding is Self or Parent, hide entire sponsor information
+  //       if (['Self', 'Parent'].includes(fundingType)) {
+  //         filteredKeys = [];
+  //       }
 
-    // 2. Visa Details
-    if (section.label === 'Visa Details' && visaRejected === 'No') {
-      return {
-        ...section,
-        keys: section.keys.filter(key => key === 'isVisaRejected')
-      };
-    }
+  //       return {
+  //         ...section,
+  //         keys: filteredKeys
+  //       };
+  //     }
 
-    // 3. English Test Details
-    // if (
-    //   section.label === 'English Test Details' &&
-    //   ['NotRequried', 'NotGiven', 'Applied'].includes(englishTestType)
-    // ) {
-    //   return {
-    //     ...section,
-    //     keys: section.keys.filter(key => key === 'englishTestType')
-    //   };
-    // }
+  //     // 2. Visa Details
+  //     if (section.label === 'Visa Details' && visaRejected === 'No') {
+  //       return {
+  //         ...section,
+  //         keys: section.keys.filter(key => key === 'isVisaRejected')
+  //       };
+  //     }
 
-    // new changes
+  //     // 3. English Test Details
+  //     // if (
+  //     //   section.label === 'English Test Details' &&
+  //     //   ['NotRequried', 'NotGiven', 'Applied'].includes(englishTestType)
+  //     // ) {
+  //     //   return {
+  //     //     ...section,
+  //     //     keys: section.keys.filter(key => key === 'englishTestType')
+  //     //   };
+  //     // }
 
-    if (section.label === 'English Test Details') {
+  //     // new changes
 
-  const isScoreNotApplicable =
-    ['NotRequried', 'NotRequired', 'NotGiven', 'Applied']
-      .includes(englishTestType);
+  //     if (section.label === 'English Test Details') {
 
-  if (isScoreNotApplicable) {
+  //       const isScoreNotApplicable =
+  //         ['NotRequried', 'NotRequired', 'NotGiven', 'Applied']
+  //           .includes(englishTestType);
 
-    const fieldsToHide = [
-      'speakingScore',
-      'readingScore',
-      'writingScore',
-      'listeningScore',
-      'overallScore',
-      'englishTestYear'
-    ];
+  //       if (isScoreNotApplicable) {
 
-    return {
-      ...section,
-      keys: section.keys.filter(
-        key => !fieldsToHide.includes(key)
-      )
-    };
-  }
-}
+  //         const fieldsToHide = [
+  //           'speakingScore',
+  //           'readingScore',
+  //           'writingScore',
+  //           'listeningScore',
+  //           'overallScore',
+  //           'englishTestYear'
+  //         ];
+
+  //         return {
+  //           ...section,
+  //           keys: section.keys.filter(
+  //             key => !fieldsToHide.includes(key)
+  //           )
+  //         };
+  //       }
+  //     }
 
 
-    // 4. Relative at Abroad
-   if (section.label === 'Relative at Abroad') {
+  //     // 4. Relative at Abroad
+  //     if (section.label === 'Relative at Abroad') {
 
-    const isRelativeNotApplicable =
-      (!relativeName || relativeName === 'NA') &&
-      (!relativeRelation || relativeRelation === 'NA') &&
-      (!relativeCountry || relativeCountry === 'NA');
+  //       const isRelativeNotApplicable =
+  //         (!relativeName || relativeName === 'NA') &&
+  //         (!relativeRelation || relativeRelation === 'NA') &&
+  //         (!relativeCountry || relativeCountry === 'NA');
 
-    if (isRelativeNotApplicable) {
-      return {
-        ...section,
-        keys: ['relativeNotApplicable']
-      };
-    }
-}
+  //       if (isRelativeNotApplicable) {
+  //         return {
+  //           ...section,
+  //           keys: ['relativeNotApplicable']
+  //         };
+  //       }
+  //     }
 
-    // 5. Passport Details
-    if (section.label === 'Passport Details') {
+  //     // 5. Passport Details
+  //     if (section.label === 'Passport Details') {
 
-      const filteredKeys = section.keys.filter(
-        key => key !== 'passportStatus'
-      );
+  //       const filteredKeys = section.keys.filter(
+  //         key => key !== 'passportStatus'
+  //       );
 
-      return {
-        ...section,
-        keys: filteredKeys
-      };
-    }
+  //       return {
+  //         ...section,
+  //         keys: filteredKeys
+  //       };
+  //     }
 
-    // if (
-    //   section.label === 'Passport Details' &&
-    //   (!passportStatus || passportStatus === 'No')
-    // ) {
-    //   return {
-    //     ...section,
-    //     keys: section.keys.filter(key => key === 'passportStatus')
-    //   };
-    // }
+  //     // if (
+  //     //   section.label === 'Passport Details' &&
+  //     //   (!passportStatus || passportStatus === 'No')
+  //     // ) {
+  //     //   return {
+  //     //     ...section,
+  //     //     keys: section.keys.filter(key => key === 'passportStatus')
+  //     //   };
+  //     // }
 
-    return section;
-  });
-}
+  //     return section;
+  //   });
+  // }
+
+
   // public getFilteredFormSections() {
   //   // Read the current state of form controls
   //   const fundingType = this.studentForm?.get('isSelfFunded')?.value; 
@@ -423,6 +447,226 @@ const relativeCountry = this.studentForm?.get('relativeCountry')?.value;
   //   });
   // }
   
+
+  public getFilteredFormSections() {
+
+  const fundingType = this.studentForm?.get('isSelfFunded')?.value;
+  const visaRejected = this.studentForm?.get('isVisaRejected')?.value;
+  const englishTestType = this.studentForm?.get('englishTestType')?.value;
+  const passportStatus = this.studentForm?.get('passportStatus')?.value;
+
+  const relativeName = this.studentForm?.get('relativeName')?.value;
+  const relativeRelation = this.studentForm?.get('relativeRelation')?.value;
+  const relativeCountry = this.studentForm?.get('relativeCountry')?.value;
+
+  return this.formSections.map(section => {
+
+    // =====================================================
+    // 1. Sponsor Details
+    // =====================================================
+
+    if (section.label === 'Sponsor Details') {
+
+  const isSelfFunded =
+    this.studentForm?.get('isSelfFunded')?.value;
+
+  const sponsorName =
+    this.studentForm?.get('sponsorName')?.value;
+
+  const sponsorContact =
+    this.studentForm?.get('sponsorContact')?.value;
+
+  const sponsorEmail =
+    this.studentForm?.get('sponsorEmail')?.value;
+
+  let filteredKeys = [...section.keys];
+
+  // Self Funded
+  if (
+    isSelfFunded === true ||
+    isSelfFunded === 'True' ||
+    isSelfFunded === 'Yes'
+  ) {
+
+    return {
+      ...section,
+      keys: ['sponsorName']
+    };
+  }
+
+  // Parent / Parents
+  if (
+    ['parent', 'parents'].includes(
+      (sponsorName || '').toString().trim().toLowerCase()
+    )
+  ) {
+
+    return {
+      ...section,
+      keys: ['sponsorName']
+    };
+  }
+
+  // Other / Others
+  if (
+    ['other', 'others'].includes(
+      (sponsorName || '').toString().trim().toLowerCase()
+    )
+  ) {
+
+    filteredKeys = ['sponsorName', 'sponsorRelation'];
+
+    if (sponsorContact && sponsorContact.toString().trim()) {
+      filteredKeys.push('sponsorContact');
+    }
+
+    if (sponsorEmail && sponsorEmail.toString().trim()) {
+      filteredKeys.push('sponsorEmail');
+    }
+
+    return {
+      ...section,
+      keys: filteredKeys
+    };
+  }
+
+  return {
+    ...section,
+    keys: filteredKeys
+  };
+}
+//    if (section.label === 'Sponsor Details') {
+
+//   const sponsorType =
+//     (
+//       this.studentForm?.get('sponsorType')?.value ||
+//       this.studentForm?.get('sponsorName')?.value ||
+//       this.studentForm?.get('sponsorRelation')?.value ||
+//       ''
+//     )
+//       .toString()
+//       .trim()
+//       .toLowerCase();
+
+//   const sponsorEmail =
+//     this.studentForm?.get('sponsorEmail')?.value;
+
+//   const sponsorContact =
+//     this.studentForm?.get('sponsorContact')?.value;
+
+//   let filteredKeys = [...section.keys];
+
+//   if (['parent', 'parents'].includes(sponsorType)) {
+
+//     filteredKeys = filteredKeys.filter(
+//       key =>
+//         ![
+//           'sponsorName',
+//           'sponsorRelation',
+//           'sponsorEmail',
+//           'sponsorContact'
+//         ].includes(key)
+//     );
+//   }
+
+//   if (['other', 'others'].includes(sponsorType)) {
+
+//     if (!sponsorEmail || sponsorEmail.toString().trim() === '') {
+//       filteredKeys = filteredKeys.filter(
+//         key => key !== 'sponsorEmail'
+//       );
+//     }
+
+//     if (!sponsorContact || sponsorContact.toString().trim() === '') {
+//       filteredKeys = filteredKeys.filter(
+//         key => key !== 'sponsorContact'
+//       );
+//     }
+//   }
+
+//   return {
+//     ...section,
+//     keys: filteredKeys
+//   };
+// }
+    // =====================================================
+    // 2. Visa Details
+    // =====================================================
+    if (section.label === 'Visa Details' && visaRejected === 'No') {
+      return {
+        ...section,
+        keys: section.keys.filter(
+          key => key === 'isVisaRejected'
+        )
+      };
+    }
+
+    // =====================================================
+    // 3. English Test Details
+    // =====================================================
+    if (section.label === 'English Test Details') {
+
+      const isScoreNotApplicable =
+        ['NotRequried', 'NotRequired', 'NotGiven', 'Applied']
+          .includes(englishTestType);
+
+      if (isScoreNotApplicable) {
+
+        const fieldsToHide = [
+          'speakingScore',
+          'readingScore',
+          'writingScore',
+          'listeningScore',
+          'overallScore',
+          'englishTestYear'
+        ];
+
+        return {
+          ...section,
+          keys: section.keys.filter(
+            key => !fieldsToHide.includes(key)
+          )
+        };
+      }
+    }
+
+    // =====================================================
+    // 4. Relative at Abroad
+    // =====================================================
+    if (section.label === 'Relative at Abroad') {
+
+      const isRelativeNotApplicable =
+        (!relativeName || relativeName === 'NA') &&
+        (!relativeRelation || relativeRelation === 'NA') &&
+        (!relativeCountry || relativeCountry === 'NA');
+
+      if (isRelativeNotApplicable) {
+        return {
+          ...section,
+          keys: ['relativeNotApplicable']
+        };
+      }
+    }
+
+    // =====================================================
+    // 5. Passport Details
+    // =====================================================
+    if (section.label === 'Passport Details') {
+
+      const filteredKeys = section.keys.filter(
+        key => key !== 'passportStatus'
+      );
+
+      return {
+        ...section,
+        keys: filteredKeys
+      };
+    }
+
+    return section;
+  });
+}
+
 beautifyLabel(label: string): string {
 
   const customLabels: Record<string, string> = {
@@ -437,6 +681,23 @@ beautifyLabel(label: string): string {
     return 'Relative at Abroad';
   }
 
+  if (label === 'sponsorName') {
+  return 'Sponsor Type';
+}
+  // Show "Sponsor Type" instead of "Sponsor Name"
+  // when sponsorName contains Parent/Parents/Other/Others
+  if (
+    label === 'sponsorName' &&
+    ['parent', 'parents', 'other', 'others'].includes(
+      (this.studentForm?.get('sponsorName')?.value || '')
+        .toString()
+        .trim()
+        .toLowerCase()
+    )
+  ) {
+    return 'Sponsor Type';
+  }
+
   return label
     .replace(/([A-Z])/g, ' $1')
     .replace(/_/g, ' ')
@@ -447,6 +708,9 @@ beautifyLabel(label: string): string {
     .replace('Whatsapp', 'WhatsApp')
     .trim();
 }
+
+
+
 // beautifyLabel(label: string): string {
 
 //   const customLabels: Record<string, string> = {

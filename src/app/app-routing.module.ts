@@ -39,22 +39,15 @@ const routes: Routes = [
         path: 'StaffLogin',
         loadChildren: () => import('./views/SemesterExchange/LoginPage/LoginPage.module').then(m => m.LoginPageNComponentModule),
       },
-      // { path: 'newStudentPortal/:LoginName', redirectTo: 'newSemesterExchangeRegistration/:LoginName', pathMatch: 'full' },
       { path: 'stuPotal/:LoginName', redirectTo: 'NewWay-Register/:LoginName', pathMatch: 'full' },
-      // { path: 'SMAdmin/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
 
      
     
       {
         path: 'NewWay-Register/:LoginName', // Registeration-Form/c085f2e914a7b87faaf04df70801c7de74cc7fa78fa89978e4c5279c35331d13f781301cbdd1b14bf6c9fbd5e0582291
         loadChildren: () => import('./views/SemesterExchange/StudentForm/Register-Form/RegisterForm.module').then(m => m.RegisterFormModule),
-        // loadChildren: () => import('./views/SemesterExchange/StudentForm/NewLogic/NewLogicForm.module').then(m => m.NewLogicFormModule),
       },
-      // {
-      //   path: 'stuPotal/:LoginName',
-      //   loadChildren: () => import('./views/SemesterExchange/StudentForm/StudentForm.module').then(m => m.StudentFormModule),
-      //   // loadChildren: () => import('./views/SemesterExchange/StudentForm/NewLogic/NewLogicForm.module').then(m => m.NewLogicFormModule),
-      // },
+     
       {
         path: 'newSemesterExchangeRegistration/:LoginName',
         // loadChildren: () => import('./views/SemesterExchange/StudentForm/StudentForm.module').then(m => m.StudentFormModule),
@@ -64,24 +57,50 @@ const routes: Routes = [
         path: 'StudentDashboard/:LoginName/:RegistrationNo',
         // loadChildren: () => import('./views/SemesterExchange/StudentDashboard/StudentDashboard.module').then(m => m.StudentDashboardModule),
         // loadChildren: () => import('./views/SemesterExchange/StudentDashboard/StudentDashboardwithTabs.module').then(m => m.StudentDashboardwithTabsModule),
-        loadChildren: () => import('./views/SemesterExchange/StudentDashboard/Edit-Application/StudentForm.module').then(m => m.EditApplicationModule),
+        // loadChildren: () => import('./views/SemesterExchange/StudentDashboard/Edit-Application/StudentForm.module').then(m => m.EditApplicationModule),
+        loadChildren: () => import('./views/SemesterExchange/StudentDashboard/Edit-Application/SE/StudentForm.module').then(m => m.EditApplicationModule),
       },
       {
         path: 'SENextStep/:LoginName/:RegistrationNo',
         loadChildren: () => import('./views/SemesterExchange/StudentDashboard/StudentDashboardwithTabs.module').then(m => m.StudentDashboardwithTabsModule),
       },
-      // {
-      //   path: 'DashboardHOW/:LoginName',
-      //   loadChildren: () => import('./views/SemesterExchange/HOWDashboard/HOWDashboard.module').then(m => m.HOWDashboardModule),
-      // },
 
 
 
 
+      { path: 'DashboardHOD/:LoginName',         
+        loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule)  
+        // redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' 
+      },
 
 
- {
+      { path: 'DashboardHOW/:LoginName', 
+          loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule)  
+        // loadChildren: () => import('./views/SemesterExchange/HowDashboardNew/HowDashboards.module').then(m => m.HowDashboardsModule)  
+      },
+
+
+      { path: 'DashboardDIAHOD/:LoginName', 
+          loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule)    
+        // redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' 
+      
+      },
+
+      {
         path: 'CounsellorDashboard/:LoginName',
+         loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule)  
+      },
+    
+     
+
+      {
+        path: 'ApplicationDetails/:LoginName/:RegistrationNo/:Role',
+        loadChildren: () => import('./views/SemesterExchange/StudentApplicationDetails/StudentApplicationDetails.module').then(m => m.StudentApplicationDetailsModule),
+      },
+
+
+      {
+        path: 'CounsellorDashboards/:LoginName',
         loadChildren: () => import('./views/SemesterExchange/CounsellorDashboardNew/CounsellorDashboard.module').then(m => m.CounsellorDashboardModule),
       },
       
@@ -90,30 +109,16 @@ const routes: Routes = [
         loadChildren: () => import('./views/SemesterExchange/FacultyDashboardNew/DealingDashboard.module').then(m => m.FacultyDashboardNewModule),
         // loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule),
       },
-
-       { path: 'DashboardHOD/:LoginName',         
-        loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule)  
-        // redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' 
+      {
+        path: 'HODDashboards/:LoginName',
+        loadChildren: () => import('./views/SemesterExchange/HODDashboardNew/HODDashboardNew.module').then(m => m.HODDashboardNewModule),
+        // loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule),
       },
-
-
-      { path: 'DashboardHOW/:LoginName', 
-        loadChildren: () => import('./views/SemesterExchange/HowDashboardNew/HowDashboards.module').then(m => m.HowDashboardsModule)  
+      {
+        path: 'HOWDashboards/:LoginName',
+        loadChildren: () => import('./views/SemesterExchange/HowDashboardNew/HowDashboards.module').then(m => m.HowDashboardsModule),
+        // loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule),
       },
-
-
-      { path: 'DashboardDIAHOD/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
-      // { path: 'DashboardHOW/:LoginName', redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' },
-    
-     
-
- {
-        path: 'ApplicationDetails/:LoginName/:RegistrationNo/:Role',
-        loadChildren: () => import('./views/SemesterExchange/StudentApplicationDetails/StudentApplicationDetails.module').then(m => m.StudentApplicationDetailsModule),
-      },
-
-
-
 
 
 
@@ -127,6 +132,12 @@ const routes: Routes = [
 
 
       // 6-Sep-25 Starts
+
+       // {
+      //   path: 'stuPotal/:LoginName',
+      //   loadChildren: () => import('./views/SemesterExchange/StudentForm/StudentForm.module').then(m => m.StudentFormModule),
+      //   // loadChildren: () => import('./views/SemesterExchange/StudentForm/NewLogic/NewLogicForm.module').then(m => m.NewLogicFormModule),
+      // },
       {
         path: 'HODAdminPanel/:loginName',
         component: SemesterMigrationAdminComponent

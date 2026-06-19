@@ -1,0 +1,595 @@
+<div *ngIf="isLoading" class="fullscreen-loader">
+    <div class="custom-spinner-overlay">
+        <div class="custom-spinner-content text-center">
+            <img src="assets/images/spinner.gif" alt="Loading..." />
+            <p>Loading...</p>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt-4" id="EditApplicationPage" *ngIf="!isLoading">
+    <div class="student-registration container-fluid py-4">
+
+        <div class="row mt-2 mb-4" *ngIf="stuApplication">
+            <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row d-flex justify-content-start">
+                            <label class="col-md-5 form-label text-danger">Name</label>
+                            <label class="col-md-7 form-label text-dark">{{ studentName}}</label>
+                        </div>
+                        <div class="row d-flex justify-content-start">
+                            <label class="col-md-5 form-label text-danger">Registration Number</label>
+                            <label class="col-md-7 form-label text-dark">{{ RegistrationNo }}</label>
+                        </div>
+                        <div class="row d-flex justify-content-start">
+                            <label class="col-md-5 form-label text-danger">Program Name</label>
+                            <label class="col-md-7 form-label text-dark">{{ courseName}}</label>
+                        </div>
+                        <div class="row d-flex justify-content-start">
+                            <label class="col-md-5 form-label text-danger">Current Year</label>
+                            <label class="col-md-7 form-label text-dark">{{ CurrentYear }}</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row d-flex justify-content-center">
+                            <label class="col-md-4 form-label text-danger">Overall Score</label>
+                            <label class="col-md-7 form-label text-dark">{{ cgpa ?? 'NA' }}</label>
+                        </div>
+                        <div class="row d-flex justify-content-center">
+                            <label class="col-md-4 form-label text-danger">Program</label>
+                            <label class="col-md-7 form-label text-dark">{{ courseName}}</label>
+                        </div>
+                        <div class="row d-flex justify-content-center">
+                            <label class="col-md-4 form-label text-danger">Status</label>
+                            <label class="col-md-7 form-label text-dark">{{ studentStatus }}</label>
+                        </div>
+                        <div class="row d-flex justify-content-center">
+                            <label class="col-md-4 form-label text-danger">Current Term</label>
+                            <label class="col-md-7 form-label text-dark">{{ CurrentTerm }}</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12 grid-margin stretch-card mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-center flex-wrap gap-3">
+                        <ng-container *ngFor="let label of stepLabels; let i = index">
+                            <div class="step" [class.active]="i === currentStep" [class.past]="i < currentStep">
+                                <span class="badge rounded-pill step-badge"
+                                    [ngClass]="{ 'bg-primary': i === currentStep, 'bg-success': i < currentStep, 'bg-secondary': i > currentStep }">
+                                    {{ label }}
+                                </span>
+                            </div>
+                            <div *ngIf="i < stepLabels.length - 1" class="divider"></div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="$event.preventDefault()">
+
+            <section *ngIf="currentStep === 0" class="step-section">
+                <div class="row m-3">
+                    <div *ngIf="stuApplication?.studentGradeMarksDataX?.length > 0">
+                        <p class="text-muted">Academic summary (see original Register Form for full table).</p>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-3">
+                    <button type="button" class="btn btn-secondary" (click)="prevStep()"
+                        [disabled]="currentStep===0">Back</button>
+                    <button type="button" class="btn btn-primary" (click)="nextStep()">Next</button>
+                </div>
+            </section>
+
+            <section *ngIf="currentStep === 1" class="step-section">
+                <div class="row g-3">
+                    <div class="col-md-6 col-lg-10 mx-auto mb-3">
+                        <div class="card section">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span>Contact Information</span>
+                                <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[1]" (click)="startEdit(1)">Edit</button>
+                            </div>
+                            <div class="card-body" [class.disabled-form]="!isEditingStep[1]">
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Email Id *</label>
+                                        <input class="form-control" formControlName="EmailId" [readonly]="!isEditingStep[1]" />
+                                        <div class="text-danger small"
+                                            *ngIf="(form.get('EmailId')?.touched || isSubmitted) && form.get('EmailId')?.invalid">
+                                            Required / invalid
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6"></div>
+                                </div>
+
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Country *</label>
+                                        <select class="form-select" formControlName="CountryName" [disabled]="!isEditingStep[1]">
+                                            <option value="">Select country</option>
+                                            <option *ngFor="let c of countries" [value]="c.name">{{ c.name }}</option>
+                                        </select>
+                                        <div class="text-danger small"
+                                            *ngIf="(form.get('CountryName')?.touched || isSubmitted) && form.get('CountryName')?.invalid">
+                                            Required
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">WhatsApp Number *</label>
+                                        <input class="form-control" formControlName="WhatsAppNo" [readonly]="!isEditingStep[1]" />
+                                        <div class="text-danger small"
+                                            *ngIf="(form.get('WhatsAppNo')?.touched || isSubmitted) && form.get('WhatsAppNo')?.invalid">
+                                            Required / invalid
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Phone Number *</label>
+                                        <input class="form-control" formControlName="PhoneNumber" [readonly]="!isEditingStep[1]" />
+                                        <div class="text-danger small"
+                                            *ngIf="(form.get('PhoneNumber')?.touched || isSubmitted) && form.get('PhoneNumber')?.invalid">
+                                            Required / invalid
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Parent Contact *</label>
+                                        <input class="form-control" formControlName="ParentContact" [readonly]="!isEditingStep[1]" />
+                                        <div class="text-danger small"
+                                            *ngIf="(form.get('ParentContact')?.touched || isSubmitted) && form.get('ParentContact')?.invalid">
+                                            Required / invalid
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                        <div class="card section">
+                             <div class="card-header d-flex justify-content-between align-items-center">
+                                <span>Relative Details</span>
+                                <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[1]" (click)="startEdit(1)">Edit</button>
+                            </div>
+                            <div class="card-body" [class.disabled-form]="!isEditingStep[1]">
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Any Relative Abroad? *</label>
+                                        <select class="form-select" formControlName="HasRelativeDetails" [disabled]="!isEditingStep[1]">
+                                            <option value="">Select</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                        <div class="text-danger small"
+                                            *ngIf="(form.get('HasRelativeDetails')?.touched || isSubmitted) && form.get('HasRelativeDetails')?.invalid">
+                                            Required
+                                        </div>
+                                    </div>
+
+                                    <div *ngIf="form.get('HasRelativeDetails')?.value === 'Yes'" class="col-md-12">
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Relative Name *</label>
+                                                <input class="form-control" formControlName="RelativeName" [readonly]="!isEditingStep[1]" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Country *</label>
+                                                <select class="form-select" formControlName="RelativeCountryName" [disabled]="!isEditingStep[1]">
+                                                    <option value="">Select</option>
+                                                    <option *ngFor="let c of countries" [value]="c.name">{{ c.name }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Relation *</label>
+                                                <input class="form-control" formControlName="RelativeRelation" [readonly]="!isEditingStep[1]" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Email (optional)</label>
+                                                <input class="form-control" formControlName="RelativeEmail" [readonly]="!isEditingStep[1]" />
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Phone (optional)</label>
+                                                <input class="form-control" formControlName="RelativePhone" [readonly]="!isEditingStep[1]" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="d-flex justify-content-between mt-3">
+                    <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
+                    <button type="button" class="btn btn-danger" *ngIf="isEditingStep[1]" (click)="cancelEdit(1)">Cancel</button>
+                    <button type="button" class="btn btn-success" *ngIf="isEditingStep[1]" (click)="updateStep(1)" [disabled]="form.invalid">Update</button>
+                    <button type="button" class="btn btn-primary" *ngIf="!isEditingStep[1]" (click)="nextStep()" [disabled]="isEditingStep[1]">Next</button>
+                </div>
+            </section>
+
+            <section *ngIf="currentStep === 2" class="step-section">
+                <div class="row g-3">
+                    <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                        <div class="card section">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span>University Preferences</span>
+                                <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[2]" (click)="startEdit(2)">Edit</button>
+                            </div>
+                            <div class="card-body" [class.disabled-form]="!isEditingStep[2]">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Applying For *</label>
+                                        <select class="form-select" formControlName="ApplyingOption" [disabled]="!isEditingStep[2]">
+                                            <option value="">Select</option>
+                                            <option value="Spring (Jan to May Intake)">Spring (Jan to May Intake)
+                                            </option>
+                                            <option value="Fall (Aug to Dec Intake)">Fall (Aug to Dec Intake)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-2">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Preference 1 *</label>
+                                        <select class="form-select" formControlName="UniversityOption1" [disabled]="!isEditingStep[2]">
+                                            <option value="">Select University</option>
+                                            <option *ngFor="let u of uniData" [value]="u.universityName">{{ u.universityName }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Preference 2 *</label>
+                                        <select class="form-select" formControlName="UniversityOption2" [disabled]="!isEditingStep[2]">
+                                            <option value="">Select University</option>
+                                            <option *ngFor="let u of uniData" [value]="u.universityName" [disabled]="u.universityName === form.get('UniversityOption1')?.value">{{ u.universityName }}</option>
+                                             
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Preference 3 *</label>
+                                        <select class="form-select" formControlName="UniversityOption3" [disabled]="!isEditingStep[2]">
+                                            <option value="">Select University</option>
+                                            <option *ngFor="let u of uniData" [value]="u.universityName" [disabled]="u.universityName === form.get('UniversityOption1')?.value || u.universityName === form.get('UniversityOption2')?.value">{{ u.universityName }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-3">
+                    <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
+                    <button type="button" class="btn btn-danger" *ngIf="isEditingStep[2]" (click)="cancelEdit(2)">Cancel</button>
+                    <button type="button" class="btn btn-success" *ngIf="isEditingStep[2]" (click)="updateStep(2)" [disabled]="form.invalid">Update</button>
+                    <button type="button" class="btn btn-primary" *ngIf="!isEditingStep[2]" (click)="nextStep()" [disabled]="isEditingStep[2]">Next</button>
+                </div>
+            </section>
+
+            <section *ngIf="currentStep === 3" class="step-section">
+                <div class="row g-3">
+                    <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                        <div class="card section">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span>Passport Details</span>
+                                <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[3]" (click)="startEdit(3)">Edit</button>
+                            </div>
+                            <div class="card-body" [class.disabled-form]="!isEditingStep[3]">
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Passport Status *</label>
+                                        <select class="form-select" formControlName="PassportStatus" [disabled]="!isEditingStep[3]">
+                                            <option value="">Select</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="Applied">Applied</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+
+                                    <div *ngIf="form.get('PassportStatus')?.value === 'Yes'" class="col-md-12">
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Passport Number *</label>
+                                                <input class="form-control" formControlName="PassportNumber" [readonly]="!isEditingStep[3]" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Issue Date *</label>
+                                                <input type="date" class="form-control" [readonly]="!isEditingStep[3]"
+                                                    formControlName="PassportIssueDate" />
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Valid Upto *</label>
+                                                <input type="date" class="form-control" [readonly]="!isEditingStep[3]"
+                                                    formControlName="PassportValidUpto" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                        <div class="card section">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span>Previous Visa</span>
+                                <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[3]" (click)="startEdit(3)">Edit</button>
+                            </div>
+                            <div class="card-body" [class.disabled-form]="!isEditingStep[3]">
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Any Visa Rejection? *</label>
+                                        <select class="form-select" formControlName="IsVisaRejected" [disabled]="!isEditingStep[3]">
+                                            <option value="">Select</option>
+                                            <option value="No">No</option>
+                                            <option value="Yes">Yes</option>
+                                        </select>
+                                    </div>
+
+                                    <div *ngIf="form.get('IsVisaRejected')?.value === 'Yes'" class="col-md-12">
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Reason *</label>
+                                                <input class="form-control" formControlName="VisaRejectedReason" [readonly]="!isEditingStep[3]" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Country *</label>
+                                                <select class="form-select" formControlName="VisaRejectedCountry" [disabled]="!isEditingStep[3]">
+                                                    <option value="">Select country</option>
+                                                    <option *ngFor="let c of countries" [value]="c.name">{{ c.name }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                        <div class="card section">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span>English Proficiency</span>
+                                <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[3]" (click)="startEdit(3)">Edit</button>
+                            </div>
+                            <div class="card-body" [class.disabled-form]="!isEditingStep[3]">
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="form-label">English Test *</label>
+                                        <select class="form-select" formControlName="EnglishTestType" [disabled]="!isEditingStep[3]">
+                                            <option value="">Select</option>
+                                            <option *ngFor="let option of englishOptions" [value]="option.value">{{
+                                                option.label }}</option>
+                                        </select>
+                                    </div>
+
+                                    <div *ngIf="form.get('EnglishTestType')?.value === 'Appeared'" class="col-md-12">
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Test Name *</label>
+                                                <select class="form-select" formControlName="TestName" [disabled]="!isEditingStep[3]">
+                                                    <option value="">Select Test</option>
+                                                    <option *ngFor="let t of englishTestNames" [value]="t">{{ t }}
+                                                    </option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Test Date *</label>
+                                                <input type="date" class="form-control" formControlName="TestDate" [readonly]="!isEditingStep[3]" />
+                                            </div>
+                                        </div>
+
+                                        <div *ngIf="form.get('TestDate')?.value" class="col-md-12">
+                                            <div class="row mt-2">
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Listening Score</label>
+                                                    <input class="form-control" formControlName="ListeningScore" [readonly]="!isEditingStep[3]" />
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Speaking Score</label>
+                                                    <input class="form-control" formControlName="SpeakingScore" [readonly]="!isEditingStep[3]" />
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Reading Score</label>
+                                                    <input class="form-control" formControlName="ReadingScore" [readonly]="!isEditingStep[3]" />
+                                                </div>
+                                            </div>
+
+                                            <div class="row mt-2">
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Writing Score</label>
+                                                    <input class="form-control" formControlName="WritingScore" [readonly]="!isEditingStep[3]" />
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Overall Score</label>
+                                                    <input class="form-control" formControlName="OverallScore" [readonly]="!isEditingStep[3]" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                        <div class="card section">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span>Sponsor Details</span>
+                                <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[3]" (click)="startEdit(3)">Edit</button>
+                            </div>
+                            <div class="card-body" [class.disabled-form]="!isEditingStep[3]">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Sponsor Type *</label>
+                                        <select class="form-select" formControlName="SponsorType" [disabled]="!isEditingStep[3]">
+                                            <option value="">Select Sponsor Type</option>
+                                            <option value="Parents">Parents</option>
+                                            <option value="Relative">Relative</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Available Funds *</label>
+                                        <select class="form-select" formControlName="AvailableFunds" [disabled]="!isEditingStep[3]">
+                                            <option value="">Select</option>
+                                            <option *ngFor="let opt of availableFundsOptions" [value]="opt.value">{{
+                                                opt.label }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div
+                                    *ngIf="form.get('SponsorType')?.value === 'Other' || form.get('SponsorType')?.value === 'Relative'" class="col-md-12">
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Sponsor Name *</label>
+                                            <input class="form-control" formControlName="SponsorName" [readonly]="!isEditingStep[3]" />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Sponsor Relation *</label>
+                                            <input class="form-control" formControlName="SponsorRelation" [readonly]="!isEditingStep[3]" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="d-flex justify-content-between mt-3">
+                    <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
+                    <button type="button" class="btn btn-danger" *ngIf="isEditingStep[3]" (click)="cancelEdit(3)">Cancel</button>
+                    <button type="button" class="btn btn-success" *ngIf="isEditingStep[3]" (click)="updateStep(3)" [disabled]="form.invalid">Update</button>
+                    <button type="button" class="btn btn-primary" *ngIf="!isEditingStep[3]" (click)="nextStep()" [disabled]="isEditingStep[3]">Next</button>
+                </div>
+            </section>
+
+            <section *ngIf="currentStep === 4 || currentStep === 3" class="step-section">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title text-primary">Documents (View / Edit / Update)</h4>
+                        <div class="col-md-12 col-lg-10 mx-auto mb-3">
+                            <div class="card section">
+                                <div class="card-header">Document Uploads (PDF, JPEG, PNG only)</div>
+                                <div class="card-body">
+
+                                    <div class="row mb-3 mt-2" *ngIf="true">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Consent Letter</label>
+                                            <div class="small mt-1" *ngIf="documentFields[0]?.fileName">Uploaded:
+                                                <strong>{{ documentFields[0]?.fileName }}</strong></div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">
+                                                Consent Letter <span>Download Format</span>
+                                                </label>
+                                        </div>
+                                    </div>
+
+                                    <hr />
+                                    <div class="mb-3">
+                                        <label class="form-label">Resume / CV <span class="text-danger">*</span></label>
+                                        <div class="d-flex gap-2 align-items-center">
+                                            <input type="file" class="form-control-file"
+                                                (change)="onFilePicked($event,'resume')"
+                                                accept=".pdf,.jpg,.jpeg,.png" />
+                                            <div class="small" *ngIf="documentFields[1]?.fileName">Uploaded: <strong>{{
+                                                    documentFields[1]?.fileName }}</strong></div>
+                                            <button class="btn btn-sm btn-info"
+                                                (click)="viewDocument(documentFields[1])"
+                                                [disabled]="!documentFields[1].fileData">View</button>
+                                        </div>
+                                    </div>
+
+                                    <hr>
+                                    <div class="mb-3">
+                                        <label class="form-label">Passport Copy <span
+                                                *ngIf="form.get('PassportStatus')?.value === 'Yes'"
+                                                class="text-danger">*</span></label>
+                                        <div class="d-flex gap-2 align-items-center">
+                                            <input type="file" class="form-control-file"
+                                                (change)="onFilePicked($event,'passport')"
+                                                accept=".pdf,.jpg,.jpeg,.png" />
+                                            <div class="small" *ngIf="documentFields[2]?.fileName">Uploaded: <strong>{{
+                                                    documentFields[2]?.fileName }}</strong></div>
+                                            <button class="btn btn-sm btn-info"
+                                                (click)="viewDocument(documentFields[2])"
+                                                [disabled]="!documentFields[2].fileData">View</button>
+                                        </div>
+                                    </div>
+
+                                    <hr>
+                                    <div class="mb-3">
+                                        <label class="form-label">English Test Score Card</label>
+                                        <div class="d-flex gap-2 align-items-center">
+                                            <input type="file" class="form-control-file"
+                                                (change)="onFilePicked($event,'english')"
+                                                accept=".pdf,.jpg,.jpeg,.png" />
+                                            <div class="small" *ngIf="documentFields[3]?.fileName">Uploaded: <strong>{{
+                                                    documentFields[3]?.fileName }}</strong></div>
+                                            <button class="btn btn-sm btn-info"
+                                                (click)="viewDocument(documentFields[3])"
+                                                [disabled]="!documentFields[3].fileData">View</button>
+                                        </div>
+                                    </div>
+
+                                    <hr>
+                                    <div class="mb-3">
+                                        <label class="form-label">Fees Receipt (Optional)</label>
+                                        <div class="d-flex gap-2 align-items-center">
+                                            <input type="file" class="form-control-file"
+                                                (change)="onFilePicked($event,'fees')" accept=".pdf,.jpg,.jpeg,.png" />
+                                            <div class="small" *ngIf="documentFields[4]?.fileName">Uploaded: <strong>{{
+                                                    documentFields[4]?.fileName }}</strong></div>
+                                            <button class="btn btn-sm btn-info"
+                                                (click)="viewDocument(documentFields[4])"
+                                                [disabled]="!documentFields[4].fileData">View</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </form>
+    </div>
+</div>

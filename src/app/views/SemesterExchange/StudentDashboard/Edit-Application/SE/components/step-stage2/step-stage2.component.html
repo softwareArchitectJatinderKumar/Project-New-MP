@@ -1,0 +1,119 @@
+<app-step-nav
+  [showBack]="true"
+  [showNext]="false"
+  [showEdit]="false"
+  [isEditing]="false"
+  [isLocked]="false"
+  (prevClick)="prevClick.emit()">
+</app-step-nav>
+
+<nav>
+  <div class="nav nav-tabs d-flex justify-content-center" id="nav-tab" role="tablist">
+    <button class="btn me-5 active" data-bs-toggle="tab" data-bs-target="#stageTab" type="button" role="tab"
+      style="padding:.95rem 8rem;">Stage - II</button>
+    <button class="btn btn-lg ms-5" data-bs-toggle="tab" data-bs-target="#courseTab" type="button" role="tab"
+      style="padding:.95rem 8rem;">Course Mapping</button>
+  </div>
+</nav>
+
+<div class="tab-content">
+  <!-- Stage II Documents -->
+  <div class="tab-pane fade active show" id="stageTab" role="tabpanel">
+    <div class="card mt-3">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr><th>#</th><th>Stage Name</th><th>Document Name</th><th>Uploaded Document</th><th></th></tr>
+            </thead>
+            <tbody *ngIf="stageDocumentData.length > 0; else uploadTable">
+              <tr *ngFor="let row of stageDocumentData; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ row.stageName }}</td>
+                <td>{{ row.documentName }}</td>
+                <td>
+                  <button class="btn btn-dark btn-sm" (click)="viewDocument.emit(row.document)">
+                    <span class="material-icons md-18">description</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+            <ng-template #uploadTable>
+              <tbody>
+                <tr *ngFor="let row of stagesDetail; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ row.stageName }}</td>
+                  <td>{{ row.documentName }}</td>
+                  <td>
+                    <div class="d-flex gap-2 align-items-center">
+                      <input type="file" class="form-control form-control-sm" (change)="onStageFilePicked($event, i)" />
+                      <a *ngIf="row.fileName" href="#" class="btn btn-outline-secondary btn-sm"
+                        (click)="downloadStageFile(i, $event)">{{ row.fileName }}</a>
+                    </div>
+                  </td>
+                  <td>
+                    <button *ngIf="!row.isUploaded" class="btn btn-primary btn-sm"
+                      [disabled]="!row.fileObject || row.isUploading" (click)="uploadStage.emit(i)">
+                      <span *ngIf="row.isUploading" class="spinner-border spinner-border-sm me-1"></span>
+                      {{ row.isUploading ? 'Uploading...' : 'Upload' }}
+                    </button>
+                    <span *ngIf="row.isUploaded" class="badge bg-success p-2">
+                      <i class="bi bi-check-circle-fill me-1"></i> Saved
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </ng-template>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Course Mapping -->
+  <div class="tab-pane fade" id="courseTab" role="tabpanel">
+    <div class="card mt-3">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h3 class="text-info m-0">Course Covered &amp; Uploads</h3>
+          <div>
+            <button class="btn btn-success me-2" (click)="addCourseRow.emit()">Add Row</button>
+            <button class="btn btn-primary" (click)="saveCourses.emit()"
+              [disabled]="isSavingCourses || courseRows.length === 0">Save All</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr><th>#</th><th>Course Name</th><th>Course Code</th><th>Hours</th><th>Upload Document</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of courseRows; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td><input class="form-control" [(ngModel)]="row.courseName" name="courseName{{i}}" /></td>
+                <td><input class="form-control" [(ngModel)]="row.courseCode" name="courseCode{{i}}" /></td>
+                <td><input type="number" min="0" class="form-control" [(ngModel)]="row.hours" name="hours{{i}}" /></td>
+                <td>
+                  <div class="d-flex gap-2 align-items-center">
+                    <input type="file" (change)="onCourseFilePicked($event, i)" />
+                    <span *ngIf="row.fileName" class="text-muted small">{{ row.fileName }}</span>
+                  </div>
+                </td>
+                <td><button class="btn btn-danger btn-sm" (click)="removeCourseRow.emit(i)">Remove</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-step-nav
+  [showBack]="true"
+  [showNext]="false"
+  [showEdit]="false"
+  [isEditing]="false"
+  [isLocked]="false"
+  (prevClick)="prevClick.emit()">
+</app-step-nav>

@@ -7,7 +7,7 @@ import {  FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ArchwizardModule } from 'angular-archwizard';
 import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { DynamicDashboardComponent } from './DynamicDashboard/DynamicDashboard.component';
-import { RoleFilterPipe } from './DynamicDashboard/role-filter.pipe';
+import { RoleFilterPipe } from './DynamicDashboard/role-filter_pipe';
 const routes: Routes = [
   {
     path: '',

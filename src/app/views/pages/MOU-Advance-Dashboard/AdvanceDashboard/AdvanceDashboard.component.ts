@@ -252,7 +252,7 @@ export class MouActivityActionPlanComponent implements OnInit {
           this.EmployeeDetails = response.item1;
           // console.log(JSON.stringify(this.EmployeeDetails))
           this.EmployeeName = response.item1[0].employeeName;
-          this.EmployeeCode ='23408';// response.item1[0].employeeCode;
+          this.EmployeeCode = response.item1[0].employeeCode;
           this.ContactNoX = response.item1[0].contactNo;
           this.Department = response.item1[0].department;
           this.DepartmentName = response.item1[0].departmentName;

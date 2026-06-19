@@ -17,7 +17,7 @@ import { ColumnMode } from '@swimlane/ngx-datatable';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { finalize } from 'rxjs';
 import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
-
+import * as XLSX from 'xlsx';
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
  
@@ -140,6 +140,108 @@ interface AggregatedRemarks {
 })
 export class DynamicDashboardComponent implements OnInit {
 
+FilterAllHOWApplications: Application[] = [];
+searchQueryMyHod: any;
+    searchMyHod() {
+   
+    const query = this.searchQueryMyHod.trim().toLowerCase();
+    // console.log(JSON.stringify(this.MouActivityData))
+    this.FilterAllHOWApplications = this.AllHOWApplications.filter(item => {
+      return Object.entries(item).some(([key, val]) => {
+        if (val !== null && val !== undefined) {
+          let valueString = String(val).toLowerCase();
+   
+          return valueString.includes(query);
+        }
+        return false;
+      });
+    });
+  }
+
+
+
+
+FilterAllAuthorityApplications: Application[] = [];
+searchQueryAuthority: any;
+    searchAuthority() {
+   
+    const query = this.searchQueryAuthority.trim().toLowerCase();
+    // console.log(JSON.stringify(this.MouActivityData))
+    this.FilterAllAuthorityApplications = this.AllAuthorityApplications.filter(item => {
+      return Object.entries(item).some(([key, val]) => {
+        if (val !== null && val !== undefined) {
+          let valueString = String(val).toLowerCase();
+   
+          return valueString.includes(query);
+        }
+        return false;
+      });
+    });
+  }
+
+
+
+
+  FilterAllFacultyApplications: Application[] = [];
+  searchQueryFaculty: any;
+    searchFaculty() {
+   
+    const query = this.searchQueryFaculty.trim().toLowerCase();
+    // console.log(JSON.stringify(this.MouActivityData))
+    this.FilterAllFacultyApplications = this.AllFacultyApplications.filter(item => {
+      return Object.entries(item).some(([key, val]) => {
+        if (val !== null && val !== undefined) {
+          let valueString = String(val).toLowerCase();
+   
+          return valueString.includes(query);
+        }
+        return false;
+      });
+    });
+  }
+
+
+
+  searchQuery: any;
+    search() {
+   
+    const query = this.searchQuery.trim().toLowerCase();
+    // console.log(JSON.stringify(this.MouActivityData))
+    this.FilterAllHODApplications = this.AllHODApplications.filter(item => {
+      return Object.entries(item).some(([key, val]) => {
+        if (val !== null && val !== undefined) {
+          let valueString = String(val).toLowerCase();
+   
+          return valueString.includes(query);
+        }
+        return false;
+      });
+    });
+  }
+  searchQuery2: any;
+    search2() {
+   
+    const query = this.searchQuery2.trim().toLowerCase();
+    
+    this.FilterAllApplications = this.AllApplications.filter(item => {
+      return Object.entries(item).some(([key, val]) => {
+        if (val !== null && val !== undefined) {
+          let valueString = String(val).toLowerCase();
+   
+          return valueString.includes(query);
+        }
+        return false;
+      });
+    });
+  }
+
+  exportToExcel(data: any[]): void {
+    const fileName = 'SemesterExchange-Report.xlsx'; 
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    XLSX.writeFile(wb, fileName);
+  }
 
   // added on 17-6-26 
     AcceptForm!: FormGroup;
@@ -251,9 +353,11 @@ export class DynamicDashboardComponent implements OnInit {
 
   /** Raw list from getAllApplications() */
   AllApplications: Application[] = [];
+  FilterAllApplications: Application[] = [];
   AllFacultyApplications: Application[] = [];
   AllAuthorityApplications: Application[] = [];
   AllHODApplications: Application[] = [];
+  FilterAllHODApplications: Application[] = [];
   AllHOWApplications: Application[] = [];
 
   /** Raw remarks list from getAllRemarks() */
@@ -381,15 +485,18 @@ export class DynamicDashboardComponent implements OnInit {
 
   private initializeForms(): void {
     this.EvaluationForm = this.fb.group({
-      AcademicsMarks:           [null, [Validators.required, Validators.min(0), Validators.max(100)]],
-      CommunicationSkillsMarks: [null, [Validators.required, Validators.min(0), Validators.max(100)]],
-      AttitudeMarks:            [null, [Validators.required, Validators.min(0), Validators.max(100)]],
-      ExtraCurricularMarks:     [null, [Validators.required, Validators.min(0), Validators.max(100)]],
-      KnowledgeMarks:           [null, [Validators.required, Validators.min(0), Validators.max(100)]],
+      AcademicsMarks:           [null, [Validators.required, Validators.min(0), Validators.max(10)]],
+      CommunicationSkillsMarks: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
+      AttitudeMarks:            [null, [Validators.required, Validators.min(0), Validators.max(10)]],
+      ExtraCurricularMarks:     [null, [Validators.required, Validators.min(0), Validators.max(10)]],
+      KnowledgeMarks:           [null, [Validators.required, Validators.min(0), Validators.max(10)]],
       Comments: [''],
     });
 
     this.CounsellingRemarksForm = this.fb.group({
+      Comments: ['', Validators.required],
+    });
+    this.EvaluationForm = this.fb.group({
       Comments: ['', Validators.required],
     });
 
@@ -436,7 +543,7 @@ export class DynamicDashboardComponent implements OnInit {
           const emp = response.item1[0];
           this.EmployeeDetails  = emp;
           this.EmployeeName     = emp.employeeName;
-          this.EmployeeCode     =  String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
+          this.EmployeeCode     = String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
           this.ContactNoX       = emp.contactNo;
           this.Department       = emp.department;
           this.DepartmentName   = emp.departmentName;
@@ -465,9 +572,9 @@ export class DynamicDashboardComponent implements OnInit {
       next: response => {
         this.AllApplications = Array.isArray(response?.item1) ? response.item1 : [];
 
-        this.AllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | ''; }) => app.dealingFaculty==this.EmployeeCode);
-        this.AllAuthorityApplications =  response.item1.filter((app: { dealingAuthority: string | ''; }) => app.dealingAuthority==this.EmployeeCode);
-        this.AllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | '';  isLocked: string | ''; }) => app.dealingHODId==this.EmployeeCode && app.isForwardtoHOD=='1' && app.isLocked != 'True');
+        this.AllFacultyApplications = this.FilterAllFacultyApplications =  response.item1.filter((app: { dealingFaculty: string | ''; }) => app.dealingFaculty==this.EmployeeCode);
+        this.AllAuthorityApplications = this.FilterAllAuthorityApplications = response.item1.filter((app: { dealingAuthority: string | ''; }) => app.dealingAuthority==this.EmployeeCode);
+        this.AllHODApplications =  this.FilterAllHODApplications= response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | '';  isLocked: string | ''; }) => app.dealingHODId==this.EmployeeCode && app.isForwardtoHOD=='1' && app.isLocked != 'True');
         this.AllHOWApplications = response.item1.filter((app: { dealingHow: string | ''; isForwardedtoHOW: string | ''; isLocked: string | ''; }) => app.dealingHow==this.EmployeeCode && app.isForwardedtoHOW=='1'  );  
          this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0);
         this.enrichAndFilterApplications();
@@ -485,6 +592,7 @@ export class DynamicDashboardComponent implements OnInit {
     ).subscribe({
       next: response => {
         this.AllAuthorityRemarks = Array.isArray(response?.item1) ? response.item1 : [];
+        
         this.cd.detectChanges();
       },
       error: err => this.LoginFailed(err),
@@ -524,13 +632,13 @@ export class DynamicDashboardComponent implements OnInit {
  
     let hasFacultyRows = false;
 
-    this.AllApplications = this.AllApplications.map(app => {
+    this.AllApplications = this.FilterAllApplications =  this.AllApplications.map(app => {
       const authority = this.normalise(app.dealingAuthority);
       const faculty   = this.normalise(app.dealingFaculty);
       const hodId     = this.normalise(app.dealingHODId);
       const how       = this.normalise(app.dealingHow);
 
-      this.UniversityOption1 = this.normalise(app.universityOption1) ;
+      this.UniversityOption1 = this.normalise(app.universityOption1);
       this.UniversityOption2 = this.normalise(app.universityOption2);
       this.UniversityOption3 = this.normalise(app.universityOption3);
       
@@ -556,11 +664,8 @@ export class DynamicDashboardComponent implements OnInit {
       // HoW row: DealingHow === empCode
       app._isHoW = emp !== null && how === emp && hodId !== emp; // HoW role is exclusive of HOD role
 
-         app._isHoW =
-        emp !== null &&
-        authority !== emp &&
-        hodId !== emp &&
-        how   == emp;
+      app._isHoW =         emp !== null &&        authority !== emp &&        hodId !== emp &&        how == emp;
+
 
       if (app._isFaculty) hasFacultyRows = true;
 
@@ -577,8 +682,7 @@ export class DynamicDashboardComponent implements OnInit {
     // ── Raise global role flags from the finalised per-row values ────────────
     this.AllApplications.forEach(app => {
       if (app._isCounsellor) this.isDealingAuthority = true;
-      if (app._isFaculty)    
-        this.isdealingFaculty   = true;
+      if (app._isFaculty)    this.isdealingFaculty   = true;
       if (app._isHOD)        this.isHOD              = true;
       if (app._isHoW)        this.isHoW              = true;
     });
@@ -608,9 +712,10 @@ export class DynamicDashboardComponent implements OnInit {
   private buildPageTitle(): void {
     var roles: any='';
     if (this.isDealingAuthority) roles='Counsellor';
-    if (this.isdealingFaculty)   roles='Faculty';
-    if (this.isHOD)             roles='HOD';
-    if (this.isHoW)              roles='HoW';    
+    else if (this.isdealingFaculty)   roles='Faculty';
+    else if (this.isHOD)             roles='HOD';
+    else if (this.isHoW)              roles='HoW';    
+    else if(!this.isdealingFaculty || !this.isdealingFaculty || !this.isHOD || !this.isHoW ) roles='Semester Exchange Admin'
 
     this.pageTitle = roles.length
       ? `** ${roles} Dashboard **`
@@ -1154,7 +1259,6 @@ submitEvaluationForm(): void {
     );
 
     // alert(JSON.stringify(this.selectedRemarksEvaluations));
-    console.log(JSON.stringify(this.selectedRemarksEvaluations));
     // ── Open modal ───────────────────────────────────────────────────────────
     this.currentModalRef = this.modalService.open(this.ViewRemarksModal, {
       size: 'xl',
@@ -1177,6 +1281,14 @@ submitEvaluationForm(): void {
       r?.ApprovalRemarks ||
       row.approvalRemarks ||
       r?.academicsMarks
+    );
+  }
+  hasAnyERemarks(row: Application): boolean {
+    const r = this.AllAuthorityRemarks.find(x => x.dealingUserInterviewRemarks.length >0 || x.dealingHODInterviewRemarks.length >0  );
+    return !!(
+      row._isFaculty || row._isHOD || row._isHoW ||
+      r?.dealingUserInterviewRemarks ||
+      r?.dealingHODInterviewRemarks  
     );
   }
 
