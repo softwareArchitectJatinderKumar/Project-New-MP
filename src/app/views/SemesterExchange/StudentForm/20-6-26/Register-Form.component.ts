@@ -629,45 +629,45 @@ export class RegisterFormcomponent implements OnInit {
       // formData.append("PassportDocumentPath", 'NA');
     }
 
-    formData.append("IsVisaRejected", formValue.IsVisaRejected || 'NA');
+    formData.append("IsVisaRejected", formValue.IsVisaRejected);
     if (formValue.IsVisaRejected === 'Yes') {
-      formData.append("VisaRejectedReason", formValue.VisaRejectedReason || 'NA');
-      formData.append("VisaRejectedCountry", formValue.VisaRejectedCountry || 'NA');
+      formData.append("VisaRejectedReason", formValue.VisaRejectedReason);
+      formData.append("VisaRejectedCountry", formValue.VisaRejectedCountry);
     } else {
       formData.append("VisaRejectedReason", 'NA');
       formData.append("VisaRejectedCountry", 'NA');
     }
 
-    formData.append("EnglishTestType", formValue.EnglishTestType || 'NA');
+    formData.append("EnglishTestType", formValue.EnglishTestType);
     if (['PTE', 'DULINGO', 'IELTS', 'TOFEL'].includes(formValue.EnglishTestType)) {
-      formData.append("EnglishTestName", formValue.TestName || 'NA');
-      formData.append("SpeakingScore", formValue.SpeakingScore || 'NA');
-      formData.append("ListeningScore", formValue.ListeningScore || 'NA');
-      formData.append("ReadingScore", formValue.ReadingScore || 'NA');
-      formData.append("WritingScore", formValue.WritingScore || 'NA');
-      formData.append("OverallScore", formValue.OverallScore || 'NA');
+      formData.append("EnglishTestName", formValue.TestName);
+      formData.append("SpeakingScore", formValue.SpeakingScore);
+      formData.append("ListeningScore", formValue.ListeningScore);
+      formData.append("ReadingScore", formValue.ReadingScore);
+      formData.append("WritingScore", formValue.WritingScore);
+      formData.append("OverallScore", formValue.OverallScore);
       formData.append("EnglishTestYear", formValue.EnglishTestYear);
       formData.append("TestDate", formValue.TestDate);
     }
     if (formValue.EnglishTestType === 'Appeared') {
-      formData.append("EnglishTestName", formValue.TestName || 'NA');
-      formData.append("SpeakingScore", formValue.SpeakingScore || 'NA');
-      formData.append("ListeningScore", formValue.ListeningScore || 'NA');
-      formData.append("ReadingScore", formValue.ReadingScore || 'NA');
-      formData.append("WritingScore", formValue.WritingScore || 'NA');
-      formData.append("OverallScore", formValue.OverallScore || 'NA');
+      formData.append("EnglishTestName", formValue.TestName );
+      formData.append("SpeakingScore", formValue.SpeakingScore );
+      formData.append("ListeningScore", formValue.ListeningScore);
+      formData.append("ReadingScore", formValue.ReadingScore);
+      formData.append("WritingScore", formValue.WritingScore);
+      formData.append("OverallScore", formValue.OverallScore);
       formData.append("EnglishTestYear", formValue.TestDate);
       formData.append("TestDate", formValue.TestDate);
     }
     else {
-      formData.append("EnglishTestName", 'NA');
-      formData.append("SpeakingScore", 'NA');
-      formData.append("ListeningScore", 'NA');
-      formData.append("ReadingScore", 'NA');
-      formData.append("WritingScore", 'NA');
-      formData.append("OverallScore", 'NA');
-      formData.append("EnglishTestYear", 'NA');
-      formData.append("TestDate", 'NA');
+      formData.append("EnglishTestName", '');
+      formData.append("SpeakingScore", '');
+      formData.append("ListeningScore", '');
+      formData.append("ReadingScore", '');
+      formData.append("WritingScore", '');
+      formData.append("OverallScore", '');
+      formData.append("EnglishTestYear", '');
+      formData.append("TestDate", '');
 
     }
 
@@ -677,9 +677,9 @@ export class RegisterFormcomponent implements OnInit {
     if (formValue.SponsorType === 'Other') {
       formData.append("IsSelfFunded", 'False');
       formData.append("SponsorType", 'Other');
-      formData.append("SponsorName", formValue.SponsorName || 'NA');
-      formData.append("SponsorRelation", formValue.SponsorRelation || 'NA');
-      formData.append("SponsorContact", formValue.SponsorContact || 'NA'); // This field is not in the form, so default to 'NA'
+      formData.append("SponsorName", formValue.SponsorName );
+      formData.append("SponsorRelation", formValue.SponsorRelation);
+      formData.append("SponsorContact", formValue.SponsorContact); // This field is not in the form, so default to 'NA'
       formData.append("SponsorEmail", formValue.SponsorEmail); // This field is not in the form, so default to 'NA'
     } else {
       formData.append("IsSelfFunded", 'True');
@@ -702,12 +702,12 @@ export class RegisterFormcomponent implements OnInit {
     formData.append("EnglishProofData", this.EnglishProofData);
     formData.append("EnglishProofFileName", this.EnglishProofFileName);
 
-    formData.append("RelativeCountryName", formValue.RelativeCountryName || 'NA');
-    formData.append("RelativeName", formValue.RelativeName || 'NA');
-    formData.append("RelativeEmail", formValue.RelativeEmail || 'NA');
-    formData.append("RelativePhone", formValue.RelativePhone || 'NA');
-    formData.append("RelativeRelation", formValue.RelativeRelation || 'NA'); // Added RelativeRelation
-    formData.append("HasRelativeDetails", formValue.HasRelativeDetails || 'NA'); // Added HasRelativeDetails
+    formData.append("RelativeCountryName", formValue.RelativeCountryName);
+    formData.append("RelativeName", formValue.RelativeName);
+    formData.append("RelativeEmail", formValue.RelativeEmail);
+    formData.append("RelativePhone", formValue.RelativePhone);
+    formData.append("RelativeRelation", formValue.RelativeRelation); // Added RelativeRelation
+    formData.append("HasRelativeDetails", formValue.HasRelativeDetails); // Added HasRelativeDetails
 
       // if counselling authority is required / selected, attach full object
         if (this.showCounsellingAuthority && this.form.value.CounsellingAuthority) {

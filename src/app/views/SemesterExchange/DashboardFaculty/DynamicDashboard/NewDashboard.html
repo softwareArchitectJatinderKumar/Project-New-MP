@@ -268,7 +268,7 @@
                     </button> -->
                     <!-- b) Submit Evaluation Remarks — was missing for Faculty (req #2) -->
                     <button class="btn btn-secondary btn-sm me-1 mb-1"
-                    [disabled]="hasAnyERemarks(row)"  [disabled]="hasAnyERemarks(row)"
+                    [disabled]="hasAnyERemarks(row)" 
                         (click)="UploadEvaluationRemarks(row, 'Faculty')">
                         <i class="bi bi-clipboard-check me-1"></i>Submit Evaluation
                     </button>
@@ -438,7 +438,7 @@
                             <i class="bi bi-eye me-1"></i>View Remarks
                         </button>
                         <!-- b) Submit Evaluation Remarks -->
-                        <button class="btn btn-primary btn-sm me-1 mb-1"  [disabled]="hasAnyERemarks(row)"
+                        <button class="btn btn-primary btn-sm me-1 mb-1"
                             (click)="UploadEvaluationRemarks(row, 'HOD')">
                             <i class="bi bi-clipboard-check me-1"></i>Submit Evaluation
                         </button>
@@ -784,7 +784,7 @@
                     </button>
                     <!-- c) Submit Evaluation Remarks -->
                     <button class="btn btn-primary btn-sm me-1 mb-1"
-                        (click)="UploadEvaluationRemarks(row, 'HOW')"  [disabled]="hasAnyERemarks(row)">
+                        (click)="UploadEvaluationRemarks(row, 'HOW')">
                         <i class="bi bi-clipboard-check me-1"></i>Submit Evaluation
                     </button>
                     <!-- d) Accept -->

@@ -20,7 +20,7 @@ import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
 import * as XLSX from 'xlsx';
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
- 
+
 interface Application {
   // Core identity
   applicationId: string;
@@ -67,7 +67,7 @@ interface Application {
 
 }
 
- 
+
 interface AuthorityRemarks {
   registrationNo: string;
   applicationId: string;
@@ -140,17 +140,17 @@ interface AggregatedRemarks {
 })
 export class DynamicDashboardComponent implements OnInit {
 
-FilterAllHOWApplications: Application[] = [];
-searchQueryMyHod: any;
-    searchMyHod() {
-   
+  FilterAllHOWApplications: Application[] = [];
+  searchQueryMyHod: any;
+  searchMyHod() {
+
     const query = this.searchQueryMyHod.trim().toLowerCase();
     // console.log(JSON.stringify(this.MouActivityData))
     this.FilterAllHOWApplications = this.AllHOWApplications.filter(item => {
       return Object.entries(item).some(([key, val]) => {
         if (val !== null && val !== undefined) {
           let valueString = String(val).toLowerCase();
-   
+
           return valueString.includes(query);
         }
         return false;
@@ -161,17 +161,17 @@ searchQueryMyHod: any;
 
 
 
-FilterAllAuthorityApplications: Application[] = [];
-searchQueryAuthority: any;
-    searchAuthority() {
-   
+  FilterAllAuthorityApplications: Application[] = [];
+  searchQueryAuthority: any;
+  searchAuthority() {
+
     const query = this.searchQueryAuthority.trim().toLowerCase();
     // console.log(JSON.stringify(this.MouActivityData))
     this.FilterAllAuthorityApplications = this.AllAuthorityApplications.filter(item => {
       return Object.entries(item).some(([key, val]) => {
         if (val !== null && val !== undefined) {
           let valueString = String(val).toLowerCase();
-   
+
           return valueString.includes(query);
         }
         return false;
@@ -184,15 +184,15 @@ searchQueryAuthority: any;
 
   FilterAllFacultyApplications: Application[] = [];
   searchQueryFaculty: any;
-    searchFaculty() {
-   
+  searchFaculty() {
+
     const query = this.searchQueryFaculty.trim().toLowerCase();
     // console.log(JSON.stringify(this.MouActivityData))
     this.FilterAllFacultyApplications = this.AllFacultyApplications.filter(item => {
       return Object.entries(item).some(([key, val]) => {
         if (val !== null && val !== undefined) {
           let valueString = String(val).toLowerCase();
-   
+
           return valueString.includes(query);
         }
         return false;
@@ -203,15 +203,15 @@ searchQueryAuthority: any;
 
 
   searchQuery: any;
-    search() {
-   
+  search() {
+
     const query = this.searchQuery.trim().toLowerCase();
     // console.log(JSON.stringify(this.MouActivityData))
     this.FilterAllHODApplications = this.AllHODApplications.filter(item => {
       return Object.entries(item).some(([key, val]) => {
         if (val !== null && val !== undefined) {
           let valueString = String(val).toLowerCase();
-   
+
           return valueString.includes(query);
         }
         return false;
@@ -219,15 +219,15 @@ searchQueryAuthority: any;
     });
   }
   searchQuery2: any;
-    search2() {
-   
+  search2() {
+
     const query = this.searchQuery2.trim().toLowerCase();
-    
+
     this.FilterAllApplications = this.AllApplications.filter(item => {
       return Object.entries(item).some(([key, val]) => {
         if (val !== null && val !== undefined) {
           let valueString = String(val).toLowerCase();
-   
+
           return valueString.includes(query);
         }
         return false;
@@ -236,7 +236,7 @@ searchQueryAuthority: any;
   }
 
   exportToExcel(data: any[]): void {
-    const fileName = 'SemesterExchange-Report.xlsx'; 
+    const fileName = 'SemesterExchange-Report.xlsx';
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
@@ -244,106 +244,106 @@ searchQueryAuthority: any;
   }
 
   // added on 17-6-26 
-    AcceptForm!: FormGroup;
+  AcceptForm!: FormGroup;
 
-    UniversitySelected: any;
-    UniversityOption1: any; 
-    UniversityOption2: any; 
-    UniversityOption3: any; 
-    selectedId: any;
-    selectedRegNo:any;
+  UniversitySelected: any;
+  UniversityOption1: any;
+  UniversityOption2: any;
+  UniversityOption3: any;
+  selectedId: any;
+  selectedRegNo: any;
 
-    selectedApplication:any;
+  selectedApplication: any;
 
- acceptApplication(application: Application): void {
+  acceptApplication(application: Application): void {
 
-  this.selectedApplication = application;
+    this.selectedApplication = application;
 
-  this.selectedId = application.applicationId;
-  this.selectedRegNo = application.registrationNo;
+    this.selectedId = application.applicationId;
+    this.selectedRegNo = application.registrationNo;
 
-  this.AcceptForm.reset();
+    this.AcceptForm.reset();
 
-  this.modalService.open(this.AcceptModal, {
-    size: 'lg',
-    backdrop: 'static'
-  });
-}
-
- submitAcceptForm(): void {
-
-  if (this.AcceptForm.invalid) {
-    this.AcceptForm.markAllAsTouched();
-    return;
+    this.modalService.open(this.AcceptModal, {
+      size: 'lg',
+      backdrop: 'static'
+    });
   }
 
-  this.loadingIndicator = true;
-  const startTime = Date.now();
+  submitAcceptForm(): void {
 
-  const fd = new FormData();
+    if (this.AcceptForm.invalid) {
+      this.AcceptForm.markAllAsTouched();
+      return;
+    }
 
-  fd.append(
-    'RegistrationNo',
-    this.selectedApplication.registrationNo
-  );
+    this.loadingIndicator = true;
+    const startTime = Date.now();
 
-  fd.append(
-    'UniversitySelected',
-    this.AcceptForm.get('UniversitySelected')?.value
-  );
+    const fd = new FormData();
 
-  fd.append('Action', 'Accept');
+    fd.append(
+      'RegistrationNo',
+      this.selectedApplication.registrationNo
+    );
 
-  this.studentService.SendApproveRequest(fd)
-    .pipe(
-      finalize(() => this.stopLoader(startTime))
-    )
-    .subscribe({
-      next: (data: any) => {
+    fd.append(
+      'UniversitySelected',
+      this.AcceptForm.get('UniversitySelected')?.value
+    );
 
-        const msg = data?.item1?.[0]?.msg;
+    fd.append('Action', 'Accept');
 
-        if (msg === 'Approved') {
+    this.studentService.SendApproveRequest(fd)
+      .pipe(
+        finalize(() => this.stopLoader(startTime))
+      )
+      .subscribe({
+        next: (data: any) => {
 
-          Swal.fire(
-            'Success!',
-            'Application accepted successfully!',
-            'success'
-          ).then(() => {
+          const msg = data?.item1?.[0]?.msg;
 
-            this.modalService.dismissAll();
+          if (msg === 'Approved') {
 
-            this.getSEAllApplications();
-          });
+            Swal.fire(
+              'Success!',
+              'Application accepted successfully!',
+              'success'
+            ).then(() => {
 
-        } else if (msg === 'Disapproved') {
+              this.modalService.dismissAll();
 
-          Swal.fire(
-            'No Change!',
-            'The application status was not changed.',
-            'info'
-          );
+              this.getSEAllApplications();
+            });
 
-        } else {
+          } else if (msg === 'Disapproved') {
+
+            Swal.fire(
+              'No Change!',
+              'The application status was not changed.',
+              'info'
+            );
+
+          } else {
+
+            Swal.fire(
+              'Error!',
+              'Failed to accept application.',
+              'error'
+            );
+          }
+        },
+
+        error: () => {
 
           Swal.fire(
             'Error!',
-            'Failed to accept application.',
+            'An error occurred while trying to accept the application.',
             'error'
           );
         }
-      },
-
-      error: () => {
-
-        Swal.fire(
-          'Error!',
-          'An error occurred while trying to accept the application.',
-          'error'
-        );
-      }
-    });
-}
+      });
+  }
 
 
 
@@ -416,9 +416,9 @@ searchQueryAuthority: any;
 
   // ── Global role flags ────────────────────────────────────────────────────────
   isDealingAuthority = false;   // Counsellor
-  isdealingFaculty   = false;   // Faculty
-  isHOD              = false;
-  isHoW              = false;
+  isdealingFaculty = false;   // Faculty
+  isHOD = false;
+  isHoW = false;
 
   // ── Employee info ────────────────────────────────────────────────────────────
   EmployeeCode: string | null = null;
@@ -431,9 +431,9 @@ searchQueryAuthority: any;
   Department: string | null = null;
 
   // ── Form submission flags ────────────────────────────────────────────────────
-  isEvaluationFormSubmitted  = false;
+  isEvaluationFormSubmitted = false;
   isCounsellingFormSubmitted = false;
-  isAddRemarksFormSubmitted  = false;
+  isAddRemarksFormSubmitted = false;
 
   // ── Selected row context (used by all modals) ────────────────────────────────
   ApplicationId: string | null = null;
@@ -441,11 +441,11 @@ searchQueryAuthority: any;
   RemarksBy: string | null = null;
 
   // ── Modal refs ───────────────────────────────────────────────────────────────
-  @ViewChild('EvaluationModal')        EvaluationModal!: TemplateRef<any>;
+  @ViewChild('EvaluationModal') EvaluationModal!: TemplateRef<any>;
   @ViewChild('CounsellingRemarksModal') CounsellingRemarksModal!: TemplateRef<any>;
-  @ViewChild('AddRemarksModal')        AddRemarksModal!: TemplateRef<any>;
-  @ViewChild('ViewRemarksModal')       ViewRemarksModal!: TemplateRef<any>;
-  @ViewChild('AcceptModal')       AcceptModal!: TemplateRef<any>;
+  @ViewChild('AddRemarksModal') AddRemarksModal!: TemplateRef<any>;
+  @ViewChild('ViewRemarksModal') ViewRemarksModal!: TemplateRef<any>;
+  @ViewChild('AcceptModal') AcceptModal!: TemplateRef<any>;
 
   private currentModalRef: NgbModalRef | null = null;
 
@@ -463,7 +463,7 @@ searchQueryAuthority: any;
     private modalService: NgbModal,
     private mouDocumentsService: MouDocumentsService,
     private title: Title
-  ) {}
+  ) { }
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────────
 
@@ -489,11 +489,11 @@ searchQueryAuthority: any;
 
   private initializeForms(): void {
     this.EvaluationForm = this.fb.group({
-      AcademicsMarks:           [null, [Validators.required, Validators.min(0), Validators.max(10)]],
+      AcademicsMarks: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
       CommunicationSkillsMarks: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
-      AttitudeMarks:            [null, [Validators.required, Validators.min(0), Validators.max(10)]],
-      ExtraCurricularMarks:     [null, [Validators.required, Validators.min(0), Validators.max(10)]],
-      KnowledgeMarks:           [null, [Validators.required, Validators.min(0), Validators.max(10)]],
+      AttitudeMarks: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
+      ExtraCurricularMarks: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
+      KnowledgeMarks: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
       Comments: [''],
     });
 
@@ -545,13 +545,13 @@ searchQueryAuthority: any;
       next: response => {
         if (response?.item1?.length > 0) {
           const emp = response.item1[0];
-          this.EmployeeDetails  = emp;
-          this.EmployeeName     = emp.employeeName;
-          this.EmployeeCode     = String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
-          this.ContactNoX       = emp.contactNo;
-          this.Department       = emp.department;
-          this.DepartmentName   = emp.departmentName;
-          this.UserRole         = emp.userRole;
+          this.EmployeeDetails = emp;
+          this.EmployeeName = emp.employeeName;
+          this.EmployeeCode = '28243';//String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
+          this.ContactNoX = emp.contactNo;
+          this.Department = emp.department;
+          this.DepartmentName = emp.departmentName;
+          this.UserRole = emp.userRole;
 
           // Fetch applications and remarks in parallel
           this.getSEAllApplications();
@@ -576,11 +576,13 @@ searchQueryAuthority: any;
       next: response => {
         this.AllApplications = Array.isArray(response?.item1) ? response.item1 : [];
 
-        this.AllFacultyApplications = this.FilterAllFacultyApplications =  response.item1.filter((app: { dealingFaculty: string | ''; }) => app.dealingFaculty==this.EmployeeCode);
-        this.AllAuthorityApplications = this.FilterAllAuthorityApplications = response.item1.filter((app: { dealingAuthority: string | ''; }) => app.dealingAuthority==this.EmployeeCode);
-        this.AllHODApplications =  this.FilterAllHODApplications= response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | '';  isLocked: string | ''; }) => app.dealingHODId==this.EmployeeCode && app.isForwardtoHOD=='1' && app.isLocked != 'True');
-        this.AllHOWApplications = response.item1.filter((app: { dealingHow: string | ''; isForwardedtoHOW: string | ''; isLocked: string | ''; }) => app.dealingHow==this.EmployeeCode && app.isForwardedtoHOW=='1'  );  
-         this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0);
+        this.AllFacultyApplications = this.FilterAllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | ''; }) => app.dealingFaculty == this.EmployeeCode);
+        this.AllAuthorityApplications = this.FilterAllAuthorityApplications = response.item1.filter((app: { dealingAuthority: string | ''; }) => app.dealingAuthority == this.EmployeeCode);
+        
+        this.AllHODApplications = this.FilterAllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | ''; isLocked: string | ''; isApproved: string | ''; }) => app.dealingHODId == this.EmployeeCode && app.isForwardtoHOD == '1' && app.isLocked != 'True' && app.isLocked != 'False' ) ;
+
+        this.AllHOWApplications = response.item1.filter((app: { dealingHow: string | ''; isForwardedtoHOW: string | ''; isLocked: string | ''; }) => app.dealingHow == this.EmployeeCode && app.isForwardedtoHOW == '1');
+        this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0);
         this.enrichAndFilterApplications();
       },
       error: err => this.LoginFailed(err),
@@ -596,14 +598,14 @@ searchQueryAuthority: any;
     ).subscribe({
       next: response => {
         this.AllAuthorityRemarks = Array.isArray(response?.item1) ? response.item1 : [];
-        
+
         this.cd.detectChanges();
       },
       error: err => this.LoginFailed(err),
     });
   }
 
-  
+
   private GetAllApplicationsforHOD(): void {
     this.loadingIndicator = true;
     const startTime = Date.now();
@@ -621,38 +623,38 @@ searchQueryAuthority: any;
   }
 
   // ── Role Enrichment & Filtering ───────────────────────────────────────────────
- 
+
   private enrichAndFilterApplications(): void {
     this.AllApplications = this.AllApplications || [];
 
     const emp = this.EmployeeCode ? this.EmployeeCode.trim() : null;
 
     // Reset all global role flags
-    this.isHOD              = false;
-    this.isHoW              = false;
-    this.isdealingFaculty   = false;
+    this.isHOD = false;
+    this.isHoW = false;
+    this.isdealingFaculty = false;
     this.isDealingAuthority = false;
 
- 
+
     let hasFacultyRows = false;
 
-    this.AllApplications = this.FilterAllApplications =  this.AllApplications.map(app => {
+    this.AllApplications = this.FilterAllApplications = this.AllApplications.map(app => {
       const authority = this.normalise(app.dealingAuthority);
-      const faculty   = this.normalise(app.dealingFaculty);
-      const hodId     = this.normalise(app.dealingHODId);
-      const how       = this.normalise(app.dealingHow);
+      const faculty = this.normalise(app.dealingFaculty);
+      const hodId = this.normalise(app.dealingHODId);
+      const how = this.normalise(app.dealingHow);
 
       this.UniversityOption1 = this.normalise(app.universityOption1);
       this.UniversityOption2 = this.normalise(app.universityOption2);
       this.UniversityOption3 = this.normalise(app.universityOption3);
-      
+
       // Counsellor row: DealingAuthority === empCode
       //   AND not acting as HOD or HoW on this same row
       app._isCounsellor =
         emp !== null &&
         authority === emp &&
         hodId !== emp &&
-        how   !== emp;
+        how !== emp;
 
       // Faculty row: DealingFaculty === empCode
       //   AND not acting as HOD or HoW on this same row
@@ -660,7 +662,7 @@ searchQueryAuthority: any;
         emp !== null &&
         faculty === emp &&
         hodId !== emp &&
-        how   !== emp;
+        how !== emp;
 
       // HOD row: DealingHODId === empCode
       app._isHOD = emp !== null && hodId === emp;
@@ -668,7 +670,7 @@ searchQueryAuthority: any;
       // HoW row: DealingHow === empCode
       app._isHoW = emp !== null && how === emp && hodId !== emp; // HoW role is exclusive of HOD role
 
-      app._isHoW =         emp !== null &&        authority !== emp &&        hodId !== emp &&        how == emp;
+      app._isHoW = emp !== null && authority !== emp && hodId !== emp && how == emp;
 
 
       if (app._isFaculty) hasFacultyRows = true;
@@ -676,7 +678,7 @@ searchQueryAuthority: any;
       return app;
     });
 
- 
+
     if (hasFacultyRows) {
       this.AllApplications.forEach(app => {
         if (app._isCounsellor) { app._isCounsellor = false; }
@@ -686,9 +688,9 @@ searchQueryAuthority: any;
     // ── Raise global role flags from the finalised per-row values ────────────
     this.AllApplications.forEach(app => {
       if (app._isCounsellor) this.isDealingAuthority = true;
-      if (app._isFaculty)    this.isdealingFaculty   = true;
-      if (app._isHOD)        this.isHOD              = true;
-      if (app._isHoW)        this.isHoW              = true;
+      if (app._isFaculty) this.isdealingFaculty = true;
+      if (app._isHOD) this.isHOD = true;
+      if (app._isHoW) this.isHoW = true;
     });
 
     this.buildPageTitle();
@@ -709,17 +711,17 @@ searchQueryAuthority: any;
     }
 
     this.visibleApplications = this.AllApplications.filter(
-      a => a._isCounsellor || a._isFaculty || a._isHoW  
+      a => a._isCounsellor || a._isFaculty || a._isHoW
     );
   }
- 
+
   private buildPageTitle(): void {
-    var roles: any='';
-    if (this.isDealingAuthority) roles='Counsellor';
-    else if (this.isdealingFaculty)   roles='Faculty';
-    else if (this.isHOD)             roles='HOD';
-    else if (this.isHoW)              roles='HoW';    
-    else if(!this.isdealingFaculty || !this.isdealingFaculty || !this.isHOD || !this.isHoW ) roles='Semester Exchange Admin'
+    var roles: any = '';
+    if (this.isDealingAuthority) roles = 'Counsellor';
+    else if (this.isdealingFaculty) roles = 'Faculty';
+    else if (this.isHOD) roles = 'HOD';
+    else if (this.isHoW) roles = 'HoW';
+    else if (!this.isdealingFaculty || !this.isdealingFaculty || !this.isHOD || !this.isHoW) roles = 'Semester Exchange Admin'
 
     this.pageTitle = roles.length
       ? `** ${roles} Dashboard **`
@@ -729,14 +731,14 @@ searchQueryAuthority: any;
 
   // ── HOD Tab Switching ─────────────────────────────────────────────────────────
 
-  switchHodTab(tab: 'my' | 'all'| 'allApproved'): void {
+  switchHodTab(tab: 'my' | 'all' | 'allApproved'): void {
     this.hodActiveTab = tab;
     this.cd.detectChanges();
   }
 
-    // ── HOW Tab Switching ─────────────────────────────────────────────────────────
+  // ── HOW Tab Switching ─────────────────────────────────────────────────────────
 
-  switchHowTab(tab: 'my' |  'allApproved'): void {
+  switchHowTab(tab: 'my' | 'allApproved'): void {
     this.howActiveTab = tab;
     this.cd.detectChanges();
   }
@@ -978,8 +980,8 @@ searchQueryAuthority: any;
 
   UploadEvaluationRemarks(application: Application, remarksBy: string): void {
     this.RegistrationNo = application.registrationNo;
-    this.ApplicationId  = application.applicationId;
-    this.RemarksBy      = remarksBy;
+    this.ApplicationId = application.applicationId;
+    this.RemarksBy = remarksBy;
 
     this.EvaluationForm.reset();
     this.isEvaluationFormSubmitted = false;
@@ -987,104 +989,104 @@ searchQueryAuthority: any;
     this.currentModalRef = this.modalService.open(this.EvaluationModal, {
       size: 'lg', backdrop: 'static', keyboard: false,
     });
-    this.currentModalRef.result.then(() => this.getSEAllApplications()).catch(() => {});
+    this.currentModalRef.result.then(() => this.getSEAllApplications()).catch(() => { });
     this.cd.detectChanges();
   }
 
-submitEvaluationForm(): void {
-  this.isEvaluationFormSubmitted = true;
+  submitEvaluationForm(): void {
+    this.isEvaluationFormSubmitted = true;
 
-  if (this.EvaluationForm.invalid) {
-    Swal.fire(
-      'Validation Error',
-      'Please fill in all required fields correctly.',
-      'error'
-    ).then(() => {
-      window.location.reload();
-    });
-    return;
-  }
+    if (this.EvaluationForm.invalid) {
+      Swal.fire(
+        'Validation Error',
+        'Please fill in all required fields correctly.',
+        'error'
+      ).then(() => {
+        window.location.reload();
+      });
+      return;
+    }
 
-  this.loadingIndicator = true;
-  const startTime = Date.now();
+    this.loadingIndicator = true;
+    const startTime = Date.now();
 
-  const v = this.EvaluationForm.value;
-  const total = +v.AcademicsMarks + +v.CommunicationSkillsMarks +
-                +v.AttitudeMarks + +v.ExtraCurricularMarks +
-                +v.KnowledgeMarks;
+    const v = this.EvaluationForm.value;
+    const total = +v.AcademicsMarks + +v.CommunicationSkillsMarks +
+      +v.AttitudeMarks + +v.ExtraCurricularMarks +
+      +v.KnowledgeMarks;
 
-  const fd = new FormData();
-  fd.append('RegistrationNo', this.RegistrationNo || '');
-  fd.append('AcademicsMarks', v.AcademicsMarks);
-  fd.append('CommunicationSkillsMarks', v.CommunicationSkillsMarks);
-  fd.append('AttitudeMarks', v.AttitudeMarks);
-  fd.append('ExtraCurricularMarks', v.ExtraCurricularMarks);
-  fd.append('KnowledgeMarks', v.KnowledgeMarks);
-  fd.append('TotalMarks', total.toString());
-  fd.append('Comments', v.Comments || '');
-  fd.append('RemarksBy', this.RemarksBy || 'Unknown');
-  fd.append('DealingUId', this.EmployeeCode || 'Unknown');
+    const fd = new FormData();
+    fd.append('RegistrationNo', this.RegistrationNo || '');
+    fd.append('AcademicsMarks', v.AcademicsMarks);
+    fd.append('CommunicationSkillsMarks', v.CommunicationSkillsMarks);
+    fd.append('AttitudeMarks', v.AttitudeMarks);
+    fd.append('ExtraCurricularMarks', v.ExtraCurricularMarks);
+    fd.append('KnowledgeMarks', v.KnowledgeMarks);
+    fd.append('TotalMarks', total.toString());
+    fd.append('Comments', v.Comments || '');
+    fd.append('RemarksBy', this.RemarksBy || 'Unknown');
+    fd.append('DealingUId', this.EmployeeCode || 'Unknown');
 
-  this.ServicesSM.StudentEvalutionAddNew(fd)
-    .pipe(
-      finalize(() => this.stopLoader(startTime))
-    )
-    .subscribe({
-      next: (data: any) => {
+    this.ServicesSM.StudentEvalutionAddNew(fd)
+      .pipe(
+        finalize(() => this.stopLoader(startTime))
+      )
+      .subscribe({
+        next: (data: any) => {
 
-        const code = data?.item1?.[0]?.returnData;
+          const code = data?.item1?.[0]?.returnData;
 
-        if (code > 0) {
+          if (code > 0) {
 
-          Swal.fire(
-            'Success!',
-            'Evaluation Marks Updated Successfully',
-            'success'
-          ).then(() => {
-            this.currentModalRef?.close();
-            window.location.reload();
-          });
+            Swal.fire(
+              'Success!',
+              'Evaluation Marks Updated Successfully',
+              'success'
+            ).then(() => {
+              this.currentModalRef?.close();
+              window.location.reload();
+            });
 
-        } else if (code === '-1' || code === -1) {
+          } else if (code === '-1' || code === -1) {
 
-          Swal.fire(
-            'Info',
-            'Evaluation Marks Already Uploaded',
-            'info'
-          ).then(() => {
-            this.currentModalRef?.close();
-            window.location.reload();
-          });
+            Swal.fire(
+              'Info',
+              'Evaluation Marks Already Uploaded',
+              'info'
+            ).then(() => {
+              this.currentModalRef?.close();
+              window.location.reload();
+            });
 
-        } else {
+          } else {
 
+            Swal.fire(
+              'Error!',
+              'Unable to complete the request.',
+              'error'
+            ).then(() => {
+              window.location.reload();
+            });
+
+          }
+        },
+
+        error: () => {
           Swal.fire(
             'Error!',
-            'Unable to complete the request.',
+            'Unable to complete the request. Please try again later.',
             'error'
           ).then(() => {
             window.location.reload();
           });
-
         }
-      },
-
-      error: () => {
-        Swal.fire(
-          'Error!',
-          'Unable to complete the request. Please try again later.',
-          'error'
-        ).then(() => {
-          window.location.reload();
-        });
-      }
-    });
-}
+      });
+  }
   // ── Counselling Remarks (Counsellor submits) ──────────────────────────────────
 
   submitCounsellingRemarks(application: Application): void {
     this.RegistrationNo = application.registrationNo;
-    this.ApplicationId  = application.applicationId;
+    this.ApplicationId = application.applicationId;
 
     this.CounsellingRemarksForm.reset();
     this.isCounsellingFormSubmitted = false;
@@ -1097,7 +1099,7 @@ submitEvaluationForm(): void {
     this.currentModalRef = this.modalService.open(this.CounsellingRemarksModal, {
       size: 'lg', backdrop: 'static', keyboard: false,
     });
-    this.currentModalRef.result.then(() => this.getSEAllApplications()).catch(() => {});
+    this.currentModalRef.result.then(() => this.getSEAllApplications()).catch(() => { });
     this.cd.detectChanges();
   }
 
@@ -1112,9 +1114,9 @@ submitEvaluationForm(): void {
     const startTime = Date.now();
 
     const fd = new FormData();
-    fd.append('ApplicationId',      this.ApplicationId  || '');
+    fd.append('ApplicationId', this.ApplicationId || '');
     fd.append('CounsellingRemarks', this.CounsellingRemarksForm.value.Comments.trim());
-    fd.append('Action',             'Counsellor');
+    fd.append('Action', 'Counsellor');
 
     this.ServicesSM.UpdateCounsellingRemarks(fd).pipe(
       finalize(() => this.stopLoader(startTime))
@@ -1136,7 +1138,7 @@ submitEvaluationForm(): void {
 
   openAddRemarksModal(application: Application): void {
     this.RegistrationNo = application.registrationNo;
-    this.ApplicationId  = application.applicationId;
+    this.ApplicationId = application.applicationId;
 
     this.AddRemarksForm.reset();
     this.isAddRemarksFormSubmitted = false;
@@ -1144,7 +1146,7 @@ submitEvaluationForm(): void {
     this.currentModalRef = this.modalService.open(this.AddRemarksModal, {
       size: 'lg', backdrop: 'static', keyboard: false,
     });
-    this.currentModalRef.result.then(() => this.getSEAllApplications()).catch(() => {});
+    this.currentModalRef.result.then(() => this.getSEAllApplications()).catch(() => { });
     this.cd.detectChanges();
   }
 
@@ -1159,9 +1161,9 @@ submitEvaluationForm(): void {
     const startTime = Date.now();
 
     const fd = new FormData();
-    fd.append('ApplicationId',      this.ApplicationId  || '');
+    fd.append('ApplicationId', this.ApplicationId || '');
     fd.append('CounsellingRemarks', this.AddRemarksForm.value.Comments.trim());
-    fd.append('Action',             'Faculty');
+    fd.append('Action', 'Faculty');
 
     this.ServicesSM.UpdateCounsellingRemarks(fd).pipe(
       finalize(() => this.stopLoader(startTime))
@@ -1178,7 +1180,7 @@ submitEvaluationForm(): void {
       error: () => Swal.fire('Error!', 'Unable to complete the request. Please try again later.', 'error'),
     });
 
-    
+
   }
 
   // ── Unified View Remarks Modal ────────────────────────────────────────────────
@@ -1217,44 +1219,44 @@ submitEvaluationForm(): void {
     // ── Build AggregatedRemarks (shared fields only — no evaluation data) ────
     this.selectedRemarks = first
       ? {
-          registrationNo: row.registrationNo,
-          applicationId:  row.applicationId || first.applicationId || '',
-          dealingUId:    first.dealingUId || row.dealingUId || '',
-          // Counselling
-          counsellingRemarks: first.counsellingRemarks || row.counsellingRemarks || '',
-          counsellingDate:    first.counsellingDate    || row.counsellingDate    || '',
-          counsellingDone:    this.isTrue(first.counsellingStatus ?? row.counsellingStatus),
+        registrationNo: row.registrationNo,
+        applicationId: row.applicationId || first.applicationId || '',
+        dealingUId: first.dealingUId || row.dealingUId || '',
+        // Counselling
+        counsellingRemarks: first.counsellingRemarks || row.counsellingRemarks || '',
+        counsellingDate: first.counsellingDate || row.counsellingDate || '',
+        counsellingDone: this.isTrue(first.counsellingStatus ?? row.counsellingStatus),
 
-          // Faculty / Interview
-          facultyRemarks:
-            first.facultyRemarks || first.dealingUserInterviewRemarks || '',
+        // Faculty / Interview
+        facultyRemarks:
+          first.facultyRemarks || first.dealingUserInterviewRemarks || '',
 
-          // HOD
-          hodRemarks:      first.hodRemarks || first.dealingHODRemarks || first.dealingHODInterviewRemarks || '',
-          forwardedToHOD:  this.isTrue(first.isForwardtoHOD  ?? row.isForwardtoHOD),
+        // HOD
+        hodRemarks: first.hodRemarks || first.dealingHODRemarks || first.dealingHODInterviewRemarks || '',
+        forwardedToHOD: this.isTrue(first.isForwardtoHOD ?? row.isForwardtoHOD),
 
-          // HoW
-          howRemarks:      first.howRemarks || first.dealingHowRemarks || '',
-          forwardedToHoW:  this.isTrue(first.isForwardedtoHOW ?? row.isForwardedtoHOW),
+        // HoW
+        howRemarks: first.howRemarks || first.dealingHowRemarks || '',
+        forwardedToHoW: this.isTrue(first.isForwardedtoHOW ?? row.isForwardedtoHOW),
 
-          // Approval / Rejection
-          approvalRemarks: first.ApprovalRemarks || row.approvalRemarks || '',
-        }
+        // Approval / Rejection
+        approvalRemarks: first.ApprovalRemarks || row.approvalRemarks || '',
+      }
       : {
-          // No remarks row at all — still show the modal with inline app data
-          registrationNo:  row.registrationNo,
-          applicationId:   row.applicationId  || '',
-          dealingUId:     '',
-          counsellingRemarks: row.counsellingRemarks || '',
-          counsellingDate:    row.counsellingDate    || '',
-          counsellingDone:    this.isTrue(row.counsellingStatus),
-          facultyRemarks:     '',
-          hodRemarks:         '',
-          forwardedToHOD:     this.isTrue(row.isForwardtoHOD),
-          howRemarks:         '',
-          forwardedToHoW:     this.isTrue(row.isForwardedtoHOW),
-          approvalRemarks:    row.approvalRemarks || '',
-        };
+        // No remarks row at all — still show the modal with inline app data
+        registrationNo: row.registrationNo,
+        applicationId: row.applicationId || '',
+        dealingUId: '',
+        counsellingRemarks: row.counsellingRemarks || '',
+        counsellingDate: row.counsellingDate || '',
+        counsellingDone: this.isTrue(row.counsellingStatus),
+        facultyRemarks: '',
+        hodRemarks: '',
+        forwardedToHOD: this.isTrue(row.isForwardtoHOD),
+        howRemarks: '',
+        forwardedToHoW: this.isTrue(row.isForwardedtoHOW),
+        approvalRemarks: row.approvalRemarks || '',
+      };
 
     // ── All rows → one evaluation card each in the modal ────────────────────
     // Keep every row that has at least one evaluation mark populated.
@@ -1269,7 +1271,7 @@ submitEvaluationForm(): void {
       backdrop: 'static',
       keyboard: false,
     });
-    this.currentModalRef.result.catch(() => {});
+    this.currentModalRef.result.catch(() => { });
     this.cd.detectChanges();
   }
 
@@ -1288,11 +1290,11 @@ submitEvaluationForm(): void {
     );
   }
   hasAnyERemarks(row: Application): boolean {
-    const r = this.AllAuthorityRemarks.find(x => x.dealingUserInterviewRemarks.length >0 || x.dealingHODInterviewRemarks.length >0  );
+    const r = this.AllAuthorityRemarks.find(x => x.dealingUserInterviewRemarks.length > 0 || x.dealingHODInterviewRemarks.length > 0);
     return !!(
       row._isFaculty || row._isHOD || row._isHoW ||
       r?.dealingUserInterviewRemarks ||
-      r?.dealingHODInterviewRemarks  
+      r?.dealingHODInterviewRemarks
     );
   }
 
@@ -1315,7 +1317,7 @@ submitEvaluationForm(): void {
   }
 
   approvalClass(val: string): string {
-    if (this.isTrue(val))                                   return 'bg-success';
+    if (this.isTrue(val)) return 'bg-success';
     if (val === '0' || val === 'False' || val === 'false') return 'bg-danger';
     return 'bg-warning text-dark';
   }
@@ -1334,10 +1336,10 @@ submitEvaluationForm(): void {
 
   // ── Form Control Getters ──────────────────────────────────────────────────────
 
-  get evaluationFormControls()       { return this.EvaluationForm.controls; }
-  get counsellingRemarksFormControls(){ return this.CounsellingRemarksForm.controls; }
-  get addRemarksFormControls()       { return this.AddRemarksForm.controls; }
-  get addUniversitySelectedFormControls()       { return this.AcceptForm.controls; }
+  get evaluationFormControls() { return this.EvaluationForm.controls; }
+  get counsellingRemarksFormControls() { return this.CounsellingRemarksForm.controls; }
+  get addRemarksFormControls() { return this.AddRemarksForm.controls; }
+  get addUniversitySelectedFormControls() { return this.AcceptForm.controls; }
 
   // ── Error Helper ──────────────────────────────────────────────────────────────
 
