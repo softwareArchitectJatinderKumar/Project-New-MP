@@ -1,0 +1,474 @@
+<!-- ── Main container ─────────────────────────────────────── -->
+<div class="container-fluid mt-4" id="StudentDashboardWithTabs"
+     *ngIf="!isLoginFailed; else ErrorTemplate">
+  <div class="card shadow-lg p-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="text-primary m-0">My Dashboard</h2>
+      <div>
+        <span class="fs-4 me-3">Hi!</span>
+        <span class="fs-4 badge" style="background-color: #FD6C04;">
+          {{ studentProfile?.studentName }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Tab Nav -->
+    <ul class="nav nav-tabs mb-3" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link"
+                [class.active]="activeTab === 'application'"
+                (click)="selectTab('application')"
+                type="button" role="tab"
+                aria-controls="tab-application"
+                [attr.aria-selected]="activeTab === 'application'">
+          Application Details
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link"
+                [class.active]="activeTab === 'documents'"
+                (click)="selectTab('documents')"
+                type="button" role="tab"
+                aria-controls="tab-documents"
+                [attr.aria-selected]="activeTab === 'documents'">
+          Application Documents
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link"
+                [class.active]="activeTab === 'courses'"
+                [disabled]="isCoursesSectionDisabled"
+                (click)="selectTab('courses')"
+                type="button" role="tab"
+                aria-controls="tab-courses"
+                [attr.aria-selected]="activeTab === 'courses'">
+          Semester Exchanged Details
+        </button>
+      </li>
+    </ul>
+
+    <!-- Full-screen loader -->
+    <div *ngIf="isLoading" class="fullscreen-loader" role="status" aria-live="polite">
+      <div class="custom-spinner-overlay">
+        <div class="custom-spinner-content text-center">
+          <img src="assets/images/spinner.gif" alt="Loading…" />
+          <p>Loading…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Panes -->
+    <div class="tab-content">
+
+      <!-- ── TAB 1: Application Details ──────────────────── -->
+      <div id="tab-application"
+           class="tab-pane fade me-3"
+           [class.show]="activeTab === 'application'"
+           [class.active]="activeTab === 'application'"
+           role="tabpanel">
+
+        <!-- Student photo + section header -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="ms-5 mb-3 text-center">
+            <ng-container *ngIf="studentImage; else placeholderImg">
+              <img [src]="studentImage"
+                   alt="Student Photo"
+                   class="img-fluid rounded-circle border border-3 border-primary"
+                   style="width:130px;height:130px;object-fit:cover;" />
+            </ng-container>
+            <ng-template #placeholderImg>
+              <img src="https://placehold.co/150x150"
+                   alt="No photo available"
+                   class="img-thumbnail"
+                   style="max-width:150px;max-height:150px;object-fit:cover;" />
+            </ng-template>
+          </div>
+
+          <h2 class="text-info m-0">Application Details</h2>
+
+          <div>
+            <button class="btn btn-dark me-2"
+                    *ngIf="!isSection1Edit"
+                    (click)="enableSection1Edit()">Edit</button>
+            <button class="btn btn-primary"
+                    *ngIf="isSection1Edit"
+                    (click)="updateApplicationSection()"
+                    [disabled]="isLoading || applicationForm.invalid">Update</button>
+          </div>
+        </div>
+
+        <form [formGroup]="applicationForm" (ngSubmit)="updateApplicationSection()" novalidate>
+
+          <!-- Personal Details -->
+          <h5 class="mt-4 mb-3 text-info">Personal Details</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3"
+                 *ngFor="let key of ['applicationId','registrationNo','emailId','countryName','whatsAppNo','phoneNumber','parentContact']">
+              <label [for]="key" class="form-label fw-semibold">{{ labelFor(key) }}</label>
+              <input class="form-control"
+                     [type]="key.includes('email') ? 'email' : 'text'"
+                     [id]="key"
+                     [formControlName]="key"
+                     [readonly]="!isSection1Edit || key === 'registrationNo'"
+                     [class.is-invalid]="isFieldInvalid(key)" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalid(key)">
+                {{ getFirstError(key) }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Relative Details -->
+          <h5 class="mt-4 mb-3 text-info">Relative Details</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="relativeName" class="form-label fw-semibold">Relative Name</label>
+              <input class="form-control" id="relativeName" formControlName="relativeName"
+                     [readonly]="!isSection1Edit"
+                     [class.is-invalid]="isFieldInvalid('relativeName')" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('relativeName')">
+                {{ getFirstError('relativeName') }}
+              </div>
+            </div>
+
+            <ng-container *ngIf="showRelativeDetails">
+              <div class="col-md-4 mb-3">
+                <label for="relativeRelation" class="form-label fw-semibold">Relative Relation</label>
+                <input class="form-control" id="relativeRelation" formControlName="relativeRelation"
+                       [readonly]="!isSection1Edit"
+                       [class.is-invalid]="isFieldInvalid('relativeRelation')" />
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('relativeRelation')">
+                  {{ getFirstError('relativeRelation') }}
+                </div>
+              </div>
+
+              <div class="col-md-4 mb-3">
+                <label for="relativeCountry" class="form-label fw-semibold">Relative Country</label>
+                <select class="form-select" id="relativeCountry" formControlName="relativeCountry"
+                        [class.is-invalid]="isFieldInvalid('relativeCountry')">
+                  <option value="" disabled>Select a Country</option>
+                  <option *ngFor="let c of countriesList" [value]="c.name">{{ c.name }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('relativeCountry')">
+                  {{ getFirstError('relativeCountry') }}
+                </div>
+              </div>
+            </ng-container>
+          </div>
+
+          <!-- Sponsor Details -->
+          <h5 class="mt-4 mb-3 text-info">Sponsor Details</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="isSelfFunded" class="form-label fw-semibold">Sponsor Type</label>
+              <select class="form-select" id="isSelfFunded" formControlName="isSelfFunded"
+                      [class.is-invalid]="isFieldInvalid('isSelfFunded')">
+                <option value="" disabled>Select Sponsor Type</option>
+                <option value="Parent">Parent</option>
+                <option value="Relative">Relative</option>
+                <option value="Other">Other</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('isSelfFunded')">
+                {{ getFirstError('isSelfFunded') }}
+              </div>
+            </div>
+
+            <ng-container *ngIf="showSponsorDetails">
+              <div class="col-md-4 mb-3" *ngIf="isFieldInvalid('isSelfFunded')">
+                <label for="sponsorName" class="form-label fw-semibold">Sponsor Name</label>
+                <input class="form-control" id="sponsorName" formControlName="sponsorName"
+                       [readonly]="!isSection1Edit"
+                       [class.is-invalid]="isFieldInvalid('sponsorName')" />
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('sponsorName')">
+                  {{ getFirstError('sponsorName') }}
+                </div>
+              </div>
+
+              <div class="col-md-4 mb-3" *ngIf="isFieldInvalid('isSelfFunded')">
+                <label for="sponsorRelation" class="form-label fw-semibold">Sponsor Relation</label>
+                <input class="form-control" id="sponsorRelation" formControlName="sponsorRelation"
+                       [readonly]="!isSection1Edit"
+                       [class.is-invalid]="isFieldInvalid('sponsorRelation')" />
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('sponsorRelation')">
+                  {{ getFirstError('sponsorRelation') }}
+                </div>
+              </div>
+            </ng-container>
+          </div>
+
+          <!-- Visa Details -->
+          <h5 class="mt-4 mb-3 text-info">Visa Details</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="isVisaRejected" class="form-label fw-semibold">Visa Ever Been Rejected?</label>
+              <select class="form-select" id="isVisaRejected" formControlName="isVisaRejected"
+                      [class.is-invalid]="isFieldInvalid('isVisaRejected')">
+                <option value="" disabled>Select</option>
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('isVisaRejected')">
+                {{ getFirstError('isVisaRejected') }}
+              </div>
+            </div>
+
+            <div class="col-md-4 mb-3" *ngIf="isFieldInvalid('isVisaRejected')">
+              <label for="visaRejectedReason" class="form-label fw-semibold">Reason for Rejection</label>
+              <input class="form-control" id="visaRejectedReason" formControlName="visaRejectedReason"
+                     [readonly]="!isSection1Edit"
+                     [class.is-invalid]="isFieldInvalid('visaRejectedReason')" />
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('visaRejectedReason')">
+                {{ getFirstError('visaRejectedReason') }}
+              </div>
+            </div>
+
+            <div class="col-md-4 mb-3" *ngIf="isFieldInvalid('isVisaRejected')">
+              <label for="visaRejectedCountry" class="form-label fw-semibold">Country of Rejection</label>
+              <select class="form-select" id="visaRejectedCountry" formControlName="visaRejectedCountry"
+                      [class.is-invalid]="isFieldInvalid('visaRejectedCountry')">
+                <option value="" disabled>Select a Country</option>
+                <option *ngFor="let c of countriesList" [value]="c.name">{{ c.name }}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('visaRejectedCountry')">
+                {{ getFirstError('visaRejectedCountry') }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Passport Details -->
+          <h5 class="mt-4 mb-3 text-info">Passport Details</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="passportStatus" class="form-label fw-semibold">Passport Status</label>
+              <select class="form-select" id="passportStatus" formControlName="passportStatus"
+                      [class.is-invalid]="isFieldInvalid('passportStatus')">
+                <option value="" disabled>Select</option>
+                <option value="Applied">Applied</option>
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('passportStatus')">
+                {{ getFirstError('passportStatus') }}
+              </div>
+            </div>
+
+            <ng-container *ngIf="showPassportDetails">
+              <div class="col-md-4 mb-3">
+                <label for="passportNumber" class="form-label fw-semibold">Passport Number</label>
+                <input class="form-control" id="passportNumber" formControlName="passportNumber"
+                       [readonly]="!isSection1Edit"
+                       [class.is-invalid]="isFieldInvalid('passportNumber')" />
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('passportNumber')">
+                  {{ getFirstError('passportNumber') }}
+                </div>
+              </div>
+
+              <div class="col-md-4 mb-3">
+                <label for="passportIssueDate" class="form-label fw-semibold">Passport Issue Date</label>
+                <input class="form-control" id="passportIssueDate" formControlName="passportIssueDate"
+                       type="date" [readonly]="!isSection1Edit"
+                       [class.is-invalid]="isFieldInvalid('passportIssueDate')" />
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('passportIssueDate')">
+                  {{ getFirstError('passportIssueDate') }}
+                </div>
+              </div>
+
+              <div class="col-md-4 mb-3">
+                <label for="passportValidUpto" class="form-label fw-semibold">Passport Valid Up To</label>
+                <input class="form-control" id="passportValidUpto" formControlName="passportValidUpto"
+                       type="date" [readonly]="!isSection1Edit"
+                       [class.is-invalid]="isFieldInvalid('passportValidUpto')" />
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('passportValidUpto')">
+                  {{ getFirstError('passportValidUpto') }}
+                </div>
+              </div>
+            </ng-container>
+          </div>
+
+          <!-- English Test Details -->
+          <h5 class="mt-4 mb-3 text-info">English Test Details</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="englishTestType" class="form-label fw-semibold">English Proficiency Test</label>
+              <select class="form-select" id="englishTestType" formControlName="englishTestType"
+                      [class.is-invalid]="isFieldInvalid('englishTestType')">
+                <option value="">Select</option>
+                <option *ngFor="let t of englishTestTypes" [value]="t.value">{{ t.label }}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('englishTestType')">
+                {{ getFirstError('englishTestType') }}
+              </div>
+            </div>
+
+            <ng-container *ngIf="showEnglishScores">
+              <div class="col-md-4 mb-3" *ngFor="let key of ['speakingScore','listeningScore','readingScore','writingScore','overallScore','englishTestYear']">
+                <label [for]="key" class="form-label fw-semibold">{{ labelFor(key) }}</label>
+                <input class="form-control" [id]="key" [formControlName]="key"
+                       [readonly]="!isSection1Edit"
+                       [class.is-invalid]="isFieldInvalid(key)" />
+                <div class="invalid-feedback" *ngIf="isFieldInvalid(key)">
+                  {{ getFirstError(key) }}
+                </div>
+              </div>
+            </ng-container>
+          </div>
+
+          <!-- Financial & Declaration -->
+          <h5 class="mt-4 mb-3 text-info">Financial &amp; Declaration</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="availableFunds" class="form-label fw-semibold">Available Funds</label>
+              <select class="form-select" id="availableFunds" formControlName="availableFunds"
+                      [class.is-invalid]="isFieldInvalid('availableFunds')">
+                <option value="" disabled>Select</option>
+                <option *ngFor="let opt of availableFundsOptions" [value]="opt">{{ opt }}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('availableFunds')">
+                {{ getFirstError('availableFunds') }}
+              </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <div class="form-check mt-2">
+                <input type="checkbox" class="form-check-input" id="acceptPolicy"
+                       formControlName="acceptPolicy"
+                       [disabled]="!isSection1Edit"
+                       [class.is-invalid]="isFieldInvalid('acceptPolicy')" />
+                <label class="form-check-label" for="acceptPolicy">Declaration Status</label>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('acceptPolicy')">
+                  You must accept the policy.
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </form>
+      </div><!-- /tab-application -->
+
+      <!-- ── TAB 2: Documents ─────────────────────────────── -->
+      <div id="tab-documents"
+           class="tab-pane fade me-3"
+           [class.show]="activeTab === 'documents'"
+           [class.active]="activeTab === 'documents'"
+           role="tabpanel">
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="text-info m-0">Application Documents</h5>
+          <div>
+            <button class="btn btn-dark me-2" *ngIf="!isSection2Edit"
+                    (click)="enableSection2Edit()">Edit</button>
+            <button class="btn btn-primary" *ngIf="isSection2Edit"
+                    (click)="submitDocuments()"
+                    [disabled]="isLoading">Update Documents</button>
+          </div>
+        </div>
+
+        <span class="text-danger d-block mb-3">* All documents upload required.</span>
+
+        <!-- Document upload rows — driven by DOCUMENT_FIELDS config -->
+        <div class="row g-3">
+          <div class="col-md-4 mb-3"
+               *ngFor="let doc of documentFields; trackBy: trackByDocKey">
+            <label class="form-label fw-semibold">{{ doc.label }}</label>
+
+            <!-- View existing uploaded file -->
+            <div class="d-flex align-items-center gap-2 mb-1"
+                 *ngIf="stuApplication?.[doc.apiFileField]">
+              <a class="btn btn-sm btn-outline-secondary"
+                 [attr.href]="serverUrl + stuApplication![doc.apiFileField]"
+                 target="_blank"
+                 [attr.aria-label]="'View uploaded ' + doc.label">
+                <span class="material-icons md-18">description</span> View Uploaded
+              </a>
+            </div>
+
+            <!-- File picker -->
+            <input type="file"
+                   class="form-control"
+                   [disabled]="!isSection2Edit"
+                   (change)="onDocumentFilePicked($event, doc.key)" />
+
+            <!-- Newly picked filename confirmation -->
+            <small *ngIf="pickedFiles[doc.key]?.fileName" class="text-success d-block mt-1">
+              &#10003; {{ pickedFiles[doc.key].fileName }}
+            </small>
+          </div>
+        </div>
+
+      </div><!-- /tab-documents -->
+
+      <!-- ── TAB 3: Courses ───────────────────────────────── -->
+      <div id="tab-courses"
+           class="tab-pane fade"
+           [class.show]="activeTab === 'courses'"
+           [class.active]="activeTab === 'courses'"
+           role="tabpanel">
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="text-info m-0">Course Covered &amp; Uploads</h5>
+          <div>
+            <button class="btn btn-success me-2" (click)="addCourseRow()">Add Row</button>
+            <button class="btn btn-primary"
+                    (click)="saveAllCourseCovered()"
+                    [disabled]="isSavingCourses || courseRows.length === 0">
+              Save All
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Course Name</th>
+                <th>Course Code</th>
+                <th>Hours</th>
+                <th>Upload Document</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of courseRows; let i = index; trackBy: trackByCourseIndex">
+                <td>{{ i + 1 }}</td>
+                <td>
+                  <input class="form-control" [(ngModel)]="row.courseName" [name]="'courseName' + i" />
+                </td>
+                <td>
+                  <input class="form-control" [(ngModel)]="row.courseCode" [name]="'courseCode' + i" />
+                </td>
+                <td>
+                  <input type="number" min="0" class="form-control"
+                         [(ngModel)]="row.hours" [name]="'hours' + i" />
+                </td>
+                <td>
+                  <div class="d-flex gap-2 align-items-center">
+                    <input type="file" (change)="onCourseFilePicked($event, i)" />
+                    <a *ngIf="row.fileName" href="#" class="btn btn-outline-secondary btn-sm"
+                       (click)="downloadCourseFile(i, $event)">
+                      {{ row.fileName }}
+                    </a>
+                  </div>
+                </td>
+                <td>
+                  <button class="btn btn-danger btn-sm" (click)="removeCourseRow(i)">Remove</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div><!-- /tab-courses -->
+
+    </div><!-- /tab-content -->
+  </div><!-- /card -->
+</div><!-- /container -->
+
+<!-- ── Error Template ─────────────────────────────────────── -->
+<ng-template #ErrorTemplate>
+  <div class="text-center py-5" role="alert">
+    <h3 class="text-danger mt-5">Error in User Login</h3>
+    <p class="text-muted">Unauthorised Access. Please log in again.</p>
+  </div>
+</ng-template>

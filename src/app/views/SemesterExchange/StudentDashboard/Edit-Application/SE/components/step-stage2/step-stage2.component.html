@@ -1,17 +1,17 @@
-<app-step-nav
+<!-- <app-step-nav
   [showBack]="true"
   [showNext]="false"
   [showEdit]="false"
   [isEditing]="false"
   [isLocked]="false"
   (prevClick)="prevClick.emit()">
-</app-step-nav>
+</app-step-nav> -->
 
 <nav>
   <div class="nav nav-tabs d-flex justify-content-center" id="nav-tab" role="tablist">
     <button class="btn me-5 active" data-bs-toggle="tab" data-bs-target="#stageTab" type="button" role="tab"
       style="padding:.95rem 8rem;">Stage - II</button>
-    <button class="btn btn-lg ms-5" data-bs-toggle="tab" data-bs-target="#courseTab" type="button" role="tab"
+    <button class="btn btn-lg ms-5" data-bs-toggle="tab" data-bs-target="#courseTab" type="button" role="tab" [disabled]="'true'"
       style="padding:.95rem 8rem;">Course Mapping</button>
   </div>
 </nav>
@@ -109,11 +109,11 @@
   </div>
 </div>
 
-<app-step-nav
+<!-- <app-step-nav
   [showBack]="true"
   [showNext]="false"
   [showEdit]="false"
   [isEditing]="false"
   [isLocked]="false"
   (prevClick)="prevClick.emit()">
-</app-step-nav>
+</app-step-nav> -->

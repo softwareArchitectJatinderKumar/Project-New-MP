@@ -51,6 +51,7 @@ export interface StudentApplication {
   isSelfFunded: string;
   studentGradeMarksDataX?: any[];
   courseCovered?: CourseRow[];
+  approvedUniversity?: string;
 }
 
 export interface StageDetailRow {

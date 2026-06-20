@@ -1,0 +1,168 @@
+<!-- ── Fullscreen Loader ─────────────────────────────────── -->
+<div class="fullscreen-loader" *ngIf="isLoading" role="status" aria-live="polite">
+  <div class="spinner-box">
+    <div class="spinner-ring"></div>
+    <div class="spinner-text">Loading application details&hellip;</div>
+  </div>
+</div>
+
+<!-- ── Main Page ─────────────────────────────────────────── -->
+<div class="app-details-page" id="StudentDashboard" *ngIf="!hasLoginFailed; else ErrorTemplate">
+
+  <!-- Action Bar -->
+  <div class="action-bar no-print">
+    <div class="action-bar-side">
+      <button class="btn-action btn-dashboard"
+              (click)="DashboardVisit()"
+              aria-label="Return to Dashboard">
+        <i class="bi bi-arrow-left-circle" aria-hidden="true"></i> Dashboard
+      </button>
+    </div>
+    <div class="action-bar-title" role="heading" aria-level="1">
+      <i class="bi bi-file-earmark-text me-1" aria-hidden="true"></i> Application Details
+    </div>
+    <div class="action-bar-side right">
+      <button class="btn-action btn-print"
+              (click)="printDetails()"
+              [disabled]="!isReadyForPrint"
+              aria-label="Print application details">
+        <i class="bi bi-printer" aria-hidden="true"></i> Print
+      </button>
+    </div>
+  </div>
+
+  <div class="container-fluid py-4">
+
+    <!-- Page Banner -->
+    <div class="page-banner" role="banner">
+      <div class="banner-inner">
+        <div class="banner-icon" aria-hidden="true"><i class="bi bi-globe-americas"></i></div>
+        <div class="banner-text">
+          <h2 class="banner-title">Semester Exchange Program</h2>
+          <p class="banner-sub">International Affairs &mdash; Application Review</p>
+        </div>
+        <div class="banner-badge">View Only</div>
+      </div>
+    </div>
+
+    <!-- Profile Card -->
+    <div class="profile-card" role="region" aria-label="Student Profile">
+      <div class="profile-header">
+        <i class="bi bi-person-badge-fill" aria-hidden="true"></i> Student Profile
+      </div>
+      <div class="profile-body">
+
+        <div class="profile-info">
+          <div class="profile-row">
+            <span class="pr-label">Full Name</span>
+            <span class="pr-value">{{ studentInfo?.studentName || '—' }}</span>
+          </div>
+          <div class="profile-row">
+            <span class="pr-label">Batch Year</span>
+            <span class="pr-value">{{ studentInfo?.batchYear || '—' }}</span>
+          </div>
+          <div class="profile-row">
+            <span class="pr-label">Course</span>
+            <span class="pr-value">{{ studentInfo?.courseName || '—' }}</span>
+          </div>
+          <div class="profile-row">
+            <span class="pr-label">Program : Section</span>
+            <span class="pr-value">{{ programCode }} : {{ sectionCode }}</span>
+          </div>
+        </div>
+
+        <!-- Student photo -->
+        <div class="profile-photo" role="img" [attr.aria-label]="studentInfo?.studentName ? studentInfo!.studentName + ' photo' : 'Student photo'">
+          <ng-container *ngIf="isImageLoading">
+            <div class="photo-loading" role="status" aria-label="Loading photo">
+              <div class="spinner-ring-sm"></div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="!isImageLoading">
+            <img *ngIf="studentImage"
+                 [src]="studentImage"
+                 alt="Student photo"
+                 class="photo-img" />
+            <div class="photo-placeholder" *ngIf="!studentImage" aria-hidden="true">
+              <i class="bi bi-person-fill"></i>
+            </div>
+          </ng-container>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Form Data Sections ──────────────────────────────── -->
+    <ng-container *ngFor="let section of filteredSections; trackBy: trackBySection">
+      <div class="section-card" role="region" [attr.aria-label]="section.label">
+        <div class="section-header">
+          <i class="bi" [ngClass]="sectionIcons[section.label] || 'bi-info-circle'" aria-hidden="true"></i>
+          {{ section.label }}
+        </div>
+        <div class="section-body">
+          <div class="row g-3">
+            <div class="col-md-4 col-sm-6"
+                 *ngFor="let key of section.keys; trackBy: trackByKey">
+              <div class="detail-field">
+                <div class="detail-label">{{ labelFor(key) }}</div>
+                <div class="detail-value"
+                     [class.is-empty]="displayValue(key) === '—'"
+                     [class.accepted]="key === 'acceptPolicy' && displayValue(key) === 'Accepted'"
+                     [class.not-accepted]="key === 'acceptPolicy' && displayValue(key) !== 'Accepted'">
+                  {{ displayValue(key) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ── Uploaded Documents ─────────────────────────────── -->
+    <div class="section-card" role="region" aria-label="Uploaded Documents">
+      <div class="section-header">
+        <i class="bi bi-paperclip" aria-hidden="true"></i> Uploaded Documents
+      </div>
+      <div class="section-body">
+        <div class="row g-3">
+          <div class="col-md-4 col-sm-6"
+               *ngFor="let doc of documentUploads; trackBy: trackByDocKey">
+            <div class="doc-card">
+              <div class="doc-icon" aria-hidden="true">
+                <i class="bi" [ngClass]="doc.icon"></i>
+              </div>
+              <div class="doc-meta">
+                <div class="doc-label">{{ doc.label }}</div>
+                <ng-container *ngIf="application?.[doc.key]; else noDoc">
+                  <a class="doc-link"
+                     [href]="serverUrl + application![doc.key]"
+                     target="_blank"
+                     [attr.aria-label]="'View ' + doc.label">
+                    <i class="bi bi-eye" aria-hidden="true"></i> View Document
+                  </a>
+                </ng-container>
+                <ng-template #noDoc>
+                  <div class="doc-missing" [attr.aria-label]="'No document uploaded for ' + doc.label">
+                    No document uploaded
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /container-fluid -->
+</div><!-- /app-details-page -->
+
+<!-- ── Error Template ─────────────────────────────────────── -->
+<ng-template #ErrorTemplate>
+  <div class="error-page" role="alert" aria-live="assertive">
+    <div class="error-card">
+      <div class="error-icon" aria-hidden="true"><i class="bi bi-shield-x"></i></div>
+      <div class="error-title">Unauthorised Access</div>
+      <p class="error-sub">Session expired or invalid login. Please log in again to continue.</p>
+    </div>
+  </div>
+</ng-template>

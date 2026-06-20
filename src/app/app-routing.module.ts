@@ -96,7 +96,7 @@ const routes: Routes = [
 
       {
         path: 'ApplicationDetails/:LoginName/:RegistrationNo/:Role',
-        loadChildren: () => import('./views/SemesterExchange/StudentApplicationDetails/StudentApplicationDetails.module').then(m => m.StudentApplicationDetailsModule),
+        loadChildren: () => import('./views/SemesterExchange/StudentApplicationDetails/Application-form/StudentApplicationDetails.module').then(m => m.StudentApplicationDetailsModule),
       },
 
 

@@ -371,9 +371,15 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
 
   private updateBranding(): void {
     const el = document.getElementById('stMain');
+    const navel = document.getElementById('navHeader');
     if (el) el.innerHTML = 'Semester <span class="text-info">Exchange Student</span> Dashboard';
+    if (navel) navel.style.display = 'none';
     const logo = document.getElementById('imgLogo') as HTMLImageElement | null;
     if (logo) logo.style.width = '164px';
+
+    (<HTMLInputElement>document.getElementById('navHeader')).style.display = 'none ';
+    (<HTMLInputElement>document.getElementById('stMain')).style.display = 'none ';
+    (<HTMLInputElement>document.getElementById('imgLogo')).style.display = 'none';
   }
 
   private getStudentDetail(): void {

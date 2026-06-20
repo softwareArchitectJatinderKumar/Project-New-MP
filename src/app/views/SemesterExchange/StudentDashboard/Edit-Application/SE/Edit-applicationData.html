@@ -8,6 +8,16 @@
   </div>
 </div>
 
+ <div class="page-banner mb-4">
+        <div class="banner-inner">
+          <div class="banner-icon"><i class="bi bi-globe-americas"></i></div>
+          <div class="banner-text">
+            <h2 class="banner-title">Semester Exchange Program</h2>
+            <p class="banner-sub">International Affairs &mdash; Study Abroad Application</p>
+          </div>
+          <div class="banner-badge">Edit Application</div>
+        </div>
+      </div>
 <div id="StudentDashboard" *ngIf="!isLoginFailed; else errorTemplate">
   <div class="student-registration container-fluid py-4">
 
@@ -50,15 +60,29 @@
           </div>
 
           <!-- Bottom row: university preferences -->
-          <div class="uni-divider row align-items-center g-2">
+          <div class="uni-divider row align-items-center justify-content-between g-2">
             <div class="col-auto">
-              <span class="uni-section-label">University Preferences</span>
+              <span class=" badge badge-info uni-section-label">University Preferences</span>
             </div>
-            <div class="col">
+            <div class="col-auto">
               <div class="d-flex gap-2 flex-wrap">
                 <span class="uni-tag">1. {{ stuApplication.universityOption1 }}</span>
                 <span class="uni-tag">2. {{ stuApplication.universityOption2 }}</span>
                 <span class="uni-tag">3. {{ stuApplication.universityOption3 }}</span>
+              </div>
+            </div>
+             <div class="ms-3 me-4 col-auto text-end" *ngIf="LockedStatus">
+              <span [class]="LockedStatus ? 'status-pill approved p-2' : 'status-pill pending'">
+                {{ LockedStatus ? '✔ University Approved' : '⏳ Pending' }}
+              </span>
+               
+            </div>
+            <div class="ms-3 col-auto" *ngIf="LockedStatus">
+              <div class="d-flex gap-2 flex-wrap">
+                 <span [class]="LockedStatus ? 'status-pill approved p-2' : 'status-pill pending'">
+                {{ LockedStatus ?  stuApplication.approvedUniversity : '⏳ Pending' }}
+              </span>
+                 
               </div>
             </div>
           </div>

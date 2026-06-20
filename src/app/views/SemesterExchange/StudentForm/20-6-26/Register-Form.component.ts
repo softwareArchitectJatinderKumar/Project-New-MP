@@ -28,30 +28,30 @@ export class RegisterFormcomponent implements OnInit {
 
   // Logic added on 5-June-26
 
-   // add counselling authorities list
-    counsellingAuthorities = [
-        { index: 1, name: 'Suraj', uid: '33333' },
-        { index: 2, name: 'Rupali', uid: '30922' },
-        { index: 3, name: 'Divya', uid: '34923' }
-    ];
+  // add counselling authorities list
+  counsellingAuthorities = [
+    { index: 1, name: 'Suraj', uid: '33333' },
+    { index: 2, name: 'Rupali', uid: '30922' },
+    { index: 3, name: 'Divya', uid: '34923' }
+  ];
 
-    // computed flag
-   get showCounsellingAuthority(): boolean {
-        return true;
-    
-    }
+  // computed flag
+  get showCounsellingAuthority(): boolean {
+    return true;
 
- updateCounsellingAuthorityValidator() {
-        const control = this.form.get('CounsellingAuthority');
-        if (!control) return;
-        if (this.showCounsellingAuthority) {
-            control.setValidators([Validators.required]);
-        } else {
-            control.clearValidators();
-            control.setValue('');
-        }
-        control.updateValueAndValidity();
+  }
+
+  updateCounsellingAuthorityValidator() {
+    const control = this.form.get('CounsellingAuthority');
+    if (!control) return;
+    if (this.showCounsellingAuthority) {
+      control.setValidators([Validators.required]);
+    } else {
+      control.clearValidators();
+      control.setValue('');
     }
+    control.updateValueAndValidity();
+  }
 
   // State Flags
   isLoading: boolean = false;
@@ -98,11 +98,11 @@ export class RegisterFormcomponent implements OnInit {
   ];
 
   englishOptions = [
-    { value: '', label: 'Select'},
-    { value: 'Applied', label: 'Applied'},
-    { value: 'NotRequired', label: 'Not required'},
+    { value: '', label: 'Select' },
+    { value: 'Applied', label: 'Applied' },
+    { value: 'NotRequired', label: 'Not required' },
     { value: 'NotGiven', label: 'Not Given' },
-    { value: 'Appeared', label: 'Appeared / Given'},
+    { value: 'Appeared', label: 'Appeared / Given' },
   ];
   englishTestNames = ['PTE', 'IELTS', 'TOEFL', 'DULINGO'];
 
@@ -120,11 +120,11 @@ export class RegisterFormcomponent implements OnInit {
   PresentDate: string;
   showPolicy = true;
 
-    // --- STATE & LOADER FLAGS ---
-  private readonly MIN_LOADER_TIME = 10; 
+  // --- STATE & LOADER FLAGS ---
+  private readonly MIN_LOADER_TIME = 10;
   private loaderStartTime: number = 0;
 
-   // --- LOADER UTILITIES ---
+  // --- LOADER UTILITIES ---
   private startLoader(): void {
     this.isLoading = true;
     this.loaderStartTime = Date.now();
@@ -161,7 +161,7 @@ export class RegisterFormcomponent implements OnInit {
     if (this.LoginName != '' && this.LoginName != undefined) {
       this.startLoader();
       this.getToken(this.LoginName);
-      
+
     }
     const consentControl = this.form.get('ConsentLetterDocumentPath');
     if (consentControl) {
@@ -228,9 +228,9 @@ export class RegisterFormcomponent implements OnInit {
     this.setupConditionalValidators();
     this.subscribeToFormChanges();
 
-     if (!this.form.get('CounsellingAuthority')) {
-            this.form.addControl('CounsellingAuthority', this.fb.control(''));
-        }
+    if (!this.form.get('CounsellingAuthority')) {
+      this.form.addControl('CounsellingAuthority', this.fb.control(''));
+    }
   }
 
   checkEligibility(): void {
@@ -238,7 +238,7 @@ export class RegisterFormcomponent implements OnInit {
       this.eligibilityForm.markAllAsTouched();
       return;
     }
-    
+
     const { email, contactNumber } = this.eligibilityForm.value;
     this.startLoader();
     this.servicesSM.getStudentById()
@@ -248,7 +248,7 @@ export class RegisterFormcomponent implements OnInit {
           if (studentInfo) {
             this.RegistrationNo = studentInfo.registerationNumber;
             this.getToken(this.LoginName);
-             this.stopLoader();
+            this.stopLoader();
           } else {
             this.stopLoader();
             Swal.fire({ title: 'Not Eligible', text: 'Email/Contact did not match any record.', icon: 'warning' });
@@ -266,34 +266,34 @@ export class RegisterFormcomponent implements OnInit {
       next: data => {
         this.storageService.saveUser(data);
         this.buildMainForm();
-        this.getStudentDetail(); 
+        this.getStudentDetail();
       },
       error: () => { this.stopLoader(); this.loginFailed = true; }
     });
   }
 
-  getToken(loginId: any): void {     
-   
+  getToken(loginId: any): void {
+
     this.authService.loginTemp(loginId).subscribe({
       next: data => {
         this.storageService.saveUser(data);
         const authToken = this.storageService.getUser();
         if (!this.storageService.isLoggedIn() || authToken === 'Token Expired') {
-           this.loginFailed = true;
-          this.LoginFailed('Invalid or expired token');                  
+          this.loginFailed = true;
+          this.LoginFailed('Invalid or expired token');
         } else {
-            this.loginFailed = false;
-            this.buildMainForm();
-            this.getStudentDetail();
-              
+          this.loginFailed = false;
+          this.buildMainForm();
+          this.getStudentDetail();
+
         }
       },
       error: () => { this.stopLoader(); this.loginFailed = true; }
-      });
+    });
   }
   ContactNo: any;
   getStudentDetail(): void {
-    this.servicesSM.getStudentById() 
+    this.servicesSM.getStudentById()
       .subscribe({
         next: response => {
           if (response.item1 && response.item1.length > 0) {
@@ -310,7 +310,7 @@ export class RegisterFormcomponent implements OnInit {
             this.form.get('EmailId')?.setValue(stuData.studentEmail || this.eligibilityForm.get('email')?.value);
 
 
-             this.updateCounsellingAuthorityValidator();
+            this.updateCounsellingAuthorityValidator();
 
             this.checkApplicationStatusBeforeEligibility();
           } else {
@@ -322,7 +322,7 @@ export class RegisterFormcomponent implements OnInit {
   }
 
   private checkApplicationStatusBeforeEligibility(): void {
-    this.servicesSM.getApplicationDetailsBYId(this.RegistrationNo)     
+    this.servicesSM.getApplicationDetailsBYId(this.RegistrationNo)
       .subscribe({
         next: (response) => {
           const stuApplication = response.item1?.[0];
@@ -338,11 +338,11 @@ export class RegisterFormcomponent implements OnInit {
             this.setIneligible('Student account is not active.');
           }
           else { this.runEligibilityChecks(); }
-         
+
         },
         error: (err) => this.LoginFailed(err)
       });
-                
+
   }
 
   private runEligibilityChecks(): void {
@@ -354,7 +354,7 @@ export class RegisterFormcomponent implements OnInit {
       this.getStudentCodeDetails(this.RegistrationNo);
     } else {
       this.servicesSM.GetStudentAllPreviousMarks(this.RegistrationNo)
-     
+
         .subscribe({
           next: response => {
             if (!response || !response.item1?.length) {
@@ -364,18 +364,18 @@ export class RegisterFormcomponent implements OnInit {
             this.studentAcademicDetail = response.item4?.[0] || {};
             this.ProgramCode = this.studentAcademicDetail.PName ? this.studentAcademicDetail.PName.split(':')[0].trim() : this.ProgramCode;
             this.SectionCode = this.studentAcademicDetail.Section;
-           
+
 
           }
         })
       this.setIneligible('CGPA must be more than 6 .');
-     
+
       // this.GetStudentAllPreviousMarks(this.RegistrationNo);      
     }
   }
 
-  getPlusTwoMarks(Regdno: any): void {    
-    this.servicesSM.GetStudentAllPreviousMarks(Regdno)     
+  getPlusTwoMarks(Regdno: any): void {
+    this.servicesSM.GetStudentAllPreviousMarks(Regdno)
       .subscribe({
         next: response => {
           if (!response || !response.item1?.length) {
@@ -413,7 +413,7 @@ export class RegisterFormcomponent implements OnInit {
         error: err => this.LoginFailed(err)
       });
   }
- 
+
   getApplicationDetails(regId: string): any {
     this.servicesSM.getApplicationDetailsBYId(regId).pipe(finalize(() => this.isLoading = false))
       .subscribe((response) => {
@@ -448,8 +448,8 @@ export class RegisterFormcomponent implements OnInit {
   }
 
   GetStudentAllPreviousMarks(Regdno: any): void {
-    
-    this.servicesSM.GetStudentAllPreviousMarks(Regdno)      
+
+    this.servicesSM.GetStudentAllPreviousMarks(Regdno)
       .subscribe({
         next: response => {
           if (!response || !response.item1?.length) {
@@ -488,7 +488,7 @@ export class RegisterFormcomponent implements OnInit {
 
   SchoolId: any;
   FindGradeFCount(regdNo: any): void {
-    this.servicesSM.getStudentDetailsWithMarks(regdNo) 
+    this.servicesSM.getStudentDetailsWithMarks(regdNo)
       .subscribe({
         next: response => {
           if (response.item1.length > 0) {
@@ -525,19 +525,19 @@ export class RegisterFormcomponent implements OnInit {
   private setEligible(): void {
     this.isEligible = true;
     this.currentStep = 1; // Start wizard
-    
-    this.School=this.studentAcademicDetail['School'];
+
+    this.School = this.studentAcademicDetail['School'];
 
     // alert(JSON.stringify(this.studentAcademicDetail)+' studentAcademicDetail');
     // alert(this.School + 'School Name  studentAcademicDetail' + this.RegistrationNo);
     Swal.fire({ title: 'Eligibility Confirmed', icon: 'success', timer: 500 });
-       this.stopLoader();  
+    this.stopLoader();
   }
 
   private setIneligible(reason: string): void {
     this.isEligible = false;
-    Swal.fire({ title: 'Not Eligible', text: reason, icon: 'warning',timer: 500 });
-       this.stopLoader();  
+    Swal.fire({ title: 'Not Eligible', text: reason, icon: 'warning', timer: 500 });
+    this.stopLoader();
     return;
   }
 
@@ -570,7 +570,7 @@ export class RegisterFormcomponent implements OnInit {
 
 
   nextStep(): void {
-     this.startLoader(); 
+    this.startLoader();
     if (this.currentStep === this.stepLabels.length) return;
     if (this.canProceedToNext(this.currentStep)) {
       this.currentStep++;
@@ -596,7 +596,7 @@ export class RegisterFormcomponent implements OnInit {
       return;
     }
 
-     this.startLoader();
+    this.startLoader();
     // const formData = this.form.value; 
     const formValue = this.form.getRawValue();
 
@@ -709,13 +709,13 @@ export class RegisterFormcomponent implements OnInit {
     formData.append("RelativeRelation", formValue.RelativeRelation || 'NA'); // Added RelativeRelation
     formData.append("HasRelativeDetails", formValue.HasRelativeDetails || 'NA'); // Added HasRelativeDetails
 
-      // if counselling authority is required / selected, attach full object
-        if (this.showCounsellingAuthority && this.form.value.CounsellingAuthority) {
-            const sel = this.counsellingAuthorities.find(a => a.uid === this.form.value.CounsellingAuthority);
-            if (sel) {
-                 formData.append("counsellingAuthority",  sel.uid );
-            }
-        }
+    // if counselling authority is required / selected, attach full object
+    if (this.showCounsellingAuthority && this.form.value.CounsellingAuthority) {
+      const sel = this.counsellingAuthorities.find(a => a.uid === this.form.value.CounsellingAuthority);
+      if (sel) {
+        formData.append("counsellingAuthority", sel.uid);
+      }
+    }
 
     formData.forEach((value, key) => {
       console.log(`${key}: ${value}`);
@@ -746,7 +746,7 @@ export class RegisterFormcomponent implements OnInit {
           Swal.fire({ title: 'Error Occurred', text: 'Unable to complete the request. Please try again later.', icon: 'error' });
         }
       });
-      this.stopLoader();
+    this.stopLoader();
   }
 
 
@@ -754,7 +754,7 @@ export class RegisterFormcomponent implements OnInit {
     this.loginFailed = true;
     this.isEligible = false;
     Swal.fire({ title: 'Login Failed', text: 'Invalid login or token.', icon: 'warning' });
-    this.stopLoader();  
+    this.stopLoader();
   }
 
   formatDate(date: Date): string {
@@ -772,8 +772,8 @@ export class RegisterFormcomponent implements OnInit {
 
   private distinctPhoneNumbersValidator(): ValidatorFn {
     return (group: AbstractControl): ValidationErrors | null => {
-      const wa     = (group.get('WhatsAppNo')?.value    || '').trim();
-      const ph     = (group.get('PhoneNumber')?.value   || '').trim();
+      const wa = (group.get('WhatsAppNo')?.value || '').trim();
+      const ph = (group.get('PhoneNumber')?.value || '').trim();
       const parent = (group.get('ParentContact')?.value || '').trim();
 
       // Only check distinctness when both WhatsApp and parent contact are provided
@@ -813,31 +813,31 @@ export class RegisterFormcomponent implements OnInit {
 
     this.form.get('SponsorType')!.valueChanges.subscribe(val => {
 
-  const requiredControls = [
-    'SponsorName',
-    'SponsorRelation'
-  ];
+      const requiredControls = [
+        'SponsorName',
+        'SponsorRelation'
+      ];
 
-  requiredControls.forEach(c =>
-    this.toggleRequiredValidator(c, val === 'Other')
-  );
+      requiredControls.forEach(c =>
+        this.toggleRequiredValidator(c, val === 'Other')
+      );
 
-  if (val === 'Parents') {
+      if (val === 'Parents') {
 
-    this.form.patchValue({
-      SponsorName: '',
-      SponsorRelation: '',
-      SponsorContact: '',
-      SponsorEmail: ''
+        this.form.patchValue({
+          SponsorName: '',
+          SponsorRelation: '',
+          SponsorContact: '',
+          SponsorEmail: ''
+        });
+
+        ['SponsorName', 'SponsorRelation', 'SponsorContact', 'SponsorEmail']
+          .forEach(ctrl => {
+            this.form.get(ctrl)?.clearValidators();
+            this.form.get(ctrl)?.updateValueAndValidity();
+          });
+      }
     });
-
-    ['SponsorName', 'SponsorRelation', 'SponsorContact', 'SponsorEmail']
-      .forEach(ctrl => {
-        this.form.get(ctrl)?.clearValidators();
-        this.form.get(ctrl)?.updateValueAndValidity();
-      });
-  }
-});
   }
 
   private toggleRequiredValidator(controlName: string, required: boolean): void {
@@ -866,76 +866,76 @@ export class RegisterFormcomponent implements OnInit {
 
   private updateEnglishScoreValidators(): void {
 
-  const englishTestType = this.form.get('EnglishTestType')?.value;
-  const englishDoc = this.form.get('EnglishDocumentPath');
+    const englishTestType = this.form.get('EnglishTestType')?.value;
+    const englishDoc = this.form.get('EnglishDocumentPath');
 
-  if (!englishDoc) return;
+    if (!englishDoc) return;
 
-  // English Proof compulsory for Applied / Appeared
-  if (englishTestType === 'Applied' || englishTestType === 'Appeared') {
-    englishDoc.setValidators([Validators.required]);
-  } else {
-    englishDoc.clearValidators();
-    englishDoc.setValue('');
-    this.EnglishProofFileName = '';
-    this.EnglishProofDocumentPath = '';
-  }
-
-  englishDoc.updateValueAndValidity();
-
-  const scoreControls = [
-    'TestName',
-    'TestDate',
-    'ListeningScore',
-    'SpeakingScore',
-    'ReadingScore',
-    'WritingScore',
-    'OverallScore'
-  ];
-
-  if (englishTestType === 'Appeared') {
-
-    this.toggleRequiredValidator('TestName', true);
-    this.toggleRequiredValidator('TestDate', true);
-
-    const testDateStr = this.form.get('TestDate')?.value;
-
-    if (testDateStr) {
-
-      const testDate = new Date(testDateStr);
-      const today = new Date();
-
-      const testDateOnly = new Date(
-        testDate.getFullYear(),
-        testDate.getMonth(),
-        testDate.getDate()
-      );
-
-      const todayDateOnly = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate()
-      );
-
-      const requireScores = testDateOnly < todayDateOnly;
-
-      [
-        'ListeningScore',
-        'SpeakingScore',
-        'ReadingScore',
-        'WritingScore',
-        'OverallScore'
-      ].forEach(c => this.toggleRequiredValidator(c, requireScores));
+    // English Proof compulsory for Applied / Appeared
+    if (englishTestType === 'Applied' || englishTestType === 'Appeared') {
+      englishDoc.setValidators([Validators.required]);
+    } else {
+      englishDoc.clearValidators();
+      englishDoc.setValue('');
+      this.EnglishProofFileName = '';
+      this.EnglishProofDocumentPath = '';
     }
-  } else {
 
-    scoreControls.forEach(c => {
-      const ctrl = this.form.get(c);
-      ctrl?.clearValidators();
-      ctrl?.updateValueAndValidity();
-    });
+    englishDoc.updateValueAndValidity();
+
+    const scoreControls = [
+      'TestName',
+      'TestDate',
+      'ListeningScore',
+      'SpeakingScore',
+      'ReadingScore',
+      'WritingScore',
+      'OverallScore'
+    ];
+
+    if (englishTestType === 'Appeared') {
+
+      this.toggleRequiredValidator('TestName', true);
+      this.toggleRequiredValidator('TestDate', true);
+
+      const testDateStr = this.form.get('TestDate')?.value;
+
+      if (testDateStr) {
+
+        const testDate = new Date(testDateStr);
+        const today = new Date();
+
+        const testDateOnly = new Date(
+          testDate.getFullYear(),
+          testDate.getMonth(),
+          testDate.getDate()
+        );
+
+        const todayDateOnly = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate()
+        );
+
+        const requireScores = testDateOnly < todayDateOnly;
+
+        [
+          'ListeningScore',
+          'SpeakingScore',
+          'ReadingScore',
+          'WritingScore',
+          'OverallScore'
+        ].forEach(c => this.toggleRequiredValidator(c, requireScores));
+      }
+    } else {
+
+      scoreControls.forEach(c => {
+        const ctrl = this.form.get(c);
+        ctrl?.clearValidators();
+        ctrl?.updateValueAndValidity();
+      });
+    }
   }
-}
   CountryCode: string; UniversityOption1: string = ''; UniversityOption2: string = ''; UniversityOption3: string = '';
   stuData: any;
   canProceedToNext(step: number): boolean {
@@ -965,15 +965,15 @@ export class RegisterFormcomponent implements OnInit {
     if (step === 2 && this.form.get('SponsorType')?.value === 'Other' && this.form.get('SponsorName')?.invalid) return false;
 
     if (step === 4) {
-  const englishType = this.form.get('EnglishTestType')?.value;
+      const englishType = this.form.get('EnglishTestType')?.value;
 
-  if (
-      (englishType === 'Applied' || englishType === 'Appeared')
-      && this.form.get('EnglishDocumentPath')?.invalid
-     ) {
-      return false;
-  }
-}
+      if (
+        (englishType === 'Applied' || englishType === 'Appeared')
+        && this.form.get('EnglishDocumentPath')?.invalid
+      ) {
+        return false;
+      }
+    }
 
     return true;
   }
