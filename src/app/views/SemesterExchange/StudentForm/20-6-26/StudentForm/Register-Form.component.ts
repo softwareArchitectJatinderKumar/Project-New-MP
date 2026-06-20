@@ -7,7 +7,7 @@ import {
   ValidatorFn,
   ValidationErrors,
 } from '@angular/forms';
-import { countries } from '../countries-list';
+import { countries } from '../../countries-list';
 
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -87,7 +87,7 @@ export class RegisterFormcomponent implements OnInit {
   uploadedFiles: { key: string; file: File; name: string }[] = [];
 
   // Wizard Configuration
-  stepIcons = ['bi-person-lines-fill', 'bi-passport', 'bi-cash-stack', 'bi-file-earmark-arrow-up', 'bi-check2-circle'];
+  stepIcons = ['bi-clipboard-check', 'bi-person-lines-fill', 'bi-passport', 'bi-cash-stack', 'bi-file-earmark-arrow-up', 'bi-check2-circle'];
   stepLabels = [
     'Eligibility Checked',
     'Contact Details & Preferences',
@@ -174,34 +174,16 @@ export class RegisterFormcomponent implements OnInit {
       contactNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10,15}$/)]],
     });
   }
- /**
- * Helper to check if a specific form control has a specific error.
- * Optimized for professional standards and robustness.
- */
-getFormControlError(controlName: string, errorType: string = 'required'): boolean {
-  const control = this.form.get(controlName);
-  
-  // Return false if control doesn't exist or isn't invalid
-  if (!control) return false;
-
-  return (control.touched || this.isSubmitted) && control.hasError(errorType);
-}
- 
-  private readonly PHONE_PATTERN = /^[0-9]{7,14}$/;
   private buildMainForm(): void {
     this.form = this.fb.group(
       {
         // Contact Information
         CountryName: ['', Validators.required],
-        EmailId: ['', Validators.required],
-        // EmailId: [this.eligibilityForm.get('email')?.value, Validators.required],
-        // WhatsAppNo: ['', [Validators.required, Validators.pattern(/^[0-9]{15}$/)]],
-        // PhoneNumber: ['', [Validators.pattern(/^[0-9]{15}$/)]],
-        // ParentContact: ['', [Validators.pattern(/^[0-9]{15}$/)]],
-        WhatsAppNo: ['', [Validators.required, Validators.pattern(this.PHONE_PATTERN)]],
-    PhoneNumber: ['', [Validators.pattern(this.PHONE_PATTERN)]],
-    ParentContact: ['', [Validators.pattern(this.PHONE_PATTERN)]],
-
+        EmailId: ['', [Validators.required, Validators.email]],
+        // Phone fields validated by PhoneInputComponent (NG_VALIDATORS); pattern length 8–14 digits with dial code
+        WhatsAppNo: ['', [Validators.required]],
+        PhoneNumber: [''],
+        ParentContact: [''],
         HasRelativeDetails: ['', Validators.required],
         RelativeName: [''], RelativeCountryName: [''], RelativeRelation: [''],
         RelativePhone: [''], RelativeEmail: [''],
@@ -789,14 +771,14 @@ getFormControlError(controlName: string, errorType: string = 'required'): boolea
 
   private distinctPhoneNumbersValidator(): ValidatorFn {
     return (group: AbstractControl): ValidationErrors | null => {
-      const wa = group.get('WhatsAppNo')?.value?.trim() || '';
-      const ph = group.get('PhoneNumber')?.value?.trim() || '';
-      const parent = group.get('ParentContact')?.value?.trim() || '';
+      const wa     = (group.get('WhatsAppNo')?.value    || '').trim();
+      const ph     = (group.get('PhoneNumber')?.value   || '').trim();
+      const parent = (group.get('ParentContact')?.value || '').trim();
 
-      const allValid = /^[0-9]{10}$/.test(wa) && /^[0-9]{10}$/.test(ph) && /^[0-9]{10}$/.test(parent);
-      if (!allValid) return null;
+      // Only check distinctness when both WhatsApp and parent contact are provided
+      if (!wa || !parent) return null;
 
-      if (wa === parent || ph === parent) {
+      if (wa === parent || (ph && ph === parent)) {
         return { numbersMustBeDistinct: true };
       }
       return null;

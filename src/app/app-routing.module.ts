@@ -45,7 +45,8 @@ const routes: Routes = [
     
       {
         path: 'NewWay-Register/:LoginName', // Registeration-Form/c085f2e914a7b87faaf04df70801c7de74cc7fa78fa89978e4c5279c35331d13f781301cbdd1b14bf6c9fbd5e0582291
-        loadChildren: () => import('./views/SemesterExchange/StudentForm/Register-Form/RegisterForm.module').then(m => m.RegisterFormModule),
+        loadChildren: () => import('./views/SemesterExchange/StudentForm/20-6-26/RegisterForm.module').then(m => m.RegisterFormModule),
+        // loadChildren: () => import('./views/SemesterExchange/StudentForm/Register-Form/RegisterForm.module').then(m => m.RegisterFormModule),
       },
      
       {

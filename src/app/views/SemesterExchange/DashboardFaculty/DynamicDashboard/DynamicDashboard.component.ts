@@ -477,6 +477,10 @@ searchQueryAuthority: any;
     const imgLogo = document.getElementById('imgLogo') as HTMLImageElement;
     if (imgLogo) imgLogo.style.width = '164px';
 
+    (<HTMLInputElement>document.getElementById('navHeader')).style.display = 'none ';
+    (<HTMLInputElement>document.getElementById('stMain')).style.display = 'none ';
+    (<HTMLInputElement>document.getElementById('imgLogo')).style.display = 'none';
+
     this.initializeForms();
     this.getToken(this.LoginName);
   }

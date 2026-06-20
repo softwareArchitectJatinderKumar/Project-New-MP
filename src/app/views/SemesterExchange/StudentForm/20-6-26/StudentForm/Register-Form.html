@@ -1,0 +1,1017 @@
+<!-- ── Fullscreen Loader ──────────────────────────────────── -->
+<div *ngIf="isLoading" class="fullscreen-loader">
+  <div class="custom-spinner-overlay">
+    <div class="custom-spinner-content">
+      <img src="assets/images/spinner.gif" alt="Loading…" />
+      <p>Please wait…</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── Main Page ─────────────────────────────────────────── -->
+<div class="container-fluid" id="NewRegsiterPage" *ngIf="!loginFailed; else ErrorApplication">
+  <div class="student-registration container-fluid py-4">
+
+    <ng-container *ngIf="isEligible; else EligibilityCheckSection">
+
+      <!-- Student Info Row -->
+      <div class="row mb-3">
+        <div class="col-md-6 mb-3">
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Name</span>
+              <span class="info-value">{{ studentName }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Registration No.</span>
+              <span class="info-value">{{ RegistrationNo }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Program Name</span>
+              <span class="info-value">{{ courseName }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Current Year</span>
+              <span class="info-value">{{ CurrentYear }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Overall Score</span>
+              <span class="info-value info-value-highlight">{{ cgpa > 0 ? cgpa : 'NA' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Program</span>
+              <span class="info-value">{{ ProgramCode }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Section</span>
+              <span class="info-value">{{ SectionCode }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Current Term</span>
+              <span class="info-value">{{ CurrentTerm }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step Wizard -->
+      <div class="wizard-card">
+        <div class="wizard-steps">
+          <ng-container *ngFor="let label of stepLabels; let i = index">
+            <div class="wizard-step"
+                 [class.active]="i === currentStep"
+                 [class.completed]="i < currentStep">
+              <div class="step-bubble">
+                <i class="bi bi-check-lg" *ngIf="i < currentStep"></i>
+                <span *ngIf="i >= currentStep">{{ i + 1 }}</span>
+              </div>
+              <div class="step-label">{{ label }}</div>
+            </div>
+            <div *ngIf="i < stepLabels.length - 1"
+                 class="wizard-connector"
+                 [class.completed]="i < currentStep"></div>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- ── Step 0 : Eligibility / Grade Table ──────────── -->
+      <section *ngIf="currentStep === 0" class="step-section">
+        <div class="section-card">
+          <div class="section-header">
+            <i class="bi bi-clipboard-data"></i> Academic Grade Summary
+          </div>
+          <div class="section-body">
+            <div *ngIf="studentGradeMarksDataX && studentGradeMarksDataX.length > 0; else noGradeData">
+              <div class="table-responsive">
+                <table class="grade-table">
+                  <thead>
+                    <tr>
+                      <th *ngFor="let key of getTableHeaders(studentGradeMarksDataX[0])">{{ key }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let row of studentGradeMarksDataX">
+                      <td *ngFor="let key of getTableHeaders(studentGradeMarksDataX[0])">{{ row[key] || 'N/A' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <ng-template #noGradeData>
+              <p class="text-muted text-center py-3">No grade data available.</p>
+            </ng-template>
+          </div>
+        </div>
+        <div class="step-nav justify-end">
+          <button type="button" class="btn-nav-next" (click)="nextStep()">
+            Next <i class="bi bi-arrow-right"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- ── Main Form ────────────────────────────────────── -->
+      <form [formGroup]="form" (ngSubmit)="submitFinalApplication()">
+
+        <!-- ── Step 1 : Contact & Preferences ─────────────── -->
+        <section *ngIf="currentStep === 1" class="step-section">
+          <div class="row g-0">
+            <div class="col-lg-10 mx-auto">
+
+              <!-- Counselling Authority -->
+              <div class="section-card">
+                <div class="section-header">
+                  <i class="bi bi-person-badge"></i> Dealing Counsellor
+                </div>
+                <div class="section-body">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Select Counselling Authority <span class="req">*</span></label>
+                      <select class="form-select" formControlName="CounsellingAuthority">
+                        <option value="">— Select Authority —</option>
+                        <option *ngFor="let a of counsellingAuthorities" [value]="a.uid">
+                          #{{ a.index }} {{ a.name }} (UID {{ a.uid }})
+                        </option>
+                      </select>
+                      <div class="field-error" *ngIf="(form.get('CounsellingAuthority')?.touched || isSubmitted) && form.get('CounsellingAuthority')?.invalid">
+                        <i class="bi bi-exclamation-circle"></i> Required
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Contact Information -->
+              <div class="section-card">
+                <div class="section-header">
+                  <i class="bi bi-telephone-fill"></i> Contact Information
+                </div>
+                <div class="section-body">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Email Address <span class="req">*</span></label>
+                      <input class="form-control" formControlName="EmailId" type="email" placeholder="your@email.com" />
+                      <div class="field-error" *ngIf="(form.get('EmailId')?.touched || isSubmitted) && form.get('EmailId')?.invalid">
+                        <i class="bi bi-exclamation-circle"></i> Required / invalid email
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Home Country <span class="req">*</span></label>
+                      <select class="form-select" formControlName="CountryName">
+                        <option value="">— Select Country —</option>
+                        <option *ngFor="let c of countries" [value]="c.name">{{ c.name }}</option>
+                      </select>
+                      <div class="field-error" *ngIf="(form.get('CountryName')?.touched || isSubmitted) && form.get('CountryName')?.invalid">
+                        <i class="bi bi-exclamation-circle"></i> Required
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label">WhatsApp Number <span class="req">*</span></label>
+                      <app-phone-input formControlName="WhatsAppNo" placeholder="WhatsApp number"></app-phone-input>
+                      <div class="field-error" *ngIf="(form.get('WhatsAppNo')?.touched || isSubmitted) && form.get('WhatsAppNo')?.invalid">
+                        <i class="bi bi-exclamation-circle"></i>
+                        <ng-container *ngIf="form.get('WhatsAppNo')?.errors?.['required']">Required</ng-container>
+                        <ng-container *ngIf="form.get('WhatsAppNo')?.errors?.['invalidPhoneLength']">Must be 8–14 digits including country code</ng-container>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label">Phone Number</label>
+                      <app-phone-input formControlName="PhoneNumber" placeholder="Alternate phone number"></app-phone-input>
+                      <div class="field-error" *ngIf="(form.get('PhoneNumber')?.touched || isSubmitted) && form.get('PhoneNumber')?.invalid">
+                        <i class="bi bi-exclamation-circle"></i> Must be 8–14 digits including country code
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <label class="form-label">Parent / Guardian Contact</label>
+                      <app-phone-input formControlName="ParentContact" placeholder="Parent's contact number"></app-phone-input>
+                      <div class="field-error" *ngIf="(form.get('ParentContact')?.touched || isSubmitted) && form.get('ParentContact')?.invalid">
+                        <i class="bi bi-exclamation-circle"></i> Must be 8–14 digits including country code
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="field-error mt-2"
+                       *ngIf="form.errors?.['numbersMustBeDistinct'] && form.get('WhatsAppNo')?.valid && form.get('ParentContact')?.valid">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    WhatsApp, Phone and Parent Contact numbers must all be different.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Relative Details -->
+              <div class="section-card">
+                <div class="section-header">
+                  <i class="bi bi-people-fill"></i> Relative Details Abroad
+                </div>
+                <div class="section-body">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Any Relative Abroad? <span class="req">*</span></label>
+                      <select class="form-select" formControlName="HasRelativeDetails">
+                        <option value="">— Select —</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                      </select>
+                      <div class="field-error" *ngIf="(form.get('HasRelativeDetails')?.touched || isSubmitted) && form.get('HasRelativeDetails')?.invalid">
+                        <i class="bi bi-exclamation-circle"></i> Required
+                      </div>
+                    </div>
+                  </div>
+
+                  <ng-container *ngIf="form.get('HasRelativeDetails')?.value === 'Yes'">
+                    <hr class="my-3" />
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Relative Name <span class="req">*</span></label>
+                        <input class="form-control" formControlName="RelativeName" placeholder="Full name" />
+                        <div class="field-error" *ngIf="(form.get('RelativeName')?.touched || isSubmitted) && form.get('RelativeName')?.invalid">
+                          <i class="bi bi-exclamation-circle"></i> Required
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Country <span class="req">*</span></label>
+                        <select class="form-select" formControlName="RelativeCountryName">
+                          <option value="">— Select Country —</option>
+                          <option *ngFor="let c of countries" [value]="c.name">{{ c.name }}</option>
+                        </select>
+                        <div class="field-error" *ngIf="(form.get('RelativeCountryName')?.touched || isSubmitted) && form.get('RelativeCountryName')?.invalid">
+                          <i class="bi bi-exclamation-circle"></i> Required
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Relation <span class="req">*</span></label>
+                        <input class="form-control" formControlName="RelativeRelation" placeholder="e.g. Uncle, Aunt" />
+                        <div class="field-error" *ngIf="(form.get('RelativeRelation')?.touched || isSubmitted) && form.get('RelativeRelation')?.invalid">
+                          <i class="bi bi-exclamation-circle"></i> Required
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Relative Email <span class="text-muted">(optional)</span></label>
+                        <input class="form-control" formControlName="RelativeEmail" type="email" placeholder="email@example.com" />
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Relative Phone <span class="text-muted">(optional)</span></label>
+                        <app-phone-input formControlName="RelativePhone" placeholder="Contact number"></app-phone-input>
+                        <div class="field-error" *ngIf="(form.get('RelativePhone')?.touched || isSubmitted) && form.get('RelativePhone')?.invalid">
+                          <i class="bi bi-exclamation-circle"></i> Must be 8–14 digits including country code
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+
+              <!-- University Preferences -->
+              <div class="section-card">
+                <div class="section-header">
+                  <i class="bi bi-building"></i> University Preferences
+                </div>
+                <div class="section-body">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Applying For <span class="req">*</span></label>
+                      <select class="form-select" formControlName="ApplyingOption">
+                        <option value="">— Select Intake —</option>
+                        <option value="Spring (Jan to May Intake)">Spring (Jan to May Intake)</option>
+                        <option value="Fall (Aug to Dec Intake)">Fall (Aug to Dec Intake)</option>
+                      </select>
+                      <div class="field-error" *ngIf="(form.get('ApplyingOption')?.touched || isSubmitted) && form.get('ApplyingOption')?.invalid">
+                        <i class="bi bi-exclamation-circle"></i> Required
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row g-3 mt-1">
+                    <div class="col-md-4">
+                      <label class="form-label">Preference 1 <span class="req">*</span></label>
+                      <select class="form-select" id="UniversityOption1" formControlName="UniversityOption1"
+                              [ngModel]="UniversityOption1" (ngModelChange)="UniversityOption1 = $event">
+                        <option value="">— Select University —</option>
+                        <option *ngFor="let u of uniData" [value]="u.universityName">{{ u.universityName }}</option>
+                      </select>
+                      <div class="field-error" *ngIf="(form.get('UniversityOption1')?.touched || isSubmitted) && form.get('UniversityOption1')?.invalid">
+                        <i class="bi bi-exclamation-circle"></i> Required
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">Preference 2 <span class="req">*</span></label>
+                      <select class="form-select" id="UniversityOption2" formControlName="UniversityOption2"
+                              [ngModel]="UniversityOption2" (ngModelChange)="UniversityOption2 = $event"
+                              [attr.disabled]="!UniversityOption1 ? '' : null">
+                        <option value="">— Select University —</option>
+                        <ng-container *ngFor="let u of uniData">
+                          <option *ngIf="u.universityName !== UniversityOption1" [value]="u.universityName">
+                            {{ u.universityName }}
+                          </option>
+                        </ng-container>
+                      </select>
+                      <div class="field-error" *ngIf="(form.get('UniversityOption2')?.touched || isSubmitted) && form.get('UniversityOption2')?.invalid">
+                        <i class="bi bi-exclamation-circle"></i> Required
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">Preference 3 <span class="req">*</span></label>
+                      <select class="form-select" id="UniversityOption3" formControlName="UniversityOption3"
+                              [ngModel]="UniversityOption3" (ngModelChange)="UniversityOption3 = $event"
+                              [attr.disabled]="(!UniversityOption1 || !UniversityOption2) ? '' : null">
+                        <option value="">— Select University —</option>
+                        <ng-container *ngFor="let u of uniData">
+                          <option *ngIf="u.universityName !== UniversityOption1 && u.universityName !== UniversityOption2"
+                                  [value]="u.universityName">
+                            {{ u.universityName }}
+                          </option>
+                        </ng-container>
+                      </select>
+                      <div class="field-error" *ngIf="(form.get('UniversityOption3')?.touched || isSubmitted) && form.get('UniversityOption3')?.invalid">
+                        <i class="bi bi-exclamation-circle"></i> Required
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="step-nav justify-end">
+            <button type="button" class="btn-nav-next" (click)="nextStep()" [disabled]="!canProceedToNext(currentStep)">
+              Next <i class="bi bi-arrow-right"></i>
+            </button>
+          </div>
+        </section>
+
+        <!-- ── Step 2 : Passport & English ────────────────── -->
+        <section *ngIf="currentStep === 2" class="step-section">
+          <div class="row g-0">
+            <div class="col-lg-10 mx-auto">
+
+              <!-- Passport Details -->
+              <div class="section-card">
+                <div class="section-header">
+                  <i class="bi bi-passport"></i> Passport Details
+                </div>
+                <div class="section-body">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Passport Status <span class="req">*</span></label>
+                      <select class="form-select" formControlName="PassportStatus">
+                        <option value="">— Select —</option>
+                        <option value="Yes">Yes — I have a passport</option>
+                        <option value="Applied">Applied</option>
+                        <option value="No">No</option>
+                      </select>
+                      <div class="field-error" *ngIf="(form.get('PassportStatus')?.touched || isSubmitted) && form.get('PassportStatus')?.invalid">
+                        <i class="bi bi-exclamation-circle"></i> Required
+                      </div>
+                    </div>
+                  </div>
+
+                  <ng-container *ngIf="form.get('PassportStatus')?.value === 'Yes'">
+                    <hr class="my-3" />
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Passport Number <span class="req">*</span></label>
+                        <input class="form-control" formControlName="PassportNumber" placeholder="e.g. A1234567" />
+                        <div class="field-error" *ngIf="(form.get('PassportNumber')?.touched || isSubmitted) && form.get('PassportNumber')?.invalid">
+                          <i class="bi bi-exclamation-circle"></i> Required
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Issue Date <span class="req">*</span></label>
+                        <input type="date" class="form-control" formControlName="PassportIssueDate" />
+                        <div class="field-error" *ngIf="(form.get('PassportIssueDate')?.touched || isSubmitted) && form.get('PassportIssueDate')?.invalid">
+                          <i class="bi bi-exclamation-circle"></i> Required
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Valid Upto <span class="req">*</span></label>
+                        <input type="date" class="form-control" formControlName="PassportValidUpto" />
+                        <div class="field-error" *ngIf="(form.get('PassportValidUpto')?.touched || isSubmitted) && form.get('PassportValidUpto')?.invalid">
+                          <i class="bi bi-exclamation-circle"></i> Required
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+
+              <!-- Previous Visa -->
+              <div class="section-card">
+                <div class="section-header">
+                  <i class="bi bi-card-checklist"></i> Previous Visa
+                </div>
+                <div class="section-body">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Any Visa Rejection? <span class="req">*</span></label>
+                      <select class="form-select" formControlName="IsVisaRejected">
+                        <option value="">— Select —</option>
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                      </select>
+                      <div class="field-error" *ngIf="(form.get('IsVisaRejected')?.touched || isSubmitted) && form.get('IsVisaRejected')?.invalid">
+                        <i class="bi bi-exclamation-circle"></i> Required
+                      </div>
+                    </div>
+                  </div>
+
+                  <ng-container *ngIf="form.get('IsVisaRejected')?.value === 'Yes'">
+                    <hr class="my-3" />
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Rejection Reason <span class="req">*</span></label>
+                        <input class="form-control" formControlName="VisaRejectedReason" placeholder="Reason for rejection" />
+                        <div class="field-error" *ngIf="(form.get('VisaRejectedReason')?.touched || isSubmitted) && form.get('VisaRejectedReason')?.invalid">
+                          <i class="bi bi-exclamation-circle"></i> Required
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Country of Rejection <span class="req">*</span></label>
+                        <select class="form-select" formControlName="VisaRejectedCountry">
+                          <option value="">— Select Country —</option>
+                          <option *ngFor="let c of countries" [value]="c.name">{{ c.name }}</option>
+                        </select>
+                        <div class="field-error" *ngIf="(form.get('VisaRejectedCountry')?.touched || isSubmitted) && form.get('VisaRejectedCountry')?.invalid">
+                          <i class="bi bi-exclamation-circle"></i> Required
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+
+              <!-- English Proficiency -->
+              <div class="section-card">
+                <div class="section-header">
+                  <i class="bi bi-translate"></i> English Proficiency
+                </div>
+                <div class="section-body">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label">English Test Status <span class="req">*</span></label>
+                      <select class="form-select" formControlName="EnglishTestType">
+                        <option *ngFor="let opt of englishOptions" [value]="opt.value">{{ opt.label }}</option>
+                      </select>
+                      <div class="field-error" *ngIf="(form.get('EnglishTestType')?.touched || isSubmitted) && form.get('EnglishTestType')?.invalid">
+                        <i class="bi bi-exclamation-circle"></i> Required
+                      </div>
+                    </div>
+                  </div>
+
+                  <ng-container *ngIf="form.get('EnglishTestType')?.value === 'Appeared'">
+                    <hr class="my-3" />
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Test Name <span class="req">*</span></label>
+                        <select class="form-select" formControlName="TestName">
+                          <option value="">— Select Test —</option>
+                          <option *ngFor="let t of englishTestNames" [value]="t">{{ t }}</option>
+                          <option value="Other">Other</option>
+                        </select>
+                        <div class="field-error" *ngIf="(form.get('TestName')?.touched || isSubmitted) && form.get('TestName')?.invalid">
+                          <i class="bi bi-exclamation-circle"></i> Required
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Test Date <span class="req">*</span></label>
+                        <input type="date" class="form-control" formControlName="TestDate" />
+                        <div class="field-error" *ngIf="(form.get('TestDate')?.touched || isSubmitted) && form.get('TestDate')?.invalid">
+                          <i class="bi bi-exclamation-circle"></i> Required
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Score fields — only when test date has passed -->
+                    <ng-container *ngIf="form.get('EnglishTestType')?.value === 'Appeared' && form.get('TestDate')?.value < PresentDate">
+                      <hr class="my-3" />
+                      <p class="form-label mb-3">
+                        English Test Score Card
+                        <span class="req">*</span>
+                      </p>
+                      <div class="row g-3">
+                        <div class="col-md-4">
+                          <label class="form-label">Listening</label>
+                          <input class="form-control" formControlName="ListeningScore" placeholder="Score" />
+                          <div class="field-error" *ngIf="(form.get('ListeningScore')?.touched || isSubmitted) && form.get('ListeningScore')?.invalid">
+                            <i class="bi bi-exclamation-circle"></i> Required
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label">Speaking</label>
+                          <input class="form-control" formControlName="SpeakingScore" placeholder="Score" />
+                          <div class="field-error" *ngIf="(form.get('SpeakingScore')?.touched || isSubmitted) && form.get('SpeakingScore')?.invalid">
+                            <i class="bi bi-exclamation-circle"></i> Required
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label">Reading</label>
+                          <input class="form-control" formControlName="ReadingScore" placeholder="Score" />
+                          <div class="field-error" *ngIf="(form.get('ReadingScore')?.touched || isSubmitted) && form.get('ReadingScore')?.invalid">
+                            <i class="bi bi-exclamation-circle"></i> Required
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label">Writing</label>
+                          <input class="form-control" formControlName="WritingScore" placeholder="Score" />
+                          <div class="field-error" *ngIf="(form.get('WritingScore')?.touched || isSubmitted) && form.get('WritingScore')?.invalid">
+                            <i class="bi bi-exclamation-circle"></i> Required
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label">Overall Score</label>
+                          <input class="form-control" formControlName="OverallScore" placeholder="Score" />
+                          <div class="field-error" *ngIf="(form.get('OverallScore')?.touched || isSubmitted) && form.get('OverallScore')?.invalid">
+                            <i class="bi bi-exclamation-circle"></i> Required
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="step-nav">
+            <button type="button" class="btn-nav-back" (click)="prevStep()">
+              <i class="bi bi-arrow-left"></i> Back
+            </button>
+            <button type="button" class="btn-nav-next" (click)="nextStep()" [disabled]="!canProceedToNext(currentStep)">
+              Next <i class="bi bi-arrow-right"></i>
+            </button>
+          </div>
+        </section>
+
+        <!-- ── Step 3 : Sponsor & Declaration ─────────────── -->
+        <section *ngIf="currentStep === 3" class="step-section">
+          <div class="row g-0">
+            <div class="col-lg-10 mx-auto">
+
+              <!-- Sponsor Details -->
+              <div class="section-card">
+                <div class="section-header">
+                  <i class="bi bi-cash-stack"></i> Sponsor Details
+                </div>
+                <div class="section-body">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Sponsor Type <span class="req">*</span></label>
+                      <select class="form-select" formControlName="SponsorType">
+                        <option value="">— Select Sponsor Type —</option>
+                        <option value="Parents">Parents</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      <div class="field-error" *ngIf="(form.get('SponsorType')?.touched || isSubmitted) && form.get('SponsorType')?.invalid">
+                        <i class="bi bi-exclamation-circle"></i> Required
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Available Funds <span class="req">*</span></label>
+                      <select class="form-select" formControlName="AvailableFunds">
+                        <option *ngFor="let opt of availableFundsOptions" [value]="opt.value">{{ opt.label }}</option>
+                      </select>
+                      <div class="field-error" *ngIf="(form.get('AvailableFunds')?.touched || isSubmitted) && form.get('AvailableFunds')?.invalid">
+                        <i class="bi bi-exclamation-circle"></i> Required
+                      </div>
+                    </div>
+                  </div>
+
+                  <ng-container *ngIf="form.get('SponsorType')?.value === 'Other'">
+                    <hr class="my-3" />
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Sponsor Name <span class="req">*</span></label>
+                        <input class="form-control" formControlName="SponsorName" placeholder="Full name" />
+                        <div class="field-error" *ngIf="(form.get('SponsorName')?.touched || isSubmitted) && form.get('SponsorName')?.invalid">
+                          <i class="bi bi-exclamation-circle"></i> Required
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Relation to Sponsor <span class="req">*</span></label>
+                        <input class="form-control" formControlName="SponsorRelation" placeholder="e.g. Uncle, Family Friend" />
+                        <div class="field-error" *ngIf="(form.get('SponsorRelation')?.touched || isSubmitted) && form.get('SponsorRelation')?.invalid">
+                          <i class="bi bi-exclamation-circle"></i> Required
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Sponsor Email <span class="text-muted">(optional)</span></label>
+                        <input class="form-control" formControlName="SponsorEmail" type="email" placeholder="email@example.com" />
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Sponsor Contact <span class="text-muted">(optional)</span></label>
+                        <app-phone-input formControlName="SponsorContact" placeholder="Contact number"></app-phone-input>
+                        <div class="field-error" *ngIf="(form.get('SponsorContact')?.touched || isSubmitted) && form.get('SponsorContact')?.invalid">
+                          <i class="bi bi-exclamation-circle"></i> Must be 8–14 digits including country code
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+
+              <!-- Declaration -->
+              <div class="section-card">
+                <div class="section-header">
+                  <i class="bi bi-shield-check"></i> Declaration
+                </div>
+                <div class="section-body">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" formControlName="AcceptPolicy" id="acceptPolicy" />
+                    <label class="form-check-label" for="acceptPolicy">
+                      I accept the
+                      <a href="#" (click)="togglePolicy($event)" class="text-primary fw-semibold">
+                        Terms &amp; Conditions
+                      </a>
+                      <span class="req">*</span>
+                    </label>
+                  </div>
+                  <div class="field-error mt-1" *ngIf="(form.get('AcceptPolicy')?.touched || isSubmitted) && form.get('AcceptPolicy')?.invalid">
+                    <i class="bi bi-exclamation-circle"></i> You must accept the terms and conditions to proceed.
+                  </div>
+                  <div *ngIf="showPolicy" class="policy-box mt-3">
+                    I do hereby declare that all the above said information provided by me is true &amp; correct to the
+                    best of my knowledge and belief. All formalities and expenses relating to visa, travel, accommodation
+                    and food would be borne by me. My parents / guardian / relatives have given their consent for the
+                    same. Any kind of fees levied by Partner University or Home University would be acceptable to me
+                    and would be borne by me. Lovely Professional University would not be liable in case the visa
+                    application is rejected, and the student cannot make any claims for reimbursement of the expense
+                    incurred in the above process.
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="step-nav">
+            <button type="button" class="btn-nav-back" (click)="prevStep()">
+              <i class="bi bi-arrow-left"></i> Back
+            </button>
+            <button type="button" class="btn-nav-next" (click)="nextStep()" [disabled]="!canProceedToNext(currentStep)">
+              Next <i class="bi bi-arrow-right"></i>
+            </button>
+          </div>
+        </section>
+
+        <!-- ── Step 4 : Document Uploads ──────────────────── -->
+        <section *ngIf="currentStep === 4" class="step-section">
+          <div class="row g-0">
+            <div class="col-lg-10 mx-auto">
+              <div class="section-card">
+                <div class="section-header">
+                  <i class="bi bi-file-earmark-arrow-up"></i> Document Uploads
+                  <span class="ms-2 fw-normal" style="font-size:.8rem;opacity:.85;">(PDF, JPEG, PNG · max 3 MB each)</span>
+                </div>
+                <div class="section-body">
+
+                  <!-- Consent Letter -->
+                  <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Consent Letter</label>
+                      <div class="upload-zone" [class.has-file]="ConsentLetterFileName">
+                        <input type="file" (change)="onConsentLetterFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png" />
+                        <div class="uz-icon">
+                          <i [class]="ConsentLetterFileName ? 'bi bi-check-circle-fill' : 'bi bi-cloud-arrow-up'"></i>
+                        </div>
+                        <div class="uz-cta" *ngIf="!ConsentLetterFileName">Click to upload</div>
+                        <div class="uz-name" *ngIf="ConsentLetterFileName">{{ ConsentLetterFileName }}</div>
+                        <div class="uz-sub" *ngIf="!ConsentLetterFileName">PDF, JPG or PNG</div>
+                      </div>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-center">
+                      <div class="upload-meta">
+                        <strong>Consent Letter</strong><br />
+                        Fill this form, get it signed by parent/guardian, and upload as PDF.<br />
+                        <a (click)="DownloadFormat()" href="" download target="_blank" class="text-primary fw-semibold">
+                          <i class="bi bi-download me-1"></i> Download Format
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  <hr />
+
+                  <!-- Resume / CV -->
+                  <div class="mb-3">
+                    <label class="form-label">Resume / CV <span class="req">*</span></label>
+                    <div class="upload-zone" [class.has-file]="uploadedResumeName">
+                      <input type="file" (change)="onResumeFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png" />
+                      <div class="uz-icon">
+                        <i [class]="uploadedResumeName ? 'bi bi-check-circle-fill' : 'bi bi-file-person'"></i>
+                      </div>
+                      <div class="uz-cta" *ngIf="!uploadedResumeName">Click to upload your Resume / CV</div>
+                      <div class="uz-name" *ngIf="uploadedResumeName">{{ uploadedResumeName }}</div>
+                      <div class="uz-sub" *ngIf="!uploadedResumeName">PDF, JPG or PNG</div>
+                    </div>
+                    <div class="field-error mt-1"
+                         *ngIf="(form.get('ResumeDocumentPath')?.touched || isSubmitted) && !UploadedResume">
+                      <i class="bi bi-exclamation-circle"></i> Resume / CV is mandatory.
+                    </div>
+                  </div>
+
+                  <hr />
+
+                  <!-- Passport Copy -->
+                  <div class="mb-3">
+                    <label class="form-label">
+                      Passport Copy
+                      <span class="req" *ngIf="form.get('PassportStatus')?.value === 'Yes'">*</span>
+                    </label>
+                    <div class="upload-zone" [class.has-file]="PassportFileName">
+                      <input type="file" (change)="onPassportFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png" />
+                      <div class="uz-icon">
+                        <i [class]="PassportFileName ? 'bi bi-check-circle-fill' : 'bi bi-passport'"></i>
+                      </div>
+                      <div class="uz-cta" *ngIf="!PassportFileName">Click to upload Passport Copy</div>
+                      <div class="uz-name" *ngIf="PassportFileName">{{ PassportFileName }}</div>
+                      <div class="uz-sub" *ngIf="!PassportFileName">PDF, JPG or PNG</div>
+                    </div>
+                    <div class="field-error mt-1"
+                         *ngIf="(form.get('PassportDocumentPath')?.touched || isSubmitted) && form.get('PassportDocumentPath')?.invalid">
+                      <i class="bi bi-exclamation-circle"></i> Passport copy is required since you indicated you have a passport.
+                    </div>
+                  </div>
+
+                  <hr />
+
+                  <!-- English Score Card -->
+                  <div class="mb-3">
+                    <label class="form-label">
+                      English Test Score Card
+                      <span class="req" *ngIf="form.get('EnglishTestType')?.value === 'Applied' || form.get('EnglishTestType')?.value === 'Appeared'">*</span>
+                    </label>
+                    <div class="upload-zone" [class.has-file]="EnglishProofFileName">
+                      <input type="file" (change)="onEnglishFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png" />
+                      <div class="uz-icon">
+                        <i [class]="EnglishProofFileName ? 'bi bi-check-circle-fill' : 'bi bi-translate'"></i>
+                      </div>
+                      <div class="uz-cta" *ngIf="!EnglishProofFileName">Click to upload English Score Card</div>
+                      <div class="uz-name" *ngIf="EnglishProofFileName">{{ EnglishProofFileName }}</div>
+                      <div class="uz-sub" *ngIf="!EnglishProofFileName">PDF, JPG or PNG</div>
+                    </div>
+                    <div class="field-error mt-1"
+                         *ngIf="(form.get('EnglishDocumentPath')?.touched || isSubmitted) && form.get('EnglishDocumentPath')?.invalid">
+                      <i class="bi bi-exclamation-circle"></i> English proof document is mandatory when test status is Applied or Appeared.
+                    </div>
+                  </div>
+
+                  <hr />
+
+                  <!-- Fees Receipt -->
+                  <div class="mb-1">
+                    <label class="form-label">Fees Receipt <span class="text-muted">(optional)</span></label>
+                    <div class="upload-zone" [class.has-file]="FeesProofFileName">
+                      <input type="file" (change)="onFeesFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png" />
+                      <div class="uz-icon">
+                        <i [class]="FeesProofFileName ? 'bi bi-check-circle-fill' : 'bi bi-receipt'"></i>
+                      </div>
+                      <div class="uz-cta" *ngIf="!FeesProofFileName">Click to upload Fees Receipt</div>
+                      <div class="uz-name" *ngIf="FeesProofFileName">{{ FeesProofFileName }}</div>
+                      <div class="uz-sub" *ngIf="!FeesProofFileName">PDF, JPG or PNG</div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="step-nav">
+            <button type="button" class="btn-nav-back" (click)="prevStep()">
+              <i class="bi bi-arrow-left"></i> Back
+            </button>
+            <button type="button" class="btn-nav-next" (click)="nextStep()" [disabled]="!canProceedToNext(currentStep)">
+              Next <i class="bi bi-arrow-right"></i>
+            </button>
+          </div>
+        </section>
+
+        <!-- ── Step 5 : Review & Submit ────────────────────── -->
+        <section *ngIf="currentStep === 5" class="step-section">
+          <div class="row g-0">
+            <div class="col-lg-10 mx-auto">
+
+              <!-- Counselling Authority (always visible at review) -->
+              <div *ngIf="showCounsellingAuthority" class="section-card">
+                <div class="section-header">
+                  <i class="bi bi-person-badge"></i> Dealing Counsellor
+                </div>
+                <div class="section-body">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Select Counselling Authority <span class="req">*</span></label>
+                      <select class="form-select" formControlName="CounsellingAuthority">
+                        <option value="">— Select Authority —</option>
+                        <option *ngFor="let a of counsellingAuthorities" [value]="a.uid">
+                          #{{ a.index }} {{ a.name }} (UID {{ a.uid }})
+                        </option>
+                      </select>
+                      <div class="field-error" *ngIf="(form.get('CounsellingAuthority')?.touched || isSubmitted) && form.get('CounsellingAuthority')?.invalid">
+                        <i class="bi bi-exclamation-circle"></i> Required
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Review Summary -->
+              <div class="section-card">
+                <div class="section-header">
+                  <i class="bi bi-eye"></i> Review &amp; Submit
+                </div>
+                <div class="section-body">
+                  <p class="text-info small mb-3">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Please review your information carefully before final submission.
+                  </p>
+
+                  <div class="review-heading">
+                    <i class="bi bi-list-ul"></i> Form Data
+                  </div>
+                  <div class="table-responsive">
+                    <table class="review-kv-table">
+                      <thead>
+                        <tr>
+                          <th>Field</th>
+                          <th>Value</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <ng-container *ngFor="let item of form.value | keyvalue">
+                          <tr>
+                            <td>{{ item.key }}</td>
+                            <td>{{ item.value || 'Not provided' }}</td>
+                          </tr>
+                        </ng-container>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="review-heading mt-4">
+                    <i class="bi bi-paperclip"></i> Uploaded Documents
+                  </div>
+
+                  <div class="doc-preview-row">
+                    <div class="dp-icon"><i class="bi bi-file-earmark-text"></i></div>
+                    <div class="dp-meta">
+                      <div class="dp-label">Resume / CV</div>
+                      <div class="dp-name" *ngIf="ResumeFileName">{{ ResumeFileName }}</div>
+                      <div class="dp-missing" *ngIf="!ResumeFileName">Not uploaded</div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary ms-auto"
+                            (click)="viewFile(ResumeFileData, ResumeFileName)" [disabled]="!ResumeFileData">
+                      <i class="bi bi-eye me-1"></i> View
+                    </button>
+                  </div>
+
+                  <div class="doc-preview-row">
+                    <div class="dp-icon"><i class="bi bi-passport"></i></div>
+                    <div class="dp-meta">
+                      <div class="dp-label">Passport Copy</div>
+                      <div class="dp-name" *ngIf="PassportFileName">{{ PassportFileName }}</div>
+                      <div class="dp-missing" *ngIf="!PassportFileName">Not uploaded</div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary ms-auto"
+                            (click)="viewFile(PassportFileData, PassportFileName)" [disabled]="!PassportFileData">
+                      <i class="bi bi-eye me-1"></i> View
+                    </button>
+                  </div>
+
+                  <div class="doc-preview-row">
+                    <div class="dp-icon"><i class="bi bi-translate"></i></div>
+                    <div class="dp-meta">
+                      <div class="dp-label">English Score Card</div>
+                      <div class="dp-name" *ngIf="EnglishProofFileName">{{ EnglishProofFileName }}</div>
+                      <div class="dp-missing" *ngIf="!EnglishProofFileName">Not uploaded</div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary ms-auto"
+                            (click)="viewFile(EnglishProofData, EnglishProofFileName)" [disabled]="!EnglishProofData">
+                      <i class="bi bi-eye me-1"></i> View
+                    </button>
+                  </div>
+
+                  <div class="doc-preview-row">
+                    <div class="dp-icon"><i class="bi bi-receipt"></i></div>
+                    <div class="dp-meta">
+                      <div class="dp-label">Fees Payment Proof</div>
+                      <div class="dp-name" *ngIf="FeesProofFileName">{{ FeesProofFileName }}</div>
+                      <div class="dp-missing" *ngIf="!FeesProofFileName">Not uploaded</div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary ms-auto"
+                            (click)="viewFile(FeesProofData, FeesProofFileName)" [disabled]="!FeesProofData">
+                      <i class="bi bi-eye me-1"></i> View
+                    </button>
+                  </div>
+
+                  <div class="doc-preview-row">
+                    <div class="dp-icon"><i class="bi bi-file-earmark-check"></i></div>
+                    <div class="dp-meta">
+                      <div class="dp-label">Consent Letter</div>
+                      <div class="dp-name" *ngIf="ConsentLetterFileName">{{ ConsentLetterFileName }}</div>
+                      <div class="dp-missing" *ngIf="!ConsentLetterFileName">Not uploaded</div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary ms-auto"
+                            (click)="viewFile(ConsentLetterData, ConsentLetterFileName)" [disabled]="!ConsentLetterData">
+                      <i class="bi bi-eye me-1"></i> View
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="step-nav">
+            <button type="button" class="btn-nav-back" (click)="prevStep()">
+              <i class="bi bi-arrow-left"></i> Back
+            </button>
+            <button type="submit" class="btn-nav-submit" [disabled]="form.invalid || isLoading">
+              <i class="bi bi-send-check"></i> Create Application
+            </button>
+          </div>
+        </section>
+
+      </form>
+    </ng-container>
+
+    <!-- ── Ineligible Template ────────────────────────────── -->
+    <ng-template #EligibilityCheckSection>
+      <div class="row mb-3">
+        <div class="col-md-6 mb-3">
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Name</span>
+              <span class="info-value">{{ studentName }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Registration No.</span>
+              <span class="info-value">{{ RegistrationNo }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Program Name</span>
+              <span class="info-value">{{ courseName }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Current Year</span>
+              <span class="info-value">{{ CurrentYear }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Overall Score</span>
+              <span class="info-value info-value-highlight">{{ cgpa > 0 ? cgpa : 'NA' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Program</span>
+              <span class="info-value">{{ ProgramCode }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Section</span>
+              <span class="info-value">{{ SectionCode }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Current Term</span>
+              <span class="info-value">{{ CurrentTerm }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-md-8 mx-auto">
+          <div class="ineligible-card">
+            <div class="in-icon"><i class="bi bi-x-circle-fill"></i></div>
+            <div class="in-title">Not Eligible for Semester Exchange</div>
+            <div class="in-body">
+              Dear <strong>{{ studentName }}</strong>, you are currently <strong>not eligible</strong>
+              for the Semester Exchange program.
+            </div>
+            <div class="in-contact">
+              For more information, please contact:<br />
+              <strong>Division of International Affairs</strong> &mdash; Block 32, Room No. 310<br />
+              Or email us at <strong>study.abroad&#64;lpu.co.in</strong>
+              <div *ngIf="GradeFcount >= 1" class="mt-2 text-danger fw-semibold">
+                <i class="bi bi-exclamation-triangle me-1"></i>
+                You have {{ GradeFcount }} 'F' grade(s) on record.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+  </div>
+</div>
+
+<!-- ── Login Error Template ───────────────────────────────── -->
+<ng-template #ErrorApplication>
+  <div class="error-application" *ngIf="loginFailed">
+    <div class="err-icon"><i class="bi bi-shield-x"></i></div>
+    <div class="err-title">Login Error</div>
+    <div class="err-sub">Unauthorised access. Please check your login credentials or contact support.</div>
+  </div>
+</ng-template>

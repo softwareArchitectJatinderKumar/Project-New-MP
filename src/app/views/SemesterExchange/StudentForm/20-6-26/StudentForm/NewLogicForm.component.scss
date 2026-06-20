@@ -1,0 +1,550 @@
+// ============================================================
+// Semester Exchange Registration — Professional Stylesheet
+// ============================================================
+
+// ── Design Tokens ──────────────────────────────────────────
+$primary:        #1565C0;
+$primary-light:  #E3F2FD;
+$primary-dark:   #0D47A1;
+$success:        #2E7D32;
+$success-light:  #E8F5E9;
+$danger:         #C62828;
+$danger-light:   #FFEBEE;
+$warning-bg:     #FFFDE7;
+$warning-border: #F9A825;
+$surface:        #FFFFFF;
+$bg:             #F0F4F8;
+$border:         #DEE4EA;
+$text:           #212529;
+$muted:          #6B7684;
+$shadow-sm:      0 1px 4px rgba(0, 0, 0, .07);
+$shadow-md:      0 4px 16px rgba(0, 0, 0, .11);
+$radius:         14px;
+$radius-sm:      8px;
+
+// ── Fullscreen Loader ──────────────────────────────────────
+.fullscreen-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(255, 255, 255, .72);
+  backdrop-filter: blur(4px);
+}
+
+.custom-spinner-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.custom-spinner-content {
+  background: $surface;
+  padding: 2rem 3rem;
+  border-radius: $radius;
+  box-shadow: $shadow-md;
+  text-align: center;
+
+  img { width: 72px; height: 72px; }
+
+  p {
+    margin-top: .75rem;
+    font-size: .9rem;
+    color: $muted;
+    font-weight: 500;
+    letter-spacing: .02em;
+    margin-bottom: 0;
+  }
+}
+
+// ── Page Wrapper ───────────────────────────────────────────
+.student-registration {
+  background: $bg;
+  min-height: 100vh;
+  padding-bottom: 3rem;
+}
+
+// ── Student Info Card ──────────────────────────────────────
+.info-card {
+  background: $surface;
+  border-radius: $radius;
+  box-shadow: $shadow-sm;
+  border: 1px solid $border;
+  padding: 1.25rem 1.5rem;
+  height: 100%;
+
+  .info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    padding: .5rem 0;
+    border-bottom: 1px solid lighten($border, 5%);
+
+    &:last-child { border-bottom: none; }
+
+    .info-label {
+      flex: 0 0 44%;
+      font-size: .75rem;
+      font-weight: 700;
+      color: $muted;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding-top: .05rem;
+    }
+
+    .info-value {
+      flex: 1;
+      font-size: .9rem;
+      font-weight: 500;
+      color: $text;
+      word-break: break-word;
+    }
+
+    .info-value-highlight {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: $primary;
+    }
+  }
+}
+
+// ── Step Wizard ────────────────────────────────────────────
+.wizard-card {
+  background: $surface;
+  border-radius: $radius;
+  box-shadow: $shadow-sm;
+  border: 1px solid $border;
+  padding: 1.5rem 1.25rem 1rem;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.wizard-steps {
+  display: flex;
+  align-items: flex-start;
+  min-width: 560px;
+}
+
+.wizard-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+
+  .step-bubble {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: .85rem;
+    border: 2.5px solid $border;
+    background: $surface;
+    color: $muted;
+    transition: all .25s ease;
+    flex-shrink: 0;
+  }
+
+  .step-label {
+    margin-top: .45rem;
+    font-size: .68rem;
+    font-weight: 600;
+    color: $muted;
+    text-align: center;
+    line-height: 1.35;
+    max-width: 85px;
+  }
+
+  &.active {
+    .step-bubble {
+      background: $primary;
+      border-color: $primary;
+      color: $surface;
+      box-shadow: 0 0 0 4px $primary-light;
+    }
+    .step-label { color: $primary; font-weight: 700; }
+  }
+
+  &.completed {
+    .step-bubble {
+      background: $success;
+      border-color: $success;
+      color: $surface;
+    }
+    .step-label { color: $success; }
+  }
+}
+
+.wizard-connector {
+  flex: 1;
+  height: 2px;
+  background: $border;
+  margin-top: 17px;
+  flex-shrink: 0;
+
+  &.completed { background: $success; }
+}
+
+// ── Section Card ───────────────────────────────────────────
+.section-card {
+  border: 1px solid $border;
+  border-radius: $radius;
+  background: $surface;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+
+  .section-header {
+    background: linear-gradient(135deg, $primary-dark 0%, $primary 100%);
+    color: $surface;
+    padding: .875rem 1.25rem;
+    font-weight: 600;
+    font-size: .92rem;
+    letter-spacing: .015em;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+
+  .section-body {
+    padding: 1.25rem 1.25rem 1.5rem;
+  }
+}
+
+// ── Form Styles ────────────────────────────────────────────
+.form-label {
+  font-size: .8rem;
+  font-weight: 600;
+  color: $text;
+  margin-bottom: .3rem;
+
+  .req { color: $danger; margin-left: .15rem; }
+}
+
+.form-control,
+.form-select {
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  font-size: .875rem;
+  transition: border-color .2s ease, box-shadow .2s ease;
+
+  &:focus {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba(21, 101, 192, .14);
+  }
+}
+
+// ── Phone Input ────────────────────────────────────────────
+.phone-input-wrapper {
+  width: 100%;
+}
+
+.dial-select {
+  max-width: 200px;
+  font-size: .8rem;
+  flex-shrink: 0;
+}
+
+.phone-number-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.phone-input-hint {
+  font-size: .71rem;
+  color: $muted;
+  margin-top: .3rem;
+  display: flex;
+  align-items: center;
+}
+
+// ── Field Error ────────────────────────────────────────────
+.field-error {
+  color: $danger;
+  font-size: .77rem;
+  margin-top: .3rem;
+  display: flex;
+  align-items: flex-start;
+  gap: .25rem;
+  line-height: 1.4;
+}
+
+// ── File Upload Zone ───────────────────────────────────────
+.upload-zone {
+  position: relative;
+  border: 2px dashed $border;
+  border-radius: $radius-sm;
+  padding: 1.25rem 1rem;
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease;
+  text-align: center;
+  background: $surface;
+
+  input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+
+  .uz-icon { font-size: 1.75rem; color: $muted; margin-bottom: .35rem; }
+  .uz-cta  { font-size: .82rem; font-weight: 600; color: $primary; }
+  .uz-sub  { font-size: .72rem; color: $muted; margin-top: .15rem; }
+  .uz-name {
+    font-size: .82rem; color: $success; font-weight: 600;
+    margin-top: .3rem; word-break: break-all;
+  }
+
+  &:hover { border-color: $primary; background: $primary-light; }
+
+  &.has-file {
+    border-color: $success;
+    background: $success-light;
+    .uz-icon { color: $success; }
+  }
+}
+
+.upload-meta {
+  margin-top: .6rem;
+  font-size: .78rem;
+  color: $muted;
+  line-height: 1.5;
+}
+
+// ── Review Table ───────────────────────────────────────────
+.review-kv-table {
+  width: 100%;
+  font-size: .82rem;
+  border-collapse: collapse;
+  border-radius: $radius-sm;
+  overflow: hidden;
+
+  thead th {
+    background: $primary;
+    color: $surface;
+    padding: .6rem 1rem;
+    font-weight: 600;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .045em;
+  }
+
+  tbody td {
+    padding: .5rem 1rem;
+    border-bottom: 1px solid $border;
+    vertical-align: top;
+
+    &:first-child { font-weight: 600; color: $muted; width: 42%; }
+    &:last-child  { color: $text; }
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:nth-child(even) td { background: #F8FAFC; }
+}
+
+// ── Doc Preview Row ────────────────────────────────────────
+.doc-preview-row {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .7rem .9rem;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  background: $bg;
+  margin-bottom: .6rem;
+
+  .dp-icon    { font-size: 1.3rem; color: $primary; flex-shrink: 0; }
+  .dp-label   { font-size: .75rem; font-weight: 700; color: $muted; text-transform: uppercase; letter-spacing: .04em; }
+  .dp-name    { font-size: .85rem; font-weight: 600; color: $success; }
+  .dp-missing { font-size: .82rem; color: $muted; font-style: italic; }
+  .dp-meta    { flex: 1; min-width: 0; }
+}
+
+// ── Step Navigation ────────────────────────────────────────
+.step-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid $border;
+
+  &.justify-end { justify-content: flex-end; }
+}
+
+.btn-nav-back {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .5rem 1.25rem;
+  border-radius: $radius-sm;
+  border: 1.5px solid $border;
+  background: $surface;
+  color: $text;
+  font-weight: 600;
+  font-size: .875rem;
+  cursor: pointer;
+  transition: all .2s ease;
+  line-height: 1.5;
+
+  &:hover { background: $bg; border-color: darken($border, 10%); }
+}
+
+.btn-nav-next {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .5rem 1.5rem;
+  border-radius: $radius-sm;
+  border: 1.5px solid $primary;
+  background: $primary;
+  color: $surface;
+  font-weight: 600;
+  font-size: .875rem;
+  cursor: pointer;
+  transition: all .2s ease;
+  line-height: 1.5;
+
+  &:hover  { background: $primary-dark; border-color: $primary-dark; }
+  &:disabled { opacity: .5; cursor: not-allowed; }
+}
+
+.btn-nav-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .6rem 2rem;
+  border-radius: $radius-sm;
+  border: 1.5px solid $success;
+  background: $success;
+  color: $surface;
+  font-weight: 700;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: all .2s ease;
+  line-height: 1.5;
+
+  &:hover   { background: darken($success, 8%); }
+  &:disabled { opacity: .5; cursor: not-allowed; }
+}
+
+// ── Grade Table ────────────────────────────────────────────
+.grade-table {
+  font-size: .82rem;
+  border-radius: $radius-sm;
+  overflow: hidden;
+  width: 100%;
+  border-collapse: collapse;
+
+  thead th {
+    background: $primary;
+    color: $surface;
+    font-weight: 600;
+    padding: .6rem .75rem;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    text-align: center;
+  }
+
+  tbody td {
+    padding: .5rem .75rem;
+    vertical-align: middle;
+    text-align: center;
+    border-bottom: 1px solid $border;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:nth-child(even) td { background: $bg; }
+}
+
+// ── Policy Box ─────────────────────────────────────────────
+.policy-box {
+  background: $warning-bg;
+  border: 1px solid $warning-border;
+  border-radius: $radius-sm;
+  padding: 1rem 1.25rem;
+  font-size: .84rem;
+  color: $text;
+  line-height: 1.75;
+  margin-top: .75rem;
+}
+
+// ── Ineligible Card ────────────────────────────────────────
+.ineligible-card {
+  border: 2px solid $danger;
+  border-radius: $radius;
+  background: $surface;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  box-shadow: $shadow-md;
+
+  .in-icon  { font-size: 3.5rem; color: $danger; margin-bottom: 1rem; }
+  .in-title { font-size: 1.35rem; font-weight: 700; color: $danger; margin-bottom: .75rem; }
+  .in-body  { font-size: .95rem; color: $text; line-height: 1.75; }
+
+  .in-contact {
+    margin-top: 1.25rem;
+    padding: .875rem 1.25rem;
+    background: $danger-light;
+    border-radius: $radius-sm;
+    font-size: .88rem;
+    color: darken($danger, 5%);
+    line-height: 1.6;
+  }
+}
+
+// ── Error Page ─────────────────────────────────────────────
+.error-application {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1rem;
+
+  .err-icon  { font-size: 4rem; color: $danger; margin-bottom: 1rem; }
+  .err-title { font-size: 1.75rem; font-weight: 700; color: $danger; }
+  .err-sub   { font-size: 1rem; color: $muted; margin-top: .5rem; }
+}
+
+// ── Step Section Animation ─────────────────────────────────
+.step-section {
+  animation: fadeInUp .28s ease;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Review Section Heading ─────────────────────────────────
+.review-heading {
+  font-size: .95rem;
+  font-weight: 700;
+  color: $primary;
+  margin: 1.25rem 0 .6rem;
+  padding-bottom: .4rem;
+  border-bottom: 2px solid $primary-light;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+// ── Responsive ─────────────────────────────────────────────
+@media (max-width: 768px) {
+  .wizard-card { padding: 1rem .5rem .75rem; }
+  .section-card .section-body { padding: 1rem .75rem 1.25rem; }
+  .wizard-steps { min-width: 480px; }
+  .step-nav { flex-direction: column; gap: .75rem; align-items: stretch; }
+  .btn-nav-back, .btn-nav-next, .btn-nav-submit { justify-content: center; }
+  .info-card .info-row .info-label { flex: 0 0 48%; }
+}

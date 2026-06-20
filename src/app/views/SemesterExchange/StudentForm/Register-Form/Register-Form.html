@@ -169,25 +169,39 @@
                                         <div class="col-md-6">
                                             <label class="form-label">WhatsApp Number *</label>
                                             <input class="form-control" formControlName="WhatsAppNo" />
+                                            <!-- <div class="text-danger small" *ngIf="(form.get('WhatsAppNo')?.touched || isSubmitted) && form.get('WhatsAppNo')?.invalid">
+                                                                                        Required / invalid</div> -->
+                                        
                                             <div class="text-danger small"
-                                                *ngIf="(form.get('WhatsAppNo')?.touched || isSubmitted) && form.get('WhatsAppNo')?.invalid">
-                                                Required / invalid</div>
+                                                *ngIf="getFormControlError('WhatsAppNo', 'required') || getFormControlError('WhatsAppNo', 'pattern')">
+                                                {{ form.get('WhatsAppNo')?.hasError('required') ? 'Required' : 'Invalid format (7-14 digits allowed)' }}
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row mt-2">
                                         <div class="col-md-6">
                                             <label class="form-label">Phone Number *</label>
                                             <input class="form-control" formControlName="PhoneNumber" />
-                                            <div class="text-danger small"
+                                            <!-- <div class="text-danger small"
                                                 *ngIf="(form.get('PhoneNumber')?.touched || isSubmitted) && form.get('PhoneNumber')?.invalid">
-                                                Required / invalid</div>
+                                                Required / invalid</div> -->
+                                                <div class="text-danger small"
+                                                *ngIf="getFormControlError('PhoneNumber', 'required') || getFormControlError('PhoneNumber', 'pattern') || (form.get('PhoneNumber')?.touched || isSubmitted) && form.get('PhoneNumber')?.invalid">
+                                                {{ form.get('PhoneNumber')?.hasError('required') ? 'Required' : 'Invalid format (7-14 digits allowed)' }}
+                                                Required / Invalid
+                                            </div>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Parent Contact *</label>
                                             <input class="form-control" formControlName="ParentContact" />
-                                            <div class="text-danger small"
+                                            <!-- <div class="text-danger small"
                                                 *ngIf="(form.get('ParentContact')?.touched || isSubmitted) && form.get('ParentContact')?.invalid">
                                                 Required / invalid
+                                            </div> -->
+
+                                                <div class="text-danger small"
+                                                *ngIf="getFormControlError('ParentContact', 'required') || getFormControlError('ParentContact', 'pattern')">
+                                                {{ form.get('ParentContact')?.hasError('required') ? 'Required' : 'Invalid format (7-14 digits allowed)' }}
                                             </div>
                                         </div>
                                     </div>

@@ -1,0 +1,30 @@
+<div class="phone-input-wrapper">
+  <div class="input-group">
+    <select
+      class="form-select dial-select"
+      [(ngModel)]="selectedDial"
+      [ngModelOptions]="{ standalone: true }"
+      [disabled]="isDisabled"
+      (change)="onDialChange()"
+      aria-label="Select country code">
+      <option *ngFor="let d of dialCodes" [value]="d.dial">
+        {{ d.name }} ({{ d.dial }})
+      </option>
+    </select>
+    <input
+      type="tel"
+      class="form-control phone-number-field"
+      [placeholder]="placeholder"
+      [value]="numberPart"
+      [disabled]="isDisabled"
+      (input)="onNumberInput($event)"
+      (blur)="onBlur()"
+      maxlength="12"
+      inputmode="numeric"
+      autocomplete="tel-national" />
+  </div>
+  <div class="phone-input-hint">
+    <i class="bi bi-info-circle me-1"></i>
+    Country code + number &mdash; 8 to 14 digits total (e.g. +91 9876543210)
+  </div>
+</div>

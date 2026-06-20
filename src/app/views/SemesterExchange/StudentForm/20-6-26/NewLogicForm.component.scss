@@ -1,0 +1,986 @@
+// ════════════════════════════════════════════════════════════
+//  Semester Exchange Registration  ·  Professional Stylesheet
+//  v3 — Mobile-first, fully responsive, design-system ready
+// ════════════════════════════════════════════════════════════
+
+// ── Design Tokens ────────────────────────────────────────────
+$pri:        #1565C0;
+$pri-lt:     #E3F2FD;
+$pri-mid:    #1976D2;
+$pri-dk:     #0D47A1;
+$suc:        #2E7D32;
+$suc-lt:     #E8F5E9;
+$dan:        #C62828;
+$dan-lt:     #FFEBEE;
+$wrn-bg:     #FFFDE7;
+$wrn-bd:     #EF6C00;
+$surface:    #FFFFFF;
+$bg:         #EEF2F7;
+$bg-card:    #FAFCFF;
+$bd:         #D4DCE8;
+$bd-dk:      #B0BEC5;
+$txt:        #1A2030;
+$muted:      #64748B;
+$muted-lt:   #94A3B8;
+
+$sh-xs:  0 1px 3px  rgba(16, 30, 60, .06);
+$sh-sm:  0 2px 8px  rgba(16, 30, 60, .09);
+$sh-md:  0 6px 24px rgba(16, 30, 60, .13);
+$sh-lg:  0 12px 40px rgba(16, 30, 60, .18);
+$sh-pri: 0 4px 14px rgba(21, 101, 192, .30);
+$sh-suc: 0 4px 14px rgba(46, 125, 50,  .28);
+
+$r4:  4px;
+$r8:  8px;
+$r12: 12px;
+$r16: 16px;
+$r24: 24px;
+
+$ease: cubic-bezier(.4, 0, .2, 1);
+$t:   .22s $ease;
+
+// ── Breakpoints (mirror Bootstrap) ───────────────────────────
+$xs: 0;
+$sm: 576px;
+$md: 768px;
+$lg: 992px;
+$xl: 1200px;
+
+// ── Mixins ───────────────────────────────────────────────────
+@mixin card($radius: $r16) {
+  background: $surface;
+  border: 1px solid $bd;
+  border-radius: $radius;
+  box-shadow: $sh-sm;
+}
+
+@mixin btn-reset {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+@mixin btn-base($radius: $r8) {
+  @include btn-reset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  padding: .55rem 1.35rem;
+  border-radius: $radius;
+  border: 1.5px solid transparent;
+  font-weight: 600;
+  font-size: .875rem;
+  line-height: 1.5;
+  transition: all $t;
+  white-space: nowrap;
+  text-decoration: none;
+
+  &:focus-visible { outline: 2px solid $pri; outline-offset: 3px; }
+  &:disabled      { opacity: .48; cursor: not-allowed; pointer-events: none; }
+}
+
+@mixin section-header {
+  background: linear-gradient(to right, $pri-dk 0%, $pri-mid 100%);
+  color: $surface;
+  padding: .9rem 1.5rem;
+  font-weight: 700;
+  font-size: .88rem;
+  letter-spacing: .01em;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+
+  i { font-size: .95rem; opacity: .9; }
+}
+
+// ════════════════════════════════════════════════════════════
+//  LOADING OVERLAY
+// ════════════════════════════════════════════════════════════
+.fullscreen-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(255, 255, 255, .8);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.custom-spinner-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9001;
+}
+
+.custom-spinner-content {
+  @include card($r16);
+  padding: 2.25rem 3rem;
+  text-align: center;
+  box-shadow: $sh-lg;
+  animation: scaleIn .25s $ease;
+
+  img { width: 68px; height: 68px; display: block; margin: 0 auto; }
+
+  p {
+    margin: .75rem 0 0;
+    font-size: .88rem;
+    color: $muted;
+    font-weight: 500;
+    letter-spacing: .02em;
+  }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(.88); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+// ════════════════════════════════════════════════════════════
+//  PAGE WRAPPER
+// ════════════════════════════════════════════════════════════
+.student-registration {
+  background: $bg;
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
+
+// ════════════════════════════════════════════════════════════
+//  PAGE BANNER
+// ════════════════════════════════════════════════════════════
+.page-banner {
+  position: relative;
+  border-radius: $r16;
+  padding: 1.6rem 2rem;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  background: linear-gradient(130deg, $pri-dk 0%, $pri 45%, $pri-mid 80%, #1E88E5 100%);
+  box-shadow: $sh-md;
+
+  // Subtle decorative circles
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .07);
+    pointer-events: none;
+  }
+  &::before { width: 220px; height: 220px; top: -90px;  right: -55px; }
+  &::after  { width: 130px; height: 130px; bottom: -50px; left: -30px; }
+
+  .banner-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .banner-icon {
+    flex-shrink: 0;
+    width: 54px;
+    height: 54px;
+    border-radius: $r12;
+    background: rgba(255, 255, 255, .18);
+    border: 1.5px solid rgba(255, 255, 255, .3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.65rem;
+    color: $surface;
+  }
+
+  .banner-text { flex: 1; min-width: 0; }
+
+  .banner-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: $surface;
+    letter-spacing: -.01em;
+    margin: 0 0 .2rem;
+    line-height: 1.2;
+  }
+
+  .banner-sub {
+    font-size: .82rem;
+    color: rgba(255, 255, 255, .78);
+    margin: 0;
+    letter-spacing: .01em;
+  }
+
+  .banner-badge {
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, .18);
+    border: 1px solid rgba(255, 255, 255, .32);
+    border-radius: $r24;
+    padding: .3rem .9rem;
+    font-size: .7rem;
+    font-weight: 700;
+    color: $surface;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: $sm - 1) {
+    padding: 1.2rem 1.25rem;
+
+    .banner-title   { font-size: 1.05rem; }
+    .banner-sub     { font-size: .75rem; }
+    .banner-badge   { display: none; }
+    .banner-icon    { width: 44px; height: 44px; font-size: 1.35rem; }
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  STUDENT INFO CARDS
+// ════════════════════════════════════════════════════════════
+.info-card {
+  @include card($r16);
+  height: 100%;
+  overflow: hidden;
+
+  .info-card-head {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .7rem 1.25rem;
+    background: $bg-card;
+    border-bottom: 1px solid $bd;
+    font-size: .72rem;
+    font-weight: 800;
+    color: $pri;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+
+  .info-body { padding: .25rem 1.25rem .9rem; }
+
+  .info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+    padding: .52rem 0;
+    border-bottom: 1px solid lighten($bd, 4%);
+    &:last-child { border-bottom: none; }
+  }
+
+  .info-label {
+    flex: 0 0 45%;
+    font-size: .72rem;
+    font-weight: 700;
+    color: $muted;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    padding-top: .1rem;
+  }
+
+  .info-value {
+    flex: 1;
+    font-size: .88rem;
+    font-weight: 500;
+    color: $txt;
+    word-break: break-word;
+    line-height: 1.4;
+  }
+
+  .info-highlight {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: $pri;
+    letter-spacing: -.01em;
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  STEP WIZARD
+// ════════════════════════════════════════════════════════════
+.wizard-card {
+  @include card($r16);
+  padding: 1.5rem 1.5rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+// ── Mobile progress bar (< 576px) ─────────────────────────
+.mobile-wizard {
+  @media (min-width: $sm) { display: none !important; }
+
+  .mw-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: .5rem;
+
+    .mw-name {
+      font-size: .82rem;
+      font-weight: 700;
+      color: $pri;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 70%;
+    }
+
+    .mw-count {
+      font-size: .75rem;
+      font-weight: 600;
+      color: $muted;
+      flex-shrink: 0;
+    }
+  }
+
+  .mw-track {
+    height: 7px;
+    background: $bd;
+    border-radius: 99px;
+    overflow: hidden;
+
+    .mw-fill {
+      height: 100%;
+      background: linear-gradient(to right, $pri-dk, $pri-mid);
+      border-radius: 99px;
+      transition: width .4s $ease;
+    }
+  }
+}
+
+// ── Desktop steps (≥ 576px) ───────────────────────────────
+.wizard-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: $bd transparent;
+
+  &::-webkit-scrollbar { height: 4px; }
+  &::-webkit-scrollbar-thumb { background: $bd; border-radius: 2px; }
+
+  @media (max-width: $sm - 1) { display: none !important; }
+}
+
+.wizard-steps {
+  display: flex;
+  align-items: flex-start;
+  min-width: 540px;
+}
+
+.wizard-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+
+  .step-bubble {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: .85rem;
+    border: 2.5px solid $bd;
+    background: $surface;
+    color: $muted;
+    transition: all $t;
+    flex-shrink: 0;
+    box-shadow: $sh-xs;
+  }
+
+  .step-label {
+    margin-top: .5rem;
+    font-size: .65rem;
+    font-weight: 600;
+    color: $muted;
+    text-align: center;
+    line-height: 1.3;
+    max-width: 78px;
+
+    @media (max-width: $md - 1) { font-size: .6rem; max-width: 66px; }
+  }
+
+  &.completed {
+    .step-bubble {
+      background: $suc;
+      border-color: $suc;
+      color: $surface;
+      box-shadow: 0 2px 8px rgba(46, 125, 50, .28);
+    }
+    .step-label { color: $suc; }
+  }
+
+  &.active {
+    .step-bubble {
+      background: $pri;
+      border-color: $pri;
+      color: $surface;
+      box-shadow: 0 0 0 5px $pri-lt, $sh-pri;
+      transform: scale(1.1);
+    }
+    .step-label { color: $pri; font-weight: 800; }
+  }
+}
+
+.wizard-connector {
+  flex: 1;
+  height: 2.5px;
+  background: $bd;
+  margin-top: 17px;
+  flex-shrink: 0;
+  border-radius: 2px;
+  transition: background .3s ease;
+
+  &.completed {
+    background: linear-gradient(to right, $suc, lighten($suc, 18%));
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  SECTION CARDS
+// ════════════════════════════════════════════════════════════
+.section-card {
+  @include card($r16);
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+
+  .section-header {
+    @include section-header;
+
+    .header-tag {
+      margin-left: auto;
+      font-size: .65rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, .2);
+      border: 1px solid rgba(255, 255, 255, .3);
+      border-radius: $r24;
+      padding: .18rem .7rem;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+  }
+
+  .section-body {
+    padding: 1.5rem;
+
+    @media (max-width: $sm - 1) { padding: 1rem; }
+  }
+}
+
+// Step context notice
+.step-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  background: $pri-lt;
+  border: 1px solid lighten($pri, 38%);
+  border-left: 4px solid $pri;
+  border-radius: $r8;
+  padding: .7rem 1rem;
+  font-size: .82rem;
+  color: darken($pri, 8%);
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+
+  i { flex-shrink: 0; margin-top: .1rem; }
+}
+
+// ════════════════════════════════════════════════════════════
+//  FORM ELEMENTS
+// ════════════════════════════════════════════════════════════
+.form-label {
+  display: block;
+  font-size: .78rem;
+  font-weight: 700;
+  color: $txt;
+  margin-bottom: .3rem;
+  line-height: 1.4;
+
+  .req { color: $dan; margin-left: .15rem; }
+}
+
+.form-control,
+.form-select {
+  border: 1.5px solid $bd;
+  border-radius: $r8;
+  font-size: .875rem;
+  color: $txt;
+  background-color: $surface;
+  padding: .52rem .8rem;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .04);
+  transition: border-color $t, box-shadow $t;
+  height: auto;
+
+  &::placeholder { color: $muted-lt; }
+
+  &:focus {
+    border-color: $pri;
+    box-shadow: 0 0 0 3px rgba(21, 101, 192, .15);
+    outline: none;
+  }
+
+  &:hover:not(:focus):not(:disabled) { border-color: $bd-dk; }
+}
+
+.form-check-input {
+  width: 1.1em;
+  height: 1.1em;
+  margin-top: .18em;
+  cursor: pointer;
+  border: 1.5px solid $bd-dk;
+  transition: all $t;
+
+  &:checked {
+    background-color: $pri;
+    border-color: $pri;
+  }
+
+  &:focus { box-shadow: 0 0 0 3px rgba(21, 101, 192, .18); }
+}
+
+.form-check-label {
+  font-size: .88rem;
+  cursor: pointer;
+  color: $txt;
+  line-height: 1.5;
+}
+
+// ════════════════════════════════════════════════════════════
+//  FIELD ERROR
+// ════════════════════════════════════════════════════════════
+.field-error {
+  display: flex;
+  align-items: flex-start;
+  gap: .3rem;
+  color: $dan;
+  font-size: .75rem;
+  font-weight: 600;
+  margin-top: .3rem;
+  line-height: 1.4;
+
+  i { flex-shrink: 0; margin-top: .05rem; }
+}
+
+// ════════════════════════════════════════════════════════════
+//  FILE UPLOAD ZONE
+// ════════════════════════════════════════════════════════════
+.upload-zone {
+  position: relative;
+  border: 2px dashed $bd;
+  border-radius: $r12;
+  padding: 1.5rem 1rem;
+  cursor: pointer;
+  transition: border-color $t, background $t, box-shadow $t;
+  text-align: center;
+  background: $bg-card;
+  user-select: none;
+
+  input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+
+  .uz-icon {
+    display: block;
+    font-size: 2rem;
+    color: $muted-lt;
+    margin-bottom: .4rem;
+    transition: color $t, transform $t;
+  }
+
+  .uz-cta { font-size: .83rem; font-weight: 700; color: $pri; }
+  .uz-sub { font-size: .72rem; color: $muted; margin-top: .18rem; }
+  .uz-name {
+    font-size: .83rem;
+    color: $suc;
+    font-weight: 700;
+    margin-top: .3rem;
+    word-break: break-all;
+  }
+
+  &:hover {
+    border-color: $pri;
+    background: $pri-lt;
+    box-shadow: $sh-xs;
+
+    .uz-icon { color: $pri; transform: translateY(-3px); }
+  }
+
+  &.has-file {
+    border-style: solid;
+    border-color: $suc;
+    background: $suc-lt;
+    .uz-icon { color: $suc; }
+  }
+
+  @media (max-width: $sm - 1) {
+    padding: 1.1rem .75rem;
+    .uz-icon { font-size: 1.65rem; }
+  }
+}
+
+.upload-meta {
+  font-size: .8rem;
+  color: $muted;
+  line-height: 1.7;
+
+  strong { color: $txt; font-weight: 700; }
+
+  a {
+    color: $pri;
+    font-weight: 600;
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  DOCUMENT PREVIEW ROW (Review step)
+// ════════════════════════════════════════════════════════════
+.doc-preview-row {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .8rem 1rem;
+  border: 1px solid $bd;
+  border-radius: $r8;
+  background: $bg-card;
+  margin-bottom: .6rem;
+  transition: box-shadow $t, border-color $t;
+
+  &:hover { box-shadow: $sh-xs; border-color: $bd-dk; }
+
+  .dp-icon {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: $r8;
+    background: $pri-lt;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: $pri;
+  }
+
+  .dp-meta    { flex: 1; min-width: 0; }
+  .dp-label   { font-size: .68rem; font-weight: 800; color: $muted; text-transform: uppercase; letter-spacing: .05em; }
+  .dp-name    { font-size: .85rem; font-weight: 600; color: $suc; word-break: break-all; margin-top: .1rem; }
+  .dp-missing { font-size: .82rem; color: $muted-lt; font-style: italic; margin-top: .1rem; }
+
+  .btn-view {
+    @include btn-base($r8);
+    flex-shrink: 0;
+    padding: .36rem .85rem;
+    border: 1.5px solid $bd;
+    background: $surface;
+    color: $txt;
+    font-size: .78rem;
+    box-shadow: $sh-xs;
+
+    &:hover:not([disabled]) {
+      border-color: $pri;
+      color: $pri;
+      background: $pri-lt;
+      box-shadow: $sh-xs;
+    }
+
+    &[disabled] { opacity: .4; cursor: not-allowed; }
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  REVIEW TABLE
+// ════════════════════════════════════════════════════════════
+.review-kv-table {
+  width: 100%;
+  font-size: .82rem;
+  border-collapse: collapse;
+
+  thead th {
+    background: $pri;
+    color: $surface;
+    padding: .65rem 1rem;
+    font-weight: 700;
+    font-size: .73rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  tbody td {
+    padding: .55rem 1rem;
+    border-bottom: 1px solid $bd;
+    vertical-align: top;
+
+    &:first-child { font-weight: 600; color: $muted; width: 42%; }
+    &:last-child  { color: $txt; }
+  }
+
+  tbody tr:last-child td   { border-bottom: none; }
+  tbody tr:nth-child(even) { background: #F5F8FC; }
+}
+
+// ════════════════════════════════════════════════════════════
+//  NAVIGATION BUTTONS
+// ════════════════════════════════════════════════════════════
+.step-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.1rem;
+  border-top: 1.5px solid $bd;
+
+  &.justify-end { justify-content: flex-end; }
+
+  @media (max-width: $sm - 1) {
+    flex-direction: column;
+    align-items: stretch;
+
+    .btn-nav-back,
+    .btn-nav-next,
+    .btn-nav-submit { justify-content: center; width: 100%; }
+  }
+}
+
+.btn-nav-back {
+  @include btn-base($r8);
+  border-color: $bd;
+  background: $surface;
+  color: $txt;
+  box-shadow: $sh-xs;
+
+  &:hover:not(:disabled) {
+    background: $bg;
+    border-color: $bd-dk;
+    box-shadow: $sh-sm;
+  }
+}
+
+.btn-nav-next {
+  @include btn-base($r8);
+  border-color: $pri;
+  background: $pri;
+  color: $surface;
+  box-shadow: $sh-pri;
+
+  &:hover:not(:disabled) {
+    background: $pri-dk;
+    border-color: $pri-dk;
+    box-shadow: 0 6px 20px rgba(21, 101, 192, .38);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) { transform: translateY(0); }
+}
+
+.btn-nav-submit {
+  @include btn-base($r8);
+  padding: .6rem 2.25rem;
+  border-color: $suc;
+  background: $suc;
+  color: $surface;
+  font-size: .9rem;
+  font-weight: 700;
+  box-shadow: $sh-suc;
+
+  &:hover:not(:disabled) {
+    background: darken($suc, 7%);
+    border-color: darken($suc, 7%);
+    box-shadow: 0 6px 20px rgba(46, 125, 50, .38);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) { transform: translateY(0); }
+}
+
+// ════════════════════════════════════════════════════════════
+//  GRADE TABLE
+// ════════════════════════════════════════════════════════════
+.grade-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .82rem;
+
+  thead th {
+    background: $pri;
+    color: $surface;
+    padding: .65rem .75rem;
+    font-weight: 700;
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    text-align: center;
+  }
+
+  tbody td {
+    padding: .55rem .75rem;
+    text-align: center;
+    border-bottom: 1px solid $bd;
+    vertical-align: middle;
+    color: $txt;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:nth-child(odd) { background: $bg-card; }
+  tbody tr:hover td { background: $pri-lt; transition: background .15s ease; }
+}
+
+// ════════════════════════════════════════════════════════════
+//  POLICY / DECLARATION BOX
+// ════════════════════════════════════════════════════════════
+.policy-box {
+  background: $wrn-bg;
+  border: 1px solid lighten($wrn-bd, 25%);
+  border-left: 4px solid $wrn-bd;
+  border-radius: $r8;
+  padding: 1rem 1.25rem;
+  font-size: .84rem;
+  color: $txt;
+  line-height: 1.85;
+  margin-top: .75rem;
+}
+
+// ════════════════════════════════════════════════════════════
+//  INELIGIBLE CARD
+// ════════════════════════════════════════════════════════════
+.ineligible-card {
+  @include card($r16);
+  border: 2px solid lighten($dan, 28%);
+  padding: 3rem 2rem;
+  text-align: center;
+  box-shadow: $sh-md;
+  animation: fadeInUp .35s $ease;
+
+  .in-icon-wrap {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: $dan-lt;
+    box-shadow: 0 0 0 12px rgba($dan, .07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2.5rem;
+    color: $dan;
+    animation: pulseRing 2.5s infinite $ease;
+  }
+
+  .in-title {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: $dan;
+    letter-spacing: -.01em;
+    margin-bottom: .75rem;
+  }
+
+  .in-body {
+    font-size: .95rem;
+    color: $muted;
+    line-height: 1.8;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .in-contact {
+    display: block;
+    margin: 1.5rem auto 0;
+    max-width: 540px;
+    padding: 1rem 1.5rem;
+    background: $dan-lt;
+    border: 1px solid lighten($dan, 28%);
+    border-radius: $r12;
+    font-size: .88rem;
+    color: darken($dan, 5%);
+    line-height: 1.75;
+    text-align: left;
+  }
+
+  @media (max-width: $sm - 1) {
+    padding: 2rem 1.25rem;
+    .in-title { font-size: 1.2rem; }
+    .in-contact { padding: .875rem 1rem; }
+  }
+}
+
+@keyframes pulseRing {
+  0%, 100% { box-shadow: 0 0 0 12px rgba($dan, .07); }
+  50%       { box-shadow: 0 0 0 20px rgba($dan, .03); }
+}
+
+// ════════════════════════════════════════════════════════════
+//  ERROR PAGE
+// ════════════════════════════════════════════════════════════
+.error-application {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+
+  .err-icon-wrap {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: $dan-lt;
+    box-shadow: 0 0 0 14px rgba($dan, .07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2.5rem;
+    color: $dan;
+  }
+
+  .err-title { font-size: 1.85rem; font-weight: 800; color: $dan; letter-spacing: -.01em; }
+  .err-sub   { font-size: .95rem; color: $muted; margin-top: .6rem; max-width: 380px; line-height: 1.65; }
+}
+
+// ════════════════════════════════════════════════════════════
+//  REVIEW HEADING
+// ════════════════════════════════════════════════════════════
+.review-heading {
+  font-size: .88rem;
+  font-weight: 800;
+  color: $pri;
+  margin: 1.35rem 0 .8rem;
+  padding-bottom: .4rem;
+  border-bottom: 2px solid $pri-lt;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+// ════════════════════════════════════════════════════════════
+//  HR DIVIDER
+// ════════════════════════════════════════════════════════════
+hr {
+  border: none;
+  border-top: 1.5px dashed $bd;
+  margin: 1.25rem 0;
+}
+
+// ════════════════════════════════════════════════════════════
+//  STEP SECTION ANIMATION
+// ════════════════════════════════════════════════════════════
+.step-section {
+  animation: fadeInUp .28s $ease;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
