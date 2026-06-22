@@ -33,6 +33,278 @@ interface SchoolDivision {
   standalone: false
 })
 export class MouActivityActionPlanComponent implements OnInit {
+
+
+  //  Started Logic on 22-6-26 
+
+  @ViewChild('ModifyFacultyModal')
+  ModifyFacultyModal!: TemplateRef<any>;
+
+  //====================================================
+  // Existing Variables
+  //====================================================
+
+
+  newMouid: any; recordId:any;
+  TitleS: any;
+
+  //====================================================
+  // Faculty Search Variables
+  //====================================================
+
+  employeeControl3 = new FormControl('');
+
+  remarks3: any = '';
+
+  filteredEmployeesData3: Employee[] = [];
+
+  showSuggestions3 = false;
+
+  activeSuggestionIndex3 = -1;
+
+  ResponsiblePerson3: any = '';
+
+  AssignedToUid3: any = '';
+
+  //====================================================
+  // Open Modal
+  //====================================================
+
+  ModifyFaculty(row: any) {
+
+    this.newMouid = row.mouId;
+    this.TitleS = row.mouTitle;
+    this.recordId = row.id;
+    // Reset values every time modal opens
+    this.employeeControl3.setValue('');
+
+    this.remarks3 = '';
+
+    this.filteredEmployeesData3 = [];
+
+    this.showSuggestions3 = false;
+
+    this.activeSuggestionIndex3 = -1;
+
+    this.ResponsiblePerson3 = '';
+
+    this.AssignedToUid3 = '';
+
+    this.modalService.open(
+      this.ModifyFacultyModal,
+      {
+        size: 'lg',
+        backdrop: 'static'
+      }
+    ).result.then(
+      () => {
+        setTimeout(() => {
+          window.dispatchEvent(new Event('resize'));
+        }, 200);
+      },
+      () => { }
+    );
+  }
+
+  //====================================================
+  // Search Employee
+  //====================================================
+
+  onInput3() {
+
+    const inputValue =
+      (this.employeeControl3.value || '')
+        .toString()
+        .toLowerCase()
+        .trim();
+
+    if (inputValue) {
+
+      this.filteredEmployeesData3 =
+        this.EmployeeData
+          .filter(employee =>
+            employee.employeeName.toLowerCase().includes(inputValue) ||
+            employee.employeeCode.toLowerCase().includes(inputValue)
+          )
+          .slice(0, 10);
+
+    }
+    else {
+
+      this.filteredEmployeesData3 = [];
+
+    }
+
+    this.showSuggestions3 = true;
+    this.activeSuggestionIndex3 = -1;
+  }
+
+  //====================================================
+  // Select Employee
+  //====================================================
+
+  selectEmployee3(employee: Employee) {
+
+    this.ResponsiblePerson3 = employee.employeeCode;
+
+    this.AssignedToUid3 = employee.employeeCode;
+
+    this.employeeControl3.setValue(
+      `${employee.employeeName} (${employee.employeeCode})`
+    );
+
+    this.filteredEmployeesData3 = [];
+
+    this.showSuggestions3 = false;
+  }
+
+  //====================================================
+  // Keyboard Navigation
+  //====================================================
+
+  onKeydown3(event: KeyboardEvent) {
+
+    if (!this.filteredEmployeesData3?.length) {
+      return;
+    }
+
+    if (event.key === 'ArrowDown') {
+
+      event.preventDefault();
+
+      this.activeSuggestionIndex3 =
+        (this.activeSuggestionIndex3 + 1)
+        % this.filteredEmployeesData3.length;
+    }
+
+    else if (event.key === 'ArrowUp') {
+
+      event.preventDefault();
+
+      this.activeSuggestionIndex3 =
+        (this.activeSuggestionIndex3 - 1 +
+          this.filteredEmployeesData3.length)
+        % this.filteredEmployeesData3.length;
+    }
+
+    else if (event.key === 'Enter') {
+
+      event.preventDefault();
+
+      if (
+        this.activeSuggestionIndex3 >= 0 &&
+        this.activeSuggestionIndex3 < this.filteredEmployeesData3.length
+      ) {
+
+        this.selectEmployee3(
+          this.filteredEmployeesData3[
+          this.activeSuggestionIndex3
+          ]
+        );
+      }
+    }
+  }
+
+  //====================================================
+  // Hide Suggestions
+  //====================================================
+
+  hideSuggestions3() {
+
+    setTimeout(() => {
+
+      this.showSuggestions3 = false;
+
+    }, 200);
+  }
+
+  //====================================================
+  // Validation
+  //====================================================
+
+  checkFormValidity3(): boolean {
+
+    return !!(
+      this.AssignedToUid3 &&
+      this.remarks3 &&
+      this.remarks3.trim().length > 0
+    );
+  }
+
+  //====================================================
+  // Submit
+  //====================================================
+
+  UpdateUID() {
+
+    if (!this.checkFormValidity3()) {
+      return;
+    }
+
+    const formData = new FormData();
+
+    formData.append(
+      'MouId',
+      this.newMouid
+    );
+
+    formData.append(
+      'Uid',
+      this.ResponsiblePerson3
+    );
+
+    formData.append(
+      'ActionAssignedBy',
+      this.EmployeeCode
+    );
+
+    formData.append(
+      'RecordID',
+      this.recordId
+    );
+    formData.append(
+      'Remarks',
+      this.remarks3
+    );
+
+    console.log('FormData Ready', JSON.stringify(formData));
+
+    formData.forEach((value, key) => {
+      console.log(key, value);
+    });
+
+    // API Call Here
+
+    /*
+    this.apiService.UpdateUID(formData)
+      .subscribe({
+        next: (res) => {
+
+        },
+        error: (err) => {
+
+        }
+      });
+    */
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Ended logic on 22-6-26
+
+
   resetTab1Filters(): void {
 
   // Reset dropdowns
@@ -937,6 +1209,7 @@ getRenewedCount(): number {
   filteredMouActivityAssignedOthers: any[] = [];
 
   employeeControl = new FormControl();
+  
   EmployeeData: Employee[] = [];
   filteredEmployeesData: Employee[] = [];
   showSuggestions = false;
@@ -1109,7 +1382,9 @@ getRenewedCount(): number {
     this.mouDocumentsService.GetAllActivitiesAssignedwithSession(IdCode, sessionId).subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
+
           this.MouActivityAssignedMeMaster = response.item1;
+          console.log(JSON.stringify(this.MouActivityAssignedMeMaster))
           this.filteredMouActivityAssignedMe = [...this.MouActivityAssignedMeMaster];
           this.filteredMouActivityAssignedMe = response.item1.filter((activity: any) => {
             return activity.actionAssignedBy == this.EmployeeCode;

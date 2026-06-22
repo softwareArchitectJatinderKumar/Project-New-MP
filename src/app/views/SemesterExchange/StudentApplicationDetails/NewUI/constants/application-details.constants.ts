@@ -12,7 +12,7 @@ export const SERVER_URL = 'https://files.lpu.in/umsweb/DIA/SemesterExchangedocum
 export const FORM_SECTIONS: ReadonlyArray<FormSection> = [
   { label: 'Personal Details',        keys: ['applicationId', 'registrationNo', 'emailId', 'countryName', 'whatsAppNo', 'phoneNumber', 'parentContact'] },
   { label: 'University Preferences',  keys: ['applyingOption', 'universityOption1', 'universityOption2', 'universityOption3'] },
-  { label: 'Relative at Abroad',      keys: ['relativeName', 'relativeRelation', 'relativeCountry'] },
+  { label: 'Relative at Abroad',      keys: ['relativeName', 'relativeRelation', 'relativeCountry', 'relativeEmail', 'relativePhone'] },
   { label: 'Passport Details',        keys: ['passportStatus', 'passportNumber', 'passportIssueDate', 'passportValidUpto'] },
   { label: 'Visa Details',            keys: ['isVisaRejected', 'visaRejectedReason', 'visaRejectedCountry'] },
   { label: 'English Test Details',    keys: ['englishTestType', 'speakingScore', 'listeningScore', 'readingScore', 'writingScore', 'overallScore', 'englishTestYear'] },
@@ -91,4 +91,5 @@ export const INITIAL_FORM_CONTROLS = {
   sponsorContact: [''], sponsorEmail:  [''],
   availableFunds: [''], acceptPolicy:  [false as boolean | string],
   relativeName:   [''], relativeRelation: [''], relativeCountry: [''],
+  relativeEmail:  [''], relativePhone:  [''],
 } as const;

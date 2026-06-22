@@ -154,9 +154,11 @@ export class RegisterFormcomponent implements OnInit {
 
   ngOnInit(): void {
     this.PresentDate = this.formatDate(new Date());
-    (<HTMLInputElement>document.getElementById('navHeader')).style.display = 'none ';
-    (<HTMLInputElement>document.getElementById('stMain')).style.display = 'none !important';
-    (<HTMLInputElement>document.getElementById('imgLogo')).style.display = 'none !important';
+
+             
+    (<HTMLInputElement>document.getElementById('stMain')).innerHTML = '<span class="themeClr"> Semester  </span> Exchange <span class="themeClr"> Registration </span>';
+    (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '40px';
+    
     this.LoginName = this.route.snapshot.params['LoginName'];
     if (this.LoginName != '' && this.LoginName != undefined) {
       this.startLoader();

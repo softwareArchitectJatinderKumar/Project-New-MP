@@ -14,6 +14,7 @@ export class StepContactComponent {
   @Input() countries: Country[] = [];
   @Input() isLocked = false;
   @Input() isValid = true;
+  @Input() hideBackNext = false;
 
   @Output() editClick = new EventEmitter<void>();
   @Output() cancelClick = new EventEmitter<void>();
@@ -23,6 +24,17 @@ export class StepContactComponent {
 
   get hasRelative(): boolean {
     return this.form.get('HasRelativeDetails')?.value === 'Yes';
+  }
+
+  showOptionalRelativeField(controlName: 'RelativeEmail' | 'RelativePhone'): boolean {
+    if (this.isEditing) return true;
+    return this.hasMeaningfulValue(this.form.get(controlName)?.value);
+  }
+
+  private hasMeaningfulValue(value: unknown): boolean {
+    const v = String(value ?? '').trim();
+    if (!v) return false;
+    return !['na', 'n/a', 'none', 'null', '-'].includes(v.toLowerCase());
   }
 
   trackByCountryName(_: number, item: Country): string {

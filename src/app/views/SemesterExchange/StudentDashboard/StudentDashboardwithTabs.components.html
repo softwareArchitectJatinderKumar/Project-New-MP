@@ -2,16 +2,67 @@
   <div class="card shadow-lg p-4">
 
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-2">
       <h2 class="text-primary m-0">My Dashboard</h2>
-      <div><span class=" fs-4 me-3"> Hi! </span> <span [ngClass]="'fs-4 badge'"
-          style=" background-color: #FD6C04 !important; "> {{studentDetailsWithImage?.studentName}} </span>
+    </div>
+
+    <!-- Top Student Information Bar -->
+    <div class="border rounded p-3 mb-3 bg-light" *ngIf="stuApplication">
+      <!-- Row 1: Photo + Name + App ID + Approval Status -->
+      <div class="d-flex align-items-center gap-3">
+        <div class="flex-shrink-0">
+          <div *ngIf="StudentImage; else placeholderInfoBar">
+            <img [src]="StudentImage" alt="Student" class="rounded-circle border border-2 border-primary"
+              style="width:52px;height:52px;object-fit:cover;">
+          </div>
+          <ng-template #placeholderInfoBar>
+            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold"
+              style="width:52px;height:52px;font-size:1.2rem;">
+              {{ (studentDetailsWithImage?.studentName || '?').charAt(0).toUpperCase() }}
+            </div>
+          </ng-template>
+        </div>
+        <div class="flex-grow-1">
+          <div class="fw-bold fs-6">{{ studentDetailsWithImage?.studentName }}</div>
+          <div class="small text-muted mt-1">
+            <span class="me-3">App ID: <strong class="text-dark">{{ stuApplication?.applicationId }}</strong></span>
+            <span class="me-3">Reg No: <strong class="text-dark">{{ stuApplication?.registrationNo }}</strong></span>
+            <span class="me-3">Email: <strong class="text-dark">{{ stuApplication?.emailId }}</strong></span>
+            <span>Phone: <strong class="text-dark">{{ stuApplication?.phoneNumber }}</strong></span>
+          </div>
+        </div>
+        <div class="flex-shrink-0">
+          <span class="badge fs-6 px-3 py-2 rounded-pill"
+            [class.bg-success]="stuApplication?.approvalStatus?.toLowerCase() === 'approved'"
+            [class.bg-danger]="stuApplication?.approvalStatus?.toLowerCase() === 'rejected'"
+            [class.bg-warning]="!stuApplication?.approvalStatus || (stuApplication?.approvalStatus?.toLowerCase() !== 'approved' && stuApplication?.approvalStatus?.toLowerCase() !== 'rejected')"
+            [class.text-dark]="!stuApplication?.approvalStatus || (stuApplication?.approvalStatus?.toLowerCase() !== 'approved' && stuApplication?.approvalStatus?.toLowerCase() !== 'rejected')">
+            {{ stuApplication?.approvalStatus || 'Pending' }}
+          </span>
+        </div>
+      </div>
+      <!-- Row 2: University Options + Approved University (right corner) -->
+      <div class="d-flex align-items-center mt-2 pt-2 border-top flex-wrap gap-2">
+        <div class="flex-grow-1 small">
+          <span class="me-3 text-muted">Session: <strong class="text-dark">{{ stuApplication?.applyingOption || '-' }}</strong></span>
+          <span class="me-3 text-muted">Opt 1: <strong class="text-dark">{{ stuApplication?.universityOption1 || '-' }}</strong></span>
+          <span class="me-3 text-muted">Opt 2: <strong class="text-dark">{{ stuApplication?.universityOption2 || '-' }}</strong></span>
+          <span class="text-muted">Opt 3: <strong class="text-dark">{{ stuApplication?.universityOption3 || '-' }}</strong></span>
+        </div>
+        <div class="flex-shrink-0">
+          <span class="badge bg-success px-3 py-2" *ngIf="stuApplication?.approvedUniversity">
+            Approved University: {{ stuApplication?.approvedUniversity }}
+          </span>
+          <span class="badge bg-warning text-dark px-3 py-2" *ngIf="!stuApplication?.approvedUniversity">
+            Awaiting University Approval
+          </span>
+        </div>
       </div>
     </div>
 
     <!-- Tabs -->
     <ul class="nav nav-tabs mb-3" role="tablist">
-      <!-- <li class="nav-item" role="presentation">
+      <li class="nav-item" role="presentation">
         <button class="nav-link me-3" [class.active]="activeTab==='application'" (click)="selectTab('application')"
           type="button" role="tab">
           Student Application Details
@@ -22,9 +73,9 @@
           role="tab">
           Application Documents
         </button>
-      </li> -->
+      </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link " [class.active]="activeTab==='courses'" [disabled]="isCoursesSectionDisabled" (click)="selectTab('courses')" type="button"
+        <button class="nav-link" [class.active]="activeTab==='courses'" [disabled]="isCoursesSectionDisabled" (click)="selectTab('courses')" type="button"
           role="tab">
           Semester Exchanged Details
         </button>
@@ -47,298 +98,373 @@
     <!-- TAB PANES -->
     <div class="tab-content">
 
-      <!-- TAB 1: Application Details -->
+      <!-- TAB 1: Application Details (Stage-wise) -->
       <div class="tab-pane fade me-3" [class.show]="activeTab==='application'" [class.active]="activeTab==='application'">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <div class="ms-5 mb-3 text-center">
 
-            <div class="ms-4" *ngIf="StudentImage else placeholderImg">
-              <img alt="Student Image" class="img-fluid rounded-circle border border-3 border-primary"
-                [src]="StudentImage" style="width: 130px; height: 130px; object-fit: cover;">
-            </div>
-            <ng-template #placeholderImg>
-              <img src="https://placehold.co/150x150" alt="No Image" class="img-thumbnail"
-                style="max-width:150px; max-height:150px; object-fit:cover;" />
-            </ng-template>
-          </div>
-
-          <h2 class="text-info m-0">Application Details</h2>
+        <!-- Stage Header -->
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
           <div>
-            <button class="btn btn-dark  me-2" *ngIf="!isSection1Edit" (click)="enableSection1Edit()">Edit</button>
-            <button class="btn btn-primary" *ngIf="isSection1Edit" (click)="updateApplicationSection()"
+            <h5 class="text-info m-0">{{ applicationStageNames[currentApplicationStage - 1] }}</h5>
+            <small class="text-muted">Step {{ currentApplicationStage }} of {{ totalApplicationStages }}</small>
+          </div>
+          <div class="progress mx-3 flex-grow-1" style="height:6px;max-width:220px;">
+            <div class="progress-bar bg-info" [style.width.%]="(currentApplicationStage / totalApplicationStages) * 100"></div>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-dark btn-sm" *ngIf="!isSection1Edit" (click)="enableSection1Edit()">Edit</button>
+            <button class="btn btn-primary btn-sm" *ngIf="isSection1Edit" (click)="updateApplicationSection()"
               [disabled]="isLoading || applicationForm.invalid">Update</button>
+            <button class="btn btn-outline-secondary btn-sm" *ngIf="isSection1Edit" (click)="cancelSection1Edit()">Cancel</button>
           </div>
-
         </div>
+
+        <!-- Stage Breadcrumb -->
+        <div class="d-flex align-items-center gap-1 mb-3 flex-wrap">
+          <ng-container *ngFor="let name of applicationStageNames; let i = index">
+            <button type="button" class="btn btn-sm rounded-pill px-2 py-1"
+              [class.btn-info]="currentApplicationStage === i + 1"
+              [class.btn-success]="currentApplicationStage > i + 1"
+              [class.btn-outline-secondary]="currentApplicationStage < i + 1"
+              (click)="goToApplicationStage(i + 1)" style="font-size:0.75rem;">
+              {{ i + 1 }}. {{ name }}
+            </button>
+            <small *ngIf="i < applicationStageNames.length - 1" class="text-muted">&#8250;</small>
+          </ng-container>
+        </div>
+
         <form [formGroup]="applicationForm" (ngSubmit)="updateApplicationSection()" novalidate>
-          <h5 class="mt-4 mb-3 text-info">Personal Details</h5>
-          <div class="row">
-            <div class="col-md-4 mb-3"
-              *ngFor="let key of ['applicationId', 'registrationNo', 'emailId', 'countryName', 'whatsAppNo', 'phoneNumber', 'parentContact']">
-              <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
-              <input class="form-control" [type]="key.includes('email') ? 'email' : 'text'" [id]="key"
-                [formControlName]="key" [readonly]="!isSection1Edit || key === 'registrationNo'"
-                [class.is-invalid]="isFieldInvalidApplication(key)" />
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication(key)">
-                {{ beautifyLabel(key) }} is required.
-              </div>
-            </div>
-          </div>
 
-          <!-- NEW: Relative Details Section -->
-          <h5 class="mt-4 mb-3 text-info">Relative Details</h5>
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label for="relativeName" class="form-label fw-semibold">Relative Name</label>
-              <input class="form-control" id="relativeName" formControlName="relativeName" [readonly]="!isSection1Edit"
-                [class.is-invalid]="isFieldInvalidApplication('relativeName')" />
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('relativeName')">
-                Relative Name is required.
-              </div>
-            </div>
-            <ng-container *ngIf="showRelativeDetails">
-            <div class="col-md-4 mb-3">
-              <label for="relativeRelation" class="form-label fw-semibold">Relative Relation</label>
-              <input class="form-control" id="relativeRelation" formControlName="relativeRelation"
-                [readonly]="!isSection1Edit" [class.is-invalid]="isFieldInvalidApplication('relativeRelation')" />
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('relativeRelation')">
-                Relative Relation is required.
-              </div>
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="relativeCountry" class="form-label fw-semibold">Relative Country</label>
-              <select class="form-select" id="relativeCountry" formControlName="relativeCountry"
-                [class.is-invalid]="isFieldInvalidApplication('relativeCountry')">
-                <option value="" disabled>Select a Country</option>
-                <option *ngFor="let country of countriesList" [value]="country.name">{{ country.name }}</option>
-              </select>
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('relativeCountry')">
-                Relative Country is required.
-              </div>
-            </div>
-            </ng-container>
-          </div>
-          <!-- END NEW: Relative Details Section -->
-
-          <h5 class="mt-4 mb-3 text-info">Sponsor Details</h5>
+          <!-- STAGE 1: Personal Details -->
+          <div *ngIf="currentApplicationStage === 1">
             <div class="row">
-            <div class="col-md-4 mb-3">
-              <label for="isSelfFunded" class="form-label fw-semibold">Sponsor Type</label>
-              <select class="form-select" id="isSelfFunded" formControlName="isSelfFunded"
-                [class.is-invalid]="isFieldInvalidApplication('isSelfFunded')">
-                <option value="" disabled>Select Sponsor Type</option>
-                <option value="Parent">Parent</option>
-                <option value="Relative">Relative</option>
-                <option value="Other">Other</option>
-              </select>
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('isSelfFunded')">
-                Sponsor Type is required.
-              </div>
-            </div>
-            <ng-container *ngIf="showSponsorDetails">
-            <div class="col-md-4 mb-3" *ngIf="isFieldInvalidApplication('isSelfFunded')">
-              <label for="sponsorName" class="form-label fw-semibold">Sponsor Name</label>
-              <input class="form-control" id="sponsorName" formControlName="sponsorName" [readonly]="!isSection1Edit"
-                [class.is-invalid]="isFieldInvalidApplication('sponsorName')" />
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('sponsorName')">
-                Sponsor Name is required.
-              </div>
-            </div>
-            <div class="col-md-4 mb-3" *ngIf="isFieldInvalidApplication('isSelfFunded')">
-              <label for="sponsorRelation" class="form-label fw-semibold">Sponsor Relation</label>
-              <input class="form-control" id="sponsorRelation" formControlName="sponsorRelation"
-                [readonly]="!isSection1Edit" [class.is-invalid]="isFieldInvalidApplication('sponsorRelation')" />
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('sponsorRelation')">
-                Sponsor Relation is required.
-              </div>
-            </div>
-            </ng-container>
-          </div>  
- 
-          <h5 class="mt-4 mb-3 text-info">Visa Details</h5>
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label for="isVisaRejected" class="form-label fw-semibold">Visa Ever Been Rejected?</label>
-              <select class="form-select" id="isVisaRejected" formControlName="isVisaRejected"
-                [class.is-invalid]="isFieldInvalidApplication('isVisaRejected')">
-                <option value="" disabled>Select</option>
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
-              </select>
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('isVisaRejected')">
-                Visa Rejection status is required.
-              </div>
-            </div>
-            <div class="col-md-4 mb-3" *ngIf="isFieldInvalidApplication('isVisaRejected')">
-              <label for="visaRejectedReason" class="form-label fw-semibold">Reason for Rejection  </label>
-              <input class="form-control" id="visaRejectedReason" formControlName="visaRejectedReason"
-                [readonly]="!isSection1Edit" [class.is-invalid]="isFieldInvalidApplication('visaRejectedReason')" />
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('visaRejectedReason')">
-                Reason for Rejection is required.
-              </div>
-            </div>
-            <div class="col-md-4 mb-3"  *ngIf="isFieldInvalidApplication('isVisaRejected')">
-              <label for="visaRejectedCountry" class="form-label fw-semibold">Country of Rejection</label>
-              <select class="form-select" id="visaRejectedCountry" formControlName="visaRejectedCountry"
-                [class.is-invalid]="isFieldInvalidApplication('visaRejectedCountry')">
-                <option value="" disabled>Select a Country</option>
-                <option *ngFor="let country of countriesList" [value]="country.name">{{ country.name }}</option>
-              </select>
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('visaRejectedCountry')">
-                Visa Rejection Country is required.
+              <div class="col-md-4 mb-3"
+                *ngFor="let key of ['applicationId', 'registrationNo', 'emailId', 'countryName', 'whatsAppNo', 'phoneNumber', 'parentContact']">
+                <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+                <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                  {{ applicationForm.get(key)?.value || 'N/A' }}</p>
+                <ng-container *ngIf="isSection1Edit">
+                  <input class="form-control" [type]="key.includes('email') ? 'email' : 'text'" [id]="key"
+                    [formControlName]="key" [readonly]="alwaysDisabledKeys.includes(key)"
+                    [class.is-invalid]="isFieldInvalidApplication(key)" />
+                  <div class="invalid-feedback">{{ getFirstErrorApplication(key) }}</div>
+                </ng-container>
               </div>
             </div>
           </div>
 
-          <h5 class="mt-4 mb-3 text-info">Passport Details</h5>
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label for="passportStatus" class="form-label fw-semibold">Passport Status</label>
-              <select class="form-select" id="passportStatus" formControlName="passportStatus"
-                [class.is-invalid]="isFieldInvalidApplication('passportStatus')">
-                <option value="" disabled>Select</option>
-                <option value="Applied">Applied</option>
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
-              </select>
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('passportStatus')">
-                Passport Status is required.
+          <!-- STAGE 2: University Preferences -->
+          <div *ngIf="currentApplicationStage === 2">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="applyingOption" class="form-label fw-semibold">Applying Session</label>
+                <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                  {{ applicationForm.get('applyingOption')?.value || 'N/A' }}</p>
+                <ng-container *ngIf="isSection1Edit">
+                  <select class="form-select" id="applyingOption" formControlName="applyingOption"
+                    [class.is-invalid]="isFieldInvalidApplication('applyingOption')">
+                    <option value="" disabled>Select Session</option>
+                    <option *ngFor="let opt of applyingOptions" [value]="opt">{{ opt }}</option>
+                  </select>
+                  <div class="invalid-feedback">{{ getFirstErrorApplication('applyingOption') }}</div>
+                </ng-container>
+              </div>
+              <div class="col-md-4 mb-3" *ngFor="let key of ['universityOption1', 'universityOption2', 'universityOption3']; let idx = index">
+                <label [for]="key" class="form-label fw-semibold">University Option {{ idx + 1 }}</label>
+                <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                  {{ applicationForm.get(key)?.value || 'N/A' }}</p>
+                <ng-container *ngIf="isSection1Edit">
+                  <select class="form-select" [id]="key" [formControlName]="key"
+                    [class.is-invalid]="isFieldInvalidApplication(key)">
+                    <option value="" disabled>Select University</option>
+                    <option *ngFor="let uni of universityOptions" [value]="uni.universityName">{{ uni.universityName }}</option>
+                  </select>
+                  <div class="invalid-feedback">{{ getFirstErrorApplication(key) }}</div>
+                </ng-container>
               </div>
             </div>
-            <ng-container *ngIf="showPassportDetails">
-            <div class="col-md-4 mb-3">
-              <label for="passportNumber" class="form-label fw-semibold">Passport Number</label>
-              <input class="form-control" id="passportNumber" formControlName="passportNumber"
-                [readonly]="!isSection1Edit" [class.is-invalid]="isFieldInvalidApplication('passportNumber')" />
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('passportNumber')">
-                Passport Number is required.
-              </div>
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="passportIssueDate" class="form-label fw-semibold">Passport Issue Date</label>
-              <input class="form-control" id="passportIssueDate" formControlName="passportIssueDate"
-                [readonly]="!isSection1Edit" type="date"
-                [class.is-invalid]="isFieldInvalidApplication('passportIssueDate')" />
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('passportIssueDate')">
-                Passport Issue Date is required.
-              </div>
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="passportValidUpto" class="form-label fw-semibold">Passport Valid Upto</label>
-              <input class="form-control" id="passportValidUpto" formControlName="passportValidUpto"
-                [readonly]="!isSection1Edit" type="date"
-                [class.is-invalid]="isFieldInvalidApplication('passportValidUpto')" />
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('passportValidUpto')">
-                Passport Valid Upto is required.
-              </div>
-            </div>
-            </ng-container>
           </div>
 
-          <h5 class="mt-4 mb-3 text-info">English Test Details</h5>
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label for="englishTestType" class="form-label fw-semibold">English Proficiency Test</label>
-              <select class="form-select" id="englishTestType" formControlName="englishTestType"
-                [class.is-invalid]="isFieldInvalidApplication('englishTestType')">
-                <option value="">Select</option>
-                <option value="NotRequried">Not Required</option>
-                <option value="NotGiven">Not Given</option>
-                <option value="Applied">Applied</option>
-                <option value="Appeared">Appeared/ Given</option>
-                <option value="PTE">PTE</option>
-                <option value="DULINGO">DULINGO</option>
-                <option value="IELTS">IELTS</option>
-                <option value="TOFEL">TOFEL</option>
-              </select>
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('englishTestType')">
-                English Test Type is required.
+          <!-- STAGE 3: Relative Details -->
+          <div *ngIf="currentApplicationStage === 3">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="relativeName" class="form-label fw-semibold">Relative Name</label>
+                <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                  {{ applicationForm.get('relativeName')?.value || 'N/A' }}</p>
+                <ng-container *ngIf="isSection1Edit">
+                  <input class="form-control" id="relativeName" formControlName="relativeName"
+                    [class.is-invalid]="isFieldInvalidApplication('relativeName')" />
+                  <div class="invalid-feedback">{{ getFirstErrorApplication('relativeName') }}</div>
+                </ng-container>
               </div>
+              <ng-container *ngIf="showRelativeDetails || !isSection1Edit">
+                <div class="col-md-4 mb-3">
+                  <label for="relativeRelation" class="form-label fw-semibold">Relative Relation</label>
+                  <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                    {{ applicationForm.get('relativeRelation')?.value || 'N/A' }}</p>
+                  <ng-container *ngIf="isSection1Edit">
+                    <input class="form-control" id="relativeRelation" formControlName="relativeRelation"
+                      [class.is-invalid]="isFieldInvalidApplication('relativeRelation')" />
+                    <div class="invalid-feedback">{{ getFirstErrorApplication('relativeRelation') }}</div>
+                  </ng-container>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="relativeCountry" class="form-label fw-semibold">Relative Country</label>
+                  <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                    {{ applicationForm.get('relativeCountry')?.value || 'N/A' }}</p>
+                  <ng-container *ngIf="isSection1Edit">
+                    <select class="form-select" id="relativeCountry" formControlName="relativeCountry"
+                      [class.is-invalid]="isFieldInvalidApplication('relativeCountry')">
+                      <option value="" disabled>Select a Country</option>
+                      <option *ngFor="let country of countriesList" [value]="country.name">{{ country.name }}</option>
+                    </select>
+                    <div class="invalid-feedback">{{ getFirstErrorApplication('relativeCountry') }}</div>
+                  </ng-container>
+                </div>
+              </ng-container>
             </div>
-            <ng-container *ngIf="showEnglishScores">
-            <div class="col-md-4 mb-3">
-              <label for="speakingScore" class="form-label fw-semibold">Speaking Score</label>
-              <input class="form-control" id="speakingScore" formControlName="speakingScore"
-                [readonly]="!isSection1Edit" [class.is-invalid]="isFieldInvalidApplication('speakingScore')" />
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('speakingScore')">
-                Speaking Score is required.
-              </div>
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="listeningScore" class="form-label fw-semibold">Listening Score</label>
-              <input class="form-control" id="listeningScore" formControlName="listeningScore"
-                [readonly]="!isSection1Edit" [class.is-invalid]="isFieldInvalidApplication('listeningScore')" />
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('listeningScore')">
-                Listening Score is required.
-              </div>
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="readingScore" class="form-label fw-semibold">Reading Score</label>
-              <input class="form-control" id="readingScore" formControlName="readingScore" [readonly]="!isSection1Edit"
-                [class.is-invalid]="isFieldInvalidApplication('readingScore')" />
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('readingScore')">
-                Reading Score is required.
-              </div>
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="writingScore" class="form-label fw-semibold">Writing Score</label>
-              <input class="form-control" id="writingScore" formControlName="writingScore" [readonly]="!isSection1Edit"
-                [class.is-invalid]="isFieldInvalidApplication('writingScore')" />
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('writingScore')">
-                Writing Score is required.
-              </div>
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="overallScore" class="form-label fw-semibold">Overall Score</label>
-              <input class="form-control" id="overallScore" formControlName="overallScore" [readonly]="!isSection1Edit"
-                [class.is-invalid]="isFieldInvalidApplication('overallScore')" />
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('overallScore')">
-                Overall Score is required.
-              </div>
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="englishTestYear" class="form-label fw-semibold">Year of Test</label>
-              <input class="form-control" id="englishTestYear" formControlName="englishTestYear"
-                [readonly]="!isSection1Edit" [class.is-invalid]="isFieldInvalidApplication('englishTestYear')" />
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('englishTestYear')">
-                Year of Test is required.
-              </div>
-            </div>
-            </ng-container>
           </div>
 
-          <h5 class="mt-4 mb-3 text-info">Financial & Declaration</h5>
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label for="availableFunds" class="form-label fw-semibold">Available Funds</label>
-              <select class="form-select" id="availableFunds" formControlName="availableFunds"
-                [class.is-invalid]="isFieldInvalidApplication('availableFunds')">
-                <option value="" disabled>Select</option>
-                <option value="2 to 4 Lakhs">2 to 4 Lakhs</option>
-                <option value="4 to 6 Lakhs">4 to 6 Lakhs</option>
-                <option value="6 to 8 Lakhs">6 to 8 Lakhs</option>
-              </select>
-              <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('availableFunds')">
-                Available Funds is required.
+          <!-- STAGE 4: Sponsor Details -->
+          <div *ngIf="currentApplicationStage === 4">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="isSelfFunded" class="form-label fw-semibold">Sponsor Type</label>
+                <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                  {{ applicationForm.get('isSelfFunded')?.value || 'N/A' }}</p>
+                <ng-container *ngIf="isSection1Edit">
+                  <select class="form-select" id="isSelfFunded" formControlName="isSelfFunded"
+                    [class.is-invalid]="isFieldInvalidApplication('isSelfFunded')">
+                    <option value="" disabled>Select Sponsor Type</option>
+                    <option value="Parent">Parent</option>
+                    <option value="Relative">Relative</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <div class="invalid-feedback">{{ getFirstErrorApplication('isSelfFunded') }}</div>
+                </ng-container>
+              </div>
+              <ng-container *ngIf="showSponsorDetails || !isSection1Edit">
+                <div class="col-md-4 mb-3">
+                  <label for="sponsorName" class="form-label fw-semibold">Sponsor Name</label>
+                  <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                    {{ applicationForm.get('sponsorName')?.value || 'N/A' }}</p>
+                  <input *ngIf="isSection1Edit" class="form-control" id="sponsorName" formControlName="sponsorName" />
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="sponsorRelation" class="form-label fw-semibold">Sponsor Relation</label>
+                  <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                    {{ applicationForm.get('sponsorRelation')?.value || 'N/A' }}</p>
+                  <input *ngIf="isSection1Edit" class="form-control" id="sponsorRelation" formControlName="sponsorRelation" />
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="sponsorContact" class="form-label fw-semibold">Sponsor Contact</label>
+                  <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                    {{ applicationForm.get('sponsorContact')?.value || 'N/A' }}</p>
+                  <input *ngIf="isSection1Edit" class="form-control" id="sponsorContact" formControlName="sponsorContact" />
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="sponsorEmail" class="form-label fw-semibold">Sponsor Email</label>
+                  <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                    {{ applicationForm.get('sponsorEmail')?.value || 'N/A' }}</p>
+                  <input *ngIf="isSection1Edit" type="email" class="form-control" id="sponsorEmail" formControlName="sponsorEmail" />
+                </div>
+              </ng-container>
+            </div>
+          </div>
+
+          <!-- STAGE 5: Visa Details -->
+          <div *ngIf="currentApplicationStage === 5">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="isVisaRejected" class="form-label fw-semibold">Visa Ever Been Rejected?</label>
+                <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                  {{ applicationForm.get('isVisaRejected')?.value || 'N/A' }}</p>
+                <ng-container *ngIf="isSection1Edit">
+                  <select class="form-select" id="isVisaRejected" formControlName="isVisaRejected"
+                    [class.is-invalid]="isFieldInvalidApplication('isVisaRejected')">
+                    <option value="" disabled>Select</option>
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                  </select>
+                  <div class="invalid-feedback">{{ getFirstErrorApplication('isVisaRejected') }}</div>
+                </ng-container>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="visaRejectedReason" class="form-label fw-semibold">Reason for Rejection</label>
+                <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                  {{ applicationForm.get('visaRejectedReason')?.value || 'N/A' }}</p>
+                <input *ngIf="isSection1Edit" class="form-control" id="visaRejectedReason" formControlName="visaRejectedReason" />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="visaRejectedCountry" class="form-label fw-semibold">Country of Rejection</label>
+                <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                  {{ applicationForm.get('visaRejectedCountry')?.value || 'N/A' }}</p>
+                <ng-container *ngIf="isSection1Edit">
+                  <select class="form-select" id="visaRejectedCountry" formControlName="visaRejectedCountry">
+                    <option value="" disabled>Select a Country</option>
+                    <option *ngFor="let country of countriesList" [value]="country.name">{{ country.name }}</option>
+                  </select>
+                </ng-container>
               </div>
             </div>
-            <div class="col-md-4 mb-3">
-              <div class="form-check mt-2">
-                <input type="checkbox" class="form-check-input" id="acceptPolicy" formControlName="acceptPolicy"
-                  [disabled]="!isSection1Edit" [class.is-invalid]="isFieldInvalidApplication('acceptPolicy')" />
-                <label class="form-check-label" for="acceptPolicy">
-                  Declaration Status
-                  <!-- {{policyAccepted}} -->
-                </label>
-                <div class="invalid-feedback" *ngIf="isFieldInvalidApplication('acceptPolicy')">
-                  You must accept the policy.
+          </div>
+
+          <!-- STAGE 6: Passport Details -->
+          <div *ngIf="currentApplicationStage === 6">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="passportStatus" class="form-label fw-semibold">Passport Status</label>
+                <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                  {{ applicationForm.get('passportStatus')?.value || 'N/A' }}</p>
+                <ng-container *ngIf="isSection1Edit">
+                  <select class="form-select" id="passportStatus" formControlName="passportStatus"
+                    [class.is-invalid]="isFieldInvalidApplication('passportStatus')">
+                    <option value="" disabled>Select</option>
+                    <option value="Applied">Applied</option>
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                  </select>
+                  <div class="invalid-feedback">{{ getFirstErrorApplication('passportStatus') }}</div>
+                </ng-container>
+              </div>
+              <ng-container *ngIf="showPassportDetails || !isSection1Edit">
+                <div class="col-md-4 mb-3">
+                  <label for="passportNumber" class="form-label fw-semibold">Passport Number</label>
+                  <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                    {{ applicationForm.get('passportNumber')?.value || 'N/A' }}</p>
+                  <ng-container *ngIf="isSection1Edit">
+                    <input class="form-control" id="passportNumber" formControlName="passportNumber"
+                      [class.is-invalid]="isFieldInvalidApplication('passportNumber')" />
+                    <div class="invalid-feedback">{{ getFirstErrorApplication('passportNumber') }}</div>
+                  </ng-container>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="passportIssueDate" class="form-label fw-semibold">Passport Issue Date</label>
+                  <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                    {{ applicationForm.get('passportIssueDate')?.value || 'N/A' }}</p>
+                  <ng-container *ngIf="isSection1Edit">
+                    <input class="form-control" type="date" id="passportIssueDate" formControlName="passportIssueDate"
+                      [class.is-invalid]="isFieldInvalidApplication('passportIssueDate')" />
+                    <div class="invalid-feedback">{{ getFirstErrorApplication('passportIssueDate') }}</div>
+                  </ng-container>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="passportValidUpto" class="form-label fw-semibold">Passport Valid Upto</label>
+                  <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                    {{ applicationForm.get('passportValidUpto')?.value || 'N/A' }}</p>
+                  <ng-container *ngIf="isSection1Edit">
+                    <input class="form-control" type="date" id="passportValidUpto" formControlName="passportValidUpto"
+                      [class.is-invalid]="isFieldInvalidApplication('passportValidUpto')" />
+                    <div class="invalid-feedback">{{ getFirstErrorApplication('passportValidUpto') }}</div>
+                  </ng-container>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+
+          <!-- STAGE 7: English Test Details -->
+          <div *ngIf="currentApplicationStage === 7">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="englishTestType" class="form-label fw-semibold">English Proficiency Test</label>
+                <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                  {{ applicationForm.get('englishTestType')?.value || 'N/A' }}</p>
+                <ng-container *ngIf="isSection1Edit">
+                  <select class="form-select" id="englishTestType" formControlName="englishTestType"
+                    [class.is-invalid]="isFieldInvalidApplication('englishTestType')">
+                    <option value="">Select</option>
+                    <option value="NotRequried">Not Required</option>
+                    <option value="NotGiven">Not Given</option>
+                    <option value="Applied">Applied</option>
+                    <option value="Appeared">Appeared / Given</option>
+                    <option value="PTE">PTE</option>
+                    <option value="DULINGO">DULINGO</option>
+                    <option value="IELTS">IELTS</option>
+                    <option value="TOFEL">TOFEL</option>
+                  </select>
+                  <div class="invalid-feedback">{{ getFirstErrorApplication('englishTestType') }}</div>
+                </ng-container>
+              </div>
+              <ng-container *ngIf="showEnglishScores || !isSection1Edit">
+                <div class="col-md-4 mb-3"
+                  *ngFor="let key of ['speakingScore', 'listeningScore', 'readingScore', 'writingScore', 'overallScore', 'englishTestYear']">
+                  <label [for]="key" class="form-label fw-semibold">{{ beautifyLabel(key) }}</label>
+                  <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                    {{ applicationForm.get(key)?.value || 'N/A' }}</p>
+                  <ng-container *ngIf="isSection1Edit">
+                    <input class="form-control" [id]="key" [formControlName]="key"
+                      [class.is-invalid]="isFieldInvalidApplication(key)" />
+                    <div class="invalid-feedback">{{ beautifyLabel(key) }} is required.</div>
+                  </ng-container>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+
+          <!-- STAGE 8: Financial and Declaration -->
+          <div *ngIf="currentApplicationStage === 8">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="availableFunds" class="form-label fw-semibold">Available Funds</label>
+                <p *ngIf="!isSection1Edit" class="form-control-plaintext border rounded p-2 bg-white mb-0">
+                  {{ applicationForm.get('availableFunds')?.value || 'N/A' }}</p>
+                <ng-container *ngIf="isSection1Edit">
+                  <select class="form-select" id="availableFunds" formControlName="availableFunds"
+                    [class.is-invalid]="isFieldInvalidApplication('availableFunds')">
+                    <option value="" disabled>Select</option>
+                    <option value="2 to 4 Lakhs">2 to 4 Lakhs</option>
+                    <option value="4 to 6 Lakhs">4 to 6 Lakhs</option>
+                    <option value="6 to 8 Lakhs">6 to 8 Lakhs</option>
+                  </select>
+                  <div class="invalid-feedback">{{ getFirstErrorApplication('availableFunds') }}</div>
+                </ng-container>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label fw-semibold">Declaration Status</label>
+                <div class="form-check mt-2">
+                  <input type="checkbox" class="form-check-input" id="acceptPolicy" formControlName="acceptPolicy"
+                    [attr.disabled]="!isSection1Edit ? true : null"
+                    [class.is-invalid]="isFieldInvalidApplication('acceptPolicy')" />
+                  <label class="form-check-label" for="acceptPolicy">I accept the policy and terms.</label>
+                  <div class="invalid-feedback">You must accept the policy.</div>
                 </div>
               </div>
             </div>
           </div>
+
+          <!-- Navigation Buttons -->
+          <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+            <button type="button" class="btn btn-outline-secondary"
+              (click)="prevApplicationStage()" [disabled]="currentApplicationStage === 1">
+              &#8592; Back
+            </button>
+            <div class="d-flex gap-1 align-items-center">
+              <span *ngFor="let i of [1,2,3,4,5,6,7,8]" class="d-inline-block rounded-circle"
+                style="width:10px;height:10px;cursor:pointer;transition:background 0.2s"
+                [class.bg-info]="currentApplicationStage === i"
+                [class.bg-success]="currentApplicationStage > i"
+                [class.bg-secondary]="currentApplicationStage < i"
+                (click)="goToApplicationStage(i)">
+              </span>
+            </div>
+            <ng-container *ngIf="currentApplicationStage < totalApplicationStages; else lastStageBtn">
+              <button type="button" class="btn btn-info text-white" (click)="nextApplicationStage()">
+                Next &#8594;
+              </button>
+            </ng-container>
+            <ng-template #lastStageBtn>
+              <button type="button" class="btn btn-success" *ngIf="isSection1Edit"
+                (click)="updateApplicationSection()" [disabled]="isLoading || applicationForm.invalid">
+                Save All Changes
+              </button>
+              <span class="badge bg-success fs-6 px-3 py-2" *ngIf="!isSection1Edit">
+                &#10003; All Stages Reviewed
+              </span>
+            </ng-template>
+          </div>
+
         </form>
       </div>
-
       <!-- TAB 2: Documents -->
       <div class="tab-pane fade me-3" [class.show]="activeTab==='documents'" [class.active]="activeTab==='documents'">
         <div class="d-flex justify-content-between align-items-center mb-2">

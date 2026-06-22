@@ -13,6 +13,7 @@ export class StepDocumentsComponent {
   @Input() isEditing = false;
   @Input() isLocked = false;
   @Input() localServerUrl = '';
+  @Input() hideBackNext = false;
 
   @Output() fileSelected = new EventEmitter<FileSelectedEvent>();
   @Output() editClick = new EventEmitter<void>();

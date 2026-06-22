@@ -3,6 +3,8 @@
     [isEditing]="isEditing"
     [isLocked]="isLocked"
     [isValid]="isValid"
+    [showBack]="!hideBackNext"
+    [showNext]="!hideBackNext"
     (editClick)="editClick.emit()"
     (cancelClick)="cancelClick.emit()"
     (updateClick)="updateClick.emit()"
@@ -120,22 +122,22 @@
 
     <!-- Hidden when sponsor is Parents or Parent -->
     <div *ngIf="showSponsorDetails" class="col-md-12">
-      <div class="row mt-2">
-        <div class="col-md-6">
+      <div class="row mt-2" *ngIf="showOptionalSponsorField('SponsorName') || showOptionalSponsorField('SponsorRelation')">
+        <div class="col-md-6" *ngIf="showOptionalSponsorField('SponsorName')">
           <label class="form-label">Sponsor Name *</label>
           <input class="form-control" formControlName="SponsorName" [readonly]="!isEditing" />
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6" *ngIf="showOptionalSponsorField('SponsorRelation')">
           <label class="form-label">Sponsor Relation *</label>
           <input class="form-control" formControlName="SponsorRelation" [readonly]="!isEditing" />
         </div>
       </div>
-      <div class="row mt-2">
-        <div class="col-md-6">
+      <div class="row mt-2" *ngIf="showOptionalSponsorField('SponsorEmail') || showOptionalSponsorField('SponsorContact')">
+        <div class="col-md-6" *ngIf="showOptionalSponsorField('SponsorEmail')">
           <label class="form-label">Sponsor Email</label>
           <input class="form-control" formControlName="SponsorEmail" [readonly]="!isEditing" />
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6" *ngIf="showOptionalSponsorField('SponsorContact')">
           <label class="form-label">Sponsor Contact</label>
           <input class="form-control" formControlName="SponsorContact" [readonly]="!isEditing" />
         </div>
@@ -147,6 +149,8 @@
     [isEditing]="isEditing"
     [isLocked]="isLocked"
     [isValid]="isValid"
+    [showBack]="!hideBackNext"
+    [showNext]="!hideBackNext"
     [showEdit]="false"
     (cancelClick)="cancelClick.emit()"
     (updateClick)="updateClick.emit()"

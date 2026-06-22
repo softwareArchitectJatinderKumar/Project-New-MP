@@ -432,6 +432,14 @@
                         </ng-template>
                       </ngx-datatable-column>
 
+                      <ngx-datatable-column name="Modify Faculty" [sortable]="false" prop="Id">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <button class="btn btn-danger" (click)="ModifyFaculty(row)">
+                            Modify Faculty
+                          </button>
+                        </ng-template>
+                      </ngx-datatable-column>
+
                       <ngx-datatable-column name="Activity Details" [sortable]="false" prop="activityDetails">
                         <ng-template let-row="row" ngx-datatable-cell-template>
                           <span class="fw-bold ps-2">
@@ -1083,4 +1091,128 @@
       <i class="bi bi-cloud-upload me-1"></i> {{isRenewalMode ? 'Renew MOU' : 'Save Changes'}}
     </button>
   </div>
+</ng-template>
+
+
+
+
+
+<!-- New Modal to Change faculty of the MOU Activity Action Plan -->
+<ng-template #ModifyFacultyModal let-modal>
+
+  <div class="modal-header">
+    <h5 class="modal-title">
+      Modify Faculty
+    </h5>
+
+    <button type="button" class="btn-close" (click)="modal.dismiss()">
+    </button>
+  </div>
+
+  <div class="modal-body">
+
+    <div class="card shadow-sm">
+
+      <div class="card-body">
+
+        <form #PUpdateUid="ngForm" (ngSubmit)="UpdateUID()">
+
+          <div class="row mb-4">
+
+            <div class="col-md-6">
+
+              <label class="form-label">
+                MOU ID
+              </label>
+
+              <input class="form-control" [value]="'MOU/' + newMouid" disabled>
+
+            </div>
+
+            <div class="col-md-6">
+
+              <label class="form-label">
+                Title
+              </label>
+
+              <input class="form-control" [value]="TitleS" disabled>
+
+            </div>
+
+          </div>
+
+          <!-- Employee Search -->
+
+          <div class="mb-4 position-relative">
+
+            <label class="form-label">
+              New Concerned Faculty
+            </label>
+
+            <input type="text" class="form-control" [formControl]="employeeControl3" (input)="onInput3()"
+              (keydown)="onKeydown3($event)" (focus)="showSuggestions3=true" (blur)="hideSuggestions3()"
+              autocomplete="off" placeholder="Search Faculty">
+
+            <div *ngIf="showSuggestions3 && filteredEmployeesData3?.length"
+              class="position-absolute bg-white border rounded shadow-sm w-100" style="
+                max-height:250px;
+                overflow-y:auto;
+                z-index:9999;
+              ">
+
+              <div *ngFor="
+                  let emp of filteredEmployeesData3;
+                  let i=index
+                " class="p-2 border-bottom cursor-pointer" [class.bg-light]="
+                  i===activeSuggestionIndex3
+                " (mousedown)="selectEmployee3(emp)">
+
+                {{ emp.employeeName }}
+                ({{ emp.employeeCode }})
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Remarks -->
+
+          <div class="mb-4">
+
+            <label class="form-label">
+              Remarks
+            </label>
+
+            <textarea class="form-control" rows="4" name="remarks3" [(ngModel)]="remarks3" required>
+            </textarea>
+
+          </div>
+
+          <!-- Buttons -->
+
+          <div class="text-end">
+
+            <button type="button" class="btn btn-secondary me-2" (click)="modal.dismiss()">
+
+              Close
+
+            </button>
+
+            <button type="submit" class="btn btn-primary" [disabled]="!checkFormValidity3()">
+
+              Update Faculty
+
+            </button>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
 </ng-template>

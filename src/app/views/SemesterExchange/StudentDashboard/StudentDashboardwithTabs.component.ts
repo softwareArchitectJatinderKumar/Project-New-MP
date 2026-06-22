@@ -15,7 +15,7 @@ import { countries } from '../countries-list'; // Assuming countries-list.ts exi
 type CourseRow = {
   courseName?: string | null;
   courseCode?: string | null;
-  hours?: number | null;  
+  hours?: number | null;
   file?: File | null;
   fileName?: string | null;
   fileData?: string | null;
@@ -32,12 +32,12 @@ type CourseRow = {
 
 
 export class StudentDashboardwithTabs implements OnInit {
-  countriesList: any = countries; // Ensure 'countries' is correctly imported
+  countriesList: any = countries; // Ensure 'countries' is correctly imported2
   // UI / state
   isLoading = false;
   isSavingCourses = false;
   isLoginFailed = false;
-  activeTab: 'application' | 'documents' | 'courses'  ;
+  activeTab: 'application' | 'documents' | 'courses' = 'application';
 
 
   // 🚀 ADDED: Control property for the Courses tab
@@ -189,7 +189,7 @@ getApplicationDetails(regId: string): void {
           this.stuApplication = response.item1[0];
           // console.log(JSON.stringify(this.stuApplication))
           this.ApplicationId = this.stuApplication.applicationId;
-          
+
           // ✅ FIX: Explicitly assign component properties for document display in the UI
           // These properties hold the existing file names fetched from the API response
           this.FeesProofFileName = this.stuApplication.feesProofFileName || '';
@@ -197,7 +197,7 @@ getApplicationDetails(regId: string): void {
           this.ConsentLetterFileName = this.stuApplication.consentLetterFileName || '';
           this.PassportFileName = this.stuApplication.passportFileName || '';
           // Assuming a similar pattern for English Proof if a specific field exists in the UI/API
-          // this.EnglishProofFileName = this.stuApplication.englishTestDocumentPath || ''; 
+          // this.EnglishProofFileName = this.stuApplication.englishTestDocumentPath || '';
 
 
           this.detectOtherDocs();
@@ -383,7 +383,7 @@ private buildApplicationForm(): void {
 
     this.applicationForm = this.fb.group(cfg);
     this.applicationForm.disable();
-    
+
     // Setup listeners for conditional validation
     this.setupConditionalValidators(); // CALL NEW METHOD
 }
@@ -425,7 +425,7 @@ private setupConditionalValidators(): void {
 
     // Initial check (for when data is loaded via patchValue)
     applyRelativeValidation(relativeNameControl.value);
-    
+
     // Subscribe to runtime changes
     relativeNameControl.valueChanges.subscribe(nameVal => {
         applyRelativeValidation(nameVal);
@@ -446,9 +446,33 @@ private setupConditionalValidators(): void {
     });
   }
 
+  // ---------------- APPLICATION STAGE NAVIGATION ----------------
+  applicationStageNames = [
+    'Personal Details', 'University Preferences', 'Relative Details',
+    'Sponsor Details', 'Visa Details', 'Passport Details',
+    'English Test Details', 'Financial & Declaration'
+  ];
+  readonly totalApplicationStages = 8;
+  currentApplicationStage = 1;
+
+  nextApplicationStage(): void {
+    if (this.currentApplicationStage < this.totalApplicationStages) this.currentApplicationStage++;
+  }
+  prevApplicationStage(): void {
+    if (this.currentApplicationStage > 1) this.currentApplicationStage--;
+  }
+  goToApplicationStage(stage: number): void {
+    this.currentApplicationStage = stage;
+  }
+  cancelSection1Edit(): void {
+    this.isSection1Edit = false;
+    this.applicationForm.disable();
+    this.populateForms();
+  }
+
   // ---------------- TABS ----------------
   selectTab(tab: 'application' | 'documents' | 'courses'): void {
-    this.activeTab = 'courses';
+    this.activeTab = tab;
   }
 
   // ---------------- SECTION 1 ----------------
@@ -665,7 +689,7 @@ private setupConditionalValidators(): void {
 
     this.PassportFileData = file;
     this.PassportFileStatus = true;
-    // alert(10);  
+    // alert(10);
     if (file) {
       reader.readAsDataURL(file);
       reader.onload = () => {
@@ -718,7 +742,7 @@ private setupConditionalValidators(): void {
 
     this.ResumeFileData = file;
     this.ResumeFileStatus = true;
-    // alert(10);  
+    // alert(10);
     if (file) {
       reader.readAsDataURL(file);
       reader.onload = () => {
@@ -771,7 +795,7 @@ private setupConditionalValidators(): void {
 
     this.FeesProofData = file;
     this.FeesProofStatus = true;
-    // alert(10);  
+    // alert(10);
     if (file) {
       reader.readAsDataURL(file);
       reader.onload = () => {
@@ -842,7 +866,7 @@ private setupConditionalValidators(): void {
 
     this.ConsentLetterData = file;
     this.ConsentLetterStatus = true;
-    // alert(10);  
+    // alert(10);
     if (file) {
       reader.readAsDataURL(file);
       reader.onload = () => {
@@ -895,7 +919,7 @@ private setupConditionalValidators(): void {
 
     this.EnglishProofData = file;
     this.EnglishProofStatus = true;
-    // alert(10);  
+    // alert(10);
     if (file) {
       reader.readAsDataURL(file);
       reader.onload = () => {

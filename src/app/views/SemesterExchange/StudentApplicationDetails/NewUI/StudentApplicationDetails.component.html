@@ -139,7 +139,7 @@
 
       <div class="row g-3" *ngIf="!(section.label === 'Passport Details' && isPassportMissing())">
         <div class="col-md-4 col-sm-6" *ngFor="let key of section.keys; trackBy: trackByKey">
-          <div class="detail-field">
+          <div class="detail-field" *ngIf="shouldShowField(key)">
             <div class="detail-label">{{ labelFor(key) }}</div>
             <div class="detail-value"
                  [class.is-empty]="displayValue(key) === 'N/A' || displayValue(key) === 'Not Available'"

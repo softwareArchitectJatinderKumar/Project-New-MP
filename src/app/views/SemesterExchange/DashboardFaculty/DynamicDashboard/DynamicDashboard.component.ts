@@ -58,6 +58,8 @@ interface Application {
   universityOption1: string;
   universityOption2: string;
   universityOption3: string;
+  uploadedDocumentCount: string;
+  cgpa: string;
 
   // ── Runtime flags set by enrichAndFilterApplications() ──────────────────
   _isCounsellor: boolean;
@@ -477,9 +479,9 @@ export class DynamicDashboardComponent implements OnInit {
     const imgLogo = document.getElementById('imgLogo') as HTMLImageElement;
     if (imgLogo) imgLogo.style.width = '164px';
 
-    (<HTMLInputElement>document.getElementById('navHeader')).style.display = 'none ';
-    (<HTMLInputElement>document.getElementById('stMain')).style.display = 'none ';
-    (<HTMLInputElement>document.getElementById('imgLogo')).style.display = 'none';
+    // (<HTMLInputElement>document.getElementById('navHeader')).style.display = 'none ';
+    // (<HTMLInputElement>document.getElementById('stMain')).style.display = 'none ';
+    // (<HTMLInputElement>document.getElementById('imgLogo')).style.display = 'none';
 
     this.initializeForms();
     this.getToken(this.LoginName);
@@ -575,7 +577,7 @@ export class DynamicDashboardComponent implements OnInit {
     ).subscribe({
       next: response => {
         this.AllApplications = Array.isArray(response?.item1) ? response.item1 : [];
-
+        
         this.AllFacultyApplications = this.FilterAllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | ''; }) => app.dealingFaculty == this.EmployeeCode);
         this.AllAuthorityApplications = this.FilterAllAuthorityApplications = response.item1.filter((app: { dealingAuthority: string | ''; }) => app.dealingAuthority == this.EmployeeCode);
         

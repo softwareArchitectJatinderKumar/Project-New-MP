@@ -74,8 +74,10 @@ export class StudentDashboardComponent implements OnInit {
       },
       error: err => this.LoginFailed(err)
     });
-    (<HTMLInputElement>document.getElementById('stMain')).innerHTML = 'Semester Exchange <span class="themeClr">Student Dashboard</span>';
-    (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
+    
+    (<HTMLInputElement>document.getElementById('stMain')).style.fontSize = '1rem';
+    (<HTMLInputElement>document.getElementById('stMain')).innerHTML = 'Semester Exchange <span class="themeClr">Student Dashboard </span>';
+    (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '40px';
   }
 
   LoginFailed(error: any): void {

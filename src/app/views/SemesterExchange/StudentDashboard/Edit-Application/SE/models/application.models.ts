@@ -42,6 +42,7 @@ export interface StudentApplication {
   dealingFacultyName: string;
   counsellingAuthorityName: string;
   isLocked: string;
+  isApproved?: string | number | boolean | null;
   sectionCode: string;
   feesProofFileName: string;
   resumeFileName: string;
@@ -51,6 +52,8 @@ export interface StudentApplication {
   isSelfFunded: string;
   studentGradeMarksDataX?: any[];
   courseCovered?: CourseRow[];
+  approvedUniversity: string;
+  
 }
 
 export interface StageDetailRow {

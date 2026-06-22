@@ -14,6 +14,7 @@ export class StepUniversityComponent {
   @Input() uniData: University[] = [];
   @Input() isLocked = false;
   @Input() isValid = true;
+  @Input() hideBackNext = false;
 
   @Output() editClick = new EventEmitter<void>();
   @Output() cancelClick = new EventEmitter<void>();

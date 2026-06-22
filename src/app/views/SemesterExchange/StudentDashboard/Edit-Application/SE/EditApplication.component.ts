@@ -52,7 +52,24 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
   // ── Staff display ──────────────────────────────────────────────────────────
   DealingFacultyName = ''; CounsellingAuthorityName = '';
   LockedStatus = false;
+  isApprovedApplication = false;
+  activeMainTab: 'application' | 'stage1' | 'stage2' | 'course' = 'application';
   CounsellingAuthority: any; DealingHodId: any; DealingFaculty: any;
+  ApprovedUniversity: string;
+  IsApproved: string | number | boolean | null | undefined;
+
+  /** Locked + not approved → edit allowed on My Application & Stage I */
+  get canEditApplication(): boolean {
+    return this.LockedStatus && !this.isApprovedApplication;
+  }
+
+  get showStage2Tab(): boolean {
+    return this.LockedStatus && this.isApprovedApplication;
+  }
+
+  get showCourseTab(): boolean {
+    return this.LockedStatus && this.isApprovedApplication;
+  }
 
   // ── Config ─────────────────────────────────────────────────────────────────
   readonly countries: Country[] = countries;
@@ -120,7 +137,8 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
 
   // ── Edit controls ──────────────────────────────────────────────────────────
   startEdit(step: number): void {
-    if (step >= 1 && step <= 4 && this.currentStep === step) {
+    if (step >= 1 && step <= 4 && (this.LockedStatus ? this.activeMainTab === 'application' : this.currentStep === step)) {
+      if (this.LockedStatus && !this.canEditApplication) return;
       this.isEditingStep[step] = true;
       this.form.enable();
     }
@@ -193,13 +211,16 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     }
   }
 
-  moveNextStep(): void {
-    if (this.isEditingStep[this.currentStep]) {
-      Swal.fire('Please Update or Cancel', 'Save or cancel before proceeding.', 'warning');
+  setMainTab(tab: 'application' | 'stage1' | 'stage2' | 'course'): void {
+    if (tab === 'stage2' && !this.showStage2Tab) return;
+    if (tab === 'course' && !this.showCourseTab) return;
+    if (this.isEditingStep.some((e, i) => e && i >= 1 && i <= 4)) {
+      Swal.fire('Please Update or Cancel', 'Save or cancel changes before switching tabs.', 'warning');
       return;
     }
-    this.currentStep = 5;
+    this.activeMainTab = tab;
     this.form.disable();
+    window.scrollTo(0, 0);
   }
 
   // ── Documents ──────────────────────────────────────────────────────────────
@@ -390,7 +411,8 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
           this.cgpa = stu.cgpa;
           this.CurrentYear = stu.currentYear;
           this.CurrentTerm = stu.currentTerm;
-          this.studentStatus = stu.studentStatus;
+          
+         
           this.ProgramCode = stu.programCode;
           this.getApplicationDetails(this.RegistrationNo ?? '');
           this.getStuDetailsWithImage(this.RegistrationNo);
@@ -408,19 +430,27 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
           const app: StudentApplication = response?.item1?.[0];
           if (!app) { this.loginFailed('Not Valid Application'); return; }
 
+          const lockState = this.resolveLockState(this.readAppFlag(app, 'isLocked', 'IsLocked'));
+          // Stay on Student Dashboard — show locked tabs instead of redirecting to ApplicationDetails
+          this.LockedStatus = lockState === 'locked';
+          this.isApprovedApplication = app.isLocked === 'True' && app.isApproved === 'True' ? true : false;
+          // this.isApprovedValue(
+          //   this.readAppFlag(app, 'isApproved', 'IsApproved'),
+          // );
+          this.activeMainTab = 'application';
+
           this.stuApplication = app;
+          this.studentStatus = app.isLocked==='True' ? 'Approved' : 'Pending';
           this.ApplicationId = app.applicationId;
           this.EmailId = app.emailId ?? '';
           this.SectionCode = app.sectionCode;
-          this.LockedStatus = app.isLocked === 'True';
           this.DealingFacultyName = app.dealingFacultyName;
           this.CounsellingAuthorityName = app.counsellingAuthorityName;
           this.CounsellingAuthority = app.counsellingAuthority;
           this.DealingHodId = app.dealingHODId;
           this.DealingFaculty = app.dealingFaculty;
-
-          if (this.LockedStatus) this.moveNextStep();
-
+          this.ApprovedUniversity = app.approvedUniversity;
+          this.IsApproved = app.isApproved;
           this.isLoadingData = true;
           this.form.patchValue({
             EmailId: app.emailId ?? '',
@@ -463,7 +493,9 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
           });
           this.isLoadingData = false;
 
-          const editing = this.isEditingStep[this.currentStep] && !this.LockedStatus;
+          const mayEdit = !this.LockedStatus || this.canEditApplication;
+          const anyFormEditing = [1, 2, 3, 4].some(i => this.isEditingStep[i]);
+          const editing = anyFormEditing && mayEdit;
           editing ? this.form.enable() : this.form.disable();
 
           this.initCourseRows();
@@ -610,5 +642,30 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return '';
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  private isApprovedValue(value: unknown): boolean {
+    if (value === null || value === undefined) return false;
+    const s = String(value).trim().toLowerCase();
+    return s === '1' || s === 'true' || s === 'yes';
+  }
+
+  private readAppFlag(app: StudentApplication, ...keys: string[]): unknown {
+    for (const key of keys) {
+      const val = (app as any)?.[key];
+      if (val !== null && val !== undefined && String(val).trim() !== '') return val;
+    }
+    return null;
+  }
+
+  /** empty/null → unlocked wizard; true/1 → locked tabs; false/0 → unlocked wizard */
+  private resolveLockState(isLocked: unknown): 'null' | 'locked' | 'unlocked' {
+    if (isLocked === null || isLocked === undefined) return 'null';
+    const raw = String(isLocked).trim();
+    if (!raw) return 'null';
+    const lower = raw.toLowerCase();
+    if (lower === 'true' || lower === '1' || lower === 'yes') return 'locked';
+    if (lower === 'false' || lower === '0' || lower === 'no') return 'unlocked';
+    return 'null';
   }
 }

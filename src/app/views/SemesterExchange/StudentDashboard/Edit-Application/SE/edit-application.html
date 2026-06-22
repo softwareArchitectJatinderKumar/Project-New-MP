@@ -201,13 +201,13 @@
                                                 <label class="form-label">Relation *</label>
                                                 <input class="form-control" formControlName="RelativeRelation" [readonly]="!isEditingStep[1]" />
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-6" *ngIf="isEditingStep[1] || form.get('RelativeEmail')?.value">
                                                 <label class="form-label">Email (optional)</label>
                                                 <input class="form-control" formControlName="RelativeEmail" [readonly]="!isEditingStep[1]" />
                                             </div>
                                         </div>
 
-                                        <div class="row mt-2">
+                                        <div class="row mt-2" *ngIf="isEditingStep[1] || form.get('RelativePhone')?.value">
                                             <div class="col-md-6">
                                                 <label class="form-label">Phone (optional)</label>
                                                 <input class="form-control" formControlName="RelativePhone" [readonly]="!isEditingStep[1]" />
@@ -471,13 +471,23 @@
                                 <div
                                     *ngIf="form.get('SponsorType')?.value === 'Other' || form.get('SponsorType')?.value === 'Relative'" class="col-md-12">
                                     <div class="row mt-2">
-                                        <div class="col-md-6">
+                                        <div class="col-md-6" *ngIf="isEditingStep[3] || form.get('SponsorName')?.value">
                                             <label class="form-label">Sponsor Name *</label>
                                             <input class="form-control" formControlName="SponsorName" [readonly]="!isEditingStep[3]" />
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-6" *ngIf="isEditingStep[3] || form.get('SponsorRelation')?.value">
                                             <label class="form-label">Sponsor Relation *</label>
                                             <input class="form-control" formControlName="SponsorRelation" [readonly]="!isEditingStep[3]" />
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2" *ngIf="isEditingStep[3] || form.get('SponsorEmail')?.value || form.get('SponsorContact')?.value">
+                                        <div class="col-md-6" *ngIf="isEditingStep[3] || form.get('SponsorEmail')?.value">
+                                            <label class="form-label">Sponsor Email</label>
+                                            <input class="form-control" formControlName="SponsorEmail" [readonly]="!isEditingStep[3]" />
+                                        </div>
+                                        <div class="col-md-6" *ngIf="isEditingStep[3] || form.get('SponsorContact')?.value">
+                                            <label class="form-label">Sponsor Contact</label>
+                                            <input class="form-control" formControlName="SponsorContact" [readonly]="!isEditingStep[3]" />
                                         </div>
                                     </div>
                                 </div>

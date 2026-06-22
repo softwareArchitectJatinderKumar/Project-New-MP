@@ -3,6 +3,8 @@
     [isEditing]="isEditing"
     [isLocked]="isLocked"
     [isValid]="isValid"
+    [showBack]="!hideBackNext"
+    [showNext]="!hideBackNext"
     [showBack]="true"
     [showNext]="true"
     (editClick)="editClick.emit()"
@@ -94,12 +96,12 @@
             <label class="form-label">Relation *</label>
             <input class="form-control" formControlName="RelativeRelation" [readonly]="!isEditing" />
           </div>
-          <div class="col-md-6">
+          <div class="col-md-6" *ngIf="showOptionalRelativeField('RelativeEmail')">
             <label class="form-label">Email (optional)</label>
             <input class="form-control" formControlName="RelativeEmail" [readonly]="!isEditing" />
           </div>
         </div>
-        <div class="row mt-2">
+        <div class="row mt-2" *ngIf="showOptionalRelativeField('RelativePhone')">
           <div class="col-md-6">
             <label class="form-label">Phone (optional)</label>
             <input class="form-control" formControlName="RelativePhone" [readonly]="!isEditing" />
@@ -113,6 +115,8 @@
     [isEditing]="isEditing"
     [isLocked]="isLocked"
     [isValid]="isValid"
+    [showBack]="!hideBackNext"
+    [showNext]="!hideBackNext"
     [showBack]="false"
     [showNext]="true"
     [showEdit]="false"

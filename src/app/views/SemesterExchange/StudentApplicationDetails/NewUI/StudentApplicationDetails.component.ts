@@ -147,6 +147,16 @@ export class StudentApplicationDetailsComponent implements OnInit, OnDestroy {
     return this.displayValues[key] ?? 'N/A';
   }
 
+  /** Whether a field row should render in the details view */
+  shouldShowField(key: string): boolean {
+    const optionalKeys = new Set([
+      'sponsorName', 'sponsorRelation', 'sponsorContact', 'sponsorEmail',
+      'relativeEmail', 'relativePhone',
+    ]);
+    if (!optionalKeys.has(key)) return true;
+    return this.hasMeaningfulValue(this.displayValue(key));
+  }
+
   /** Converts a camelCase key to a human-readable label */
   labelFor(key: string): string {
     return LABEL_OVERRIDES[key] ??
@@ -354,49 +364,51 @@ export class StudentApplicationDetailsComponent implements OnInit, OnDestroy {
 
     const allKeys = new Set(FORM_SECTIONS.flatMap(s => [...s.keys]));
 
-    const rawType = this.fv('isSelfFunded').toLowerCase();
-
-  // If Parent, we don't display specific sponsor details even if they exist in the form
-  const showDetail = OTHER_SPONSOR_TYPES.has(rawType);
-
-
     for (const key of allKeys) {
       if (key in map) continue;
 
-      const rawVal = this.fv(key);
-
-      // 1. Passport Logic: Check if all primary fields are missing/NA
-      if (key === 'passportNo' || key === 'passportIssueDate' || key === 'passportValidUpto') {
-        const pNo = this.fv('passportNo');
-        const pIssue = this.fv('passportIssueDate');
-        const pValid = this.fv('passportValidUpto');
-
-        const isMissing = (v: string) => !v || ['na', 'n/a', ''].includes(v.toLowerCase());
-
-        // If any of the main passport fields are missing, set a specific display string
-        if (isMissing(pNo) || isMissing(pIssue) || isMissing(pValid)) {
-          map[key] = 'Not Available';
-        } else {
-          map[key] = rawVal;
-        }
-      }
-      // 2. Sponsor Logic
-      else if (key === 'isSelfFunded') {
-        map[key] = PARENT_SPONSOR_TYPES.has(rawVal.toLowerCase()) ? 'Parents' : 'Others';
-      }
-      // 3. Default
-      else {
-        map[key] = rawVal && rawVal !== 'NA' ? rawVal : 'N/A';
+      if (key === 'isSelfFunded') {
+        map[key] = this.sponsorTypeLabel();
+        continue;
       }
 
       if (['sponsorName', 'sponsorRelation', 'sponsorContact', 'sponsorEmail'].includes(key)) {
-      map[key] = showDetail ? (this.fv(key) || 'N/A') : '';
-    } else {
-      map[key] = String(this.studentForm.get(key)?.value || 'N/A');
-    }
+        map[key] = this.hasMeaningfulValue(this.fv(key)) ? this.fv(key) : '';
+        continue;
+      }
+
+      if (['relativeEmail', 'relativePhone'].includes(key)) {
+        map[key] = this.hasMeaningfulValue(this.fv(key)) ? this.fv(key) : '';
+        continue;
+      }
+
+      if (key === 'passportNumber' || key === 'passportIssueDate' || key === 'passportValidUpto') {
+        const pNo = this.fv('passportNumber');
+        const pIssue = this.fv('passportIssueDate');
+        const pValid = this.fv('passportValidUpto');
+        const isMissing = (v: string) => !this.hasMeaningfulValue(v);
+        map[key] = (isMissing(pNo) || isMissing(pIssue) || isMissing(pValid)) ? 'Not Available' : this.fv(key);
+        continue;
+      }
+
+      map[key] = this.hasMeaningfulValue(this.fv(key)) ? this.fv(key) : 'N/A';
     }
 
     return map;
+  }
+
+  /** Mirrors Edit Application sponsor-type mapping (Parents vs Others) */
+  private sponsorTypeLabel(): string {
+    const selfFunded = this.fv('isSelfFunded');
+    if (SELF_FUNDED_VALUES.has(selfFunded)) return 'Parents';
+
+    const sponsorName = this.fv('sponsorName').toLowerCase();
+    const sponsorRelation = this.fv('sponsorRelation').toLowerCase();
+    if (PARENT_SPONSOR_TYPES.has(sponsorName) || PARENT_SPONSOR_TYPES.has(sponsorRelation)) {
+      return 'Parents';
+    }
+
+    return 'Others';
   }
   // ── Private — section filtering ────────────────────────────
 
@@ -419,30 +431,20 @@ export class StudentApplicationDetailsComponent implements OnInit, OnDestroy {
     }
   }
   private filterSponsorSection(section: FormSection): FormSection {
-  const rawType = this.fv('isSelfFunded').toLowerCase();
-  
-  // 1. Base keys: Always show the sponsor type selector
-  let keys: string[] = ['isSelfFunded'];
+    const keys: string[] = ['isSelfFunded'];
 
-  // 2. Case: Parents (Hide all extra details)
-  if (PARENT_SPONSOR_TYPES.has(rawType)) {
+    if (this.sponsorTypeLabel() === 'Parents') {
+      return { ...section, keys };
+    }
+
+    for (const key of ['sponsorName', 'sponsorRelation', 'sponsorContact', 'sponsorEmail']) {
+      if (this.hasMeaningfulValue(this.fv(key))) {
+        keys.push(key);
+      }
+    }
+
     return { ...section, keys };
   }
-
-  // 3. Case: Others (Show name, relation, and optionally contact/email)
-  if (OTHER_SPONSOR_TYPES.has(rawType)) {
-    const dynamicKeys: string[] = ['sponsorName', 'sponsorRelation'];
-    
-    // Check if these fields contain actual data
-    if (this.fv('sponsorContact')) dynamicKeys.push('sponsorContact');
-    if (this.fv('sponsorEmail'))   dynamicKeys.push('sponsorEmail');
-    
-    return { ...section, keys: [...keys, ...dynamicKeys] };
-  }
-
-  // Fallback: Return standard if nothing else matches
-  return { ...section, keys };
-}
   // private filterSponsorSection(section: FormSection): FormSection {
   //   const rawType = this.fv('isSelfFunded');
   //   const sponsorType = rawType.toLowerCase();
@@ -515,14 +517,22 @@ export class StudentApplicationDetailsComponent implements OnInit, OnDestroy {
   }
 
   private filterRelativeSection(section: FormSection): FormSection {
-    const isEmpty = (v: string) => !v || v === 'NA';
-    const noRelative =
-      isEmpty(this.fv('relativeName')) &&
-      isEmpty(this.fv('relativeRelation')) &&
-      isEmpty(this.fv('relativeCountry'));
-    return noRelative
-      ? { ...section, keys: ['relativeNotApplicable'] }
-      : { ...section };
+    const coreKeys = ['relativeName', 'relativeRelation', 'relativeCountry'] as const;
+    const optionalKeys = ['relativeEmail', 'relativePhone'] as const;
+
+    const hasCoreRelative = coreKeys.some(k => this.hasMeaningfulValue(this.fv(k)));
+    if (!hasCoreRelative) {
+      return { ...section, keys: ['relativeNotApplicable'] };
+    }
+
+    const keys: string[] = [...coreKeys];
+    for (const key of optionalKeys) {
+      if (this.hasMeaningfulValue(this.fv(key))) {
+        keys.push(key);
+      }
+    }
+
+    return { ...section, keys };
   }
 
   // private filterPassportSection(section: FormSection): FormSection {
@@ -552,6 +562,13 @@ export class StudentApplicationDetailsComponent implements OnInit, OnDestroy {
   /** Read a form value as a trimmed string */
   private fv(key: string): string {
     return String(this.studentForm?.get(key)?.value ?? '').trim();
+  }
+
+  /** True when a field has a real value (not blank / NA / placeholder) */
+  private hasMeaningfulValue(value: string): boolean {
+    const v = String(value ?? '').trim();
+    if (!v) return false;
+    return !['na', 'n/a', 'none', 'null', '-'].includes(v.toLowerCase());
   }
 
   /** Counts grades of F or numeric grade ≤ 6 — single pass */
