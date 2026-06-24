@@ -44,7 +44,7 @@
         <div class="table-responsive">
           <table class="table table-bordered">
             <thead class="table-light">
-              <tr><th>#</th><th>Stage Name</th><th>Document Name</th><th>Uploaded Document</th><th *ngIf="canEditStageDocs"></th></tr>
+              <tr><th>S.no</th><th>Stage Name</th><th>Document Name</th><th>Uploaded Document</th><th *ngIf="canEditStageDocs"></th></tr>
             </thead>
             <tbody>
               <tr *ngFor="let row of stage1Rows; let i = index">
@@ -57,12 +57,12 @@
                       <button class="btn btn-info btn-sm" type="button" (click)="viewExisting(row)">View</button>
                       <span class="text-muted small text-truncate" style="max-width: 220px;">{{ uploadedFile }}</span>
                     </ng-container>
-                    <input *ngIf="canEditStageDocs" type="file" class="form-control form-control-sm" (change)="onStageFilePicked($event, row)" />
+                    <input *ngIf="true" type="file" class="form-control form-control-sm" (change)="onStageFilePicked($event, row)" />
                     <a *ngIf="canEditStageDocs && row.fileName" href="#" class="btn btn-outline-secondary btn-sm"
                       (click)="downloadStageFile(row, $event)">{{ row.fileName }}</a>
                   </div>
                 </td>
-                <td *ngIf="canEditStageDocs">
+                <td *ngIf="true">
                   <button *ngIf="!row.isUploaded" class="btn btn-primary btn-sm"
                     [disabled]="!row.fileObject || row.isUploading" (click)="uploadRow(row)">
                     <span *ngIf="row.isUploading" class="spinner-border spinner-border-sm me-1"></span>
@@ -81,7 +81,7 @@
   </div>
 
   <!-- Stage II Documents -->
-  <div *ngIf="showPanel('stage2')"
+  <!-- <div *ngIf="showPanel('stage2')"
     class="tab-pane fade"
     [ngClass]="{ 'active show': activePanel === 'stage2' || (!isLocked && !activePanel) }"
     id="stageTab"
@@ -94,7 +94,7 @@
               <tr><th>#</th><th>Stage Name</th><th>Document Name</th><th>Uploaded Document</th><th *ngIf="canEditStageDocs"></th></tr>
             </thead>
             <tbody *ngIf="stageDocumentData.length > 0; else uploadTable">
-              <tr *ngFor="let row of stageDocumentData; let i = index">
+              <tr *ngFor="let row of stage2Rows; let i = index">
                 <td>{{ i + 1 }}</td>
                 <td>{{ row.stageName }}</td>
                 <td>{{ row.documentName }}</td>
@@ -112,26 +112,75 @@
                   <td>{{ i + 1 }}</td>
                   <td>{{ row.stageName }}</td>
                   <td>{{ row.documentName }}</td>
-                  <td>
-                    <div class="d-flex gap-2 align-items-center">
-                      <input *ngIf="canEditStageDocs" type="file" class="form-control form-control-sm" (change)="onStageFilePicked($event, row)" />
-                      <a *ngIf="canEditStageDocs && row.fileName" href="#" class="btn btn-outline-secondary btn-sm"
-                        (click)="downloadStageFile(row, $event)">{{ row.fileName }}</a>
-                    </div>
-                  </td>
-                  <td *ngIf="canEditStageDocs">
-                    <button *ngIf="!row.isUploaded" class="btn btn-primary btn-sm"
-                      [disabled]="!row.fileObject || row.isUploading" (click)="uploadRow(row)">
-                      <span *ngIf="row.isUploading" class="spinner-border spinner-border-sm me-1"></span>
-                      {{ row.isUploading ? 'Uploading...' : 'Upload' }}
-                    </button>
-                    <span *ngIf="row.isUploaded" class="badge bg-success p-2">
-                      <i class="bi bi-check-circle-fill me-1"></i> Saved
-                    </span>
-                  </td>
+                 <td>
+                  <div class="d-flex gap-2 align-items-center flex-wrap">
+                    <ng-container *ngIf="existingDocPathFor(row) as uploadedFile">
+                      <button class="btn btn-info btn-sm" type="button" (click)="viewExisting(row)">View</button>
+                      <span class="text-muted small text-truncate" style="max-width: 220px;">{{ uploadedFile }}</span>
+                    </ng-container>
+                    <input *ngIf="true" type="file" class="form-control form-control-sm" (change)="onStageFilePicked($event, row)" />
+                    <a *ngIf="canEditStageDocs && row.fileName" href="#" class="btn btn-outline-secondary btn-sm"
+                      (click)="downloadStageFile(row, $event)">{{ row.fileName }}</a>
+                  </div>
+                </td>
+                  <td *ngIf="true">
+                  <button *ngIf="!row.isUploaded" class="btn btn-primary btn-sm"
+                    [disabled]="!row.fileObject || row.isUploading" (click)="uploadRow(row)">
+                    <span *ngIf="row.isUploading" class="spinner-border spinner-border-sm me-1"></span>
+                    {{ row.isUploading ? 'Uploading...' : 'Upload' }}
+                  </button>
+                  <span *ngIf="row.isUploaded" class="badge bg-success p-2">
+                    <i class="bi bi-check-circle-fill me-1"></i> Saved
+                  </span>
+                </td>
                 </tr>
               </tbody>
             </ng-template>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div> -->
+<div *ngIf="showPanel('stage1')"
+    class="tab-pane fade"
+    [ngClass]="{ 'active show': activePanel === 'stage2' || (isLocked && !activePanel) }"
+    id="stage1Tab"
+    role="tabpanel">
+    <div class="card mt-3">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr><th>S.no</th><th>Stage Name</th><th>Document Name</th><th>Uploaded Document</th><th *ngIf="canEditStageDocs"></th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of stage2Rows; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ row.stageName }}</td>
+                <td>{{ row.documentName }}</td>
+                <td>
+                  <div class="d-flex gap-2 align-items-center flex-wrap">
+                    <ng-container *ngIf="existingDocPathFor(row) as uploadedFile">
+                      <button class="btn btn-info btn-sm" type="button" (click)="viewExisting(row)">View</button>
+                      <span class="text-muted small text-truncate" style="max-width: 220px;">{{ uploadedFile }}</span>
+                    </ng-container>
+                    <input *ngIf="true" type="file" class="form-control form-control-sm" (change)="onStageFilePicked($event, row)" />
+                    <a *ngIf="canEditStageDocs && row.fileName" href="#" class="btn btn-outline-secondary btn-sm"
+                      (click)="downloadStageFile(row, $event)">{{ row.fileName }}</a>
+                  </div>
+                </td>
+                <td *ngIf="true">
+                  <button *ngIf="!row.isUploaded" class="btn btn-primary btn-sm"
+                    [disabled]="!row.fileObject || row.isUploading" (click)="uploadRow(row)">
+                    <span *ngIf="row.isUploading" class="spinner-border spinner-border-sm me-1"></span>
+                    {{ row.isUploading ? 'Uploading...' : 'Upload' }}
+                  </button>
+                  <span *ngIf="row.isUploaded" class="badge bg-success p-2">
+                    <i class="bi bi-check-circle-fill me-1"></i> Saved
+                  </span>
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>

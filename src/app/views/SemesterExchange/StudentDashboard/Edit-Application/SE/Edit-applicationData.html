@@ -110,7 +110,7 @@
           <div class="step-track">
             <ng-container *ngFor="let label of stepLabels; let i = index">
 
-              <div class="step-item"
+              <div class="step-item" 
                    [style.cursor]="i < currentStep ? 'pointer' : 'default'"
                    (click)="goToStep(i)">
                 <div class="step-bubble"
@@ -258,7 +258,7 @@
           [isEditing]="isEditingStep[1]"
           [isSubmitted]="isSubmitted"
           [countries]="countries"
-          [isLocked]="LockedStatus && isApprovedApplication"
+          [isLocked]="LockedStatus"
           [hideBackNext]="LockedStatus"
           [isValid]="isCurrentStepValid(1)"
           (editClick)="startEdit(1)"
@@ -276,7 +276,7 @@
           [isEditing]="isEditingStep[2]"
           [isSubmitted]="isSubmitted"
           [uniData]="uniData"
-          [isLocked]="LockedStatus && isApprovedApplication"
+          [isLocked]="LockedStatus"
           [hideBackNext]="LockedStatus"
           [isValid]="isCurrentStepValid(2)"
           (editClick)="startEdit(2)"
@@ -294,7 +294,7 @@
           [isEditing]="isEditingStep[3]"
           [isSubmitted]="isSubmitted"
           [countries]="countries"
-          [isLocked]="LockedStatus && isApprovedApplication"
+          [isLocked]="LockedStatus"
           [hideBackNext]="LockedStatus"
           [isValid]="isCurrentStepValid(3)"
           (editClick)="startEdit(3)"
@@ -310,7 +310,7 @@
         <app-step-documents
           [stuApplication]="stuApplication"
           [isEditing]="isEditingStep[4]"
-          [isLocked]="LockedStatus && isApprovedApplication"
+          [isLocked]="LockedStatus"
           [hideBackNext]="LockedStatus"
           [localServerUrl]="localServerUrl"
           (editClick)="startEdit(4)"

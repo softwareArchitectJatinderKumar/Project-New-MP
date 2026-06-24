@@ -59,16 +59,19 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
   IsApproved: string | number | boolean | null | undefined;
 
   /** Locked + not approved → edit allowed on My Application & Stage I */
-  get canEditApplication(): boolean {
-    return this.LockedStatus && !this.isApprovedApplication;
-  }
+  // get canEditApplication(): boolean {
+  //   return this.LockedStatus && !this.isApprovedApplication;
+  // }
 
+    get canEditApplication(): boolean {
+    return !this.LockedStatus && !this.isApprovedApplication;
+  }
   get showStage2Tab(): boolean {
-    return this.LockedStatus && this.isApprovedApplication;
+    return this.LockedStatus;
   }
 
   get showCourseTab(): boolean {
-    return this.LockedStatus && this.isApprovedApplication;
+    return this.LockedStatus;
   }
 
   // ── Config ─────────────────────────────────────────────────────────────────
@@ -91,7 +94,7 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private storageService: StorageService,
   ) {}
-
+  
   // ── Lifecycle ──────────────────────────────────────────────────────────────
   ngOnInit(): void {
     this.LoginName = this.route.snapshot.params['LoginName'];

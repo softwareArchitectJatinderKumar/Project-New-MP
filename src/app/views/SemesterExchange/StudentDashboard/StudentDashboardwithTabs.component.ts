@@ -34,7 +34,7 @@ type CourseRow = {
 export class StudentDashboardwithTabs implements OnInit {
   countriesList: any = countries; // Ensure 'countries' is correctly imported2
   // UI / state
-  isLoading = false;
+  isLoading = true;
   isSavingCourses = false;
   isLoginFailed = false;
   activeTab: 'application' | 'documents' | 'courses' = 'application';
@@ -178,7 +178,8 @@ export class StudentDashboardwithTabs implements OnInit {
   }
   // StudentDashboardwithTabs.component.ts
 
-// ... (existing code up to getApplicationDetails) ...
+ 
+lockedStatus: any;
 
 getApplicationDetails(regId: string): void {
     this.isLoading = true;
@@ -189,7 +190,7 @@ getApplicationDetails(regId: string): void {
           this.stuApplication = response.item1[0];
           // console.log(JSON.stringify(this.stuApplication))
           this.ApplicationId = this.stuApplication.applicationId;
-
+          this.lockedStatus = this.stuApplication.isLocked;
           // ✅ FIX: Explicitly assign component properties for document display in the UI
           // These properties hold the existing file names fetched from the API response
           this.FeesProofFileName = this.stuApplication.feesProofFileName || '';
@@ -331,6 +332,25 @@ get showSponsorDetails(): boolean {
     const relativeName = this.applicationForm?.get('isSelfFunded')?.value;
     return !!relativeName && relativeName.toUpperCase() !== 'NA' || relativeName=='Parent';
 }
+ get isLocked(): boolean {
+    if (!this.stuApplication) return false;
+    // API may return field as camelCase or PascalCase; check both
+    const val = this.stuApplication.isLocked
+               ?? this.stuApplication.IsLocked
+               ?? this.stuApplication.lockedStatus
+               ?? this.stuApplication.LockedStatus;
+    if (val === null || val === undefined || val === '') return false;
+    if (val === true || val === 1) return true;
+    const lower = String(val).toLowerCase().trim();
+    return lower === 'true' || lower === '1' || lower === 'yes';
+} 
+
+// get isLocked(): boolean {
+//     const val = this.stuApplication?.isLocked;
+//     if (val === null || val === undefined || val === '') return false;
+//     const lower = String(val).toLowerCase().trim();
+//     return lower === 'true' || lower === '1' || lower === 'yes';
+// }
 // ---------------- FORM BUILD ----------------
 private buildApplicationForm(): void {
     // Build fresh form with controls and validators using stuApplication values

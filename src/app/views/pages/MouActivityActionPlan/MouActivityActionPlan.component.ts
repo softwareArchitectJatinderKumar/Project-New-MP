@@ -46,7 +46,7 @@ export class MouActivityActionPlanComponent implements OnInit {
 
 
   newMouid: any; recordId:any;
-  TitleS: any;
+  TitleS: any; StartDate3: any; EndDate3: any;
 
   //====================================================
   // Faculty Search Variables
@@ -71,10 +71,15 @@ export class MouActivityActionPlanComponent implements OnInit {
   //====================================================
 
   ModifyFaculty(row: any) {
+    
+
 
     this.newMouid = row.mouId;
     this.TitleS = row.mouTitle;
     this.recordId = row.id;
+    this.StartDate3= row.startDate;
+    this.EndDate3= row.endDate;
+
     // Reset values every time modal opens
     this.employeeControl3.setValue('');
 
@@ -241,65 +246,45 @@ export class MouActivityActionPlanComponent implements OnInit {
       return;
     }
 
+
+ 
+
     const formData = new FormData();
+    formData.append('MouId', this.newMouid );
+    formData.append('RecordID',this.recordId );
+    formData.append('Uid', this.ResponsiblePerson3);
+    formData.append('ActionAssignedBy', this.EmployeeCode );
+    formData.append('Remarks', this.remarks3 );
+    formData.append('StartDate', this.StartDate3 );
+    formData.append('EndDate', this.EndDate3 );
 
-    formData.append(
-      'MouId',
-      this.newMouid
-    );
 
-    formData.append(
-      'Uid',
-      this.ResponsiblePerson3
-    );
-
-    formData.append(
-      'ActionAssignedBy',
-      this.EmployeeCode
-    );
-
-    formData.append(
-      'RecordID',
-      this.recordId
-    );
-    formData.append(
-      'Remarks',
-      this.remarks3
-    );
-
-    console.log('FormData Ready', JSON.stringify(formData));
-
-    formData.forEach((value, key) => {
-      console.log(key, value);
-    });
+    // formData.forEach((value, key) => {
+    //   console.log(key, value);
+    // });
 
     // API Call Here
-
-    /*
-    this.apiService.UpdateUID(formData)
-      .subscribe({
-        next: (res) => {
-
-        },
-        error: (err) => {
-
+    this.mouDocumentsService.ReassignNewUID(formData).subscribe({
+      next: (data: any) => {
+        const resultMsg = data.item1 && data.item1.length > 0 ? data.item1[0].msg : data.responseData;
+        if (resultMsg === 'success') {
+          swal.fire('Success', 'Assigned UID Done.', 'success');
+          window.location.reload();
+        } else if (data.responseData == 'Failed') {
+          swal.fire('Error', 'Failed to Assign New UID. Please try again.', 'error');
+          window.location.reload();
         }
-      });
-    */
+      },
+      error: (err) => {
+        swal.fire('Error', 'Failed to Assign New UID .', 'error');
+      },
+      complete: () => {
+        this.clearFields();
+        this.reloadGrid2();
+      }
+    });
+
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // Ended logic on 22-6-26
@@ -1384,7 +1369,7 @@ getRenewedCount(): number {
         if (response.item1 && response.item1.length > 0) {
 
           this.MouActivityAssignedMeMaster = response.item1;
-          console.log(JSON.stringify(this.MouActivityAssignedMeMaster))
+          // console.log(JSON.stringify(this.MouActivityAssignedMeMaster))
           this.filteredMouActivityAssignedMe = [...this.MouActivityAssignedMeMaster];
           this.filteredMouActivityAssignedMe = response.item1.filter((activity: any) => {
             return activity.actionAssignedBy == this.EmployeeCode;
@@ -1481,22 +1466,42 @@ getRenewedCount(): number {
     });
   }
 
-  UploadUID() {
-    const formData = new FormData();
-    formData.append('RecordId', this.IdX);
-    formData.append('Uid', this.AssignedToUid);
+UploadUID() {
+  const formData = new FormData();
+  formData.append('RecordId', this.IdX);
+  formData.append('Uid', this.AssignedToUid);
+  formData.append('MouId', this.MouidX);
+ 
 
-    this.mouDocumentsService.ActivityPlanUpdateUID(formData).subscribe({
-      next: (data: any) => {
-        const result = data?.item1?.[0]?.msg;
-        if (result === 'Success') {
-          this.showAlert('UID Updated Successfully!', 'success');
-        } else {
-          this.showAlert('Failed to Update UID!', 'error');
-        }
+  this.mouDocumentsService.ActivityPlanUpdateUID(formData).subscribe({
+    next: (data: any) => {
+      const result = data?.item1?.[0]?.msg;
+
+      if (result === 'Success') {
+        this.showAlert('UID Updated Successfully!', 'success');
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        this.showAlert('Failed to Update UID!', 'error');
+
+        // setTimeout(() => {
+        //   window.location.reload();
+        // }, 1500);
       }
-    });
-  }
+    },
+     error: (err) => {
+        swal.fire('Error', 'Failed to Assign New UID .', 'error');
+      },
+      complete: () => {
+        this.clearFields();
+        this.reloadGrid2();
+        // window.location.reload();
+      }
+     
+  });
+}
 
   genericSearch(data: any[], query: string): any[] {
     if (!query || query.trim() === '') {

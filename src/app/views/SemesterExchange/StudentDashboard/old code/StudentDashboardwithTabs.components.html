@@ -86,13 +86,13 @@
     <!-- <div *ngIf="isLoading" class="mb-3">
       <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
     </div> -->
-<div *ngIf="isLoading" class="full-page-loader">
-  <div class="loader-spinner">
-    <div class="spin-icon">
-      <!-- <img src="assets/images/spinner.gif" alt="Loading..." /> -->
+<div *ngIf="isLoading" class="fullscreen-loader">
+    <div class="custom-spinner-overlay" *ngIf="isLoading">
+        <div class="custom-spinner-content text-center">
+            <img src="assets/images/spinner.gif" alt="Loading..." />
+            <p>Loading...</p>
+        </div>
     </div>
-    <p>Loading...</p>
-  </div>
 </div>
 
     <!-- TAB PANES -->
@@ -110,7 +110,7 @@
           <div class="progress mx-3 flex-grow-1" style="height:6px;max-width:220px;">
             <div class="progress-bar bg-info" [style.width.%]="(currentApplicationStage / totalApplicationStages) * 100"></div>
           </div>
-          <div class="d-flex gap-2" *ngIf="!isLocked">
+          <div class="d-flex gap-2">
             <button class="btn btn-outline-dark btn-sm" *ngIf="!isSection1Edit" (click)="enableSection1Edit()">Edit</button>
             <button class="btn btn-primary btn-sm" *ngIf="isSection1Edit" (click)="updateApplicationSection()"
               [disabled]="isLoading || applicationForm.invalid">Update</button>
@@ -119,7 +119,7 @@
         </div>
 
         <!-- Stage Breadcrumb -->
-        <div class="d-flex align-items-center gap-1 mb-3 flex-wrap" *ngIf="!isLocked">
+        <div class="d-flex align-items-center gap-1 mb-3 flex-wrap">
           <ng-container *ngFor="let name of applicationStageNames; let i = index">
             <button type="button" class="btn btn-sm rounded-pill px-2 py-1"
               [class.btn-info]="currentApplicationStage === i + 1"
@@ -433,7 +433,7 @@
           </div>
 
           <!-- Navigation Buttons -->
-          <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top" *ngIf="!isLocked">
+          <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
             <button type="button" class="btn btn-outline-secondary"
               (click)="prevApplicationStage()" [disabled]="currentApplicationStage === 1">
               &#8592; Back

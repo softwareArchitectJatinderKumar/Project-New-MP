@@ -35,7 +35,9 @@ export class StepStage2Component {
   }
 
   get stage2Rows(): StageDetailRow[] {
-    return (this.stagesDetail ?? []).filter(r => this.isStage2(r));
+    let data = (this.stagesDetail ?? []).filter(r => this.isStage2(r));
+    // console.log(data);
+    return data
   }
 
   async onStageFilePicked(event: Event, row: StageDetailRow): Promise<void> {
@@ -109,6 +111,42 @@ export class StepStage2Component {
     return group ? this.pickAppField(...group.fields) : null;
   }
 
+
+   existingDocPathForStage2(row: StageDetailRow): string | null {
+    const name = String(row?.documentName ?? '').trim().toLowerCase();
+    if (!name || !this.stuApplication) return null;
+
+    const fieldGroups: Array<{ match: (n: string) => boolean; fields: string[] }> = [
+      {
+        match: n => n.includes('Offer'),
+        fields: ['consentLetterFileName', 'ConsentLetterFileName', 'consentLetterDocumentPath', 'ConsentLetterDocumentPath'],
+      },
+      {
+        match: n => n.includes('passport'),
+        fields: ['passportFileName', 'PassportFileName', 'passportDocumentPath', 'PassportDocumentPath'],
+      },
+      {
+        match: n => n.includes('fees'),
+        fields: ['feesProofFileName', 'FeesProofFileName', 'feesProofDocumentPath', 'FeesProofDocumentPath'],
+      },
+      {
+        match: n => n.includes('resume') || n.includes('cv'),
+        fields: ['resumeFileName', 'ResumeFileName', 'resumeDocumentPath', 'ResumeDocumentPath'],
+      },
+      {
+        match: n => n.includes('english') || n.includes('test'),
+        fields: [
+          'englishTestDocumentPath', 'EnglishTestDocumentPath',
+          'englishProofFileName', 'EnglishProofFileName',
+          'englishTestDocumentFile', 'EnglishTestDocumentFile',
+        ],
+      },
+    ];
+
+    const group = fieldGroups.find(g => g.match(name));
+    return group ? this.pickAppField(...group.fields) : null;
+  }
+
   viewExisting(row: StageDetailRow): void {
     const file = this.existingDocPathFor(row);
     if (file) this.viewDocument.emit(file);
@@ -153,15 +191,16 @@ export class StepStage2Component {
   }
 
   private isStage2(r: StageDetailRow): boolean {
-    const stage = Number((r as any)?.stage);
-    const stageName = String((r as any)?.stageName ?? '').toLowerCase();
-    const normalized = stageName.replace(/[\s-]/g, '');
-    return stage === 22 || normalized === 'stageii';
+    // console.log(r);
+    return r.stageName === 'Stage II'
   }
 
   showPanel(panel: 'stage1' | 'stage2' | 'course'): boolean {
-    if (this.activePanel) return this.activePanel === panel;
+
+    console.log(panel)
+    // if (this.activePanel) return this.activePanel === panel;
     if (panel === 'stage1') return this.isLocked;
+    if (panel === 'stage2') return this.isLocked; 
     if (panel === 'course') return !this.isLocked;
     return true;
   }

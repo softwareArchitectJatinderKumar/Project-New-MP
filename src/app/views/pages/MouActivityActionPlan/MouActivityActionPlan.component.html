@@ -434,8 +434,10 @@
 
                       <ngx-datatable-column name="Modify Faculty" [sortable]="false" prop="Id">
                         <ng-template let-row="row" ngx-datatable-cell-template>
-                          <button class="btn btn-danger" (click)="ModifyFaculty(row)">
-                            Modify Faculty
+                          <!-- <button class="btn btn-dark" (click)="AssignUid(row)"> -->
+                          <button class="btn btn-dark" (click)="ModifyFaculty(row)">
+                            <!-- Modify Faculty  -->
+                            <i class="bi bi-people"></i>
                           </button>
                         </ng-template>
                       </ngx-datatable-column>
@@ -703,14 +705,14 @@
 
 <ng-template #AssignNewUIDModal let-modal>
   <div class="modal-header">
-    <h5 class="modal-title" id="exampleModalLabel">MOU Action Plan Assign UID Screen </h5>
+    <h5 class="modal-title" id="exampleModalLabel">MOU Action Plan Re-Assign UID Screen </h5>
     <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
   </div>
   <div class="modal-body ">
     <div class="col-12 grid-margin stretch-card ">
       <div class="card ">
         <div class="card-body vh-100">
-          <h2 class="modal-title text-center" id="exampleModalLabel">MOU Action Plan Assign UID </h2>
+          <h2 class="modal-title text-center" id="exampleModalLabel">MOU Action Plan Re-Assign UID </h2>
           <form #UpdateUIDForm="ngForm" (ngSubmit)="UploadUID()" class="p-4 bg-white rounded shadow-sm">
 
             <div class="row g-3 mb-3">
@@ -761,10 +763,10 @@
                 <label class="form-label fw-bold">End Date</label>
                 <div class="form-control bg-light">{{ EndDateX }}</div>
               </div>
-              <div class="col-md-4">
+              <!-- <div class="col-md-4">
                 <label class="form-label fw-bold">Activity</label>
                 <div class="form-control bg-light">{{ ActivityDetailsX }}</div>
-              </div>
+              </div> -->
             </div>
 
             <!-- Remarks in One Line -->

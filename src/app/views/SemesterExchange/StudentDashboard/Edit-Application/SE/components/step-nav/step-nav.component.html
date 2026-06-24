@@ -1,4 +1,4 @@
-<div class="step-nav-bar">
+<div class="step-nav-bar" [ngStyle]="{ 'display': isLocked ? 'none' : 'd-flex' } ">
   <button *ngIf="showBack" type="button" class="btn btn-secondary" (click)="prevClick.emit()">
     &larr; Back
   </button>

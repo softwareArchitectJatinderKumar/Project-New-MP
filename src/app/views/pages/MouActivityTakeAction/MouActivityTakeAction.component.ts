@@ -40,7 +40,50 @@ interface SchoolDivision {
 
 })
 export class MouActivityTakeActionComponent implements OnInit {
+// added Logic on 23-6-26
 
+
+requiredDocumentFiles: File[] = [];
+
+
+onRequiredDocumentSelected(event: any, index: number) {
+  const file = event.target.files[0];
+
+  if (file) {
+    this.requiredDocumentFiles[index] = file;
+  }
+}
+
+
+uploadRequiredDocument(documentName: string, index: number) {
+
+  const selectedFile = this.requiredDocumentFiles[index];
+
+  if (!selectedFile) {
+    alert('Please select a file.');
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.append('File', selectedFile);
+  formData.append('DocumentName', documentName);
+  formData.append('MouId', this.mouId);
+  formData.append('Uid', this.EmployeeCode);
+
+  // console.log('Uploading:', documentName);
+
+  // this.mouDocumentsService.UploadRequiredDocument(formData)
+  //   .subscribe({
+  //     next: (response: any) => {
+  //       alert(documentName + ' uploaded successfully');
+  //     },
+  //     error: (error: any) => {
+  //       console.error(error);
+  //       alert('Upload failed');
+  //     }
+  //   });
+}
 
   // added on 17-06-26
 
