@@ -269,14 +269,21 @@ export class MouActivityActionPlanComponent implements OnInit {
         const resultMsg = data.item1 && data.item1.length > 0 ? data.item1[0].msg : data.responseData;
         if (resultMsg === 'success') {
           swal.fire('Success', 'Assigned UID Done.', 'success');
+           setTimeout(() => {
           window.location.reload();
+        }, 1500);
         } else if (data.responseData == 'Failed') {
           swal.fire('Error', 'Failed to Assign New UID. Please try again.', 'error');
+           setTimeout(() => {
           window.location.reload();
+        }, 1500);
         }
       },
       error: (err) => {
         swal.fire('Error', 'Failed to Assign New UID .', 'error');
+         setTimeout(() => {
+          window.location.reload();
+        }, 1500);
       },
       complete: () => {
         this.clearFields();

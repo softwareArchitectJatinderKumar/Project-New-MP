@@ -490,21 +490,28 @@ export class DynamicDashboardComponent implements OnInit {
   // ── Form Init ─────────────────────────────────────────────────────────────────
 
   private initializeForms(): void {
+    // this.EvaluationForm = this.fb.group({
+    //   AcademicsMarks: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
+    //   CommunicationSkillsMarks: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
+    //   AttitudeMarks: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
+    //   ExtraCurricularMarks: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
+    //   KnowledgeMarks: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
+    //   Comments: [''],
+    // });
     this.EvaluationForm = this.fb.group({
-      AcademicsMarks: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
-      CommunicationSkillsMarks: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
-      AttitudeMarks: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
-      ExtraCurricularMarks: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
-      KnowledgeMarks: [null, [Validators.required, Validators.min(0), Validators.max(10)]],
-      Comments: [''],
+      AcademicsMarks: ['', [Validators.required, Validators.min(0), Validators.max(10)]],
+      CommunicationSkillsMarks: ['', [Validators.required, Validators.min(0), Validators.max(10)]],
+      AttitudeMarks: ['', [Validators.required, Validators.min(0), Validators.max(10)]],
+      ExtraCurricularMarks: ['', [Validators.required, Validators.min(0), Validators.max(10)]],
+      KnowledgeMarks: ['', [Validators.required, Validators.min(0), Validators.max(10)]],
+      Comments: ['', [Validators.required, Validators.minLength(10)]]
     });
-
     this.CounsellingRemarksForm = this.fb.group({
       Comments: ['', Validators.required],
     });
-    this.EvaluationForm = this.fb.group({
-      Comments: ['', Validators.required],
-    });
+    // this.EvaluationForm = this.fb.group({
+    //   Comments: ['', Validators.required],
+    // });
 
     this.AddRemarksForm = this.fb.group({
       Comments: ['', Validators.required],
@@ -577,11 +584,11 @@ export class DynamicDashboardComponent implements OnInit {
     ).subscribe({
       next: response => {
         this.AllApplications = Array.isArray(response?.item1) ? response.item1 : [];
-        
+
         this.AllFacultyApplications = this.FilterAllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | ''; }) => app.dealingFaculty == this.EmployeeCode);
         this.AllAuthorityApplications = this.FilterAllAuthorityApplications = response.item1.filter((app: { dealingAuthority: string | ''; }) => app.dealingAuthority == this.EmployeeCode);
-        
-        this.AllHODApplications = this.FilterAllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | ''; isLocked: string | ''; isApproved: string | ''; }) => app.dealingHODId == this.EmployeeCode && app.isForwardtoHOD == '1' && app.isLocked != 'True' && app.isLocked != 'False' ) ;
+
+        this.AllHODApplications = this.FilterAllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | ''; isLocked: string | ''; isApproved: string | ''; }) => app.dealingHODId == this.EmployeeCode && app.isForwardtoHOD == '1' && app.isLocked != 'True' && app.isLocked != 'False');
 
         this.AllHOWApplications = response.item1.filter((app: { dealingHow: string | ''; isForwardedtoHOW: string | ''; isLocked: string | ''; }) => app.dealingHow == this.EmployeeCode && app.isForwardedtoHOW == '1');
         this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0);
@@ -790,7 +797,7 @@ export class DynamicDashboardComponent implements OnInit {
 
   disapproveApplication(application: Application): void {
     Swal.fire({
-      title: 'Reason for Disapproval',
+      title: 'Reason for Rejection',
       input: 'text',
       inputPlaceholder: 'Enter reason here...',
       showCancelButton: true,
@@ -999,15 +1006,22 @@ export class DynamicDashboardComponent implements OnInit {
     this.isEvaluationFormSubmitted = true;
 
     if (this.EvaluationForm.invalid) {
-      Swal.fire(
-        'Validation Error',
-        'Please fill in all required fields correctly.',
-        'error'
-      ).then(() => {
-        window.location.reload();
-      });
+
+      this.EvaluationForm.markAllAsTouched();
+
       return;
     }
+
+    // if (this.EvaluationForm.invalid) {
+    //   Swal.fire(
+    //     'Validation Error',
+    //     'Please fill in all required fields correctly.',
+    //     'error'
+    //   ).then(() => {
+    //     window.location.reload();
+    //   });
+    //   return;
+    // }
 
     this.loadingIndicator = true;
     const startTime = Date.now();

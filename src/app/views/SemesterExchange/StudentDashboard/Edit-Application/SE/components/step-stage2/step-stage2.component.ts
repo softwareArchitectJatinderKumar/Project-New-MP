@@ -36,7 +36,7 @@ export class StepStage2Component {
 
   get stage2Rows(): StageDetailRow[] {
     let data = (this.stagesDetail ?? []).filter(r => this.isStage2(r));
-    // console.log(data);
+    console.log(data);
     return data
   }
 
@@ -191,7 +191,7 @@ export class StepStage2Component {
   }
 
   private isStage2(r: StageDetailRow): boolean {
-    // console.log(r);
+    console.log(r);
     return r.stageName === 'Stage II'
   }
 

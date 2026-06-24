@@ -57,7 +57,12 @@ $bg:           #f1f5f9;
       color: #fbbf24;
       border: 1.5px solid rgba(251, 191, 36, 0.45);
     }
+    &.rejected {
+  background-color: #dc3545;
+  color: #fff;
+}
   }
+
 
   .student-photo {
     width: 86px;

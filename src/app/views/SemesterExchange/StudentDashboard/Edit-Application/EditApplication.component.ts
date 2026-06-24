@@ -17,13 +17,14 @@ interface StageDetailRow {
   forAdmin: number;
   sampleFormat: any;
   stageName: string;
-  fileName?: string;  // Track the string name for UI display
+  fileName: string;  // Track the string name for UI display
   fileObject?: File;  // Track the raw file for API uploads
   file?: File;        // Track the raw file for API uploads
   fileData: any;
   isUploading?: boolean;
   isUploaded?: boolean;
   document: any;
+
 }
 
 interface DocumentField {
@@ -327,6 +328,8 @@ export class EditApplicationComponent implements OnInit {
 
   uploadStageDocumentRow(index: number): void {
     const row = this.StagesDetail[index];
+    console.log("hello this is row data " , row ,  index)
+  
     
     if (!row.fileObject) {
       Swal.fire('Error', 'Please select a valid file first.', 'error');
@@ -338,7 +341,7 @@ export class EditApplicationComponent implements OnInit {
     formData.append('File', row.fileObject, row.fileName);
     formData.append('ApplicationId', this.ApplicationId);
     formData.append('DocumentName', row.documentName);
-    formData.append('FileName', row.documentName);
+    formData.append('FilePath', row.fileName);
     formData.append('Stage', row.stage.toString());
     formData.append('StageName', row.stageName.trim());
     formData.append('FileData', row.fileData);

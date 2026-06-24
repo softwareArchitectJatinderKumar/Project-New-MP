@@ -53,6 +53,7 @@ export interface StudentApplication {
   studentGradeMarksDataX?: any[];
   courseCovered?: CourseRow[];
   approvedUniversity: string;
+  approvalRemarks: string;
   
 }
 
@@ -63,13 +64,17 @@ export interface StageDetailRow {
   forAdmin: number;
   sampleFormat: any;
   stageName: string;
-  fileName?: string;
+  fileName: string;
   fileObject?: File;
   file?: File;
   fileData: any;
   isUploading?: boolean;
   isUploaded?: boolean;
   document: any;
+  filePath: any;
+
+ 
+  
 }
 
 export interface DocumentField {

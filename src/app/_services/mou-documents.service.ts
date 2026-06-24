@@ -4,10 +4,13 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 import { StorageService } from './storage.service';
+
 const AUTH_API = 'https://projectsapi.lpu.in/';//'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
 const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
 const AUTH_API_LOCALs = 'https://projectsapi.lpu.in/'; //'https://localhost:7125/'; 
 const AUTH_API_LOCAs = 'https://projectsapi.lpu.in/'; //'https://localhost:7125/';  
+
+
 // const AUTH_API = 'https://localhost:7135/';//'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
 // const AUTH_API_LOCAL = 'https://localhost:7135/';
 // const AUTH_API_LOCALs = 'https://localhost:7135/'; //'https://localhost:7125/'; 
@@ -459,6 +462,22 @@ downloadMOUFile(fileUrl: string): Observable<Blob> {
     return this.http.post(
       //  'https://localhost:7135/api/Mou/MouSendPendingReminderEmail',
       AUTH_API+ 'api/Mou/ReassingActivitytoNewUID',
+      dataSoft,
+      { headers }
+    );
+    
+  }
+
+
+  
+
+  MouActionTakenDocumentsOperations(dataSoft:FormData): Observable<any> {
+    let authToken = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + authToken)
+    return this.http.post(
+      //  'https://localhost:7135/api/Mou/MouActionTakenDocumentsOperations',
+      AUTH_API+ 'api/Mou/MouActionTakenDocumentsOperations',
       dataSoft,
       { headers }
     );

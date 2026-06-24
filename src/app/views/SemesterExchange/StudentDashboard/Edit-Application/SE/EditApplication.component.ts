@@ -287,10 +287,11 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     if (!row?.fileObject) { Swal.fire('Error', 'Please select a file first.', 'error'); return; }
     row.isUploading = true;
     const fd = new FormData();
+    console.log("Hello" , row)
     fd.append('File', row.fileObject, row.fileName ?? '');
     fd.append('ApplicationId', this.ApplicationId);
     fd.append('DocumentName', row.documentName);
-    fd.append('FileName', row.documentName);
+    fd.append('FilePath', row.fileName);
     fd.append('Stage', row.stage.toString());
     fd.append('StageName', row.stageName.trim());
     fd.append('FileData', row.fileData);
@@ -299,7 +300,7 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     this.studentService.addSECheckListDocuments(fd)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => { row.isUploading = false; row.isUploaded = true; Swal.fire('Success', `${row.documentName} uploaded!`, 'success'); },
+        next: () => { row.isUploading = false; row.isUploaded = true; Swal.fire('Success', `${row.documentName} uploaded!`, 'success'); row.isUploading = false;},
         error: () => { row.isUploading = false; Swal.fire('Upload Failed', 'Could not upload document.', 'error'); },
       });
   }
@@ -423,7 +424,7 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
         error: err => this.loginFailed(err),
       });
   }
-
+ApprovalRemarks:any;
   private getApplicationDetails(regNo: string): void {
     this.isLoading = true;
     this.studentService.getStudentDetailsBYId(regNo)
@@ -443,7 +444,8 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
           this.activeMainTab = 'application';
 
           this.stuApplication = app;
-          this.studentStatus = app.isLocked==='True' ? 'Approved' : 'Pending';
+          this.studentStatus = app.isLocked==='True' ? 'Approved' : app.isLocked ==='False'? 'Rejected' : 'Pending';
+          this.ApprovalRemarks = app.approvalRemarks;
           this.ApplicationId = app.applicationId;
           this.EmailId = app.emailId ?? '';
           this.SectionCode = app.sectionCode;
