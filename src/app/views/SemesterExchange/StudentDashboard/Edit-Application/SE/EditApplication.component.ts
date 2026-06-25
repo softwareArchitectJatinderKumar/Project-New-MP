@@ -287,7 +287,7 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     if (!row?.fileObject) { Swal.fire('Error', 'Please select a file first.', 'error'); return; }
     row.isUploading = true;
     const fd = new FormData();
-    console.log("Hello" , row)
+    
     fd.append('File', row.fileObject, row.fileName ?? '');
     fd.append('ApplicationId', this.ApplicationId);
     fd.append('DocumentName', row.documentName);
@@ -300,9 +300,12 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     this.studentService.addSECheckListDocuments(fd)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => { row.isUploading = false; row.isUploaded = true; Swal.fire('Success', `${row.documentName} uploaded!`, 'success'); row.isUploading = false;},
-        error: () => { row.isUploading = false; Swal.fire('Upload Failed', 'Could not upload document.', 'error'); },
+        next: () => { this.StagesDetail[index].isUploading = false, row.isUploaded = true; Swal.fire('Success', `${row.documentName} uploaded!`, 'success');},
+        error: () => { this.StagesDetail[index].isUploading = false; Swal.fire('Upload Failed', 'Could not upload document.', 'error'); },
+        complete : ()=>{this.StagesDetail = [...this.StagesDetail];}
       });
+
+
   }
 
   onStageFilePicked(e: { index: number; file: File; fileName: string; base64: string }): void {
@@ -505,6 +508,7 @@ ApprovalRemarks:any;
 
           this.initCourseRows();
           this.getStageDocumentDetails();
+        
         },
         error: err => {
           console.error(err);
@@ -525,12 +529,23 @@ ApprovalRemarks:any;
       .subscribe({ next: (r: any) => this.StagesDetail = r?.item1 ?? [] });
   }
 
-  private getStageDocumentDetails(): void {
-    if (!this.ApplicationId) return;
-    this.studentService.GetStage2DocumentDetails(+this.ApplicationId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({ next: (r: any) => this.StageDocumentData = r?.item1 ?? [] });
+  // private getStageDocumentDetails(): void {
+  //   if (!this.ApplicationId) return;
+  //   this.studentService.GetStage2DocumentDetails(+this.ApplicationId)
+  //     .pipe(takeUntil(this.destroy$))
+  //     .subscribe({ next: (r: any) => this.StageDocumentData = r?.item1 ?? [] });
+  // }
+
+    getStageDocumentDetails(): void {
+    this.studentService.GetStage2DocumentDetails(+this.ApplicationId).subscribe({
+      next: (response: any) => {
+        this.StageDocumentData = response.item1 || [];
+        console.log(JSON.stringify(this.StageDocumentData) + ' Stages data details')
+      },
+      error: () => {}
+    });
   }
+
 
   private getStuDetailsWithImage(regno: string): void {
     if (!regno) return;

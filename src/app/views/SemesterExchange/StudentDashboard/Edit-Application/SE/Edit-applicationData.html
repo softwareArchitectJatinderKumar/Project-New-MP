@@ -1,4 +1,4 @@
-<!-- Full-screen loader -->
+ 
 <div *ngIf="isLoading" class="fullscreen-loader">
   <div class="custom-spinner-overlay">
     <div class="custom-spinner-content text-center">
@@ -12,7 +12,7 @@
   <div class="student-registration container-fluid py-4">
 
     <!-- ── Header Card ──────────────────────────────────────────────────── -->
-    <div class="col-md-12 grid-margin stretch-card mb-3" *ngIf="stuApplication">
+    <div class="col-md-12 grid-margin stretch-card mb-3" *ngIf="stuApplication ">
       <div class="card header-card">
         <div class="card-body p-3">
 
@@ -81,29 +81,23 @@
               </div>
             </div>
 
-            <div class="col-auto">
+            <div class="col-auto" [ngStyle]="{ 'display': ApprovedUniversity.length> 0 ? 'd-flex' : 'd-none' }">
               <span [class]="ApprovedUniversity?.trim()
-                    ? 'status-pill approved'
+                    ? 'status-pill approved' 
                     : 'status-pill pending'">
                 Approved University
               </span>
             </div>
-
-            <div class="col">
+            <div class="col" [ngStyle]="{ 'display': ApprovedUniversity.length> 0 ? 'd-flex' : 'd-none' }">
               <div class="d-flex gap-2 flex-wrap">
-
                 <span [class]="ApprovedUniversity?.trim()
                       ? 'status-pill approved'
                       : 'status-pill pending'">
-
-                  {{ ApprovedUniversity?.trim() ? 'Approved' : 'Pending' }}
-
+                  {{ ApprovedUniversity?.trim() ? ApprovedUniversity : 'Pending' }}
                 </span>
-
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -168,7 +162,7 @@
         (stageFilePicked)="onStageFilePicked($event)" (viewDocument)="viewDocument($event)">
       </app-step-stage2>
     </section>
-
+ 
     <section *ngIf="LockedStatus && activeMainTab === 'stage2'">
       <app-step-stage2 [stuApplication]="stuApplication" [stageDocumentData]="StageDocumentData"
         [stagesDetail]="StagesDetail" [courseRows]="courseRows" [isSavingCourses]="isSavingCourses"
@@ -189,6 +183,7 @@
     </section>
 
     <!-- ── Step 0: Academic (unlocked wizard only) ────────────────────────── -->
+     
     <div class="col-md-12 grid-margin stretch-card mb-3" [hidden]="LockedStatus || currentStep !== 0">
       <div class="card">
         <div class="card-body">
@@ -243,7 +238,7 @@
     </div>
 
     <!-- ── Steps 1–4 (Reactive Form) ─────────────────────────────────────── -->
-    <ng-container *ngIf="form">
+    <ng-container *ngIf="form ">
 
       <!-- Step 1: Contact -->
       <section [hidden]="!LockedStatus && currentStep !== 1" *ngIf="!LockedStatus || activeMainTab === 'application'">

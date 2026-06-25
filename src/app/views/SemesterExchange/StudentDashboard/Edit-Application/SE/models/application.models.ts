@@ -72,7 +72,7 @@ export interface StageDetailRow {
   isUploaded?: boolean;
   document: any;
   filePath: any;
-
+  applicationId: any;
  
   
 }
