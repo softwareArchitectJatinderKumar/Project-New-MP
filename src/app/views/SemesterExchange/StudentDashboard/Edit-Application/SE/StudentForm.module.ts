@@ -11,6 +11,7 @@ import { StepUniversityComponent } from './components/step-university/step-unive
 import { StepDetailsComponent } from './components/step-details/step-details.component';
 import { StepDocumentsComponent } from './components/step-documents/step-documents.component';
 import { StepStage2Component } from './components/step-stage2/step-stage2.component';
+import { Stage1DocumentComponent } from './components/step-documents-Stage1/Stage1Document.component';
 
 const routes: Routes = [{ path: '', component: EditApplicationComponent }];
 
@@ -30,6 +31,7 @@ const routes: Routes = [{ path: '', component: EditApplicationComponent }];
     StepDetailsComponent,
     StepDocumentsComponent,
     StepStage2Component,
+    Stage1DocumentComponent
   ],
 })
 export class EditApplicationModule {}

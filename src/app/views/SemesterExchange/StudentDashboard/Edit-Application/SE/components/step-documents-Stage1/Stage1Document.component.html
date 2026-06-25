@@ -1,0 +1,50 @@
+<div>
+
+  <!-- Top nav bar -->
+
+  <div class="col-md-12 col-lg-10 mx-auto mb-3">
+    <div class="card section">
+      <div class="card-header">Document(s)</div>
+      <div class="card-body" [class.disabled-form]="!isEditing">
+        <table class="table table-bordered align-middle">
+          <thead>
+            <tr>
+              <th width="40%">Document</th>
+              <th width="40%">Format Template</th>
+              <th width="40%">Upload File</th>
+              <th width="20%">View Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let doc of docKeys">
+              <td>
+                <label class="fw-semibold mb-0">{{ doc.label }}</label>
+              </td>
+              <td>
+                <!-- <button *ngIf="row.sampleFormat" class="btn btn-info btn-sm text-white px-3" type="button" (click)="downloadLocal(row.sampleFormat)">
+                        <i class="bi bi-eye-fill me-1"></i> Download
+                  </button>
+                  <div *ngIf="!row.sampleFormat">Not Available</div> -->
+              </td>
+              <td>
+                <input type="file" class="form-control" [disabled]="!isEditing" accept=".pdf,.jpg,.jpeg,.png"
+                  (change)="onFilePicked($event, doc.key)" />
+              </td>
+
+              <td>
+                <button *ngIf="hasFile(doc.appField)" type="button" class="btn btn-info d-flex align-items-center gap-1"
+                  (click)="viewFile(getFileName(doc.appField))">
+                  <span class="material-icons md-18">description</span>
+                  View Uploaded
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+
+</div>

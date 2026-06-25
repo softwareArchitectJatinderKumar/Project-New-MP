@@ -122,7 +122,7 @@
             <button *ngIf="showStage2Tab" type="button" class="btn" [class.btn-primary]="activeMainTab === 'stage2'"
               [class.btn-outline-primary]="activeMainTab !== 'stage2'" (click)="setMainTab('stage2')">Stage II
               Documents</button>
-            <button *ngIf="showCourseTab" type="button" class="btn" [class.btn-primary]="activeMainTab === 'course'"
+            <button *ngIf="showCourseTab" type="button" class="btn" [class.btn-primary]="activeMainTab === 'course'" [disabled]="true"
               [class.btn-outline-secondary]="activeMainTab !== 'course'" (click)="setMainTab('course')">Course
               Mapping</button>
           </div>
@@ -167,6 +167,14 @@
         [canEditStageDocs]="canEditApplication" (uploadStage)="uploadStageDocumentRow($event)"
         (stageFilePicked)="onStageFilePicked($event)" (viewDocument)="viewDocument($event)">
       </app-step-stage2>
+     
+        <!-- <stage-1-Documents [stuApplication]="stuApplication" [isEditing]="isEditingStep[4]" [isLocked]="LockedStatus"
+          [hideBackNext]="LockedStatus" [localServerUrl]="localServerUrl" (editClick)="startEdit(4)"
+          (cancelClick)="cancelEdit(4)" (submitClick)="submitDocuments()" (fileSelected)="onFileSelected($event)"
+          [stageDocumentData]="StageDocumentData"
+          >
+        </stage-1-Documents> -->
+      
     </section>
 
     <section *ngIf="LockedStatus && activeMainTab === 'stage2'">
@@ -178,8 +186,8 @@
       </app-step-stage2>
     </section>
 
-    <section *ngIf="LockedStatus && activeMainTab === 'course'">
-      <app-step-stage2 [stuApplication]="stuApplication" [stageDocumentData]="StageDocumentData"
+    <section *ngIf="LockedStatus && activeMainTab === 'course'" >
+      <app-step-stage2 [stuApplication]="stuApplication" [stageDocumentData]="StageDocumentData" 
         [stagesDetail]="StagesDetail" [courseRows]="courseRows" [isSavingCourses]="isSavingCourses"
         [localServerUrl]="localServerUrl" [isLocked]="true" [activePanel]="'course'" [courseMappingDisabled]="true"
         (courseFilePicked)="onCourseFilePicked($event)" (addCourseRow)="addCourseRow()"
