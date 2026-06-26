@@ -483,4 +483,19 @@ downloadMOUFile(fileUrl: string): Observable<Blob> {
     );
     
   }
+
+
+    GetAllActionTakenUploadedDocument(dataSoft:FormData): Observable<any> {
+       let authToken = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + authToken)
+    return this.http.post(
+      //  'https://localhost:7135/api/Mou/MouActionTakenDocumentsOperations',
+      AUTH_API+ 'api/Mou/GetUploadedDocumentDetails',
+      dataSoft,
+      { headers }
+    );
+    
+    
+  }
 }

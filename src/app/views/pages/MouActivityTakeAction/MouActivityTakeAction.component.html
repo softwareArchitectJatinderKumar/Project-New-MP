@@ -380,10 +380,22 @@
                             </button>
                           </ng-container>
                           <ng-container *ngIf="row.filePath == null">
-                            <span class="text-center d-block p-2">No File</span>
+                            <button class="btn btn-dark" (click)="viewAllUploadedDocs(row)">
+                              <i class="bi bi-file-earmark-text"></i>
+                              <!-- <i class="bi bi-eye fs-5"></i> -->
+                            </button>
                           </ng-container>
                         </ng-template>
                       </ngx-datatable-column>
+                      <!-- <ngx-datatable-column name="Download Uploaded Document" [sortable]="false" prop="Id" [flexGrow]="1">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                         
+                            <button class="btn btn-dark" (click)="viewAllUploadedDocs(row)">
+                              <i class="bi bi-file-earmark-text"></i>
+                            </button>
+                           
+                        </ng-template>
+                      </ngx-datatable-column> -->
 
                       <!-- Dynamic Columns -->
                       <ngx-datatable-column *ngFor="let col of columns" [prop]="col"
@@ -440,19 +452,7 @@
     </div>
   </div>
 </ng-template>
-<!-- 
-<ng-template #loginFailed>
-  <div class="text-center " *ngIf="isLoginFailed">
-    <h3 class="text-center fs-2 m-5 pt-5 "> Error in User Login . </h3>
-    <div class="row mt-4 mb-4">
-      <div class="col-sm-12 text-center">
-        <div class="mb-3 p-4">
-          <Label class="form-label fs-4  ">Unauthorise Access.</Label>
-        </div>
-      </div>
-    </div>
-  </div>
-</ng-template> -->
+ 
 
 <ng-template #viewDescModal let-modal>
   <div class="modal-header">
@@ -937,6 +937,62 @@
 
           <!-- Dynamic Columns -->
           <ngx-datatable-column *ngFor="let col of columns" [prop]="col" [flexGrow]="1"></ngx-datatable-column>
+
+        </ngx-datatable>
+      </div>
+    </div>
+
+  </div>
+</ng-template>
+
+
+
+
+
+<ng-template #viewAllActionTakenUploadedDocumentModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="viewAllActionTakenUploadedDocumentModalLabel"> Activity Action Taken Document Grid </h5>
+    <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+
+    <div class="card-body ">
+      <h2 class="modal-title text-center fs-2 " id="exampleModalLabel">MOU Activity Action Taken Document Details </h2>
+      <div class="table-responsive">
+        <ngx-datatable class="bootstrap table table-striped material" [rows]="AllProjectDocumentUploaded"
+          [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
+          [headerHeight]="80" rowHeight="auto">
+
+          <!-- MOU ID Column -->
+          <ngx-datatable-column name="MOU Id" [sortable]="false" prop="Id" [flexGrow]="1">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <span class="text-center ">MOU/{{ row.MouId }}</span>
+            </ng-template>
+          </ngx-datatable-column>
+          
+          <!-- DocumentName Column -->
+          <ngx-datatable-column name="DocumentName" [sortable]="false" prop="Id" [flexGrow]="1">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                  <div class="p-2 fw-bold text-dark">Document Name<br />
+                    {{row.DocumentName}} 
+                  </div>
+            </ng-template>
+          </ngx-datatable-column>
+
+          <!-- Download MOU Column -->
+          <ngx-datatable-column name="Download MOU" [sortable]="false" prop="Id" [flexGrow]="1">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+              <ng-container *ngIf="row.FilePath != null">
+                <button class="btn btn-dark" (click)="onDownloadFile(row)"><i class="bi bi-file-earmark-text"></i></button>
+              </ng-container>
+              <ng-container *ngIf="row.FilePath == null">
+                <span class="text-center d-block p-2">No File</span>
+              </ng-container>
+            </ng-template>
+          </ngx-datatable-column>
+
+          <!-- Dynamic Columns -->
+          <!-- <ngx-datatable-column *ngFor="let col of columns" [prop]="col" [flexGrow]="1"></ngx-datatable-column> -->
 
         </ngx-datatable>
       </div>

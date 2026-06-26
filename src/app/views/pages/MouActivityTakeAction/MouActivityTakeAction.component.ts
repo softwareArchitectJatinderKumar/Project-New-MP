@@ -41,6 +41,57 @@ interface SchoolDivision {
 
 })
 export class MouActivityTakeActionComponent implements OnInit {
+//26-6-26 
+// view all uploaded Document against Each Project Document
+  AllProjectDocumentUploaded: any[] = [];
+  OpenSelectFile(a: any) {
+    let aa = a;
+    window.open(this.ServerUrl+aa.FilePath, '_blank');
+    // window.open(aa.FilePath, '_blank');
+  }
+
+
+ 
+  GetAllAllProjectDocumentUploaded(mouId: any) {
+      const formData = new FormData();
+
+  formData.append('MouId', mouId);
+  formData.append('Uid', this.EmployeeCode);
+  formData.append('Action', 'view');
+   this.mouDocumentsService
+    .GetAllActionTakenUploadedDocument(formData)
+    .subscribe({
+      next: (response: any) => {
+        if (response.item1.length > 0) {
+          // keep master copy and apply filters
+          this.AllProjectDocumentUploaded = response.item1;
+          console.log(JSON.stringify(this.AllProjectDocumentUploaded))
+
+          this.dataSource.data = this.AllProjectDocumentUploaded;
+          this.loadingIndicator = false;
+          this.columns = []; this.headHtmlData = [];
+          this.headHtmlData = this.AllProjectDocumentUploaded[0];
+          this.columns = Object.keys(this.AllProjectDocumentUploaded[0]);
+          this.columns = this.columns.filter((item: any) => item !== 'newMouId' && item !== 'filePath' && item != 'mouPartnerName' && item != 'actionApprovalStatus' && item !== 'sessionAcademicYear' && item !== 'mouApprovedByFacultyName' && item !== 'assignedToFacultyName' && item !== 'schoolDivisionInvolved' && item !== 'sessionId' && item !== 'documentUploaded' && item !== 'activityTitle' && item !== 'participantsCount' && item !== 'activityCount' && item !== 'uploadActivityDate' && item !== 'activityStartDate' && item !== 'activityEndDate' && item !== 'authorityRemarks' && item !== 'activityAlloted' && item !== 'mouTitle' && item !== 'mouStartDate' && item !== 'mouStatus' && item !== 'mouEndDate' && item !== 'startDate' && item !== 'endDate' && item !== 'actionAssignedBy' && item !== 'activityDetails' && item !== 'approvalStatus' && item !== 'approvalDate' && item !== 'userRemarks' && item !== 'disapprovalReason' && item !== 'uploadedActionFile' && item !== 'uploadedProofTitle' && item !== 'uid' && item !== 'mouId' && item !== 'id');
+          this.columns.push()
+          this.loadingIndicator = false;
+        } else {
+          this.dataSource.data = this.AllProjectDocumentUploaded = [];
+          this.showNoDataFoundMessage = true;
+        }
+      },
+      error: err => {
+        this.LoginFailed(err);
+      }
+    });
+  }
+
+  viewAllUploadedDocs(Data:any){
+    this.GetAllAllProjectDocumentUploaded(Data.mouId);
+      this.modalService.open(this.viewAllActionTakenUploadedDocumentModal, { size: 'lg' }).result.then((result) => {
+      window.location.reload();
+    }).catch((res) => { });
+  }
 // Added on 24-6-26 
 
 isFieldInvalid(control: any): boolean {
@@ -434,6 +485,7 @@ uploadRequiredDocument(documentName: string, index: number) {
   @ViewChild('verticalCenteredModal') verticalCenteredModal: TemplateRef<any>;
   @ViewChild('viewDescModal') viewDescModal: TemplateRef<any>;
   @ViewChild('viewActivityActionTakenModal') viewActivityActionTakenModal: TemplateRef<any>;
+  @ViewChild('viewAllActionTakenUploadedDocumentModal') viewAllActionTakenUploadedDocumentModal: TemplateRef<any>;
   searchQuery: any;
   filteredMouActivityDocuments: any[] = [];
   DocumentName: string = '';
@@ -525,7 +577,7 @@ uploadRequiredDocument(documentName: string, index: number) {
     const currentDate = new Date();
     this.CompletedDate = this.endDate = this.CompletedDate = this.endDate = this.formatDate(currentDate);
     // this.FacultyActivityEndDate  = this.FacultyActivityStartDate = this.formatDate(currentDate);
-    // this.ServerUrl = 'http://172.19.2.52/umsweb/webftp/MOUDocuments/';
+    this.ServerUrl = 'http://files.lpu/umsweb/webftp/MOUDocuments/';
     let loginName = this.route.snapshot.params['loginName'];
 
     if (loginName != '' && loginName != undefined) {
