@@ -1,0 +1,98 @@
+// ── Nav bar container ────────────────────────────────────────────────────────
+.step-nav-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  padding: 0.9rem 1rem;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 0.5rem;
+}
+
+// ── Button base ───────────────────────────────────────────────────────────────
+// Override Tailwind preflight (resets background: transparent) and any
+// global black-button rule so every variant looks correct.
+.step-nav-bar .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.48rem 1.5rem;
+  min-width: 100px;
+  text-align: center;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  text-decoration: none;
+
+  &:active { transform: scale(0.97); }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+
+// ── Back (secondary) ─────────────────────────────────────────────────────────
+.step-nav-bar .btn-secondary {
+  background-color: #475569;
+  border-color:     #475569;
+  color: #ffffff;
+
+  &:hover:not(:disabled) {
+    background-color: #334155;
+    border-color:     #334155;
+    color: #ffffff;
+  }
+}
+
+// ── Next / primary ────────────────────────────────────────────────────────────
+.step-nav-bar .btn-primary {
+  background-color: #1d4ed8;
+  border-color:     #1d4ed8;
+  color: #ffffff;
+
+  &:hover:not(:disabled) {
+    background-color: #2563eb;
+    border-color:     #2563eb;
+    color: #ffffff;
+  }
+}
+
+// ── Update (success) ──────────────────────────────────────────────────────────
+.step-nav-bar .btn-success {
+  background-color: #16a34a;
+  border-color:     #16a34a;
+  color: #ffffff;
+
+  &:hover:not(:disabled) {
+    background-color: #15803d;
+    border-color:     #15803d;
+    color: #ffffff;
+  }
+}
+
+// ── Edit (outline primary) ────────────────────────────────────────────────────
+.step-nav-bar .btn-outline-primary {
+  background-color: transparent;
+  border-color:     #1d4ed8;
+  color:            #1d4ed8;
+
+  &:hover:not(:disabled) {
+    background-color: #1d4ed8;
+    border-color:     #1d4ed8;
+    color: #ffffff;
+  }
+}
+
+// ── Cancel (outline danger) ───────────────────────────────────────────────────
+.step-nav-bar .btn-outline-danger {
+  background-color: transparent;
+  border-color:     #dc2626;
+  color:            #dc2626;
+
+  &:hover:not(:disabled) {
+    background-color: #dc2626;
+    border-color:     #dc2626;
+    color: #ffffff;
+  }
+}

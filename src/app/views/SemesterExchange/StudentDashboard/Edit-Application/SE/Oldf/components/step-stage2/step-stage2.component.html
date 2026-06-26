@@ -1,57 +1,4 @@
-<div>
- 
-  <div class="col-md-12 col-lg-10 mx-auto mb-3">
-    <div class="card section">
-      <div class="card-header">Stage II Document(s)</div>
-      <div class="card-body">
-        <table class="table table-bordered align-middle">
-          <thead>
-            <tr>
-              <th style="width:5%">S.No</th>
-              <th style="width:28%">Document</th>
-              <th style="width:17%">Format Template</th>
-              <th style="width:35%">Select File (auto-uploads on selection)</th>
-              <th style="width:15%">View Uploaded</th>
-            </tr>
-          </thead>
-          <tbody>
-            <ng-container *ngFor="let doc of docKeys; let i = index">
-              <tr *ngIf="doc.stage === '2'">
-                <td>{{ i + 1 }}</td>
-                <td>
-                  <label class="fw-semibold mb-0">{{ doc.label }}</label>
-                </td>
-                <td>
-                  <button *ngIf="hasSampleFormat(doc.documentName)" type="button" class="btn btn-success btn-sm"
-                    (click)="downloadTemplate(doc.documentName)">
-                    <i class="bi bi-download me-1"></i> Download
-                  </button>
-                  <span *ngIf="!hasSampleFormat(doc.documentName)" class="text-muted small">Not Available</span>
-                </td>
-                <td>
-                  <input type="file" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png"
-                    (change)="onFilePicked($event, doc.key)" />
-                </td>
-                <td>
-        
-                  <button *ngIf="hasFile(doc.appField)" type="button"
-                    class="btn btn-info btn-sm d-flex align-items-center gap-1"
-                    (click)="viewFile(getFileName(doc.appField))">
-                    <span class="material-icons md-18">description</span>
-                  </button>
-                  <span *ngIf="!hasFile(doc.appField)" class="text-muted small">—</span>
-                </td>
-              </tr>
-            </ng-container>
-          </tbody>
-   
-        </table>
-      </div>
-    </div>
-  </div>
-
-</div>
-<!-- <app-step-nav *ngIf="!activePanel" [showBack]="false" [showNext]="false" [showEdit]="false" [isEditing]="false"
+<app-step-nav *ngIf="!activePanel" [showBack]="false" [showNext]="false" [showEdit]="false" [isEditing]="false"
   [isLocked]="false" (prevClick)="prevClick.emit()">
 </app-step-nav>
 
@@ -237,4 +184,4 @@
       </div>
     </div>
   </div>
-</div> -->
+</div>

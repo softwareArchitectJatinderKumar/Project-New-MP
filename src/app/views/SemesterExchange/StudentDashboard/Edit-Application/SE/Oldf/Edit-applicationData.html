@@ -159,28 +159,18 @@
       </div>
     </div>
 
-    <!-- Tab-switching loader -->
-    <div *ngIf="isTabSwitching" class="text-center py-5">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-      <p class="mt-2 text-muted small">Loading...</p>
-    </div>
-
     <!-- ── Locked: Stage panels ─────────────────────────────────────────── -->
-    <ng-container *ngIf="!isTabSwitching">
     <section *ngIf="LockedStatus && activeMainTab === 'stage1'">
-      <!-- <app-step-stage2 [stuApplication]="stuApplication" [stageDocumentData]="StageDocumentData"
+      <app-step-stage2 [stuApplication]="stuApplication" [stageDocumentData]="StageDocumentData"
         [stagesDetail]="StagesDetail" [courseRows]="courseRows" [isSavingCourses]="isSavingCourses"
         [localServerUrl]="localServerUrl" [isLocked]="true" [activePanel]="'stage1'"
         [canEditStageDocs]="canEditApplication" (uploadStage)="uploadStageDocumentRow($event)"
         (stageFilePicked)="onStageFilePicked($event)" (viewDocument)="viewDocument($event)">
-      </app-step-stage2> -->
+      </app-step-stage2>
      
         <stage-1-Documents [stuApplication]="stuApplication" [stageDocumentData]="StageDocumentData"
           [stagesDetail]="StagesDetail" [courseRows]="courseRows" [isSavingCourses]="isSavingCourses"
           [localServerUrl]="localServerUrl" [isLocked]="true" [canEditStageDocs]="isApprovedApplication"
-          (fileSelected)="onFileSelected($event)"
           (uploadStage)="uploadStageDocumentRow($event)" (stageFilePicked)="onStageFilePicked($event)"
           (viewDocument)="viewDocument($event)">
         </stage-1-Documents>
@@ -188,23 +178,16 @@
     </section>
 
     <section *ngIf="LockedStatus && activeMainTab === 'stage2'">
-      <!-- <app-step-stage2 [stuApplication]="stuApplication" [stageDocumentData]="StageDocumentData"
+      <app-step-stage2 [stuApplication]="stuApplication" [stageDocumentData]="StageDocumentData"
         [stagesDetail]="StagesDetail" [courseRows]="courseRows" [isSavingCourses]="isSavingCourses"
         [localServerUrl]="localServerUrl" [isLocked]="true" [activePanel]="'stage2'"
         [canEditStageDocs]="isApprovedApplication" (uploadStage)="uploadStageDocumentRow($event)"
         (stageFilePicked)="onStageFilePicked($event)" (viewDocument)="viewDocument($event)">
-      </app-step-stage2> -->
-      <app-step-stage2 [stuApplication]="stuApplication" [stageDocumentData]="StageDocumentData"
-          [stagesDetail]="StagesDetail" [courseRows]="courseRows" [isSavingCourses]="isSavingCourses"
-          [localServerUrl]="localServerUrl" [isLocked]="true" [canEditStageDocs]="isApprovedApplication"
-          (fileSelected)="onFileSelected($event)"
-          (uploadStage)="uploadStageDocumentRow($event)" (stageFilePicked)="onStageFilePicked($event)"
-          (viewDocument)="viewDocument($event)">
-        </app-step-stage2>
+      </app-step-stage2>
     </section>
 
     <section *ngIf="LockedStatus && activeMainTab === 'course'" >
-      <app-step-stage2 [stuApplication]="stuApplication" [stageDocumentData]="StageDocumentData"
+      <app-step-stage2 [stuApplication]="stuApplication" [stageDocumentData]="StageDocumentData" 
         [stagesDetail]="StagesDetail" [courseRows]="courseRows" [isSavingCourses]="isSavingCourses"
         [localServerUrl]="localServerUrl" [isLocked]="true" [activePanel]="'course'" [courseMappingDisabled]="true"
         (courseFilePicked)="onCourseFilePicked($event)" (addCourseRow)="addCourseRow()"
@@ -212,7 +195,6 @@
         (viewDocument)="viewDocument($event)">
       </app-step-stage2>
     </section>
-    </ng-container>
 
     <!-- ── Step 0: Academic (unlocked wizard only) ────────────────────────── -->
     <div class="col-md-12 grid-margin stretch-card mb-3" [hidden]="LockedStatus || currentStep !== 0">
@@ -271,39 +253,39 @@
     <!-- ── Steps 1–4 (Reactive Form) ─────────────────────────────────────── -->
     <ng-container *ngIf="form">
 
-      
+      <!-- Step 1: Contact -->
       <section [hidden]="!LockedStatus && currentStep !== 1" *ngIf="!LockedStatus || activeMainTab === 'application'">
-        <app-step-contact [form]="form" [isEditing]="isEditingStep[1]" [isSubmitted]="isSubmitted"  
+        <app-step-contact [form]="form" [isEditing]="isEditingStep[1]" [isSubmitted]="isSubmitted"
           [countries]="countries" [isLocked]="LockedStatus" [hideBackNext]="LockedStatus"
           [isValid]="isCurrentStepValid(1)" (editClick)="startEdit(1)" (cancelClick)="cancelEdit(1)"
-          (updateClick)="updateStep(1)" (nextClick)="nextStep()" (prevClick)="prevStep()" [studentStatus] = "studentStatus">
+          (updateClick)="updateStep(1)" (nextClick)="nextStep()" (prevClick)="prevStep()">
         </app-step-contact>
       </section>
 
-      
+      <!-- Step 2: University -->
       <section [hidden]="!LockedStatus && currentStep !== 2" *ngIf="!LockedStatus || activeMainTab === 'application'">
         <app-step-university [form]="form" [isEditing]="isEditingStep[2]" [isSubmitted]="isSubmitted"
           [uniData]="uniData" [isLocked]="LockedStatus" [hideBackNext]="LockedStatus" [isValid]="isCurrentStepValid(2)"
           (editClick)="startEdit(2)" (cancelClick)="cancelEdit(2)" (updateClick)="updateStep(2)"
-          (nextClick)="nextStep()" (prevClick)="prevStep()" [studentStatus] = "studentStatus">
+          (nextClick)="nextStep()" (prevClick)="prevStep()">
         </app-step-university>
       </section>
 
-      
+      <!-- Step 3: Visa / English / Sponsor -->
       <section [hidden]="!LockedStatus && currentStep !== 3" *ngIf="!LockedStatus || activeMainTab === 'application'">
         <app-step-details [form]="form" [isEditing]="isEditingStep[3]" [isSubmitted]="isSubmitted"
           [countries]="countries" [isLocked]="LockedStatus" [hideBackNext]="LockedStatus"
           [isValid]="isCurrentStepValid(3)" (editClick)="startEdit(3)" (cancelClick)="cancelEdit(3)"
-          (updateClick)="updateStep(3)" (nextClick)="nextStep()" (prevClick)="prevStep()" [studentStatus] = "studentStatus">
+          (updateClick)="updateStep(3)" (nextClick)="nextStep()" (prevClick)="prevStep()">
         </app-step-details>
       </section>
 
-       
+      <!-- Step 4: Documents -->
       <section [hidden]="!LockedStatus && currentStep !== 4" *ngIf="!LockedStatus || activeMainTab === 'application'">
         <app-step-documents [stuApplication]="stuApplication" [isEditing]="isEditingStep[4]" [isLocked]="LockedStatus"
           [hideBackNext]="LockedStatus" [localServerUrl]="localServerUrl" (editClick)="startEdit(4)"
           (cancelClick)="cancelEdit(4)" (submitClick)="submitDocuments()" (fileSelected)="onFileSelected($event)"
-          (prevClick)="prevStep()" [studentStatus] = "studentStatus">
+          (prevClick)="prevStep()">
         </app-step-documents>
       </section>
 

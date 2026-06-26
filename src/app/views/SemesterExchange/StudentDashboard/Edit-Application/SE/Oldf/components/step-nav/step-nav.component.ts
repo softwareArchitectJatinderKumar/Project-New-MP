@@ -13,7 +13,6 @@ export class StepNavComponent {
   @Input() showBack = true;
   @Input() showNext = true;
   @Input() showEdit = true;
-  @Input() studentStatus : string = "pending";
 
   @Output() editClick = new EventEmitter<void>();
   @Output() cancelClick = new EventEmitter<void>();

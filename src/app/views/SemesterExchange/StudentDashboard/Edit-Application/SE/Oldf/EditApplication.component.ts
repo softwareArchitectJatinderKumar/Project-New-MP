@@ -23,8 +23,7 @@ import {
 })
 export class EditApplicationComponent implements OnInit, OnDestroy {
   // ── State ──────────────────────────────────────────────────────────────────
-  isLoading = true;
-  isTabSwitching = false;
+  isLoading = false;
   isSubmitted = false;
   isLoginFailed = false;
   currentStep = 0;
@@ -65,7 +64,7 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
   //   return this.LockedStatus && !this.isApprovedApplication;
   // }
 
-  get canEditApplication(): boolean {
+    get canEditApplication(): boolean {
     return !this.LockedStatus && !this.isApprovedApplication;
   }
   get showStage2Tab(): boolean {
@@ -95,8 +94,8 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     private router: Router,
     private authService: AuthService,
     private storageService: StorageService,
-  ) { }
-
+  ) {}
+  
   // ── Lifecycle ──────────────────────────────────────────────────────────────
   ngOnInit(): void {
     this.LoginName = this.route.snapshot.params['LoginName'];
@@ -142,10 +141,6 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
 
   // ── Edit controls ──────────────────────────────────────────────────────────
   startEdit(step: number): void {
-   
-    if (this.LockedStatus || this.LockedStatus==null) {
-    return;
-  }
     if (step >= 1 && step <= 4 && (this.LockedStatus ? this.activeMainTab === 'application' : this.currentStep === step)) {
       if (this.LockedStatus && !this.canEditApplication) return;
       this.isEditingStep[step] = true;
@@ -227,27 +222,19 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
       Swal.fire('Please Update or Cancel', 'Save or cancel changes before switching tabs.', 'warning');
       return;
     }
-    this.isTabSwitching = true;
+    this.activeMainTab = tab;
     this.form.disable();
     window.scrollTo(0, 0);
-    setTimeout(() => {
-      this.activeMainTab = tab;
-      this.isTabSwitching = false;
-    }, 80);
   }
 
   // ── Documents ──────────────────────────────────────────────────────────────
   onFileSelected(event: FileSelectedEvent): void {
     const map: Record<string, { fileField: string; nameField: string }> = {
-      consent: { fileField: 'ConsentLetterData', nameField: 'ConsentLetterFileName' },
-      resume: { fileField: 'ResumeFileData', nameField: 'ResumeFileName' },
-      passport: { fileField: 'PassportFileData', nameField: 'PassportFileName' },
-      english: { fileField: 'EnglishProofData', nameField: 'EnglishProofFileName' },
-      fees: { fileField: 'FeesProofData', nameField: 'FeesProofFileName' },
-      affidavitPath : { fileField: 'AffidavitData', nameField: 'AffidavitPath' },
-      offerLetter: { fileField: 'OfferLetterPath', nameField: 'OfferLetterPath' },
-      outBoundTicket: { fileField: 'OutBoundTicket', nameField: 'OutBoundTicket' },
-      returnTicket: { fileField: 'ReturnTicketPath', nameField: 'ReturnTicketPath' },
+      consent:  { fileField: 'ConsentLetterData',  nameField: 'ConsentLetterFileName' },
+      resume:   { fileField: 'ResumeFileData',      nameField: 'ResumeFileName' },
+      passport: { fileField: 'PassportFileData',    nameField: 'PassportFileName' },
+      english:  { fileField: 'EnglishProofData',    nameField: 'EnglishProofFileName' },
+      fees:     { fileField: 'FeesProofData',       nameField: 'FeesProofFileName' },
     };
     const d = map[event.key];
     if (!d) return;
@@ -301,6 +288,7 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     if (!row?.fileObject) { Swal.fire('Error', 'Please select a file first.', 'error'); return; }
     row.isUploading = true;
     const fd = new FormData();
+    console.log("Hello" , row)
     fd.append('File', row.fileObject, row.fileName ?? '');
     fd.append('ApplicationId', this.ApplicationId);
     fd.append('DocumentName', row.documentName);
@@ -313,7 +301,7 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     this.studentService.addSECheckListDocuments(fd)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => { row.isUploading = false; row.isUploaded = true; Swal.fire('Success', `${row.documentName} uploaded!`, 'success'); row.isUploading = false; },
+        next: () => { row.isUploading = false; row.isUploaded = true; Swal.fire('Success', `${row.documentName} uploaded!`, 'success'); row.isUploading = false;},
         error: () => { row.isUploading = false; Swal.fire('Upload Failed', 'Could not upload document.', 'error'); },
       });
   }
@@ -428,8 +416,8 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
           this.cgpa = stu.cgpa;
           this.CurrentYear = stu.currentYear;
           this.CurrentTerm = stu.currentTerm;
-
-
+          
+         
           this.ProgramCode = stu.programCode;
           this.getApplicationDetails(this.RegistrationNo ?? '');
           this.getStuDetailsWithImage(this.RegistrationNo);
@@ -437,7 +425,7 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
         error: err => this.loginFailed(err),
       });
   }
-  ApprovalRemarks: any;
+ApprovalRemarks:any;
   private getApplicationDetails(regNo: string): void {
     this.isLoading = true;
     this.studentService.getStudentDetailsBYId(regNo)
@@ -457,7 +445,7 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
           this.activeMainTab = 'application';
 
           this.stuApplication = app;
-          this.studentStatus = app.isLocked === 'True'  ? 'Approved' : app.isLocked === 'False' ? 'Rejected' : 'Pending';
+          this.studentStatus = app.isLocked==='True' ? 'Approved' : app.isLocked ==='False'? 'Rejected' : 'Pending';
           this.ApprovalRemarks = app.approvalRemarks;
           this.ApplicationId = app.applicationId;
           this.EmailId = app.emailId ?? '';

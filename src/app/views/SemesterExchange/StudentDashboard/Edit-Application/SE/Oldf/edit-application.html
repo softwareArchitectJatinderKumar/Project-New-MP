@@ -201,13 +201,13 @@
                                                 <label class="form-label">Relation *</label>
                                                 <input class="form-control" formControlName="RelativeRelation" [readonly]="!isEditingStep[1]" />
                                             </div>
-                                            <div class="col-md-6" *ngIf="isEditingStep[1] || (form.get('RelativeEmail')?.value?.trim())">
-                                            <label class="form-label">Email (optional)</label>
-                                            <input class="form-control" formControlName="RelativeEmail" [readonly]="!isEditingStep[1]" />
-                                        </div>
+                                            <div class="col-md-6" *ngIf="isEditingStep[1] || form.get('RelativeEmail')?.value">
+                                                <label class="form-label">Email (optional)</label>
+                                                <input class="form-control" formControlName="RelativeEmail" [readonly]="!isEditingStep[1]" />
+                                            </div>
                                         </div>
 
-                                        <div class="row mt-2" *ngIf="isEditingStep[1] || (form.get('RelativePhone')?.value?.trim())">
+                                        <div class="row mt-2" *ngIf="isEditingStep[1] || form.get('RelativePhone')?.value">
                                             <div class="col-md-6">
                                                 <label class="form-label">Phone (optional)</label>
                                                 <input class="form-control" formControlName="RelativePhone" [readonly]="!isEditingStep[1]" />
@@ -221,17 +221,11 @@
 
                 </div>
 
-                <!-- <div class="d-flex justify-content-between mt-3">
+                <div class="d-flex justify-content-between mt-3">
                     <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
                     <button type="button" class="btn btn-danger" *ngIf="isEditingStep[1]" (click)="cancelEdit(1)">Cancel</button>
                     <button type="button" class="btn btn-success" *ngIf="isEditingStep[1]" (click)="updateStep(1)" [disabled]="form.invalid">Update</button>
                     <button type="button" class="btn btn-primary" *ngIf="!isEditingStep[1]" (click)="nextStep()" [disabled]="isEditingStep[1]">Next</button>
-                </div> -->
-                <div class="d-flex justify-content-between mt-3">
-                    <button type="button" class="btn btn-secondary" (click)="prevStep()" *ngIf="!LockedStatus">Back</button>
-                    <button type="button" class="btn btn-danger" *ngIf="isEditingStep[1] && !LockedStatus" (click)="cancelEdit(1)">Cancel</button>
-                    <button type="button" class="btn btn-success" *ngIf="isEditingStep[1] && !LockedStatus" (click)="updateStep(1)" [disabled]="form.invalid">Update</button>
-                    <button type="button" class="btn btn-primary" *ngIf="!isEditingStep[1] && !LockedStatus" (click)="nextStep()" [disabled]="isEditingStep[1]">Next</button>
                 </div>
             </section>
 
@@ -241,8 +235,7 @@
                         <div class="card section">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <span>University Preferences</span>
-                                <!-- <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[2]" (click)="startEdit(2)">Edit</button> -->
-                                <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[2] && !LockedStatus" (click)="startEdit(2)">Edit</button>
+                                <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[2]" (click)="startEdit(2)">Edit</button>
                             </div>
                             <div class="card-body" [class.disabled-form]="!isEditingStep[2]">
                                 <div class="row">
@@ -287,19 +280,12 @@
                     </div>
                 </div>
 
-                  <div class="d-flex justify-content-between mt-3">
-                    <button type="button" class="btn btn-secondary" (click)="prevStep()" *ngIf="!LockedStatus">Back</button>
-                    <button type="button" class="btn btn-danger" *ngIf="isEditingStep[2] && !LockedStatus" (click)="cancelEdit(2)">Cancel</button>
-                    <button type="button" class="btn btn-success" *ngIf="isEditingStep[2] && !LockedStatus" (click)="updateStep(2)" [disabled]="form.invalid">Update</button>
-                    <button type="button" class="btn btn-primary" *ngIf="!isEditingStep[2] && !LockedStatus" (click)="nextStep()" [disabled]="isEditingStep[2]">Next</button>
-                </div>
-<!-- 
                 <div class="d-flex justify-content-between mt-3">
                     <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
                     <button type="button" class="btn btn-danger" *ngIf="isEditingStep[2]" (click)="cancelEdit(2)">Cancel</button>
                     <button type="button" class="btn btn-success" *ngIf="isEditingStep[2]" (click)="updateStep(2)" [disabled]="form.invalid">Update</button>
                     <button type="button" class="btn btn-primary" *ngIf="!isEditingStep[2]" (click)="nextStep()" [disabled]="isEditingStep[2]">Next</button>
-                </div> -->
+                </div>
             </section>
 
             <section *ngIf="currentStep === 3" class="step-section">
@@ -308,8 +294,7 @@
                         <div class="card section">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <span>Passport Details</span>
-                                <!-- <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[3]" (click)="startEdit(3)">Edit</button> -->
-                                <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[3] && !LockedStatus" (click)="startEdit(3)">Edit</button>
+                                <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[3]" (click)="startEdit(3)">Edit</button>
                             </div>
                             <div class="card-body" [class.disabled-form]="!isEditingStep[3]">
                                 <div class="row mt-2">
@@ -460,8 +445,7 @@
                         <div class="card section">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <span>Sponsor Details</span>
-                                <!-- <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[3]" (click)="startEdit(3)">Edit</button> -->
-                                 <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[3] && !LockedStatus" (click)="startEdit(3)">Edit</button>
+                                <button type="button" class="btn btn-sm btn-info" *ngIf="!isEditingStep[3]" (click)="startEdit(3)">Edit</button>
                             </div>
                             <div class="card-body" [class.disabled-form]="!isEditingStep[3]">
                                 <div class="row">
@@ -484,135 +468,45 @@
                                     </div>
                                 </div>
 
-                                <div *ngIf="form.get('SponsorType')?.value === 'Other' || form.get('SponsorType')?.value === 'Relative'" class="col-md-12">
+                                <div
+                                    *ngIf="form.get('SponsorType')?.value === 'Other' || form.get('SponsorType')?.value === 'Relative'" class="col-md-12">
                                     <div class="row mt-2">
-                                        <div class="col-md-6" *ngIf="isEditingStep[3] || (form.get('SponsorName')?.value?.trim())">
+                                        <div class="col-md-6" *ngIf="isEditingStep[3] || form.get('SponsorName')?.value">
                                             <label class="form-label">Sponsor Name *</label>
                                             <input class="form-control" formControlName="SponsorName" [readonly]="!isEditingStep[3]" />
                                         </div>
-                                        <div class="col-md-6" *ngIf="isEditingStep[3] || (form.get('SponsorRelation')?.value?.trim())">
+                                        <div class="col-md-6" *ngIf="isEditingStep[3] || form.get('SponsorRelation')?.value">
                                             <label class="form-label">Sponsor Relation *</label>
                                             <input class="form-control" formControlName="SponsorRelation" [readonly]="!isEditingStep[3]" />
                                         </div>
                                     </div>
-                                    <!-- <div class="row mt-2" *ngIf="isEditingStep[3] || (form.get('SponsorEmail')?.value?.trim()) || (form.get('SponsorContact')?.value?.trim())">
-                                        <div class="col-md-6" *ngIf="isEditingStep[3] || (form.get('SponsorEmail')?.value?.trim())">
+                                    <div class="row mt-2" *ngIf="isEditingStep[3] || form.get('SponsorEmail')?.value || form.get('SponsorContact')?.value">
+                                        <div class="col-md-6" *ngIf="isEditingStep[3] || form.get('SponsorEmail')?.value">
                                             <label class="form-label">Sponsor Email</label>
                                             <input class="form-control" formControlName="SponsorEmail" [readonly]="!isEditingStep[3]" />
                                         </div>
-                                        <div class="col-md-6" *ngIf="isEditingStep[3] || (form.get('SponsorContact')?.value?.trim())">
-                                            <label class="form-label">Sponsor Contact</label>
-                                            <input class="form-control" formControlName="SponsorContact" [readonly]="!isEditingStep[3]" />
-                                        </div>
-                                    </div> -->
-                                    <div class="row mt-2" *ngIf="(isEditingStep[3] || (form.get('SponsorEmail')?.value?.trim()) || (form.get('SponsorContact')?.value?.trim()))">
-                                        <div class="col-md-6" *ngIf="isEditingStep[3] || (form.get('SponsorEmail')?.value?.trim())">
-                                            <label class="form-label">Sponsor Email</label>
-                                            <input class="form-control" formControlName="SponsorEmail" [readonly]="!isEditingStep[3]" />
-                                        </div>
-                                        <div class="col-md-6" *ngIf="isEditingStep[3] || (form.get('SponsorContact')?.value?.trim())">
+                                        <div class="col-md-6" *ngIf="isEditingStep[3] || form.get('SponsorContact')?.value">
                                             <label class="form-label">Sponsor Contact</label>
                                             <input class="form-control" formControlName="SponsorContact" [readonly]="!isEditingStep[3]" />
                                         </div>
                                     </div>
                                 </div>
 
-
                             </div>
                         </div>
                     </div>
 
                 </div>
+
                 <div class="d-flex justify-content-between mt-3">
-                    <button type="button" class="btn btn-secondary" (click)="prevStep()" *ngIf="!LockedStatus">Back</button>
-                    <button type="button" class="btn btn-danger" *ngIf="isEditingStep[3] && !LockedStatus" (click)="cancelEdit(3)">Cancel</button>
-                    <button type="button" class="btn btn-success" *ngIf="isEditingStep[3] && !LockedStatus" (click)="updateStep(3)" [disabled]="form.invalid">Update</button>
-                    <button type="button" class="btn btn-primary" *ngIf="!isEditingStep[3] && !LockedStatus" (click)="nextStep()" [disabled]="isEditingStep[3]">Next</button>
-                </div>
-                <!-- <div class="d-flex justify-content-between mt-3">
                     <button type="button" class="btn btn-secondary" (click)="prevStep()">Back</button>
                     <button type="button" class="btn btn-danger" *ngIf="isEditingStep[3]" (click)="cancelEdit(3)">Cancel</button>
                     <button type="button" class="btn btn-success" *ngIf="isEditingStep[3]" (click)="updateStep(3)" [disabled]="form.invalid">Update</button>
                     <button type="button" class="btn btn-primary" *ngIf="!isEditingStep[3]" (click)="nextStep()" [disabled]="isEditingStep[3]">Next</button>
-                </div> -->
-            </section>
-
-            <section *ngIf="LockedStatus" class="step-section">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title text-primary">Documents (Read-only)</h4>
-                        <div class="col-md-12 col-lg-10 mx-auto mb-3">
-                            <div class="card section">
-                                <div class="card-header">Document Uploads (PDF, JPEG, PNG only)</div>
-                                <div class="card-body">
-
-                                    <div class="row mb-3 mt-2" *ngIf="true">
-                                        <div class="col-md-6">
-                                            <label class="form-label">Consent Letter</label>
-                                            <div class="small mt-1" *ngIf="documentFields[0]?.fileName">Uploaded:
-                                                <strong>{{ documentFields[0]?.fileName }}</strong></div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Consent Letter <span>Download Format</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <hr />
-                                    <div class="mb-3">
-                                        <label class="form-label">Resume / CV</label>
-                                        <div class="d-flex gap-2 align-items-center">
-                                            <div class="small" *ngIf="documentFields[1]?.fileName">Uploaded: <strong>{{
-                                                    documentFields[1]?.fileName }}</strong></div>
-                                            <button class="btn btn-sm btn-info"
-                                                (click)="viewDocument(documentFields[1])"
-                                                [disabled]="!documentFields[1]?.fileData">View</button>
-                                        </div>
-                                    </div>
-
-                                    <hr>
-                                    <div class="mb-3">
-                                        <label class="form-label">Passport Copy</label>
-                                        <div class="d-flex gap-2 align-items-center">
-                                            <div class="small" *ngIf="documentFields[2]?.fileName">Uploaded: <strong>{{
-                                                    documentFields[2]?.fileName }}</strong></div>
-                                            <button class="btn btn-sm btn-info"
-                                                (click)="viewDocument(documentFields[2])"
-                                                [disabled]="!documentFields[2]?.fileData">View</button>
-                                        </div>
-                                    </div>
-
-                                    <hr>
-                                    <div class="mb-3">
-                                        <label class="form-label">English Test Score Card</label>
-                                        <div class="d-flex gap-2 align-items-center">
-                                            <div class="small" *ngIf="documentFields[3]?.fileName">Uploaded: <strong>{{
-                                                    documentFields[3]?.fileName }}</strong></div>
-                                            <button class="btn btn-sm btn-info"
-                                                (click)="viewDocument(documentFields[3])"
-                                                [disabled]="!documentFields[3]?.fileData">View</button>
-                                        </div>
-                                    </div>
-
-                                    <hr>
-                                    <div class="mb-3">
-                                        <label class="form-label">Fees Receipt (Optional)</label>
-                                        <div class="d-flex gap-2 align-items-center">
-                                            <div class="small" *ngIf="documentFields[4]?.fileName">Uploaded: <strong>{{
-                                                    documentFields[4]?.fileName }}</strong></div>
-                                            <button class="btn btn-sm btn-info"
-                                                (click)="viewDocument(documentFields[4])"
-                                                [disabled]="!documentFields[4]?.fileData">View</button>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </section>
-            <!-- <section *ngIf="currentStep === 4 || currentStep === 3" class="step-section">
+
+            <section *ngIf="currentStep === 4 || currentStep === 3" class="step-section">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title text-primary">Documents (View / Edit / Update)</h4>
@@ -704,7 +598,7 @@
                         </div>
                     </div>
                 </div>
-            </section> -->
+            </section>
 
         </form>
     </div>

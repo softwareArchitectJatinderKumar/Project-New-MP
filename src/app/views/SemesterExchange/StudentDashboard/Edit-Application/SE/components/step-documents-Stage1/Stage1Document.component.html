@@ -1,50 +1,105 @@
 <div>
 
-  <!-- Top nav bar -->
-
+  <!-- Stage I Documents -->
   <div class="col-md-12 col-lg-10 mx-auto mb-3">
     <div class="card section">
-      <div class="card-header">Document(s)</div>
-      <div class="card-body" [class.disabled-form]="!isEditing">
+      <div class="card-header">Stage I Document(s)</div>
+      <div class="card-body">
         <table class="table table-bordered align-middle">
           <thead>
             <tr>
-              <th width="40%">Document</th>
-              <th width="40%">Format Template</th>
-              <th width="40%">Upload File</th>
-              <th width="20%">View Action</th>
+              <th style="width:5%">S.No</th>
+              <th style="width:30%">Document</th>
+              <th style="width:20%">Format Template</th>
+              <th style="width:30%">Upload File</th>
+              <th style="width:15%">View Uploaded</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let doc of docKeys">
-              <td>
-                <label class="fw-semibold mb-0">{{ doc.label }}</label>
-              </td>
-              <td>
-                <!-- <button *ngIf="row.sampleFormat" class="btn btn-info btn-sm text-white px-3" type="button" (click)="downloadLocal(row.sampleFormat)">
-                        <i class="bi bi-eye-fill me-1"></i> Download
+            <ng-container *ngFor="let doc of docKeys; let i = index">
+              <tr *ngIf="doc.stage === '1'">
+                <td>{{ i + 1 }}</td>
+                <td>
+                  <label class="fw-semibold mb-0">{{ doc.label }}</label>
+                </td>
+                <td>
+                  <button *ngIf="hasSampleFormat(doc.documentName)" type="button" class="btn btn-success btn-sm"
+                    (click)="downloadTemplate(doc.documentName)">
+                    <i class="bi bi-download me-1"></i> Download
                   </button>
-                  <div *ngIf="!row.sampleFormat">Not Available</div> -->
-              </td>
-              <td>
-                <input type="file" class="form-control" [disabled]="!isEditing" accept=".pdf,.jpg,.jpeg,.png"
-                  (change)="onFilePicked($event, doc.key)" />
-              </td>
+                  <span *ngIf="!hasSampleFormat(doc.documentName)" class="text-muted small">Not Available</span>
+                </td>
+                <td>
+                  <input type="file" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png"
+                    (change)="onFilePicked($event, doc.key)" />
+                </td>
+                <td>
 
-              <td>
-                <button *ngIf="hasFile(doc.appField)" type="button" class="btn btn-info d-flex align-items-center gap-1"
-                  (click)="viewFile(getFileName(doc.appField))">
-                  <span class="material-icons md-18">description</span>
-                  View Uploaded
-                </button>
-              </td>
-            </tr>
+                  <button *ngIf="hasFile(doc.appField)" type="button"
+                    class="btn btn-info btn-sm d-flex align-items-center gap-1"
+                    (click)="viewFile(getFileName(doc.appField))">
+                    <span class="material-icons md-18">description</span>
+                  </button>
+                  <span *ngIf="!hasFile(doc.appField)" class="text-muted small">—</span>
+                </td>
+              </tr>
+            </ng-container>
           </tbody>
         </table>
       </div>
     </div>
   </div>
 
-
+  <!-- Stage II Documents  
+  <div class="col-md-12 col-lg-10 mx-auto mb-3">
+    <div class="card section">
+      <div class="card-header">Stage II Document(s)</div>
+      <div class="card-body">
+        <table class="table table-bordered align-middle">
+          <thead>
+            <tr>
+              <th style="width:5%">S.No</th>
+              <th style="width:28%">Document</th>
+              <th style="width:17%">Format Template</th>
+              <th style="width:35%">Select File (auto-uploads on selection)</th>
+              <th style="width:15%">View Uploaded</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let doc of docKeys; let i = index">
+              <tr *ngIf="doc.stage === '2'">
+                <td>{{ i + 1 }}</td>
+                <td>
+                  <label class="fw-semibold mb-0">{{ doc.label }}</label>
+                </td>
+                <td>
+                  <button *ngIf="hasSampleFormat(doc.documentName)" type="button" class="btn btn-success btn-sm"
+                    (click)="downloadTemplate(doc.documentName)">
+                    <i class="bi bi-download me-1"></i> Download
+                  </button>
+                  <span *ngIf="!hasSampleFormat(doc.documentName)" class="text-muted small">Not Available</span>
+                </td>
+                <td>
+                  <input type="file" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png"
+                    (change)="onFilePicked($event, doc.key)" />
+                </td>
+                <td>
+        
+                  <button *ngIf="hasFile(doc.appField)" type="button"
+                    class="btn btn-info btn-sm d-flex align-items-center gap-1"
+                    (click)="viewFile(getFileName(doc.appField))">
+                    <span class="material-icons md-18">description</span>
+                  </button>
+                  <span *ngIf="!hasFile(doc.appField)" class="text-muted small">—</span>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+            
+        </table>
+      </div>
+    </div>
+  </div>
+  -->
 
 </div>

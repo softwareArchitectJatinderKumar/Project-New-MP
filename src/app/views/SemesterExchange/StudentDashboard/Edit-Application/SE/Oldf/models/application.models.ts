@@ -110,7 +110,7 @@ export interface SelectOption {
 }
 
 export interface FileSelectedEvent {
-  key: 'fees' | 'resume' | 'consent' | 'passport' | 'english' | 'affidavitPath' | 'indeminityBondPath' | 'offerLetter'|'outBoundTicket'|'returnTicket';
+  key: 'fees' | 'resume' | 'consent' | 'passport' | 'english' | 'affidavitPath' | 'indeminityBondPath' | 'offerLetterPath'|'outBoundTicket'|'returnTicketPath';
   file: File;
   base64: string;
   fileName: string;

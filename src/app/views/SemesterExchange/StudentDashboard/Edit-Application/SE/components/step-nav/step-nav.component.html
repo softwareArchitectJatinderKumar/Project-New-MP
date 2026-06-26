@@ -2,13 +2,13 @@
   <button *ngIf="showBack" type="button" class="btn btn-secondary" (click)="prevClick.emit()">
     &larr; Back
   </button>
-  <button *ngIf="showEdit && !isEditing && !isLocked" type="button" class="btn btn-outline-primary btn-sm" (click)="editClick.emit()">
+  <button *ngIf="!(studentStatus == 'Pending') && (showEdit && !isEditing && !isLocked)" type="button" class="btn btn-outline-primary btn-sm" (click)="editClick.emit()">
     ✎ Edit
   </button>
-  <button *ngIf="isEditing" type="button" class="btn btn-outline-danger" (click)="cancelClick.emit()">
+  <button *ngIf="!(studentStatus == 'Pending') && isEditing" type="button" class="btn btn-outline-danger" (click)="cancelClick.emit()">
     Cancel
   </button>
-  <button *ngIf="isEditing" type="button" class="btn btn-success" [disabled]="!isValid" (click)="updateClick.emit()">
+  <button *ngIf="!(studentStatus == 'Pending') && isEditing" type="button" class="btn btn-success" [disabled]="!isValid" (click)="updateClick.emit()">
     ✓ Update
   </button>
   <button *ngIf="!isEditing && showNext" type="button" class="btn btn-primary" (click)="nextClick.emit()">

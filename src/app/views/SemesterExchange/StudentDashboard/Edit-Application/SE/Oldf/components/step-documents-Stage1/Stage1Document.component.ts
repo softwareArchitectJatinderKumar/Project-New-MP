@@ -106,7 +106,7 @@ export class Stage1DocumentComponent {
     documentName: 'Indeminity Bond'
   },
   {
-    key: 'offerLetter',
+    key: 'offerLetterPath',
     label: 'Offer Letter',
     appField: 'offerLetterPath',
     stage: '2',
@@ -120,7 +120,7 @@ export class Stage1DocumentComponent {
     documentName: 'OutBound Ticket'
   },
   {
-    key: 'returnTicket',
+    key: 'returnTicketPath',
     label: 'Return Ticket',
     appField: 'returnTicketPath',
     stage: '2',
@@ -128,30 +128,6 @@ export class Stage1DocumentComponent {
   }
     ];
 
-
-  get stage2Rows(): StageDetailRow[] {
-    return (this.stagesDetail ?? []).filter(r => {
-      const name = String((r as any)?.stageName ?? '').trim().toLowerCase();
-      return name === 'stage ii' || name === 'stage2';
-    });
-  }
-
-  existingDocPathForStage2(row: StageDetailRow): string | null {
-    const uploaded = (this.stageDocumentData ?? []).find(
-      d => String(d.documentName ?? '').trim().toLowerCase() === String(row.documentName ?? '').trim().toLowerCase()
-    );
-    return (uploaded && uploaded.document) ? uploaded.document : null;
-  }
-
-  viewStage2(row: StageDetailRow): void {
-    const file = this.existingDocPathForStage2(row);
-    if (file) this.viewDocument.emit(file);
-  }
-
-  uploadRow(row: StageDetailRow): void {
-    const index = this.getRowIndex(row);
-    if (index >= 0) this.uploadStage.emit(index);
-  }
 
   async onStageFilePicked(event: Event, row: StageDetailRow): Promise<void> {
     const index = this.getRowIndex(row);
@@ -161,7 +137,7 @@ export class Stage1DocumentComponent {
     this.stagesDetail[index].fileName = file.fileName;
     this.stagesDetail[index].fileObject = file.raw;
     this.stageFilePicked.emit({ index, file: file.raw, fileName: file.fileName, base64: file.base64 });
-    this.uploadStage.emit(index);
+
   }
   private getRowIndex(row: StageDetailRow): number {
 
@@ -195,6 +171,8 @@ export class Stage1DocumentComponent {
 
 
   getFileName(field: keyof StudentApplication): string {
+    console.log('second', this.stageDocumentData)
+    console.log('DATANBASE', this.stagesDetail)
     return (this.stuApplication?.[field] as string) ?? '';
   }
   hasFile(field: keyof StudentApplication): boolean {
@@ -278,3 +256,88 @@ export class Stage1DocumentComponent {
     });
   }
 }
+
+// import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+// import { StudentApplication, FileSelectedEvent, MAX_FILE_SIZE_BYTES, StageDetailRow } from '../../models/application.models';
+// import Swal from 'sweetalert2';
+
+// @Component({
+//   selector: 'stage-1-Documents',
+//   templateUrl: './Stage1Document.component.html',
+//   styleUrls: ['./step-documents.component.scss'],
+//   changeDetection: ChangeDetectionStrategy.OnPush,
+// })
+// export class Stage1DocumentComponent {
+//   @Input() stuApplication!: StudentApplication;
+//   @Input() isEditing = false;
+//   @Input() isLocked = false;
+//   @Input() localServerUrl = '';
+//   @Input() hideBackNext = false;
+//   @Input() stageDocumentData: StageDetailRow[] = [];
+//   @Input() stagesDetail: StageDetailRow[] = [];
+
+//   @Output() fileSelected = new EventEmitter<FileSelectedEvent>();
+//   @Output() editClick = new EventEmitter<void>();
+//   @Output() cancelClick = new EventEmitter<void>();
+//   @Output() submitClick = new EventEmitter<void>();
+//   @Output() prevClick = new EventEmitter<void>();
+
+//   readonly docKeys: Array<{ key: FileSelectedEvent['key']; label: string; appField: keyof StudentApplication , stage: string}> = [
+//     { key: 'fees',    label: 'Fees Proof Document',   appField: 'feesProofFileName' ,stage :'1'},
+//     { key: 'resume',  label: 'Resume Document',       appField: 'resumeFileName' ,stage :'1'},
+//     { key: 'consent', label: 'Consent Letter',        appField: 'consentLetterFileName' ,stage :'1'},
+//     { key: 'passport',label: 'Passport File',         appField: 'passportFileName' ,stage :'1'},
+//     { key: 'english', label: 'English Test Proof',    appField: 'englishTestDocumentFile' ,stage :'1'},
+//     { key: 'affidavitPath', label: 'Affidavit ',    appField: 'affidavitPath' ,stage :'1'},
+//     { key: 'indeminityBondPath', label: 'Indeminity Bond ',    appField: 'indeminityBondPath' ,stage :'1'},
+//     { key: 'offerLetterPath', label: 'OfferLetter ',    appField: 'offerLetterPath' ,stage :'2'},
+//     { key: 'outBoundTicket', label: 'OutBound Ticket',    appField: 'outBoundTicket' ,stage :'2'},
+//     { key: 'returnTicketPath', label: 'Return Ticket',    appField: 'returnTicketPath' ,stage :'2'},
+//   ];
+
+//   getFileName(field: keyof StudentApplication): string {
+//     console.log(  this.stageDocumentData)
+//     console.log(  this.stagesDetail)
+//     return (this.stuApplication?.[field] as string) ?? '';
+//   }
+
+//   hasFile(field: keyof StudentApplication): boolean {
+//     return !!this.getFileName(field);
+//   }
+
+//   viewFile(fileName: string): void {
+//     if (!fileName) return;
+//     window.open(this.localServerUrl + fileName, '_blank');
+//   }
+
+//   async onFilePicked(event: Event, key: FileSelectedEvent['key']): Promise<void> {
+//     const target = event.target as HTMLInputElement;
+//     const raw = target.files?.[0];
+//     if (!raw) return;
+
+//     if (raw.size > MAX_FILE_SIZE_BYTES) {
+//       Swal.fire({ title: 'File size exceeds 3MB. Please upload a smaller file.', icon: 'warning' });
+//       target.value = '';
+//       return;
+//     }
+
+//     const safeName = raw.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+//     const file = safeName !== raw.name ? new File([raw], safeName, { type: raw.type }) : raw;
+
+//     try {
+//       const base64 = await this.readAsBase64(file);
+//       this.fileSelected.emit({ key, file, base64, fileName: file.name });
+//     } catch {
+//       Swal.fire({ title: 'Failed to read file', icon: 'error' });
+//     }
+//   }
+
+//   private readAsBase64(file: File): Promise<string> {
+//     return new Promise((resolve, reject) => {
+//       const reader = new FileReader();
+//       reader.onload = () => resolve((reader.result as string).split(',')[1]);
+//       reader.onerror = reject;
+//       reader.readAsDataURL(file);
+//     });
+//   }
+// }
