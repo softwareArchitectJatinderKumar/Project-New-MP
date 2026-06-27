@@ -288,7 +288,6 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     if (!row?.fileObject) { Swal.fire('Error', 'Please select a file first.', 'error'); return; }
     row.isUploading = true;
     const fd = new FormData();
-    console.log("Hello" , row)
     fd.append('File', row.fileObject, row.fileName ?? '');
     fd.append('ApplicationId', this.ApplicationId);
     fd.append('DocumentName', row.documentName);

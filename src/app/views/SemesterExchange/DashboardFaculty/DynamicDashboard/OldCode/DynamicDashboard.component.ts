@@ -135,7 +135,7 @@ interface AggregatedRemarks {
 @Component({
   selector: 'app-DynamicDashboard',
   templateUrl: './NewDashboard.html',
-  styleUrls: ['../DashboardFaculty.component.css'],
+  styleUrls: ['../../DashboardFaculty.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DynamicDashboardComponent implements OnInit {
@@ -482,7 +482,7 @@ export class DynamicDashboardComponent implements OnInit {
           const emp = response.item1[0];
           this.EmployeeDetails  = emp;
           this.EmployeeName     = emp.employeeName;
-          this.EmployeeCode     = '28243';// String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
+          this.EmployeeCode     =  String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
           this.ContactNoX       = emp.contactNo;
           this.Department       = emp.department;
           this.DepartmentName   = emp.departmentName;

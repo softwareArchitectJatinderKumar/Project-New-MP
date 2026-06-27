@@ -171,8 +171,6 @@ export class Stage1DocumentComponent {
 
 
   getFileName(field: keyof StudentApplication): string {
-    console.log('second', this.stageDocumentData)
-    console.log('DATANBASE', this.stagesDetail)
     return (this.stuApplication?.[field] as string) ?? '';
   }
   hasFile(field: keyof StudentApplication): boolean {

@@ -360,10 +360,10 @@ export class HOWDashboardComponent implements OnInit {
     formData.append("EvalutionDocumentPath", this.EvalutionDocumentPath);
     formData.append("EvalutionDocumentData", this.EvalutionDocumentData);
 
-    console.log('Submitting Form Data:');
-    formData.forEach((value, key) => {
-      console.log(key + ':', value);
-    });
+    // console.log('Submitting Form Data:');
+    // formData.forEach((value, key) => {
+    //   console.log(key + ':', value);
+    // });
 
     this.ServicesSM.StudentEvalutionAddNew(formData) 
       .pipe(

@@ -716,9 +716,9 @@ export class RegisterFormcomponent implements OnInit {
             }
         }
 
-    formData.forEach((value, key) => {
-      console.log(`${key}: ${value}`);
-    });
+    // formData.forEach((value, key) => {
+    //   console.log(`${key}: ${value}`);
+    // });
     this.servicesSM.SemesterExchangeNewRegistrationForm(formData)
       .pipe(
         finalize(() => this.isLoading = false)

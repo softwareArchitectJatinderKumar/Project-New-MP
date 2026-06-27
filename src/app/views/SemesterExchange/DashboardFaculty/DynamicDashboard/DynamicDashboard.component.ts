@@ -556,7 +556,7 @@ export class DynamicDashboardComponent implements OnInit {
           const emp = response.item1[0];
           this.EmployeeDetails = emp;
           this.EmployeeName = emp.employeeName;
-          this.EmployeeCode = '28243';//String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
+          this.EmployeeCode = String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
           this.ContactNoX = emp.contactNo;
           this.Department = emp.department;
           this.DepartmentName = emp.departmentName;
@@ -828,11 +828,11 @@ export class DynamicDashboardComponent implements OnInit {
     ).subscribe({
       next: (data: any) => {
         const msg = data?.item1?.[0]?.msg;
-        if (msg === 'Approved') {
+        if (msg == 'Approved') {
           Swal.fire('Success!', `Application ${action}ed successfully!`, 'success')
             .then(() => this.getSEAllApplications());
-        } else if (msg === 'Disapproved') {
-          Swal.fire('No Change!', 'The application status was not changed.', 'info');
+        } else if (msg == 'Disapproved') {
+          Swal.fire('The application status was changed to Rejected.', 'info');
         } else {
           Swal.fire('Error!', `Failed to ${action} application.`, 'error');
         }

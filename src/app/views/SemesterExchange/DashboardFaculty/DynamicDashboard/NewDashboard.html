@@ -1329,10 +1329,10 @@
 
                     <input type="number" class="form-control" [formControlName]="field.name" min="0" max="10" [ngClass]="{
                     'is-invalid':
-                    evaluationFormControls[field.name]?.invalid &&
+                    evaluationFormControls[field.name].invalid &&
                     (
-                        evaluationFormControls[field.name]?.touched ||
-                        evaluationFormControls[field.name]?.dirty ||
+                        evaluationFormControls[field.name].touched ||
+                        evaluationFormControls[field.name].dirty ||
                         isEvaluationFormSubmitted
                     )
                 }" />
@@ -1342,8 +1342,8 @@
                     <div class="invalid-feedback d-block" *ngIf="
                     evaluationFormControls[field.name]?.errors?.['required'] &&
                     (
-                    evaluationFormControls[field.name]?.touched ||
-                    evaluationFormControls[field.name]?.dirty ||
+                    evaluationFormControls[field.name].touched ||
+                    evaluationFormControls[field.name].dirty ||
                     isEvaluationFormSubmitted
                     )">
 
@@ -1356,8 +1356,8 @@
                     <div class="invalid-feedback d-block" *ngIf="
                     evaluationFormControls[field.name]?.errors?.['min'] &&
                     (
-                    evaluationFormControls[field.name]?.touched ||
-                    evaluationFormControls[field.name]?.dirty ||
+                    evaluationFormControls[field.name].touched ||
+                    evaluationFormControls[field.name].dirty ||
                     isEvaluationFormSubmitted
                     )">
 
@@ -1370,8 +1370,8 @@
                     <div class="invalid-feedback d-block" *ngIf="
                     evaluationFormControls[field.name]?.errors?.['max'] &&
                     (
-                    evaluationFormControls[field.name]?.touched ||
-                    evaluationFormControls[field.name]?.dirty ||
+                    evaluationFormControls[field.name].touched ||
+                    evaluationFormControls[field.name].dirty ||
                     isEvaluationFormSubmitted
                     )">
 
@@ -1392,10 +1392,10 @@
 
                 <textarea class="form-control" rows="3" formControlName="Comments" [ngClass]="{
       'is-invalid':
-        evaluationFormControls['Comments']?.invalid &&
+        evaluationFormControls['Comments'].invalid &&
         (
-          evaluationFormControls['Comments']?.touched ||
-          evaluationFormControls['Comments']?.dirty ||
+          evaluationFormControls['Comments'].touched ||
+          evaluationFormControls['Comments'].dirty ||
           isEvaluationFormSubmitted
         )
     }">
@@ -1404,8 +1404,8 @@
                 <div class="invalid-feedback d-block" *ngIf="
       evaluationFormControls['Comments']?.errors?.['required'] &&
       (
-        evaluationFormControls['Comments']?.touched ||
-        evaluationFormControls['Comments']?.dirty ||
+        evaluationFormControls['Comments'].touched ||
+        evaluationFormControls['Comments'].dirty ||
         isEvaluationFormSubmitted
       )">
 
