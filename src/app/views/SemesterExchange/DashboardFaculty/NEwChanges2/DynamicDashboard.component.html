@@ -1,5 +1,4 @@
-<!-- ─── Full-screen loader ───────────────────────────────────────────────────── -->
-<div *ngIf="loadingIndicator" class="fullscreen-loader">
+<!-- <div *ngIf="loadingIndicator" class="fullscreen-loader">
     <div class="custom-spinner-overlay">
         <div class="custom-spinner-content text-center">
             <img src="assets/images/spinner.gif" alt="Loading..." />
@@ -8,11 +7,9 @@
     </div>
 </div>
 
-<!-- ─── Main Dashboard ──────────────────────────────────────────────────────── -->
 <div class="container-fluid mt-4" id="UserDashboardId"
      *ngIf="!isLoginFailed; else ErrorApplication">
 
-    <!-- ── Info header cards ─────────────────────────────────────────────────── -->
     <div class="row mb-4">
         <div class="col-md-4 grid-margin stretch-card">
             <div class="card">
@@ -40,15 +37,7 @@
             </div>
         </div>
     </div>
-
-    <!-- ═══════════════════════════════════════════════════════════════════════
-         ROLE: COUNSELLOR  (isDealingAuthority)
-         Filter rule:  DealingAuthority === EmployeeCode
-                       AND EmployeeCode ≠ HOD_CODE (28243)
-                       AND EmployeeCode ≠ HOW_CODE (12160)
-         Columns: common + Actions
-         Actions: Forward to Faculty | Submit Counselling Remarks | View Remarks | Reject
-    ════════════════════════════════════════════════════════════════════════════ -->
+ 
     <ng-container *ngIf="isDealingAuthority">
         <h5 class="text-danger fw-bold mb-3">
             <i class="bi bi-person-badge me-2"></i>Counsellor Dashboard
@@ -65,7 +54,6 @@
             [rowHeight]="'auto'"
             [scrollbarH]="true">
 
-            <!-- Common columns -->
             <ngx-datatable-column name="App. ID"        prop="applicationId"  [width]="80"></ngx-datatable-column>
              <ngx-datatable-column name="Student Name"   prop="studentName"  [width]="80"></ngx-datatable-column>
             <ngx-datatable-column name="Reg. No"        prop="registrationNo" [width]="110"></ngx-datatable-column>
@@ -88,25 +76,20 @@
                 </ng-template>
             </ngx-datatable-column>
 
-            <!-- Actions -->
             <ngx-datatable-column name="Actions" [sortable]="false" [width]="380">
                 <ng-template let-row="row" ngx-datatable-cell-template>
-                    <!-- a) Forward to Faculty -->
                     <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToFaculty(row)">
                         <i class="bi bi-send me-1"></i>Forward to Faculty
                     </button>
-                    <!-- b) Submit Counselling Remarks -->
                     <button class="btn btn-primary btn-sm me-1 mb-1" (click)="submitCounsellingRemarks(row)">
                         <i class="bi bi-chat-left-text me-1"></i>
                         {{ isTrue(row.counsellingStatus) ? 'Update Remarks' : 'Add Remarks' }}
                     </button>
-                    <!-- c) View Remarks — evaluation hidden for Counsellor (req #3/#4) -->
                     <button class="btn btn-info btn-sm me-1 mb-1"
                         (click)="viewAllRemarks(row, 'counsellor')"
                         [disabled]="!hasAnyRemarks(row)">
                         <i class="bi bi-eye me-1"></i>View Remarks
                     </button>
-                    <!-- d) Reject -->
                     <button class="btn btn-danger btn-sm me-1 mb-1"
                         (click)="disapproveApplication(row)"
                         [disabled]="approvalLabel(row.isApproved) === 'Rejected'">
@@ -118,13 +101,7 @@
     </ng-container>
 
 
-    <!-- ═══════════════════════════════════════════════════════════════════════
-         ROLE: FACULTY  (isdealingFaculty)
-         Filter rule:  DealingFaculty === EmployeeCode
-                       AND EmployeeCode ≠ HOD_CODE
-                       AND EmployeeCode ≠ HOW_CODE
-         Actions: Add Remarks | Forward to HOD | View Remarks
-    ════════════════════════════════════════════════════════════════════════════ -->
+  
     <ng-container *ngIf="isdealingFaculty">
         <h5 class="text-primary fw-bold mb-3">
             <i class="bi bi-person-workspace me-2"></i>Faculty Dashboard
@@ -163,7 +140,6 @@
                 </ng-template>
             </ngx-datatable-column>
 
-            <!-- Forwarded to HOD flag -->
             <ngx-datatable-column name="Fwd. to HOD" [width]="110">
                 <ng-template let-row="row" ngx-datatable-cell-template>
                     <span class="badge" [ngClass]="isTrue(row.isForwardtoHOD) ? 'bg-success' : 'bg-secondary'">
@@ -174,23 +150,19 @@
 
             <ngx-datatable-column name="Actions" [sortable]="false" [width]="500">
                 <ng-template let-row="row" ngx-datatable-cell-template>
-                    <!-- a) Add Remarks — appended to existing, never overwrites (req #1) -->
                     <button class="btn btn-primary btn-sm me-1 mb-1" (click)="openAddRemarksModal(row)">
                         <i class="bi bi-pencil-square me-1"></i>Add Remarks
                     </button>
-                    <!-- b) Submit Evaluation Remarks (req #2 — was missing in Faculty) -->
                     <button class="btn btn-secondary btn-sm me-1 mb-1"
                         (click)="UploadEvaluationRemarks(row, 'Faculty')">
                         <i class="bi bi-clipboard-check me-1"></i>Submit Evaluation
                     </button>
-                    <!-- c) Forward to HOD -->
                     <button class="btn btn-warning btn-sm me-1 mb-1"
                         (click)="ForwardToHod(row, 'Hod')"
                         [disabled]="isTrue(row.isForwardtoHOD)">
                         <i class="bi bi-send me-1"></i>
                         {{ isTrue(row.isForwardtoHOD) ? 'Forwarded ✓' : 'Forward to HOD' }}
                     </button>
-                    <!-- d) View Remarks — shows evaluation for Faculty (req #3/#4) -->
                     <button class="btn btn-info btn-sm me-1 mb-1"
                         (click)="viewAllRemarks(row, 'faculty')"
                         [disabled]="!hasAnyRemarks(row)">
@@ -202,12 +174,7 @@
     </ng-container>
 
 
-    <!-- ═══════════════════════════════════════════════════════════════════════
-         ROLE: HOD  (isHOD — EmployeeCode === '28243')
-         Two tabs:
-           Tab (X)  My Applications — DealingFaculty is non-null (faculty assigned)
-           Tab (XX) All Applications — from GetSemesterExchangeApplicationForHOD()
-    ════════════════════════════════════════════════════════════════════════════ -->
+ 
     <ng-container *ngIf="isHOD">
         <h5 class="text-success fw-bold mb-3">
             <i class="bi bi-building me-2"></i>Head of Department Dashboard
@@ -232,7 +199,6 @@
             </li>
         </ul>
 
-        <!-- ── Tab I: My Applications (faculty-assigned rows, HOD actions) ──── -->
         <div *ngIf="hodActiveTab === 'my'">
             <p class="text-muted small mb-2">
                 Showing applications where a Faculty has been assigned
@@ -279,33 +245,27 @@
                     </ng-template>
                 </ngx-datatable-column>
 
-                <!-- Tab I HOD actions -->
                 <ngx-datatable-column name="Actions" [sortable]="false" [width]="560">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <!-- a) View Remarks — shows evaluation for HOD (req #4) -->
                         <button class="btn btn-info btn-sm me-1 mb-1"
                             (click)="viewAllRemarks(row, 'hod')"
                             [disabled]="!hasAnyRemarks(row)">
                             <i class="bi bi-eye me-1"></i>View Remarks
                         </button>
-                        <!-- b) Submit Evaluation Remarks -->
                         <button class="btn btn-primary btn-sm me-1 mb-1"
                             (click)="UploadEvaluationRemarks(row, 'HOD')">
                             <i class="bi bi-clipboard-check me-1"></i>Submit Evaluation
                         </button>
-                        <!-- c) Accept -->
                         <button class="btn btn-success btn-sm me-1 mb-1"
                             (click)="acceptApplication(row)"
                             [disabled]="approvalLabel(row.isApproved) !== 'Pending'">
                             <i class="bi bi-check-circle me-1"></i>Accept
                         </button>
-                        <!-- d) Reject -->
                         <button class="btn btn-danger btn-sm me-1 mb-1"
                             (click)="disapproveApplication(row)"
                             [disabled]="approvalLabel(row.isApproved) === 'Rejected'">
                             <i class="bi bi-x-circle me-1"></i>Reject
                         </button>
-                        <!-- e) Forward to HoW -->
                         <button class="btn btn-warning btn-sm me-1 mb-1"
                             (click)="ForwardToHod(row, 'How')"
                             [disabled]="isTrue(row.isForwardedtoHOW)">
@@ -317,7 +277,6 @@
             </ngx-datatable>
         </div>
 
-        <!-- ── Tab II: All Applications (from GetSemesterExchangeApplicationForHOD) ── -->
         <div *ngIf="hodActiveTab === 'all'">
             <p class="text-muted small mb-2">
                 Full application list from
@@ -357,7 +316,6 @@
                     </ng-template>
                 </ngx-datatable-column>
 
-                <!-- c) Counsellor assigned / Assign button -->
                 <ngx-datatable-column name="Counsellor" [width]="160">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <ng-container *ngIf="row.dealingAuthority; else noCounsellor">
@@ -371,7 +329,6 @@
                     </ng-template>
                 </ngx-datatable-column>
 
-                <!-- d) Forwarded status (to HOD, to HoW) -->
                 <ngx-datatable-column name="Forwarded" [width]="160">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <span class="badge me-1"
@@ -385,7 +342,6 @@
                     </ng-template>
                 </ngx-datatable-column>
 
-                <!-- Counselling remarks inline preview -->
                 <ngx-datatable-column name="Counselling Remarks" prop="counsellingRemarks" [width]="200">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <span [title]="row.counsellingRemarks || ''">
@@ -395,7 +351,6 @@
                     </ng-template>
                 </ngx-datatable-column>
 
-                <!-- a) View Details + e) View All Remarks -->
                 <ngx-datatable-column name="Actions" [sortable]="false" [width]="240">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <button class="btn btn-info btn-sm me-1 mb-1" (click)="GetStudentApplication(row)">
@@ -413,11 +368,7 @@
     </ng-container>
 
 
-    <!-- ═══════════════════════════════════════════════════════════════════════
-         ROLE: HoW  (isHoW — EmployeeCode === '12160')
-         Filter rule:  DealingHow === EmployeeCode AND DealingFaculty non-null
-         Actions: View Application | View Remarks | Submit Evaluation | Accept/Reject
-    ════════════════════════════════════════════════════════════════════════════ -->
+   
     <ng-container *ngIf="isHoW">
         <h5 class="text-warning fw-bold mb-3">
             <i class="bi bi-diagram-3 me-2"></i>Head of Wing Dashboard
@@ -458,28 +409,23 @@
 
             <ngx-datatable-column name="Actions" [sortable]="false" [width]="490">
                 <ng-template let-row="row" ngx-datatable-cell-template>
-                    <!-- a) View Application -->
                     <button class="btn btn-info btn-sm me-1 mb-1" (click)="GetStudentApplication(row)">
                         <i class="bi bi-eye me-1"></i>View Application
                     </button>
-                    <!-- b) View Remarks — shows evaluation for HoW (req #4) -->
                     <button class="btn btn-secondary btn-sm me-1 mb-1"
                         (click)="viewAllRemarks(row, 'how')"
                         [disabled]="!hasAnyRemarks(row)">
                         <i class="bi bi-chat-square-text me-1"></i>View Remarks
                     </button>
-                    <!-- c) Submit Evaluation Remarks -->
                     <button class="btn btn-primary btn-sm me-1 mb-1"
                         (click)="UploadEvaluationRemarks(row, 'HOW')">
                         <i class="bi bi-clipboard-check me-1"></i>Submit Evaluation
                     </button>
-                    <!-- d) Accept -->
                     <button class="btn btn-success btn-sm me-1 mb-1"
                         (click)="acceptApplication(row)"
                         [disabled]="approvalLabel(row.isApproved) !== 'Pending'">
                         <i class="bi bi-check-circle me-1"></i>Accept
                     </button>
-                    <!-- d) Reject -->
                     <button class="btn btn-danger btn-sm me-1 mb-1"
                         (click)="disapproveApplication(row)"
                         [disabled]="approvalLabel(row.isApproved) === 'Rejected'">
@@ -493,7 +439,6 @@
 </div>
 
 
-<!-- ─── Error Template ─────────────────────────────────────────────────────── -->
 <ng-template #ErrorApplication>
     <div class="text-center" *ngIf="isLoginFailed">
         <h3 class="text-center fs-2 m-5 text-danger pt-5">Error in User Login.</h3>
@@ -508,11 +453,7 @@
 </ng-template>
 
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     UNIFIED VIEW REMARKS MODAL
-     Shows all remark types for the selected row in labelled sections.
-     Triggered by viewAllRemarks(row) from any dashboard.
-════════════════════════════════════════════════════════════════════════════ -->
+ 
 <ng-template #ViewRemarksModal let-modal>
     <div class="modal-header bg-light">
         <h5 class="modal-title">
@@ -526,7 +467,6 @@
 
         <div class="row g-3">
 
-            <!-- Counselling Remarks -->
             <div class="col-md-6">
                 <div class="card h-100 border-primary">
                     <div class="card-header bg-primary text-white py-2">
@@ -545,7 +485,6 @@
                 </div>
             </div>
 
-            <!-- Faculty Remarks — each appended entry rendered separately (req #1) -->
             <div class="col-md-6">
                 <div class="card h-100 border-info">
                     <div class="card-header bg-info text-white py-2">
@@ -553,7 +492,6 @@
                     </div>
                     <div class="card-body p-2">
                         <ng-container *ngIf="selectedRemarks.facultyRemarks; else noFacultyRemarks">
-                            <!-- Split on the --- separator inserted by submitAddRemarksForm() -->
                             <div *ngFor="let entry of selectedRemarks.facultyRemarks.split('\n---\n'); let i = index"
                                  class="small" [class.border-top]="i > 0" [class.pt-2]="i > 0" [class.mt-2]="i > 0">
                                 <span style="white-space: pre-wrap">{{ entry }}</span>
@@ -566,7 +504,6 @@
                 </div>
             </div>
 
-            <!-- HOD Remarks -->
             <div class="col-md-6">
                 <div class="card h-100 border-success">
                     <div class="card-header bg-success text-white py-2">
@@ -582,7 +519,6 @@
                 </div>
             </div>
 
-            <!-- HoW Remarks -->
             <div class="col-md-6">
                 <div class="card h-100 border-warning">
                     <div class="card-header bg-warning text-dark py-2">
@@ -598,7 +534,7 @@
                 </div>
             </div>
 
-            <!-- Approval / Rejection Remarks -->
+  
             <div class="col-md-12" *ngIf="selectedRemarks.approvalRemarks">
                 <div class="card border-danger">
                     <div class="card-header bg-danger text-white py-2">
@@ -610,11 +546,7 @@
                 </div>
             </div>
 
-            <!--
-                 Evaluation Marks — visible to Faculty, HOD, HoW only (req #3/#4).
-                 Counsellor dashboard passes callerRole='counsellor' which hides this section.
-                 The card is always rendered for other roles so "not yet evaluated" state is visible.
-            -->
+ 
             <div class="col-md-12" *ngIf="selectedRemarksCallerRole !== 'counsellor'">
                 <div class="card border-secondary">
                     <div class="card-header bg-secondary text-white py-2 d-flex align-items-center">
@@ -692,8 +624,7 @@
     </div>
 </ng-template>
 
-
-<!-- ─── Evaluation Remarks Modal ──────────────────────────────────────────── -->
+ 
 <ng-template #EvaluationModal let-modal>
     <div class="modal-header">
         <h5 class="modal-title">
@@ -744,9 +675,7 @@
         </form>
     </div>
 </ng-template>
-
-
-<!-- ─── Counselling Remarks Modal (Counsellor) ────────────────────────────── -->
+ 
 <ng-template #CounsellingRemarksModal let-modal>
     <div class="modal-header">
         <h5 class="modal-title">
@@ -789,8 +718,7 @@
     </div>
 </ng-template>
 
-
-<!-- ─── Add Remarks Modal (Faculty) ──────────────────────────────────────── -->
+ 
 <ng-template #AddRemarksModal let-modal>
     <div class="modal-header">
         <h5 class="modal-title">
@@ -830,4 +758,4 @@
             </div>
         </form>
     </div>
-</ng-template>
+</ng-template> -->

@@ -4,8 +4,10 @@ import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { StorageService } from './storage.service';
 const AUTH_API = 'https://projectsapi.lpu.in/';
+// const AUTH_API = 'https://localhost:7135/';
 //  const AUTH_API = 'https://projectsapi.lpu.in/';// 'https://projectsapi.lpu.in/';//'https://projectsapi.lpu.in/'; //
 const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
+//  const AUTH_API_LOCALs = 'https://localhost:7135/'
 
 @Injectable({
   providedIn: 'root'
@@ -17,13 +19,23 @@ export class LpujournalbookService {
   // private authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJMb2dpbk5hbWUiOiIyNTg5OSIsIkRlcGFydG1lbnROYW1lIjoiTi9BIiwiUm9sbElkIjoiNTAiLCJlbWFpbElkIjoiamF0aW4uMjU4OTlAbHB1LmNvLmluIiwiTkFNRSI6IkphdGluIFNhcnBhbCIsImlzQWN0aXZlIjoiVHJ1ZSIsIlVuaXF1ZWlkIjoiYmRmYWU4MWQtMDUxNy00M2ZjLWFjMzctZjM0ZDExODRmZjY3IiwiSXNQYXJlbnQiOiJGYWxzZSIsIlVzZXJUeXBlIjoiTi9BIiwiU3BlY2lhbEJsb2NrIjoiTi9BIiwibmJmIjoxNzIxODgxODU1LCJleHAiOjE3NTM0MTc4NTUsImlhdCI6MTcyMTg4MTg1NSwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzEyNS8iLCJhdWQiOiJodHRwczovL2xvY2FsaG9zdDo3MTI1LyJ9.K8Pswv0q8MtTJ_QHOyX2TSksR6x888AdYVCqd5f1tTI';
   private authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJMb2dpbk5hbWUiOiJMUFVKb3VybmFsIiwibmJmIjoxNzM5MjU0OTYzLCJleHAiOjE3NzA3OTA5NjMsImlhdCI6MTczOTI1NDk2MywiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzEyNS8iLCJhdWQiOiJodHRwczovL2xvY2FsaG9zdDo3MTI1LyJ9.Ir-NM1QRF4MMr-hSvbMAhwv6Fzyhc3agCmn0TkqtwrM';
   GetAllBooksDetails(): Observable<any> {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Authorization': `Bearer ${this.authToken}`
-      })
-    };
-    // return this.http.get<any>(`${this.baseUrl}api/LpuJournal/GetBooksMasterData`, httpOptions);
-    return this.http.get<any>(`${this.baseUrl}api/LpuJournal/GetAllJournalData`, httpOptions);
+
+    let headers = new HttpHeaders()
+    .set('Authorization', 'Bearer ' + this.authToken)
+    .set('Content-Type', 'application/json');
+    return this.http.get(
+      AUTH_API + 'api/LpuJournal/GetAllJournalData' ,
+      // AUTH_API_LOCAL + 'api/LpuJournal/GetJournalUserDetailsIdWise?Email=' + UserEmail + '&PasswordText=' + secreatKeys + '&UserRole=' + userRole,
+     {headers}
+    );
+    //  let headers = new HttpHeaders()
+    // .set('Authorization', 'Bearer ' + this.authToken)
+    // .set('Content-Type', 'application/json');
+    // return this.http.get(
+    //   AUTH_API + 'api/LpuJournal/GetAllJournalData',
+    //   // AUTH_API_LOCAL + 'api/LpuJournal/GetJournalUserDetailsIdWise?Email=' + UserEmail + '&PasswordText=' + secreatKeys + '&UserRole=' + userRole,
+    //  {headers}
+    // );    
   }
 
   GetBooksDataWithEditorDetails(): Observable<any> {
@@ -130,7 +142,6 @@ export class LpujournalbookService {
 
 
   addJournalData(dataSoft:FormData): Observable<any> {
-    debugger;
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
     .set('Authorization', 'Bearer ' + token)

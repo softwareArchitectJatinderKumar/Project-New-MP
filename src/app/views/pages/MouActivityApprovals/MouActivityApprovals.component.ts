@@ -34,6 +34,7 @@ interface SchoolDivision {
 })
 
 export class MouActivityApprovalsComponent implements OnInit {
+  @ViewChild('viewAllActionTakenUploadedDocumentModal') viewAllActionTakenUploadedDocumentModal: TemplateRef<any>;
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
   @ViewChild('fileInput') fileInput!: ElementRef;
   isLogin: boolean = false;
@@ -50,43 +51,128 @@ export class MouActivityApprovalsComponent implements OnInit {
   ServerUrl: any;
   ResponsiblePerson: any = ''; ColumnMode = ColumnMode; columns: any; headHtmlData: any[] = []; responsiblePerson: string = '';
   searchQuery: any;
-  
+
   DocumentName: string;
 
 
   // added on 5-Feb-26
-     onDownloadFile(remoteUrl: string): void {
-      swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); }});
-  
-      this.mouDocumentsService.downloadMOUFile(remoteUrl).subscribe({
-        next: (blob: Blob) => {
-          const downloadUrl = window.URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = downloadUrl;
-  
-          const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
-          link.download = fileName;
-  
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(downloadUrl);
-  
-          swal.close();
-        },
-        error: async (err) => {
-          swal.close();
-          if (err.error instanceof Blob) {
-            const errorMsg = JSON.parse(await err.error.text());
-            swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+  onDownloadFile(remoteUrl: any): void {
+    // console.log(remoteUrl,'urls data')
+    swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
+
+    this.mouDocumentsService.downloadMOUFile(remoteUrl).subscribe({
+      next: (blob: Blob) => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+
+        const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        swal.close();
+      },
+      error: async (err) => {
+        swal.close();
+        if (err.error instanceof Blob) {
+          const errorMsg = JSON.parse(await err.error.text());
+          swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+        } else {
+          swal.fire('Error', 'Could not connect to the server', 'error');
+        }
+      }
+    });
+  }
+
+  //Ended logic 
+
+
+
+  // added on 27-6-26
+  // view all uploaded Document against Each Project Document
+  AllProjectDocumentUploaded: any[] = [];
+  onDownloadFiles(remoteUrl: any): void {
+    // console.log(remoteUrl,'urls data')
+    swal.fire({ title: 'Downloading...X', didOpen: () => { swal.showLoading(null); } });
+
+    this.mouDocumentsService.downloadMOUFile(remoteUrl.FilePath).subscribe({
+      next: (blob: Blob) => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+
+        const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        swal.close();
+      },
+      error: async (err) => {
+        swal.close();
+        if (err.error instanceof Blob) {
+          const errorMsg = JSON.parse(await err.error.text());
+          swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+        } else {
+          swal.fire('Error', 'Could not connect to the server', 'error');
+        }
+      }
+    });
+  }
+
+
+
+
+  GetAllAllProjectDocumentUploaded(mouId: any) {
+    const formData = new FormData();
+
+    formData.append('MouId', mouId);
+    formData.append('Uid', this.EmployeeCode);
+    formData.append('Action', 'view');
+    this.mouDocumentsService
+      .GetAllActionTakenUploadedDocument(formData)
+      .subscribe({
+        next: (response: any) => {
+          if (response.item1.length > 0) {
+            // keep master copy and apply filters
+            this.AllProjectDocumentUploaded = response.item1;
+            console.log(JSON.stringify(this.AllProjectDocumentUploaded))
+
+            this.dataSource.data = this.AllProjectDocumentUploaded;
+            this.loadingIndicator = false;
+            this.columns = []; this.headHtmlData = [];
+            this.headHtmlData = this.AllProjectDocumentUploaded[0];
+            this.columns = Object.keys(this.AllProjectDocumentUploaded[0]);
+            this.columns = this.columns.filter((item: any) => item !== 'newMouId' && item !== 'filePath' && item != 'mouPartnerName' && item != 'actionApprovalStatus' && item !== 'sessionAcademicYear' && item !== 'mouApprovedByFacultyName' && item !== 'assignedToFacultyName' && item !== 'schoolDivisionInvolved' && item !== 'sessionId' && item !== 'documentUploaded' && item !== 'activityTitle' && item !== 'participantsCount' && item !== 'activityCount' && item !== 'uploadActivityDate' && item !== 'activityStartDate' && item !== 'activityEndDate' && item !== 'authorityRemarks' && item !== 'activityAlloted' && item !== 'mouTitle' && item !== 'mouStartDate' && item !== 'mouStatus' && item !== 'mouEndDate' && item !== 'startDate' && item !== 'endDate' && item !== 'actionAssignedBy' && item !== 'activityDetails' && item !== 'approvalStatus' && item !== 'approvalDate' && item !== 'userRemarks' && item !== 'disapprovalReason' && item !== 'uploadedActionFile' && item !== 'uploadedProofTitle' && item !== 'uid' && item !== 'mouId' && item !== 'id');
+            this.columns.push()
+            this.loadingIndicator = false;
           } else {
-            swal.fire('Error', 'Could not connect to the server', 'error');
+            this.dataSource.data = this.AllProjectDocumentUploaded = [];
+            this.showNoDataFoundMessage = true;
           }
+        },
+        error: err => {
+          this.LoginFailed(err);
         }
       });
-    }
+  }
 
-    //Ended logic 
+  viewAllUploadedDocs(Data: any) {
+    this.GetAllAllProjectDocumentUploaded(Data.mouId);
+    this.modalService.open(this.viewAllActionTakenUploadedDocumentModal, { size: 'lg' }).result.then((result) => {
+      window.location.reload();
+    }).catch((res) => { });
+  }
+
+
+  // Edned logic for 27-6-26
   constructor(
     private lpuPlannerServiceService: LpuPlannerServiceService,
     private storageService: StorageService, private mouDocumentsService: MouDocumentsService,
@@ -96,7 +182,7 @@ export class MouActivityApprovalsComponent implements OnInit {
 
   ngOnInit(): void {
     // this.ServerUrl = 'http://172.19.2.52/umsweb/webftp/MOUDocuments/';
-         
+
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML = '<span class="themeClr"> MOU  </span> Activities <span class="themeClr"> Approvals</span>';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
     this.loadingIndicator = false;
@@ -118,7 +204,7 @@ export class MouActivityApprovalsComponent implements OnInit {
         this.storageService.saveUser(data);
         this.getAllPlannerSession();
         this.GetEmployeeDetails();
-        
+
         (<HTMLInputElement>document.getElementById('stMain')).innerHTML = '<span class="themeClr"> MOU  </span> Activities <span class="themeClr"> Approvals</span>';
         (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
       },
@@ -140,56 +226,56 @@ export class MouActivityApprovalsComponent implements OnInit {
       element.hidden = true;
     }
   }
-// 29-May-25 Logic start 
+  // 29-May-25 Logic start 
 
-selectedSessionId: any = ''; // Default to 'All'
-isLoading: boolean = false;
+  selectedSessionId: any = ''; // Default to 'All'
+  isLoading: boolean = false;
 
-onSessionChange(): void {
-  this.GetAllUploadsDetails(this.selectedSessionId);
-}
+  onSessionChange(): void {
+    this.GetAllUploadsDetails(this.selectedSessionId);
+  }
 
-GetAllUploadsDetails(SessionId: any): void {
-  this.isLoading = true;
-  const minLoadingTime = 2500; // 12.5 seconds
-  const startTime = Date.now();
+  GetAllUploadsDetails(SessionId: any): void {
+    this.isLoading = true;
+    const minLoadingTime = 2500; // 12.5 seconds
+    const startTime = Date.now();
 
-  this.mouDocumentsService.MouActionsTakenData(this.EmployeeCode, SessionId)
-    .pipe(
-      finalize(() => {
-        const elapsed = Date.now() - startTime;
-        const remaining = Math.max(minLoadingTime - elapsed, 0);
-        setTimeout(() => {
-          this.isLoading = false;
-        }, remaining);
-      })
-    )
-    .subscribe({
-      next: response => {
-        if (response.item1 && response.item1.length > 0) {
-          this.MouActivityData = response.item1;
-          this.showNoDataFoundMessage = false;
-          this.dataSource.data = this.MouActivityData;
-          this.filteredMouActivityData = this.MouActivityData;
-          // console.log("Filter Activity data "+ JSON.stringify(this.filteredMouActivityData))
-        } else {
+    this.mouDocumentsService.MouActionsTakenData(this.EmployeeCode, SessionId)
+      .pipe(
+        finalize(() => {
+          const elapsed = Date.now() - startTime;
+          const remaining = Math.max(minLoadingTime - elapsed, 0);
+          setTimeout(() => {
+            this.isLoading = false;
+          }, remaining);
+        })
+      )
+      .subscribe({
+        next: response => {
+          if (response.item1 && response.item1.length > 0) {
+            this.MouActivityData = response.item1;
+            this.showNoDataFoundMessage = false;
+            this.dataSource.data = this.MouActivityData;
+            this.filteredMouActivityData = this.MouActivityData;
+            // console.log("Filter Activity data "+ JSON.stringify(this.filteredMouActivityData))
+          } else {
+            this.MouActivityData = [];
+            this.filteredMouActivityData = [];
+            this.showNoDataFoundMessage = true;
+          }
+        },
+        error: err => {
+          console.error("Error fetching MOU data", err);
           this.MouActivityData = [];
           this.filteredMouActivityData = [];
           this.showNoDataFoundMessage = true;
         }
-      },
-      error: err => {
-        console.error("Error fetching MOU data", err);
-        this.MouActivityData = [];
-        this.filteredMouActivityData = [];
-        this.showNoDataFoundMessage = true;
-      }
-    });
-}
-// 29-May-25 Logic ended 
+      });
+  }
+  // 29-May-25 Logic ended 
 
-// 28-May-25 Logic start 
-  
+  // 28-May-25 Logic start 
+
   allPlannerSessions: any[] = [];
   selectedPlannerSession: any = '0';  // default selected value
   allOBPStaffData: any[] = [];
@@ -198,7 +284,7 @@ GetAllUploadsDetails(SessionId: any): void {
     this.mouDocumentsService.GetAllOBPPlannerSessions().subscribe({
       next: response => {
         if (response.item1) {
-          this.allPlannerSessions = response.item1;           
+          this.allPlannerSessions = response.item1;
         }
       }
     });
@@ -210,7 +296,7 @@ GetAllUploadsDetails(SessionId: any): void {
     this.GetAllUploadsDetails(this.selectedPlannerSession);
   }
 
-// 28-May-25 Logic ended 
+  // 28-May-25 Logic ended 
 
   GetEmployeeDetails(): void {
     this.mouDocumentsService.GetEmployeeDetails().subscribe({
@@ -218,7 +304,7 @@ GetAllUploadsDetails(SessionId: any): void {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
-          this.EmployeeCode = response.item1[0].employeeCode;
+          this.EmployeeCode = '11840';// response.item1[0].employeeCode;
           this.Department = response.item1[0].department;
           this.DepartmentName = response.item1[0].departmentName;
           this.loadingIndicator = false;
@@ -280,26 +366,26 @@ GetAllUploadsDetails(SessionId: any): void {
   //   });
   //   this.GetAllActivities();
   // }
- 
+
   search() {
-   
+
     const query = this.searchQuery.trim().toLowerCase();
     // console.log(JSON.stringify(this.MouActivityData))
     this.filteredMouActivityData = this.MouActivityData.filter(item => {
       return Object.entries(item).some(([key, val]) => {
         if (val !== null && val !== undefined) {
           let valueString = String(val).toLowerCase();
-  
+
           // Special handling for mouid (Numeric & "MOU/x" String Comparison)
           if (key === 'mouId') {
             const numericId = Number(val); // Convert mouid to a number
-            
+
             // Handle cases where user searches with "MOU/x" or just a number
             if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
               return true;
             }
           }
-  
+
           // General search for all other fields
           return valueString.includes(query);
         }
@@ -307,7 +393,7 @@ GetAllUploadsDetails(SessionId: any): void {
       });
     });
   }
-  
+
   allSchoolDivisions: SchoolDivision[] = []; CurrentSchool: any[] = []
 
   GetAllActivities(): void {
@@ -319,7 +405,7 @@ GetAllUploadsDetails(SessionId: any): void {
       }
     });
   }
- 
+
 
   getDivisionNameById(id: number): string {
     const idStr = id.toString();
@@ -344,28 +430,28 @@ GetAllUploadsDetails(SessionId: any): void {
       'Name of Mou Organisation': item.mouPartnerName,
       'MOU Activity Assigned to Uid': item.assignedToFacultyUID,
       'School Division Name': item.schoolDivisionInvolved
-      ? this.getDivisionNamesByIds(item.schoolDivisionInvolved.split(',').map(Number))
-      : 'N/A', // Handle null case
+        ? this.getDivisionNamesByIds(item.schoolDivisionInvolved.split(',').map(Number))
+        : 'N/A', // Handle null case
       'Details of MOU Activity Assigned': item.activityDetails,
       'Start Date of MOU Assigned By HOS': item.activityStartDate,
       'End Date of MOU Assigned By HOS': item.activityEndDate,
       'Detail of Proof Submitted': item.documentUploaded,
-      'Session Academic/ Calender Year': item.sessionAcademicYear?.length> 0 ? item.sessionAcademicYear: 'NA',
-      'Activity Title': item.activityTitle?.length> 0 ? item.activityTitle: 'NA',
-      'Participants Count': item.participantsCount>0 ?item.participantsCount: 'NA' ,
-      'Activity Count': item.activityCount>0? item.activityCount: 'NA',
-      'Uploaded Activity Date': item.uploadActivityDate,       
-      'MOU ApprovalStatus': item.approvalStatus == 'True' ? 'Approved': item.approvalStatus =='False' ? 'Disapproved': 'N/A' ,
-      'MOU Activity Rejection Remarks ': item.disapprovalReason?.length >5 ? item.disapprovalReason: 'N/A' ,
-      'MOU Activity Approval/ Rejection By Faculty Id ': item.mouApprovedByFacultyUID?.length >2 ? item.mouApprovedByFacultyUID: 'N/A' ,
-      'MOU Activity Approval/ Rejection Date ': item.approvalDate?.length >2 ? item.approvalDate: 'N/A' ,
+      'Session Academic/ Calender Year': item.sessionAcademicYear?.length > 0 ? item.sessionAcademicYear : 'NA',
+      'Activity Title': item.activityTitle?.length > 0 ? item.activityTitle : 'NA',
+      'Participants Count': item.participantsCount > 0 ? item.participantsCount : 'NA',
+      'Activity Count': item.activityCount > 0 ? item.activityCount : 'NA',
+      'Uploaded Activity Date': item.uploadActivityDate,
+      'MOU ApprovalStatus': item.approvalStatus == 'True' ? 'Approved' : item.approvalStatus == 'False' ? 'Disapproved' : 'N/A',
+      'MOU Activity Rejection Remarks ': item.disapprovalReason?.length > 5 ? item.disapprovalReason : 'N/A',
+      'MOU Activity Approval/ Rejection By Faculty Id ': item.mouApprovedByFacultyUID?.length > 2 ? item.mouApprovedByFacultyUID : 'N/A',
+      'MOU Activity Approval/ Rejection Date ': item.approvalDate?.length > 2 ? item.approvalDate : 'N/A',
       'Document Uploaded File': item.documentUploadedFile
     }));
     const header = [
       'New MOU Id',
       'Old MOU Id',
       'Name of Mou Organisation',
-      'MOU Activity Assigned to' ,
+      'MOU Activity Assigned to',
       'School Division Name',
       'Details of MOU Activity Assigned',
       'Start Date of MOU Assigned By HOS',
@@ -487,17 +573,17 @@ GetAllUploadsDetails(SessionId: any): void {
   }
 
   Activities: any;
-  Activity: any='';
-  selectedActivityType: string = '';  selectedActivityId: number;  mouActivities: MouActivity[] = []; 
+  Activity: any = '';
+  selectedActivityType: string = ''; selectedActivityId: number; mouActivities: MouActivity[] = [];
 
-  
+
   DownloadFormatDocument(activity: any): void {
-  
+
     if (!activity || !activity.activityDetails) {
       console.error("Invalid activity data.");
       return;
     }
-  
+
     const activityDetailsParts = activity.activityDetails.match(/^(\d+)-/);
     if (!activityDetailsParts) {
       const extractedTitle = activity.activityDetails.split("-")[1]?.trim() || "";
@@ -511,41 +597,41 @@ GetAllUploadsDetails(SessionId: any): void {
       })
       return;
     }
-  
+
     const selectedActivityId = parseInt(activityDetailsParts[1], 10);
     // console.log("Extracted Activity ID:", selectedActivityId);
-  
+
     if (isNaN(selectedActivityId)) {
       // console.error("Invalid extracted Activity ID."+ selectedActivityId);
       return;
     }
-  
+
     // // Find the matching MOU activity by ID
     // const matchedActivity = this.mouActivities.find(mouActivity => mouActivity.id === selectedActivityId);
-  
+
     // if (!selectedActivityId) {
     //   console.warn(`No matching MOU activity found for ID: ${selectedActivityId}`);
     //   return;
     // }
-  
+
     // console.log("Matched MOU Activity:", matchedActivity);
-  
+
     // Generate file URL
     const fileUrl = `assets/MouTemplateDocuments/${selectedActivityId}.zip`;
     // console.log("Generated File URL:", fileUrl);
-  
+
     // Create and trigger the download
     const link = document.createElement('a');
     link.href = fileUrl;
     link.download = `${selectedActivityId}.zip`;
-  
+
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   }
-  
-  
-  
+
+
+
   // DownloadFormatDocument(a: any): void {
   //   console.log(JSON.stringify(a))
   //   // const fileUrl = `assets/MouTemplateDocuments/${this.selectedActivityId}.zip`;
@@ -563,9 +649,9 @@ GetAllUploadsDetails(SessionId: any): void {
   getAllMouActivities(): void {
     this.mouDocumentsService.GetAllMouActivities().subscribe({
       next: response => {
-        if (response.item1 ) {
-          this.Activities = response.item1;  
-           //console.log(JSON.stringify(this.Activities))
+        if (response.item1) {
+          this.Activities = response.item1;
+          //console.log(JSON.stringify(this.Activities))
         }
       }
     })

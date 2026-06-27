@@ -41,94 +41,93 @@ interface SchoolDivision {
 
 })
 export class MouActivityTakeActionComponent implements OnInit {
-//26-6-26 
-// view all uploaded Document against Each Project Document
+  //26-6-26 
+  // view all uploaded Document against Each Project Document
   AllProjectDocumentUploaded: any[] = [];
   OpenSelectFile(a: any) {
     let aa = a;
-    window.open(this.ServerUrl+aa.FilePath, '_blank');
+    window.open(this.ServerUrl + aa.FilePath, '_blank');
     // window.open(aa.FilePath, '_blank');
   }
 
 
- 
+
   GetAllAllProjectDocumentUploaded(mouId: any) {
-      const formData = new FormData();
+    const formData = new FormData();
 
-  formData.append('MouId', mouId);
-  formData.append('Uid', this.EmployeeCode);
-  formData.append('Action', 'view');
-   this.mouDocumentsService
-    .GetAllActionTakenUploadedDocument(formData)
-    .subscribe({
-      next: (response: any) => {
-        if (response.item1.length > 0) {
-          // keep master copy and apply filters
-          this.AllProjectDocumentUploaded = response.item1;
-          console.log(JSON.stringify(this.AllProjectDocumentUploaded))
+    formData.append('MouId', mouId);
+    formData.append('Uid', this.EmployeeCode);
+    formData.append('Action', 'view');
+    this.mouDocumentsService
+      .GetAllActionTakenUploadedDocument(formData)
+      .subscribe({
+        next: (response: any) => {
+          if (response.item1.length > 0) {
+            // keep master copy and apply filters
+            this.AllProjectDocumentUploaded = response.item1;
 
-          this.dataSource.data = this.AllProjectDocumentUploaded;
-          this.loadingIndicator = false;
-          this.columns = []; this.headHtmlData = [];
-          this.headHtmlData = this.AllProjectDocumentUploaded[0];
-          this.columns = Object.keys(this.AllProjectDocumentUploaded[0]);
-          this.columns = this.columns.filter((item: any) => item !== 'newMouId' && item !== 'filePath' && item != 'mouPartnerName' && item != 'actionApprovalStatus' && item !== 'sessionAcademicYear' && item !== 'mouApprovedByFacultyName' && item !== 'assignedToFacultyName' && item !== 'schoolDivisionInvolved' && item !== 'sessionId' && item !== 'documentUploaded' && item !== 'activityTitle' && item !== 'participantsCount' && item !== 'activityCount' && item !== 'uploadActivityDate' && item !== 'activityStartDate' && item !== 'activityEndDate' && item !== 'authorityRemarks' && item !== 'activityAlloted' && item !== 'mouTitle' && item !== 'mouStartDate' && item !== 'mouStatus' && item !== 'mouEndDate' && item !== 'startDate' && item !== 'endDate' && item !== 'actionAssignedBy' && item !== 'activityDetails' && item !== 'approvalStatus' && item !== 'approvalDate' && item !== 'userRemarks' && item !== 'disapprovalReason' && item !== 'uploadedActionFile' && item !== 'uploadedProofTitle' && item !== 'uid' && item !== 'mouId' && item !== 'id');
-          this.columns.push()
-          this.loadingIndicator = false;
-        } else {
-          this.dataSource.data = this.AllProjectDocumentUploaded = [];
-          this.showNoDataFoundMessage = true;
+            this.dataSource.data = this.AllProjectDocumentUploaded;
+            this.loadingIndicator = false;
+            this.columns = []; this.headHtmlData = [];
+            this.headHtmlData = this.AllProjectDocumentUploaded[0];
+            this.columns = Object.keys(this.AllProjectDocumentUploaded[0]);
+            this.columns = this.columns.filter((item: any) => item !== 'newMouId' && item !== 'filePath' && item != 'mouPartnerName' && item != 'actionApprovalStatus' && item !== 'sessionAcademicYear' && item !== 'mouApprovedByFacultyName' && item !== 'assignedToFacultyName' && item !== 'schoolDivisionInvolved' && item !== 'sessionId' && item !== 'documentUploaded' && item !== 'activityTitle' && item !== 'participantsCount' && item !== 'activityCount' && item !== 'uploadActivityDate' && item !== 'activityStartDate' && item !== 'activityEndDate' && item !== 'authorityRemarks' && item !== 'activityAlloted' && item !== 'mouTitle' && item !== 'mouStartDate' && item !== 'mouStatus' && item !== 'mouEndDate' && item !== 'startDate' && item !== 'endDate' && item !== 'actionAssignedBy' && item !== 'activityDetails' && item !== 'approvalStatus' && item !== 'approvalDate' && item !== 'userRemarks' && item !== 'disapprovalReason' && item !== 'uploadedActionFile' && item !== 'uploadedProofTitle' && item !== 'uid' && item !== 'mouId' && item !== 'id');
+            this.columns.push()
+            this.loadingIndicator = false;
+          } else {
+            this.dataSource.data = this.AllProjectDocumentUploaded = [];
+            this.showNoDataFoundMessage = true;
+          }
+        },
+        error: err => {
+          this.LoginFailed(err);
         }
-      },
-      error: err => {
-        this.LoginFailed(err);
-      }
-    });
+      });
   }
 
-  viewAllUploadedDocs(Data:any){
+  viewAllUploadedDocs(Data: any) {
     this.GetAllAllProjectDocumentUploaded(Data.mouId);
-      this.modalService.open(this.viewAllActionTakenUploadedDocumentModal, { size: 'lg' }).result.then((result) => {
+    this.modalService.open(this.viewAllActionTakenUploadedDocumentModal, { size: 'lg' }).result.then((result) => {
       window.location.reload();
     }).catch((res) => { });
   }
-// Added on 24-6-26 
+  // Added on 24-6-26 
 
-isFieldInvalid(control: any): boolean {
-  return !!(
-    control &&
-    control.invalid &&
-    (control.touched || control.dirty)
-  );
-}
-
-
-checkFormsValidity(): void {
-
-  if (
-    this.FacultyActivityStartDate &&
-    this.FacultyActivityEndDate &&
-    new Date(this.FacultyActivityStartDate) >
-      new Date(this.FacultyActivityEndDate)
-  ) {
-
-    swal.fire({
-      title: 'Validation',
-      text: 'Faculty Activity End Date must be greater than or equal to Start Date.',
-      icon: 'warning'
-    });
-
-    this.FacultyActivityEndDate = '';
+  isFieldInvalid(control: any): boolean {
+    return !!(
+      control &&
+      control.invalid &&
+      (control.touched || control.dirty)
+    );
   }
-}
 
-ActivityFileData: any[] = [];
-ActivityFileName: any[] = [];
-ActivityFileStatus: boolean[] = [];
 
-uploadedDocuments: string[] = [];
-allDocumentsUploaded: boolean = false;
-uploadedFileNames: { [key: string]: string } = {};
+  checkFormsValidity(): void {
+
+    if (
+      this.FacultyActivityStartDate &&
+      this.FacultyActivityEndDate &&
+      new Date(this.FacultyActivityStartDate) >
+      new Date(this.FacultyActivityEndDate)
+    ) {
+
+      swal.fire({
+        title: 'Validation',
+        text: 'Faculty Activity End Date must be greater than or equal to Start Date.',
+        icon: 'warning'
+      });
+
+      this.FacultyActivityEndDate = '';
+    }
+  }
+
+  ActivityFileData: any[] = [];
+  ActivityFileName: any[] = [];
+  ActivityFileStatus: boolean[] = [];
+
+  uploadedDocuments: string[] = [];
+  allDocumentsUploaded: boolean = false;
+  uploadedFileNames: { [key: string]: string } = {};
 
   // added Logic on 23-6-26
 
@@ -137,180 +136,180 @@ uploadedFileNames: { [key: string]: string } = {};
   requiredDocumentFiles: File[] = [];
 
 
- 
+
 
   onFileSelectedActivityFile(event: any, index: number): void {
 
-  const target = event.target as HTMLInputElement;
-  const file: File | null = target.files?.[0] || null;
+    const target = event.target as HTMLInputElement;
+    const file: File | null = target.files?.[0] || null;
 
-  if (!file) {
-    this.ActivityFileName[index] = '';
-    this.ActivityFileData[index] = '';
-    this.ActivityFileStatus[index] = false;
-    return;
-  }
-
-  if (file.size > 3148576) {
-    swal.fire({
-      title: 'File size exceeds 3MB. Please upload a smaller file.',
-      text: 'Invalid File size',
-      icon: 'warning'
-    });
-
-    target.value = '';
-    return;
-  }
-
-  let modifiedFile = file;
-  let validFileName = file.name;
-
-  const fileNameRegex = /^[a-zA-Z0-9._-]+$/;
-
-  if (!fileNameRegex.test(file.name)) {
-
-    validFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-
-    modifiedFile = new File(
-      [file],
-      validFileName,
-      { type: file.type }
-    );
-
-    const dataTransfer = new DataTransfer();
-    dataTransfer.items.add(modifiedFile);
-    target.files = dataTransfer.files;
-  }
-
-  const reader = new FileReader();
-
-  reader.onload = () => {
-
-    const result = reader.result as string;
-
-    if (result) {
-
-      const base64Data = result.split(',')[1];
-
-      this.ActivityFileData[index] = base64Data;
-      this.ActivityFileName[index] = validFileName;
-      this.ActivityFileStatus[index] = true;
+    if (!file) {
+      this.ActivityFileName[index] = '';
+      this.ActivityFileData[index] = '';
+      this.ActivityFileStatus[index] = false;
+      return;
     }
-  };
 
-  reader.readAsDataURL(modifiedFile);
-}
+    if (file.size > 3148576) {
+      swal.fire({
+        title: 'File size exceeds 3MB. Please upload a smaller file.',
+        text: 'Invalid File size',
+        icon: 'warning'
+      });
 
-uploadRequiredDocument(documentName: string, index: number) {
+      target.value = '';
+      return;
+    }
 
-  if (
-    !this.ActivityFileData[index] ||
-    !this.ActivityFileName[index]
-  ) {
-    swal.fire({
-      title: 'Please select a file first.',
-      icon: 'warning'
-    });
-    return;
+    let modifiedFile = file;
+    let validFileName = file.name;
+
+    const fileNameRegex = /^[a-zA-Z0-9._-]+$/;
+
+    if (!fileNameRegex.test(file.name)) {
+
+      validFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+
+      modifiedFile = new File(
+        [file],
+        validFileName,
+        { type: file.type }
+      );
+
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(modifiedFile);
+      target.files = dataTransfer.files;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+
+      const result = reader.result as string;
+
+      if (result) {
+
+        const base64Data = result.split(',')[1];
+
+        this.ActivityFileData[index] = base64Data;
+        this.ActivityFileName[index] = validFileName;
+        this.ActivityFileStatus[index] = true;
+      }
+    };
+
+    reader.readAsDataURL(modifiedFile);
   }
 
-  const formData = new FormData();
+  uploadRequiredDocument(documentName: string, index: number) {
 
-  formData.append('DocumentName', documentName);
-  formData.append('MouId', this.mouId);
-  formData.append('Uid', this.EmployeeCode);
-  formData.append('FilePath', this.ActivityFileName[index]);
-  formData.append('FileData', this.ActivityFileData[index]);
-  formData.append('Action', 'Insert');
+    if (
+      !this.ActivityFileData[index] ||
+      !this.ActivityFileName[index]
+    ) {
+      swal.fire({
+        title: 'Please select a file first.',
+        icon: 'warning'
+      });
+      return;
+    }
 
-  this.mouDocumentsService
-    .MouActionTakenDocumentsOperations(formData)
-    .subscribe({
-      next: (response: any) => {
+    const formData = new FormData();
 
-        if (!this.uploadedDocuments.includes(documentName)) {
-          this.uploadedDocuments.push(documentName);
+    formData.append('DocumentName', documentName);
+    formData.append('MouId', this.mouId);
+    formData.append('Uid', this.EmployeeCode);
+    formData.append('FilePath', this.ActivityFileName[index]);
+    formData.append('FileData', this.ActivityFileData[index]);
+    formData.append('Action', 'Insert');
+
+    this.mouDocumentsService
+      .MouActionTakenDocumentsOperations(formData)
+      .subscribe({
+        next: (response: any) => {
+
+          if (!this.uploadedDocuments.includes(documentName)) {
+            this.uploadedDocuments.push(documentName);
+          }
+
+          this.uploadedFileNames[documentName] =
+            this.ActivityFileName[index];
+
+          this.allDocumentsUploaded =
+            this.uploadedDocuments.length ===
+            this.selectedDocuments.length;
+
+          swal.fire({
+            title: 'Success',
+            text: documentName + ' uploaded successfully',
+            icon: 'success'
+          });
+
+        },
+        error: (error: any) => {
+
+          console.error(error);
+
+          swal.fire({
+            title: 'Upload Failed',
+            text: 'Unable to upload document.',
+            icon: 'error'
+          });
         }
+      });
+  }
+  // uploadRequiredDocument(documentName: string, index: number) {
 
-        this.uploadedFileNames[documentName] =
-          this.ActivityFileName[index];
+  //   if (!this.ActivityFileStatus ||
+  //       !this.ActivityFileData ||
+  //       !this.ActivityFileName) {
 
-        this.allDocumentsUploaded =
-          this.uploadedDocuments.length ===
-          this.selectedDocuments.length;
+  //     swal.fire({
+  //       title: 'Please select a file first.',
+  //       icon: 'warning'
+  //     });
 
-        swal.fire({
-          title: 'Success',
-          text: documentName + ' uploaded successfully',
-          icon: 'success'
-        });
+  //     return;
+  //   }
 
-      },
-      error: (error: any) => {
+  //   const formData = new FormData();
 
-        console.error(error);
+  //   formData.append('DocumentName', documentName);
+  //   formData.append('MouId', this.mouId);
+  //   formData.append('Uid', this.EmployeeCode);
+  //   formData.append('FilePath', this.ActivityFileName);
+  //   formData.append('FileData', this.ActivityFileData);
+  //   formData.append('Action', 'Insert');
 
-        swal.fire({
-          title: 'Upload Failed',
-          text: 'Unable to upload document.',
-          icon: 'error'
-        });
-      }
-    });
-}
-// uploadRequiredDocument(documentName: string, index: number) {
+  //   console.log('DocumentName:', documentName);
+  //   console.log('FilePath:', this.ActivityFileName);
+  //   console.log('FileData Length:', this.ActivityFileData?.length);
 
-//   if (!this.ActivityFileStatus ||
-//       !this.ActivityFileData ||
-//       !this.ActivityFileName) {
+  //   this.mouDocumentsService
+  //     .MouActionTakenDocumentsOperations(formData)
+  //     .subscribe({
+  //       next: (response: any) => {
 
-//     swal.fire({
-//       title: 'Please select a file first.',
-//       icon: 'warning'
-//     });
+  //         swal.fire({
+  //           title: 'Success',
+  //           text: documentName + ' uploaded successfully',
+  //           icon: 'success'
+  //         });
 
-//     return;
-//   }
+  //       },
+  //       error: (error: any) => {
 
-//   const formData = new FormData();
+  //         console.error(error);
 
-//   formData.append('DocumentName', documentName);
-//   formData.append('MouId', this.mouId);
-//   formData.append('Uid', this.EmployeeCode);
-//   formData.append('FilePath', this.ActivityFileName);
-//   formData.append('FileData', this.ActivityFileData);
-//   formData.append('Action', 'Insert');
+  //         swal.fire({
+  //           title: 'Upload Failed',
+  //           text: 'Unable to upload document.',
+  //           icon: 'error'
+  //         });
 
-//   console.log('DocumentName:', documentName);
-//   console.log('FilePath:', this.ActivityFileName);
-//   console.log('FileData Length:', this.ActivityFileData?.length);
+  //       }
+  //     });
+  // }
 
-//   this.mouDocumentsService
-//     .MouActionTakenDocumentsOperations(formData)
-//     .subscribe({
-//       next: (response: any) => {
-
-//         swal.fire({
-//           title: 'Success',
-//           text: documentName + ' uploaded successfully',
-//           icon: 'success'
-//         });
-
-//       },
-//       error: (error: any) => {
-
-//         console.error(error);
-
-//         swal.fire({
-//           title: 'Upload Failed',
-//           text: 'Unable to upload document.',
-//           icon: 'error'
-//         });
-
-//       }
-//     });
-// }
- 
   // added on 17-06-26
 
 
@@ -1077,17 +1076,17 @@ uploadRequiredDocument(documentName: string, index: number) {
 
   UploadActivity(form: NgForm) {
 
-  if (form.invalid) {
+    if (form.invalid) {
 
-    swal.fire({
-      title: 'Validation',
-      text: 'Please complete all mandatory fields.',
-      icon: 'warning'
-    });
+      swal.fire({
+        title: 'Validation',
+        text: 'Please complete all mandatory fields.',
+        icon: 'warning'
+      });
 
-    return;
-  }
- 
+      return;
+    }
+
     const formData = new FormData();
     formData.append('MouId', this.mouId);
     formData.append('Uid', this.EmployeeCode);
