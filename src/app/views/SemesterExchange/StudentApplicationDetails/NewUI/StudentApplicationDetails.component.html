@@ -7,15 +7,12 @@
 </div>
 
 <!-- ── Main Page ─────────────────────────────────────────── -->
-<div class="app-details-page" id="StudentDashboard"
-     *ngIf="!isLoginFailed; else ErrorTemplate">
+<div class="app-details-page" id="StudentDashboard" *ngIf="!isLoginFailed; else ErrorTemplate">
 
   <!-- Sticky Action Bar -->
   <div class="action-bar no-print">
     <div class="action-bar-side">
-      <button class="btn-action btn-dashboard"
-              (click)="DashboardVisit()"
-              aria-label="Return to Dashboard">
+      <button class="btn-action btn-dashboard" (click)="DashboardVisit()" aria-label="Return to Dashboard">
         <i class="bi bi-arrow-left-circle" aria-hidden="true"></i> Dashboard
       </button>
     </div>
@@ -26,10 +23,8 @@
     </div>
 
     <div class="action-bar-side right">
-      <button class="btn-action btn-print"
-              (click)="printDetails()"
-              [disabled]="!isReadyForPrint"
-              aria-label="Print application details">
+      <button class="btn-action btn-print" (click)="printDetails()" [disabled]="!isReadyForPrint"
+        aria-label="Print application details">
         <i class="bi bi-printer" aria-hidden="true"></i> Print
       </button>
     </div>
@@ -79,18 +74,15 @@
         </div>
 
         <!-- Student Photo -->
-        <div class="profile-photo"
-             role="img"
-             [attr.aria-label]="studentProfile?.studentName ? studentProfile!.studentName + ' photo' : 'Student photo'">
+        <div class="profile-photo" role="img"
+          [attr.aria-label]="studentProfile?.studentName ? studentProfile!.studentName + ' photo' : 'Student photo'">
           <ng-container *ngIf="isImageLoading">
             <div class="photo-loading">
               <div class="spinner-ring-sm"></div>
             </div>
           </ng-container>
           <ng-container *ngIf="!isImageLoading">
-            <img *ngIf="studentImage"
-                 [src]="studentImage"
-                 alt="Student photo" />
+            <img *ngIf="studentImage" [src]="studentImage" alt="Student photo" />
             <div class="photo-placeholder" *ngIf="!studentImage" aria-hidden="true">
               <i class="bi bi-person-fill"></i>
             </div>
@@ -100,59 +92,58 @@
       </div>
     </div>
 
-    <!-- ── Application Data Sections ─────────────────────── -->
-    <!-- <ng-container *ngFor="let section of filteredSections; trackBy: trackBySection">
+
+    <ng-container *ngFor="let section of filteredSections; trackBy: trackBySection">
       <div class="section-card" role="region" [attr.aria-label]="section.label">
         <div class="section-header">
           <i class="bi" [ngClass]="sectionIcons[section.label] || 'bi-info-circle'" aria-hidden="true"></i>
           {{ section.label }}
         </div>
+
         <div class="section-body">
-          <div class="row g-3">
-            <div class="col-md-4 col-sm-6"
-                 *ngFor="let key of section.keys; trackBy: trackByKey">
-              <div class="detail-field">
-                <div class="detail-label">{{ labelFor(key) }}</div>
-                <div class="detail-value"
-                     [class.is-empty]="displayValue(key) === 'N/A'"
-                     [class.accepted]="key === 'acceptPolicy' && displayValue(key) === 'Accepted'"
-                     [class.not-accepted]="key === 'acceptPolicy' && displayValue(key) !== 'Accepted'">
-                  {{ displayValue(key) }}
+
+          <!-- Passport Applied -->
+          <ng-container
+            *ngIf="section.label === 'Passport Details' && displayValue('passportStatus')?.toLowerCase() === 'applied'; else normalSection">
+
+            <div class="row g-3">
+              <div class="col-md-4 col-sm-6">
+                <div class="detail-field">
+                  <div class="detail-label">Passport Status</div>
+                  <div class="detail-value">
+                    {{ displayValue('passportStatus') }}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </ng-container> -->
-    <ng-container *ngFor="let section of filteredSections; trackBy: trackBySection">
-  <div class="section-card" role="region" [attr.aria-label]="section.label">
-    <div class="section-header">
-      <i class="bi" [ngClass]="sectionIcons[section.label] || 'bi-info-circle'" aria-hidden="true"></i>
-      {{ section.label }}
-    </div>
-    
-    <div class="section-body">
-      <div *ngIf="section.label === 'Passport Details' && isPassportMissing()" class="p-3 text-muted fst-italic">
-        <i class="bi bi-info-circle me-2"></i> Passport details are Not Available.
-      </div>
 
-      <div class="row g-3" *ngIf="!(section.label === 'Passport Details' && isPassportMissing())">
-        <div class="col-md-4 col-sm-6" *ngFor="let key of section.keys; trackBy: trackByKey">
-          <div class="detail-field" *ngIf="shouldShowField(key)">
-            <div class="detail-label">{{ labelFor(key) }}</div>
-            <div class="detail-value"
-                 [class.is-empty]="displayValue(key) === 'N/A' || displayValue(key) === 'Not Available'"
-                 [class.accepted]="key === 'acceptPolicy' && displayValue(key) === 'Accepted'"
-                 [class.not-accepted]="key === 'acceptPolicy' && displayValue(key) !== 'Accepted'">
-              {{ displayValue(key) }}
+          </ng-container>
+
+          <!-- All other sections + Passport Yes -->
+          <ng-template #normalSection>
+            <div class="row g-3">
+              <div class="col-md-4 col-sm-6" *ngFor="let key of section.keys; trackBy: trackByKey">
+
+                <div class="detail-field" *ngIf="shouldShowField(key)">
+                  <div class="detail-label">
+                    {{ labelFor(key) }}
+                  </div>
+
+                  <div class="detail-value"
+                    [class.is-empty]="displayValue(key) === 'N/A' || displayValue(key) === 'Not Available'"
+                    [class.accepted]="key === 'acceptPolicy' && displayValue(key) === 'Accepted'"
+                    [class.not-accepted]="key === 'acceptPolicy' && displayValue(key) !== 'Accepted'">
+                    {{ displayValue(key) }}
+                  </div>
+
+                </div>
+              </div>
             </div>
-          </div>
+          </ng-template>
+
         </div>
       </div>
-    </div>
-  </div>
-</ng-container>
+    </ng-container>
 
     <!-- ── Uploaded Documents ─────────────────────────────── -->
     <div class="section-card" role="region" aria-label="Uploaded Documents">
@@ -162,8 +153,7 @@
       </div>
       <div class="section-body">
         <div class="row g-3">
-          <div class="col-md-4 col-sm-6"
-               *ngFor="let doc of documentUploads; trackBy: trackByDocKey">
+          <div class="col-md-4 col-sm-6" *ngFor="let doc of documentUploads; trackBy: trackByDocKey">
             <div class="doc-card">
               <div class="doc-icon" aria-hidden="true">
                 <i class="bi" [ngClass]="doc.icon"></i>
@@ -171,10 +161,8 @@
               <div class="doc-meta">
                 <div class="doc-label">{{ doc.label }}</div>
                 <ng-container *ngIf="application?.[doc.key]; else noUpload">
-                  <a class="doc-link"
-                     [href]="serverUrl + application![doc.key]"
-                     target="_blank"
-                     [attr.aria-label]="'View uploaded ' + doc.label">
+                  <a class="doc-link" [href]="serverUrl + application![doc.key]" target="_blank"
+                    [attr.aria-label]="'View uploaded ' + doc.label">
                     <i class="bi bi-eye" aria-hidden="true"></i> View
                   </a>
                 </ng-container>

@@ -301,47 +301,7 @@ export class StudentApplicationDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ── Private — display-value pre-computation ────────────────
 
-  /**
-   * Builds key → display-string map after form is patched.
-   * Template reads are O(1) property lookups — no .get() calls at render time.
-   */
-  // private buildDisplayValues(): Record<string, string> {
-  //   const map: Record<string, string> = {
-  //     relativeNotApplicable: 'No relative abroad on record.',
-  //     acceptPolicy: this.studentForm.get('acceptPolicy')?.value ? 'Accepted' : 'Not Accepted',
-  //   };
-
-  //   const allKeys = new Set(FORM_SECTIONS.flatMap(s => [...s.keys]));
-  //   for (const key of allKeys) {
-  //     if (!(key in map)) {
-  //       map[key] = String(this.studentForm.get(key)?.value || 'N/A');
-  //     }
-  //   }
-  //   return map;
-  // }
-
-  //   private buildDisplayValues(): Record<string, string> {
-  //   const map: Record<string, string> = {
-  //     relativeNotApplicable: 'No relative abroad on record.',
-  //     acceptPolicy: this.studentForm.get('acceptPolicy')?.value ? 'Accepted' : 'Not Accepted',
-  //     passportStatus: 'Not Available',
-  //   };
-
-  //   const allKeys = new Set(FORM_SECTIONS.flatMap(s => [...s.keys]));
-  //   for (const key of allKeys) {
-  //     if (key === 'isSelfFunded') {
-  //       const val = this.fv('isSelfFunded').toLowerCase();
-  //       // Logic: If it matches Parent list, display as 'Parents', else 'Others'
-  //       map[key] = PARENT_SPONSOR_TYPES.has(val) ? 'Parents' : 'Others';
-  //     } else if (!(key in map)) {
-  //       map[key] = String(this.studentForm.get(key)?.value || 'N/A');
-  //     }
-  //   }
-  //   return map;
-  // }
-  // Add this helper to your component for cleaner template checks
 
 
 
@@ -382,12 +342,20 @@ export class StudentApplicationDetailsComponent implements OnInit, OnDestroy {
         continue;
       }
 
-      if (key === 'passportNumber' || key === 'passportIssueDate' || key === 'passportValidUpto') {
-        const pNo = this.fv('passportNumber');
-        const pIssue = this.fv('passportIssueDate');
-        const pValid = this.fv('passportValidUpto');
-        const isMissing = (v: string) => !this.hasMeaningfulValue(v);
-        map[key] = (isMissing(pNo) || isMissing(pIssue) || isMissing(pValid)) ? 'Not Available' : this.fv(key);
+      if (
+        ['passportNo', 'passportIssueDate', 'passportValidUpto'].includes(key)
+      ) {
+        const passportStatus = this.fv('passportStatus').toLowerCase();
+
+ 
+        // These fields are hidden when passport is Applied
+        if (passportStatus === 'applied') {
+          map[key] = '';
+        } else {
+          map[key] = this.hasMeaningfulValue(this.fv(key))
+            ? this.fv(key)
+            : 'N/A';
+        }
         continue;
       }
 
@@ -540,22 +508,27 @@ export class StudentApplicationDetailsComponent implements OnInit, OnDestroy {
   // }
 
   private filterPassportSection(section: FormSection): FormSection {
-    const isEmpty = (v: string) => !v || v.toLowerCase() === 'na' || v.toLowerCase() === 'not applicable';
 
-    const passportNo = this.fv('passportNo');
-    const issueDate = this.fv('passportIssueDate');
-    const validUpto = this.fv('passportValidUpto');
-
-    // Check if all primary passport details are missing
-    const isPassportMissing = isEmpty(passportNo) || isEmpty(issueDate) || isEmpty(validUpto);
-
-    if (isPassportMissing) {
-      // Return only the section label, or a specific "Not Available" key
-      return { ...section, keys: ['passportStatus'] };
+    const passportStatus = this.fv('passportStatus').toLowerCase().trim();
+ 
+    // Passport already available
+    if (passportStatus === 'yes') {
+      return { ...section };
     }
 
-    // Return all keys if data is present
-    return { ...section };
+    // Passport applied but not received yet
+    if (passportStatus === 'applied') {
+      return {
+        ...section,
+        keys: ['passportStatus']
+      };
+    }
+
+    // Passport not available / default
+    return {
+      ...section,
+      keys: ['passportStatus']
+    };
   }
   // ── Private — utilities ────────────────────────────────────
 
