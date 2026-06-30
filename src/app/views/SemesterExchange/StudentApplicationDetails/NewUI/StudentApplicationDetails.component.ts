@@ -72,6 +72,8 @@ export class StudentApplicationDetailsComponent implements OnInit, OnDestroy {
   sectionCode = '';
   schoolId = '';
   gradeFCount = 0;
+  cgPA: any;
+  ApprovedUniversity: any;
 
   studentImage = '';
   folderUrl = '';
@@ -266,6 +268,9 @@ export class StudentApplicationDetailsComponent implements OnInit, OnDestroy {
           if (appResponse.item1.length > 0) {
             this.application = appResponse.item1[0] as ApplicationData;
             this.hydrateForm(this.application);
+            this.cgPA= this.application['cgpa'];
+            this.ApprovedUniversity= this.application['approvedUniversity']
+
             // Both derived structures depend on form values — build once here
             this.filteredSections = this.buildFilteredSections();
             this.displayValues = this.buildDisplayValues();

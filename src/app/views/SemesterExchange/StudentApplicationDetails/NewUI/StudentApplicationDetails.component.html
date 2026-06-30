@@ -76,6 +76,14 @@
             <span class="pr-label">Program : Section</span>
             <span class="pr-value">{{ programCode }} : {{ sectionCode }}</span>
           </div>
+          <div class="profile-row">
+            <span class="pr-label">CGPA</span>
+            <span class="pr-value"> {{ cgPA }}</span>
+          </div>
+          <div class="profile-row">
+            <span class="pr-label">University Approved</span>
+            <span class="pr-value"> {{ ApprovedUniversity?.length>0? ApprovedUniversity: ' Pending '  }}</span>
+          </div>
         </div>
 
         <!-- Student Photo -->

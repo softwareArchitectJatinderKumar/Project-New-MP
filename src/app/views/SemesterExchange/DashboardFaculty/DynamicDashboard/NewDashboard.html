@@ -105,14 +105,15 @@
             [scrollbarH]="true">
 
             <!-- Common columns -->
-            <ngx-datatable-column name="App. ID" prop="applicationId" [width]="80"></ngx-datatable-column>
+            <!-- <ngx-datatable-column name="App. ID" prop="applicationId" [width]="80"></ngx-datatable-column> -->
             <ngx-datatable-column name="Student Name" prop="studentName" [width]="80"></ngx-datatable-column>
             <ngx-datatable-column name="Reg. No" prop="registrationNo" [width]="80"></ngx-datatable-column>
             <ngx-datatable-column name="Contact No" prop="phoneNumber" [width]="80"></ngx-datatable-column>
             <ngx-datatable-column name="CGPA" prop="cgpa" [width]="80"></ngx-datatable-column>
             <ngx-datatable-column name="UploadedDocumentCount" prop="uploadedDocumentCount"
                 [width]="80"></ngx-datatable-column>
-            <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="115"></ngx-datatable-column>
+            <!-- <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="115"></ngx-datatable-column> -->
+            <ngx-datatable-column name="Approved University" prop="approvedUniversity"  [width]="60"></ngx-datatable-column>       
 
             <ngx-datatable-column name="Faculty" [width]="80">
                 <ng-template let-row="row" ngx-datatable-cell-template>
@@ -216,15 +217,15 @@
             [rows]="FilterAllFacultyApplications | roleFilter:'_isFaculty'" [loadingIndicator]="loadingIndicator"
             [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10" [headerHeight]="80" [rowHeight]="'auto'"
             [scrollbarH]="true">
-
-            <ngx-datatable-column name="App. ID" prop="applicationId" [width]="80"></ngx-datatable-column>
+            <!-- <ngx-datatable-column name="App. ID" prop="applicationId" [width]="80"></ngx-datatable-column> -->
             <ngx-datatable-column name="Student Name" prop="studentName" [width]="80"></ngx-datatable-column>
             <ngx-datatable-column name="Reg. No" prop="registrationNo" [width]="80"></ngx-datatable-column>
             <ngx-datatable-column name="CGPA" prop="cgpa" [width]="80"></ngx-datatable-column>
             <ngx-datatable-column name="UploadedDocumentCount" prop="uploadedDocumentCount"
                 [width]="80"></ngx-datatable-column>
             <ngx-datatable-column name="Contact No" prop="phoneNumber" [width]="80"></ngx-datatable-column>
-            <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="80"></ngx-datatable-column>
+            <!-- <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="80"></ngx-datatable-column> -->
+            <ngx-datatable-column name="Approved University" prop="approvedUniversity"  [width]="60"></ngx-datatable-column>       
 
             <ngx-datatable-column name="Counselling Status" [width]="130">
                 <ng-template let-row="row" ngx-datatable-cell-template>
@@ -262,7 +263,7 @@
                         <i class="bi bi-pencil-square me-1"></i>Add Remarks
                     </button> -->
                     <!-- b) Submit Evaluation Remarks — was missing for Faculty (req #2) -->
-                    <button class="btn btn-secondary btn-sm me-1 mb-1" [disabled]="hasAnyERemarks(row)"
+                    <button class="btn btn-secondary btn-sm me-1 mb-1" 
                         (click)="UploadEvaluationRemarks(row, 'Faculty')">
                         <i class="bi bi-clipboard-check me-1"></i>Submit Evaluation
                     </button>
@@ -357,8 +358,8 @@
                 <ngx-datatable-column name="UploadedDocumentCount" prop="uploadedDocumentCount"
                     [width]="80"></ngx-datatable-column>
                 <ngx-datatable-column name="Contact No" prop="phoneNumber" [width]="60"></ngx-datatable-column>
-                <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="60"></ngx-datatable-column>
-                <!-- <ngx-datatable-column name="Approved University" prop="approvedUniversity"  [width]="60"></ngx-datatable-column>            -->
+                <!-- <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="60"></ngx-datatable-column> -->
+                <ngx-datatable-column name="Approved University" prop="approvedUniversity"  [width]="60"></ngx-datatable-column>           
 
                 <ngx-datatable-column name="Faculty" [width]="160">
                     <ng-template let-row="row" ngx-datatable-cell-template>
@@ -429,12 +430,20 @@
                             <i class="bi bi-clipboard-check me-1"></i>Submit Evaluation
                         </button>
                         <!-- c) Accept -->
-                        <button type="button" class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)"
-                            [disabled]="row.isLocked ">
-                            <i class="bi bi-check-circle me-1"></i>Accept
+                           <button type="button" class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)" [disabled]="
+                                                  (
+                                                    ['notrequired', 'applied', 'notgiven'].includes((row.englishTestType || '').toLowerCase()) &&
+                                                    row.uploadedStageIDocumentCount < 6
+                                                  ) ||
+                                                  (
+                                                   ['appeared', 'given'].includes((row.englishTestType || '').toLowerCase())  &&
+                                                    row.uploadedStageIDocumentCount < 7
+                                                  )
+                                                ">
+                            <i class="bi bi-check-circle me-1"></i>
+                            Accept
                         </button>
-                        <!-- /* [disabled]="row.approvedUniversity!='null'" */ -->
-                        <!-- /* [disabled]="approvalLabel(row.isApproved) !== 'Pending'"> */ -->
+                   
                         <!-- d) Reject -->
                         <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)">
                             <i class="bi bi-x-circle me-1"></i>Reject
@@ -485,8 +494,8 @@
                 <ngx-datatable-column name="UploadedDocumentCount" prop="uploadedDocumentCount"
                     [width]="80"></ngx-datatable-column>
                 <ngx-datatable-column name="Contact No" prop="phoneNumber" [width]="110"></ngx-datatable-column>
-                <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="115"></ngx-datatable-column>
-
+                <!-- <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="115"></ngx-datatable-column> -->
+                <ngx-datatable-column name="Approved University" prop="approvedUniversity"  [width]="60"></ngx-datatable-column>       
                 <ngx-datatable-column name="Counselling Status" [width]="130">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <span class="badge"
@@ -586,15 +595,15 @@
                 [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
                 [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true">
 
-                <ngx-datatable-column name="App. ID" prop="applicationId" [width]="80"></ngx-datatable-column>
+                <!-- <ngx-datatable-column name="App. ID" prop="applicationId" [width]="80"></ngx-datatable-column> -->
                 <ngx-datatable-column name="Student Name" prop="studentName" [width]="80"></ngx-datatable-column>
                 <ngx-datatable-column name="Reg. No" prop="registrationNo" [width]="80"></ngx-datatable-column>
                 <ngx-datatable-column name="CGPA" prop="cgpa" [width]="80"></ngx-datatable-column>
                 <ngx-datatable-column name="UploadedDocumentCount" prop="uploadedDocumentCount"
                     [width]="80"></ngx-datatable-column>
                 <ngx-datatable-column name="Contact No" prop="phoneNumber" [width]="110"></ngx-datatable-column>
-                <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="115"></ngx-datatable-column>
-
+                <!-- <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="115"></ngx-datatable-column> -->
+                <ngx-datatable-column name="Approved University" prop="approvedUniversity"  [width]="60"></ngx-datatable-column>       
 
 
                 <ngx-datatable-column name="Counselling Status" [width]="130">
@@ -704,15 +713,15 @@
                 [rows]="AllHOWApplications | roleFilter:'_isHoW'" [loadingIndicator]="loadingIndicator"
                 [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10" [headerHeight]="80"
                 [rowHeight]="'auto'" [scrollbarH]="true">
-
-                <ngx-datatable-column name="App. ID" prop="applicationId" [width]="80"></ngx-datatable-column>
+                <ngx-datatable-column name="Approved University" prop="approvedUniversity"  [width]="60"></ngx-datatable-column>       
+                <!-- <ngx-datatable-column name="App. ID" prop="applicationId" [width]="80"></ngx-datatable-column> -->
                 <ngx-datatable-column name="Student Name" prop="studentName" [width]="80"></ngx-datatable-column>
                 <ngx-datatable-column name="Reg. No" prop="registrationNo" [width]="80"></ngx-datatable-column>
                 <ngx-datatable-column name="CGPA" prop="cgpa" [width]="80"></ngx-datatable-column>
                 <ngx-datatable-column name="UploadedDocumentCount" prop="uploadedDocumentCount"
                     [width]="80"></ngx-datatable-column>
                 <ngx-datatable-column name="Contact No" prop="phoneNumber" [width]="110"></ngx-datatable-column>
-                <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="115"></ngx-datatable-column>
+                <!-- <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="115"></ngx-datatable-column> -->
                 <ngx-datatable-column name="Approval Status" prop="isLocked" [width]="115">
 
                     <ng-template let-row="row" ngx-datatable-cell-template>
@@ -755,17 +764,27 @@
                             <i class="bi bi-clipboard-check me-1"></i>Submit Evaluation
                         </button>
                         <!-- d) Accept -->
-                        <button type="button" class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)"
-                            [disabled]="approvalLabel(row.isApproved) === 'Rejected' || row.isLocked=='True' || row.isLocked=='1' || row.isLocked=='0' || row.isLocked=='false'">
-                            <i class="bi bi-check-circle me-1"></i>Accept
+                        <!-- [disabled]="approvalLabel(row.isApproved) === 'Rejected' || row.isLocked=='True' || row.isLocked=='1' || row.isLocked=='0' || row.isLocked=='false'"> -->
+                        <button type="button" class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)" [disabled]="
+                                                  (
+                                                    ['not required', 'applied', 'not given'].includes((row.englishTestType || '').toLowerCase()) &&
+                                                    row.uploadedStageIDocumentCount < 6
+                                                  ) ||
+                                                  (
+                                                    (row.englishTestType || '').toLowerCase() === 'given' &&
+                                                    row.uploadedStageIDocumentCount < 7
+                                                  )
+                                                ">
+                            <i class="bi bi-check-circle me-1"></i>
+                            Accept
                         </button>
                         <!-- d) Reject -->
                         <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)"
                             [disabled]="approvalLabel(row.isApproved) === 'Rejected' || row.isLocked=='True' || row.isLocked=='1' || row.isLocked=='0' || row.isLocked=='false'">
                             <i class="bi bi-x-circle me-1"></i>Reject
                         </button>
-                    </ng-template>
-                </ngx-datatable-column>
+                        </ng-template>
+                        </ngx-datatable-column>
             </ngx-datatable>
         </div>
         <div *ngIf="howActiveTab === 'allApproved'">
@@ -777,14 +796,15 @@
                 [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
                 [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true">
 
-                <ngx-datatable-column name="App. ID" prop="applicationId" [width]="80"></ngx-datatable-column>
+                <!-- <ngx-datatable-column name="App. ID" prop="applicationId" [width]="80"></ngx-datatable-column> -->
+                 <ngx-datatable-column name="Approved University" prop="approvedUniversity"  [width]="60"></ngx-datatable-column>       
                 <ngx-datatable-column name="Student Name" prop="studentName" [width]="80"></ngx-datatable-column>
                 <ngx-datatable-column name="Reg. No" prop="registrationNo" [width]="110"></ngx-datatable-column>
                 <ngx-datatable-column name="CGPA" prop="cgpa" [width]="80"></ngx-datatable-column>
                 <ngx-datatable-column name="UploadedDocumentCount" prop="uploadedDocumentCount"
                     [width]="80"></ngx-datatable-column>
                 <ngx-datatable-column name="Contact No" prop="phoneNumber" [width]="110"></ngx-datatable-column>
-                <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="115"></ngx-datatable-column>
+                <!-- <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="115"></ngx-datatable-column> -->
 
 
 
@@ -1021,7 +1041,7 @@
                         <i class="bi bi-clipboard-data me-1"></i>
                         <span class="fw-semibold">
                             Evaluation By #{{ i + 1 }}
-                            <span *ngIf="selectedRemarksEvaluations.length > 1" class="ms-1  small">
+                            <span *ngIf="selectedRemarksEvaluations.length > 0" class="ms-1  small">
                                 ({{ evalRow.dealingUId || 'Unknown evaluator' }})
                             </span>
                         </span>

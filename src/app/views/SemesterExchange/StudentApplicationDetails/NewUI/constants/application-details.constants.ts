@@ -7,6 +7,7 @@ import { DocumentUpload, FormSection } from '../models/application-details.model
 
 // ── Server ────────────────────────────────────────────────────
 export const SERVER_URL = 'https://files.lpu.in/umsweb/DIA/SemesterExchangedocuments/';
+// export const SERVER_URL = 'http://172.19.2.52/umsweb/DIA/SemesterExchangedocuments/';
 
 // ── Section definitions ───────────────────────────────────────
 export const FORM_SECTIONS: ReadonlyArray<FormSection> = [

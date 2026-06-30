@@ -37,6 +37,8 @@ export interface GradeRecord {
   readonly officialCode?: string;
   readonly section?:      string;
   readonly schoolId?:     string;
+  readonly cgpa?:     string;
+  readonly approvedUniversity?:     string;
 }
 
 /**

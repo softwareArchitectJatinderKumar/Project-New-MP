@@ -60,6 +60,10 @@ interface Application {
   universityOption3: string;
   uploadedDocumentCount: string;
   cgpa: string;
+  approvedUniversity: string;
+  uploadedStageIDocumentCount : any;
+  uploadedStageIIDocumentCount : any;
+  englishTestType: any;
 
   // ── Runtime flags set by enrichAndFilterApplications() ──────────────────
   _isCounsellor: boolean;
@@ -142,12 +146,14 @@ interface AggregatedRemarks {
 })
 export class DynamicDashboardComponent implements OnInit {
 
+  uploadedStageIDocumentCount: any; uploadedStageIIDocumentCount: any;
+  isEnglishDocumentUploaded: any; EnglishTestType: any;
   FilterAllHOWApplications: Application[] = [];
   searchQueryMyHod: any;
   searchMyHod() {
 
     const query = this.searchQueryMyHod.trim().toLowerCase();
-    // console.log(JSON.stringify(this.MouActivityData))
+    
     this.FilterAllHOWApplications = this.AllHOWApplications.filter(item => {
       return Object.entries(item).some(([key, val]) => {
         if (val !== null && val !== undefined) {
@@ -306,7 +312,6 @@ export class DynamicDashboardComponent implements OnInit {
           const msg = data?.item1?.[0]?.msg;
 
           if (msg === 'Approved') {
-
             Swal.fire(
               'Success!',
               'Application accepted successfully!',
@@ -585,8 +590,8 @@ export class DynamicDashboardComponent implements OnInit {
       next: response => {
         this.AllApplications = Array.isArray(response?.item1) ? response.item1 : [];
 
-        this.AllFacultyApplications = this.FilterAllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | ''; }) => app.dealingFaculty == this.EmployeeCode);
-        this.AllAuthorityApplications = this.FilterAllAuthorityApplications = response.item1.filter((app: { dealingAuthority: string | ''; }) => app.dealingAuthority == this.EmployeeCode);
+        this.AllFacultyApplications = this.FilterAllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | '',isForwardtoHOD: string | '' ; }) => app.dealingFaculty == this.EmployeeCode );
+        this.AllAuthorityApplications = this.FilterAllAuthorityApplications = response.item1.filter((app: { dealingAuthority: string | '',  dealingFaculty: string | ''; }) => app.dealingAuthority == this.EmployeeCode && app.dealingFaculty==null);
 
         this.AllHODApplications = this.FilterAllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | ''; isLocked: string | ''; isApproved: string | ''; }) => app.dealingHODId == this.EmployeeCode && app.isForwardtoHOD == '1' && app.isLocked != 'True' && app.isLocked != 'False');
 
@@ -624,7 +629,18 @@ export class DynamicDashboardComponent implements OnInit {
     ).subscribe({
       next: response => {
         this.hodAllApplications = Array.isArray(response?.item1) ? response.item1 : [];
-        this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0);
+
+        console.log(this.hodAllApplications)
+        //  this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) =>app.approvedUniversity?.trim().length > 0 );
+
+         this.AllApprovedApplications = response.item1.filter(
+  (app: { approvedUniversity: string | null }) =>
+    app.approvedUniversity &&
+    app.approvedUniversity !== 'null' &&
+    app.approvedUniversity.trim().length > 0
+);
+        // this.AllApprovedApplications = response.item1.filter((app: { isLocked: any, isApproved: any ; }) => app.isLocked=='True' || app.isApproved=='True');
+        console.log(JSON.stringify(this.AllApprovedApplications))
         this.cd.detectChanges();
       },
       error: err => this.LoginFailed(err),
@@ -656,6 +672,9 @@ export class DynamicDashboardComponent implements OnInit {
       this.UniversityOption1 = this.normalise(app.universityOption1);
       this.UniversityOption2 = this.normalise(app.universityOption2);
       this.UniversityOption3 = this.normalise(app.universityOption3);
+      this.uploadedStageIDocumentCount = this.normalise(app.uploadedStageIDocumentCount);
+      this.uploadedStageIIDocumentCount = this.normalise(app.uploadedStageIIDocumentCount);
+      this.EnglishTestType = this.normalise(app.englishTestType);
 
       // Counsellor row: DealingAuthority === empCode
       //   AND not acting as HOD or HoW on this same row
@@ -1229,6 +1248,7 @@ export class DynamicDashboardComponent implements OnInit {
       x => x.registrationNo === row.registrationNo
     ) ?? [];
 
+    console.log(JSON.stringify(allRows)+ 'Remarks all ')
     // First row drives the shared header fields (counselling, HOD, HoW etc.)
     const first = allRows[0];
 

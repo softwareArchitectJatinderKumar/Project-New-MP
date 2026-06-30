@@ -55,7 +55,8 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
   DealingFacultyName = ''; CounsellingAuthorityName = '';
   LockedStatus = false;
   isApprovedApplication = false;
-  activeMainTab: 'application' | 'stage1' | 'stage2' | 'course' = 'application';
+  // activeMainTab: 'application' | 'stage1' | 'stage2' | 'course' = 'stage1';
+  activeMainTab: 'stage1' | 'stage2'  = 'stage1';
   CounsellingAuthority: any; DealingHodId: any; DealingFaculty: any;
   ApprovedUniversity: string;
   IsApproved: string | number | boolean | null | undefined;
@@ -146,7 +147,8 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     if (this.LockedStatus || this.LockedStatus==null) {
     return;
   }
-    if (step >= 1 && step <= 4 && (this.LockedStatus ? this.activeMainTab === 'application' : this.currentStep === step)) {
+    if (step >= 1 && step <= 4 &&  this.currentStep === step) {
+    // if (step >= 1 && step <= 4 && (this.LockedStatus ? this.activeMainTab === 'application' : this.currentStep === step)) {
       if (this.LockedStatus && !this.canEditApplication) return;
       this.isEditingStep[step] = true;
       this.form.enable();
@@ -220,9 +222,10 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     }
   }
 
-  setMainTab(tab: 'application' | 'stage1' | 'stage2' | 'course'): void {
-    if (tab === 'stage2' && !this.showStage2Tab) return;
-    if (tab === 'course' && !this.showCourseTab) return;
+  setMainTab(tab:  'stage1'  | 'stage2' ): void {
+  // setMainTab(tab: 'application' | 'stage1' | 'stage2' | 'course'): void {
+    // if (tab === 'stage2' && !this.showStage2Tab) return;
+    // if (tab === 'course' && !this.showCourseTab) return;
     if (this.isEditingStep.some((e, i) => e && i >= 1 && i <= 4)) {
       Swal.fire('Please Update or Cancel', 'Save or cancel changes before switching tabs.', 'warning');
       return;
@@ -438,6 +441,8 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
       });
   }
   ApprovalRemarks: any;
+  canEditApplications:any; // 30-6-26
+
   private getApplicationDetails(regNo: string): void {
     this.isLoading = true;
     this.studentService.getStudentDetailsBYId(regNo)
@@ -454,10 +459,12 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
           // this.isApprovedValue(
           //   this.readAppFlag(app, 'isApproved', 'IsApproved'),
           // );
-          this.activeMainTab = 'application';
+          this.activeMainTab = 'stage1';
 
           this.stuApplication = app;
           this.studentStatus = app.isLocked === 'True'  ? 'Approved' : app.isLocked === 'False' ? 'Rejected' : 'Pending';
+          this.canEditApplications = this.studentStatus === 'Rejected';
+
           this.ApprovalRemarks = app.approvalRemarks;
           this.ApplicationId = app.applicationId;
           this.EmailId = app.emailId ?? '';
