@@ -59,6 +59,8 @@ interface Application {
   universityOption2: string;
   universityOption3: string;
   uploadedDocumentCount: string;
+  uploadedStageIDocumentCount: string;
+  uploadedStageIIDocumentCount: string;
   cgpa: string;
 
   // ── Runtime flags set by enrichAndFilterApplications() ──────────────────

@@ -13,85 +13,85 @@ const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
 })
 export class PlanningrankingService {
 
-  constructor(private http: HttpClient, private storageService: StorageService) { }
+  constructor(private http: HttpClient,private storageService: StorageService) {}
 
 
   getwinglist(): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-      .set('Authorization', 'Bearer ' + token)
-      .set('Content-Type', 'application/json');
+    .set('Authorization', 'Bearer ' + token)
+    .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
     return this.http.get(
       AUTH_API + 'api/Planning/GetWingListPlanningRanking',
-      { headers }
+     {headers}
     );
   }
 
-  getplannerScoreRankingCalculation(data: any): Observable<any> {
+  getplannerScoreRankingCalculation(data:any): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-      .set('Authorization', 'Bearer ' + token)
-      .set('Content-Type', 'application/json');
+    .set('Authorization', 'Bearer ' + token)
+    .set('Content-Type', 'application/json'); 
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
-
+    
     return this.http.post(
-      AUTH_API + 'api/Planning/GetPlannerScoreRankingCalculation', data,
-      { headers }
+      AUTH_API + 'api/Planning/GetPlannerScoreRankingCalculation',data,
+     {headers}
     );
   }
 
-  GetHeadMappings(): Observable<any> {
-    let token = this.storageService.getUser();
-    let headers = new HttpHeaders()
+    GetHeadMappings(): Observable<any> {
+      let token = this.storageService.getUser();
+      let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + token)
-      .set('Content-Type', 'application/json');
+      .set('Content-Type', 'application/json'); 
+  
+      //httpOptions.headers.set('Authentication', 'Bearer ' + token);
+      return this.http.get(
+        AUTH_API_LOCAL + 'api/Planning/GetHeadMappingWithAssistant',
+       {headers}
+      );
+    }
 
-    //httpOptions.headers.set('Authentication', 'Bearer ' + token);
-    return this.http.get(
-      AUTH_API_LOCAL + 'api/Planning/GetHeadMappingWithAssistant',
-      { headers }
-    );
-  }
-
-  InsertHeadMapping(data: FormData): Observable<any> {
-    let token = this.storageService.getUser();
-    let headers = new HttpHeaders()
-      // .set('Authorization', 'Bearer ' + authToken)
-      .set('Authorization', 'Bearer ' + token)
-    return this.http.post(
-      AUTH_API_LOCAL + 'api/Planning/InsertHeadMapping',
-      data,
-      { headers }
-    );
-  }
-  updateRecord(data: FormData): Observable<any> {
-    let token = this.storageService.getUser();
-    let headers = new HttpHeaders()
-      // .set('Authorization', 'Bearer ' + authToken)
-      .set('Authorization', 'Bearer ' + token)
-    return this.http.post(
-      AUTH_API_LOCAL + 'api/Planning/UpdateHeadMapping',
-      data,
-      { headers }
-    );
-  }
-  deleteRecord(RecordId: FormData): Observable<any> {
-    let token = this.storageService.getUser();
-    let headers = new HttpHeaders()
-      // .set('Authorization', 'Bearer ' + authToken)
-      .set('Authorization', 'Bearer ' + token)
-    // return this.http.post(`${AUTH_API_LOCAL}api/Planning/ChangeStatusHeadMapping?RecordId=${RecordId}`, headers);
-    return this.http.post(
-      AUTH_API_LOCAL + 'api/Planning/ChangeStatusHeadMapping',
-      RecordId,
-      { headers }
-    );
-  }
-
-  apiCallgetMetricMasterDetails(): Observable<any> {
+    InsertHeadMapping(data: FormData): Observable<any> {
+       let token = this.storageService.getUser();
+          let headers = new HttpHeaders()
+            // .set('Authorization', 'Bearer ' + authToken)
+            .set('Authorization', 'Bearer ' + token)
+          return this.http.post(
+             AUTH_API_LOCAL + 'api/Planning/InsertHeadMapping',
+            data,
+            { headers }
+          ); 
+    }
+    updateRecord(data: FormData): Observable<any> {
+       let token = this.storageService.getUser();
+          let headers = new HttpHeaders()
+            // .set('Authorization', 'Bearer ' + authToken)
+            .set('Authorization', 'Bearer ' + token)
+          return this.http.post(
+             AUTH_API_LOCAL + 'api/Planning/UpdateHeadMapping',
+            data,
+            { headers }
+          ); 
+    }
+    deleteRecord(RecordId:FormData): Observable<any> {
+       let token = this.storageService.getUser();
+          let headers = new HttpHeaders()
+            // .set('Authorization', 'Bearer ' + authToken)
+            .set('Authorization', 'Bearer ' + token)
+            // return this.http.post(`${AUTH_API_LOCAL}api/Planning/ChangeStatusHeadMapping?RecordId=${RecordId}`, headers);
+          return this.http.post(
+             AUTH_API_LOCAL + 'api/Planning/ChangeStatusHeadMapping',
+            RecordId,
+            { headers }
+          ); 
+    }
+  
+    apiCallgetMetricMasterDetails(): Observable<any> {
     var authToken = this.storageService.getUser();
     let headers = new HttpHeaders()
       // .set('Authorization', 'Bearer ' + authToken)
@@ -101,47 +101,47 @@ export class PlanningrankingService {
       { headers }
     );
   }
-  getMetricMasterDetails(): Observable<any> {
-    let token = this.storageService.getUser();
-    let headers = new HttpHeaders()
+    getMetricMasterDetails(): Observable<any> {
+      let token = this.storageService.getUser();
+      let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + token)
-    // .set('Content-Type', 'application/json'); 
-
-    //httpOptions.headers.set('Authentication', 'Bearer ' + token);
-    return this.http.get(
-      AUTH_API_LOCAL + 'api/Planning/GetMetricMasterDetails',
-      { headers }
-    );
-  }
-
-  getCriteriaMasterDetails(): Observable<any> {
-    let token = this.storageService.getUser();
-    let headers = new HttpHeaders()
+      // .set('Content-Type', 'application/json'); 
+  
+      //httpOptions.headers.set('Authentication', 'Bearer ' + token);
+      return this.http.get(
+        AUTH_API_LOCAL + 'api/Planning/GetMetricMasterDetails',
+       {headers}
+      );
+    }
+ 
+    getCriteriaMasterDetails(): Observable<any> {
+      let token = this.storageService.getUser();
+      let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + token)
-      .set('Content-Type', 'application/json');
+      .set('Content-Type', 'application/json'); 
 
-    //httpOptions.headers.set('Authentication', 'Bearer ' + token);
-    return this.http.get(
-      AUTH_API + 'api/Planning/GetCriteriaMasterDetails',
-      { headers }
-    );
-  }
-  getKeyIndicatorMasterDetails(): Observable<any> {
-    let token = this.storageService.getUser();
-    let headers = new HttpHeaders()
+      //httpOptions.headers.set('Authentication', 'Bearer ' + token);
+      return this.http.get(
+        AUTH_API + 'api/Planning/GetCriteriaMasterDetails',
+       {headers}
+      );
+    } 
+    getKeyIndicatorMasterDetails(): Observable<any> {
+      let token = this.storageService.getUser();
+      let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + token)
-      .set('Content-Type', 'application/json');
+      .set('Content-Type', 'application/json'); 
 
-    //httpOptions.headers.set('Authentication', 'Bearer ' + token);
-    return this.http.get(
-      AUTH_API + 'api/Planning/GetIndicatorMasterDetails',
-      { headers }
-    );
-  }
+      //httpOptions.headers.set('Authentication', 'Bearer ' + token);
+      return this.http.get(
+        AUTH_API + 'api/Planning/GetIndicatorMasterDetails',
+       {headers}
+      );
+    }
 
 
   FetchObpMetricDetails(MetricId: any): Observable<any> {
-    var authToken = this.storageService.getUser();
+   var authToken = this.storageService.getUser();
     const httpOptions = {
       headers: new HttpHeaders({
         // 'Authorization': `Bearer ${authToken}`
@@ -149,8 +149,10 @@ export class PlanningrankingService {
       })
     };
     return this.http.get<any>(AUTH_API + 'api/Planning/GetObpMetricDetails?MetricId=' + MetricId, httpOptions);
-    //https://localhost:7125/api/LpuObpAutomation/GetObpMetricDetails?MetricId=990
+      //https://localhost:7125/api/LpuObpAutomation/GetObpMetricDetails?MetricId=990
+    
   }
+
 }
 
 

@@ -10,6 +10,7 @@ import { StorageService } from 'src/app/_services/storage.service';
 import * as XLSX from 'xlsx';
 import { UntypedFormBuilder } from '@angular/forms';
 import swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 import { Title } from '@angular/platform-browser';
 import { Observable, BehaviorSubject, combineLatest, of } from 'rxjs';
 import { map, tap, catchError, take } from 'rxjs/operators';
@@ -48,6 +49,269 @@ interface PlannerSession {
     styleUrls: ['./HeadMappingWithAssistant.scss']
 })
 export class OBPMetricBinding implements OnInit {
+    // start 29-6-26
+
+  fileName: string = 'Sample_file_blank_Format.xlsx';
+  filePath: string = `assets/Uploads/${this.fileName}`;
+  file: any;
+  uploadedDataRaw: any[] = [];
+  uploadedDataForDisplay: any[] = [];
+  validationErrors: string[] = [];
+  errorCells: { rowIndex: number, cellIndex: number }[] = [];
+  createdBy: any;
+    
+      // Excel Upload Logic
+      onFileChange(event: any): void {
+        if (event.target.files.length > 0) {
+          this.file = event.target.files[0];
+          if (this.file) {
+            this.readExcelFile(this.file);
+          }
+        }
+      }
+    
+      readExcelFile(file: any) {
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          const data = e.target.result;
+          const workbook = XLSX.read(data, { type: 'binary' });
+          const sheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[sheetName];
+          this.uploadedDataRaw = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+    
+          this.processUploadedDataForDisplay(this.uploadedDataRaw);
+          this.validateData();
+        };
+        reader.readAsArrayBuffer(file);
+      }
+    
+      processUploadedDataForDisplay(rawData: any[]) {
+        if (!rawData || rawData.length === 0) {
+          this.uploadedDataForDisplay = [];
+          return;
+        }
+    
+        // Copy headers
+        this.uploadedDataForDisplay = [rawData[0]];
+    
+        // Process rows, starting from the second row (index 1)
+        for (let i = 1; i < rawData.length; i++) {
+          const row = [...rawData[i]];
+    
+          this.uploadedDataForDisplay.push(row);
+        }
+      }
+    
+    
+  validateData() {
+    this.validationErrors = [];
+    this.errorCells = [];
+
+    if (!this.uploadedDataRaw || this.uploadedDataRaw.length <= 1) return;
+
+    this.uploadedDataRaw.forEach((row: any, rowIndex: number) => {
+      if (rowIndex === 0) return; // Skip header row
+      const errorMessages: string[] = [];
+      const assignedToUID = row[2]?.toString()?.trim();
+      const targetValueType = row[4]?.toString()?.trim()?.toUpperCase();
+      const baseValue = Number(row[5]);
+
+      // --- AssignedToUID validation ---
+      if (!assignedToUID) {
+        errorMessages.push('AssignedToUID is required');
+        this.errorCells.push({ rowIndex, cellIndex: 2 });
+      } else if (assignedToUID.length !== 5) {
+        errorMessages.push('AssignedToUID must be exactly 5 characters long');
+        this.errorCells.push({ rowIndex, cellIndex: 2 });
+      }
+
+      // --- TargetValueType validation ---
+      if (!targetValueType || !['P', 'N'].includes(targetValueType)) {
+        errorMessages.push("TargetValueType must be either 'P' or 'N'");
+        this.errorCells.push({ rowIndex, cellIndex: 4 });
+      }
+
+      // --- BaseValue validation based on TargetValueType ---
+      if (targetValueType === 'P') {
+        if (isNaN(baseValue) || baseValue === null || baseValue === undefined || baseValue <= 0) {
+          errorMessages.push('Base Value is required and must be greater than zero when TargetValueType = P');
+          this.errorCells.push({ rowIndex, cellIndex: 5 });
+        }
+      }
+      // For TargetValueType = 'N', BaseValue is not required — no validation needed
+
+      // --- TotalTargetValue numeric validation (example for completeness) ---
+      const totalTargetValue = Number(row[3]);
+      if (isNaN(totalTargetValue)) {
+        errorMessages.push('Total Target Value must be a valid number');
+        this.errorCells.push({ rowIndex, cellIndex: 3 });
+      }
+
+      // --- Optional: Validate Q1–Q4 numeric values ---
+      for (let i = 6; i <= 9; i++) {
+        if (row[i] !== null && row[i] !== undefined && row[i] !== '') {
+          if (isNaN(Number(row[i]))) {
+            errorMessages.push(`Q${i - 5} Target Value must be a number`);
+            this.errorCells.push({ rowIndex, cellIndex: i });
+          }
+        }
+      }
+
+      // Store validation result for the row
+      if (errorMessages.length > 0) {
+        this.validationErrors[rowIndex] = errorMessages.join(', ');
+      }
+    });
+  }
+
+  hasErrors(): boolean {
+    return this.validationErrors.some(error => error.length > 0);
+  }
+
+  isError(rowIndex: number, cellIndex: number): boolean {
+    return this.errorCells.some(errorCell => errorCell.rowIndex === rowIndex && errorCell.cellIndex === cellIndex);
+  }
+
+
+
+
+  confirmUpload() {
+    if (this.hasErrors()) {
+      Swal.fire('Validation Error', 'Please correct the errors in the uploaded data before confirming.', 'error');
+      return;
+    }
+    this.Upload();
+  }
+  responses: any;
+Upload() {
+    // 1. Set component's loading indicator (if used in template)
+    this.loadingIndicator = true; 
+    const startTime = new Date().getTime();
+    // 2. Show SweetAlert2 Loading Spinner immediately
+    Swal.fire({
+        title: 'Uploading Data...',
+        text: 'Please wait, your entries are being processed.',
+        allowOutsideClick: false, // Prevent closing by clicking outside
+        didOpen: () => {
+            // Swal.showLoading(btn); // Show the built-in SweetAlert2 spinner
+        }
+    });
+
+    // ... (Your XML construction logic remains the same) ...
+
+    var xmlString = '<dataset><data>';
+    for (var i = 1; i < this.uploadedDataRaw.length; i++) {
+        var element = this.uploadedDataRaw[i];
+        var row = "<row>";
+        // ... (rest of row construction)
+        row += "<MetricId>" + this.getPropertyByIndex(element, 0) + "</MetricId>";
+        row += "<MetricDescription>" + this.getPropertyByIndex(element, 1) + "</MetricDescription>";
+        row += "<AssignedToUID>" + this.getPropertyByIndex(element, 2) + "</AssignedToUID>";
+        row += "<TotalTargetValue>" + this.getPropertyByIndex(element, 3) + "</TotalTargetValue>";
+        row += "<TargetValueType>" + this.getPropertyByIndex(element, 4) + "</TargetValueType>";
+        row += "<BaseValue>" + this.getPropertyByIndex(element, 5) + "</BaseValue>";
+        row += "<Q1TargetValue>" + this.getPropertyByIndex(element, 6) + "</Q1TargetValue>";
+        row += "<Q2TargetValue>" + this.getPropertyByIndex(element, 7) + "</Q2TargetValue>";
+        row += "<Q3TargetValue>" + this.getPropertyByIndex(element, 8) + "</Q3TargetValue>";
+        row += "<Q4TargetValue>" + this.getPropertyByIndex(element, 9) + "</Q4TargetValue>";
+        row += "<AllocatedBy>" + this.getPropertyByIndex(element, 10) + "</AllocatedBy>";
+        row += "<Remarks>" + this.getPropertyByIndex(element, 11) + "</Remarks>";
+        row += "</row>";
+        xmlString += row;
+    }
+    xmlString += '</data></dataset>';
+
+    var obj = {
+        LeftTransferDataXml: xmlString,
+        EntryBy: this.createdBy
+    };
+   const elapsed = new Date().getTime() - startTime;
+  //       // --- CHANGE 2500 to 25 ---
+        const remainingDelay = Math.max(5500 - elapsed, 0); // Changed from 2500 to 25
+
+        setTimeout(() => {
+            this.loadingIndicator = false;
+        }, remainingDelay);
+    //CreateLeftTransferDataUsingExcelSheet
+    // this.ObpAutoAssignService.CreateLeftTransferDataUsingExcelSheet(obj).subscribe({
+    //     next: (response) => {
+    //         // 3. Hide the loading spinner before showing the result message
+    //         Swal.close(); 
+
+    //         if (response.item1.length > 0) {
+    //             this.responses = response.item1[0];
+    //             const returnData = this.responses.returnData;
+    //             let messageTitle = '';
+    //             let messageText = this.responses.returnData;
+    //             let icon: 'success' | 'error' = 'error'; // Default to error
+
+    //             if (returnData === 'success') {
+    //                 messageTitle = 'Upload Successful! 🎉';
+    //                 icon = 'success';
+    //             } else if (returnData === 'Failed') {
+    //                 messageTitle = 'Upload Failed 🚫';
+    //                 messageText = 'All Entries are Duplicate, Not Inserted.';
+    //             } else if (returnData === '-1') {
+    //                  messageTitle = 'Something went Wrong ❌';
+    //                  messageText = 'An unexpected error occurred during processing.';
+    //             }
+
+    //             Swal.fire({
+    //                 title: messageTitle,
+    //                 text: messageText,
+    //                 icon: icon
+    //             }).then(() => {
+    //                 // This block executes after the user closes the SweetAlert
+    //                 window.location.reload();
+    //             });
+    //         } else {
+    //              // Handle case where item1 is empty but no API error occurred
+    //             Swal.fire({
+    //                 title: 'Processing Complete',
+    //                 text: 'No specific success or failure data returned.',
+    //                 icon: 'warning'
+    //             }).then(() => {
+    //                 window.location.reload();
+    //             });
+    //         }
+    //     },
+    //     error: (err) => {
+    //         // 4. Hide the loading spinner on API error
+    //         Swal.close(); 
+            
+    //         // 5. Show an error message for the HTTP request itself
+    //         swal.fire({
+    //             title: 'API Request Error 🚨',
+    //             text: 'Could not connect to the server or a network error occurred.',
+    //             icon: 'error'
+    //         }).then(() => {
+    //             window.location.reload();
+    //         });
+    //     },
+    //     complete: () => {
+          
+             
+    //     }
+    // });
+
+    // 7. Remove the old setTimeout logic completely
+}
+
+   
+
+
+
+  getPropertyByIndex(obj: any, index: number): any {
+    if (obj && Array.isArray(obj) && obj.length > index) {
+      return obj[index];
+    }
+    return '';
+  }
+
+
+
+    // ended Logic on 29-6-26
+
     SchoolIndex: number = 0;
     DepartmentIndex: number = 0;
     SchoolInvolved: any;
@@ -81,8 +345,7 @@ export class OBPMetricBinding implements OnInit {
         return metric ? metric.description : `ID ${idStr} not found`;
     }
 
-
-     getDateDisplay(date: any): string {
+    getDateDisplay(date: any): string {
         if (!date) return '';
         try {
             const dateObj = new Date(date);
@@ -91,7 +354,6 @@ export class OBPMetricBinding implements OnInit {
             return date;
         }
     }
-
 
     // Logic End 19-Nov
     changeResponsiblePlanned(event: any) {
@@ -189,8 +451,7 @@ export class OBPMetricBinding implements OnInit {
         private authService: AuthService, private storageService: StorageService,
         private title: Title
     ) { }
-
- // Planner Session related properties
+    // Planner Session related properties
     allPlannerSessions: PlannerSession[] = [];
     selectedPlannerSession: PlannerSession | null = null;
     selectedSessionId: number | null = null;
@@ -278,19 +539,14 @@ export class OBPMetricBinding implements OnInit {
         }
         return null;
     }
-
-
-
     ngOnInit(): void {
         this.initForm();
         let loginName = this.route.snapshot.params['loginName'];
         if (loginName != '' && loginName != undefined) {
             this.getToken(loginName);
+            this.GetAllPlannerSessionWithType();
         }
     }
-    
-
-
     GetEmployeeData(): void {
         this.mouDocumentsService.GetEmployeeData().subscribe({
             next: response => {
@@ -313,7 +569,7 @@ export class OBPMetricBinding implements OnInit {
                 if (!this.storageService.isLoggedIn() || authToken === 'Token Expired') {
                     this.LoginFailed('Token Expired');
                 }
-                this.GetAllPlannerSessionWithType();
+
                 this.GetAllEventsData();
                 this.GetEmployeeData();
                 this.GetAllActivities();
@@ -429,6 +685,9 @@ export class OBPMetricBinding implements OnInit {
             HeadUID: [null, [Validators.required, Validators.pattern('^[0-9]+$')]],
             AssistantUID: [null, [Validators.required, Validators.pattern('^[0-9]+$')]],
             MetricId: [null, [Validators.required, Validators.pattern('^[0-9]+$')]],
+            StartDate: [null],
+            EndDate: [null],
+            PlannerSession: [null],
             Type: ['PA', Validators.required],
             SchoolId: ['']
         });
@@ -594,6 +853,9 @@ export class OBPMetricBinding implements OnInit {
         const schoolDivisionIDs = this.selectedDivisions.join(','); // Get comma-separated string for submission
         if (this.isUpdateMode && this.currentEditId !== null) {
             const MformData = new FormData();
+            MformData.append('StartDate', formData.StartDate); // Added on 29-6-26
+            MformData.append('EndDate', formData.EndDate);// Added on 29-6-26
+            MformData.append('PlannerSession', formData.SessionId);// Added on 29-6-26
             MformData.append('HeadUID', String(this.AssignedToUid));
             MformData.append('AssistantUID', String(this.AssistantUid));
             MformData.append('MetricId', String(formData.MetricId));
@@ -638,6 +900,9 @@ export class OBPMetricBinding implements OnInit {
             if ('IsActive' in payload) delete payload.IsActive;
 
             const MformData = new FormData();
+            MformData.append('StartDate', formData.StartDate); // Added on 29-6-26
+            MformData.append('EndDate', formData.EndDate);// Added on 29-6-26
+            MformData.append('PlannerSession', formData.SessionId);// Added on 29-6-26
             MformData.append('HeadUID', this.AssignedToUid);
             MformData.append('AssistantUID', formData.AssistantUID);
             MformData.append('MetricId', formData.MetricId);
@@ -967,12 +1232,9 @@ export class OBPMetricBinding implements OnInit {
 
         return names.join(', ');
     }
-
-      getSessionDisplay(sessionId: number | null | undefined): string {
+    getSessionDisplay(sessionId: number | null | undefined): string {
         if (!sessionId) return '';
         const session = this.allPlannerSessions.find(s => s.id === sessionId);
         return session ? `${session.sessionName} (${session.sessionType})` : `ID ${sessionId}`;
     }
-
-
 }
