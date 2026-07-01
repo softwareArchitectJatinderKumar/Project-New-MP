@@ -1,0 +1,149 @@
+<div class="pending-application">
+
+  <!-- Top-level nav tabs -->
+  <div class="col-md-12 grid-margin stretch-card mb-3">
+    <div class="card step-indicator-card">
+      <div class="card-body py-3 px-4">
+        <div class="nav nav-tabs d-flex justify-content-center flex-wrap gap-2 border-0">
+          <button type="button" class="btn" [class.active]="activeTab === 'application'" [disabled]="isSwitching"
+            (click)="setTab('application')">My Application</button>
+          <button type="button" class="btn" [class.active]="activeTab === 'stage1'" [disabled]="isSwitching"
+            (click)="setTab('stage1')">Stage I Documents</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transition loader: shown while moving between wizard steps or nav tabs -->
+  <div *ngIf="isSwitching" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2 text-muted small">Loading...</p>
+  </div>
+
+  <ng-container *ngIf="!isSwitching">
+
+    <!-- My Application: step-by-step wizard -->
+    <div *ngIf="activeTab === 'application'">
+
+      <div class="col-md-12 grid-margin stretch-card mb-3">
+        <div class="card step-indicator-card">
+          <div class="card-body py-3 px-4">
+            <div class="step-track">
+              <ng-container *ngFor="let label of stepLabels; let i = index">
+                <div class="step-item" [style.cursor]="i < currentStep ? 'pointer' : 'default'" (click)="goToStep(i)">
+                  <div class="step-bubble" [class.done]="i < currentStep" [class.current]="i === currentStep"
+                    [class.future]="i > currentStep">
+                    <span *ngIf="i < currentStep">&#10003;</span>
+                    <span *ngIf="i >= currentStep">{{ i + 1 }}</span>
+                  </div>
+                  <span class="step-name" [class.done]="i < currentStep" [class.current]="i === currentStep"
+                    [class.future]="i > currentStep">
+                    {{ label }}
+                  </span>
+                </div>
+                <div *ngIf="i < stepLabels.length - 1" class="step-connector" [class.done]="i < currentStep"
+                  [class.future]="i >= currentStep"></div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 0: Academic -->
+      <div class="col-md-12 grid-margin stretch-card mb-3" [hidden]="currentStep !== 0">
+        <div class="card">
+          <div class="card-body">
+            <div class="step-nav-bar">
+              <button type="button" class="btn btn-primary" (click)="nextStep()">Next &rarr;</button>
+            </div>
+            <div class="col-md-12 col-lg-10 mx-auto">
+              <div class="card section">
+                <div class="card-header">Academic Information</div>
+                <div class="card-body">
+                  <div class="row mt-2">
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Student Name</label>
+                      <input type="text" class="form-control" [value]="studentName" readonly />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Registration Number</label>
+                      <input type="text" class="form-control" [value]="registrationNo" readonly />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Program</label>
+                      <input type="text" class="form-control" [value]="courseName" readonly />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Current Year</label>
+                      <input type="text" class="form-control" [value]="currentYear" readonly />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Overall Score</label>
+                      <input type="text" class="form-control" [value]="cgpa" readonly />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Program Code</label>
+                      <input type="text" class="form-control" [value]="programCode" readonly />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Section</label>
+                      <input type="text" class="form-control" [value]="sectionCode" readonly />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Current Term</label>
+                      <input type="text" class="form-control" [value]="currentTerm" readonly />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section [hidden]="currentStep !== 1">
+        <app-step-contact [form]="form" [isEditing]="isEditingStep[1]" [isSubmitted]="isSubmitted" [countries]="countries"
+          [isLocked]="false" [hideBackNext]="false" [isValid]="isValid1"
+          (editClick)="editClick.emit(1)" (cancelClick)="cancelClick.emit(1)" (updateClick)="updateClick.emit(1)"
+          (nextClick)="nextStep()" (prevClick)="prevStep()">
+        </app-step-contact>
+      </section>
+
+      <section [hidden]="currentStep !== 2">
+        <app-step-university [form]="form" [isEditing]="isEditingStep[2]" [isSubmitted]="isSubmitted" [uniData]="uniData"
+          [isLocked]="false" [hideBackNext]="false" [isValid]="isValid2"
+          (editClick)="editClick.emit(2)" (cancelClick)="cancelClick.emit(2)" (updateClick)="updateClick.emit(2)"
+          (nextClick)="nextStep()" (prevClick)="prevStep()">
+        </app-step-university>
+      </section>
+
+      <section [hidden]="currentStep !== 3">
+        <app-step-details [form]="form" [isEditing]="isEditingStep[3]" [isSubmitted]="isSubmitted" [countries]="countries"
+          [isLocked]="false" [hideBackNext]="false" [isValid]="isValid3"
+          (editClick)="editClick.emit(3)" (cancelClick)="cancelClick.emit(3)" (updateClick)="updateClick.emit(3)"
+          (nextClick)="nextStep()" (prevClick)="prevStep()">
+        </app-step-details>
+      </section>
+
+      <section [hidden]="currentStep !== 4">
+        <app-step-documents [stuApplication]="stuApplication" [isEditing]="isEditingStep[4]" [isLocked]="false"
+          [hideBackNext]="false" [localServerUrl]="localServerUrl"
+          (editClick)="editClick.emit(4)" (cancelClick)="cancelClick.emit(4)" (submitClick)="submitClick.emit()"
+          (fileSelected)="fileSelected.emit($event)" (prevClick)="prevStep()">
+        </app-step-documents>
+      </section>
+
+    </div>
+
+    <!-- Stage I Documents -->
+    <div *ngIf="activeTab === 'stage1'">
+      <stage-1-Documents [stuApplication]="stuApplication" [stagesDetail]="stagesDetail" [localServerUrl]="localServerUrl"
+        (fileSelected)="fileSelected.emit($event)">
+      </stage-1-Documents>
+    </div>
+
+  </ng-container>
+
+</div>

@@ -14,7 +14,7 @@ export class StepDocumentsComponent {
   @Input() isLocked = false;
   @Input() localServerUrl = '';
   @Input() hideBackNext = false;
-  @Input() studentStatus : string = "pending";
+
   @Output() fileSelected = new EventEmitter<FileSelectedEvent>();
   @Output() editClick = new EventEmitter<void>();
   @Output() cancelClick = new EventEmitter<void>();

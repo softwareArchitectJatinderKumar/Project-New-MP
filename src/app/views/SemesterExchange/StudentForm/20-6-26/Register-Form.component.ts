@@ -323,13 +323,20 @@ export class RegisterFormcomponent implements OnInit {
         error: err => this.LoginFailed(err)
       });
   }
+StageIDocuments: any; StageIIDocuments: any; LockedStatus: any;   ApprovedUniversity: any;
 
   private checkApplicationStatusBeforeEligibility(): void {
     this.servicesSM.getApplicationDetailsBYId(this.RegistrationNo)     
       .subscribe({
         next: (response) => {
           const stuApplication = response.item1?.[0];
+          console.log(JSON.stringify(stuApplication)+'Application details ')
           this.ApplicationID = stuApplication?.applicationId;
+          this.StageIDocuments = stuApplication?.stageIDocuments;
+          this.StageIIDocuments = stuApplication?.stageIIDocuments;
+          this.LockedStatus = stuApplication?.lockedStatus;
+          this.ApprovedUniversity = stuApplication?.approvedUniversity;
+
 
           if (+(this.ApplicationID) > 0) {
             this.stopLoader();

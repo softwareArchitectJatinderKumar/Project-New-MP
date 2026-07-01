@@ -1,0 +1,74 @@
+<div>
+
+  <!-- Academic Summary -->
+  <app-section-card title="Academic Information">
+    <div class="row mt-2">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Student Name</label>
+        <input type="text" class="form-control" [value]="studentName" readonly />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Registration Number</label>
+        <input type="text" class="form-control" [value]="registrationNo" readonly />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Program</label>
+        <input type="text" class="form-control" [value]="courseName" readonly />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Current Year</label>
+        <input type="text" class="form-control" [value]="currentYear" readonly />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Overall Score</label>
+        <input type="text" class="form-control" [value]="cgpa" readonly />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Program Code</label>
+        <input type="text" class="form-control" [value]="programCode" readonly />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Section</label>
+        <input type="text" class="form-control" [value]="sectionCode" readonly />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Current Term</label>
+        <input type="text" class="form-control" [value]="currentTerm" readonly />
+      </div>
+    </div>
+  </app-section-card>
+
+  <ng-container *ngIf="form">
+
+    <!-- Contact Information -->
+    <app-step-contact [form]="form" [isEditing]="editable ? isEditingStep[1] : false" [isSubmitted]="isSubmitted"
+      [countries]="countries" [isLocked]="!editable" [hideBackNext]="true" [isValid]="isStep1Valid"
+      [studentStatus]="studentStatus" (editClick)="editClick.emit(1)" (cancelClick)="cancelClick.emit(1)"
+      (updateClick)="updateClick.emit(1)">
+    </app-step-contact>
+
+    <!-- University Preferences / Passport -->
+    <app-step-university [form]="form" [isEditing]="editable ? isEditingStep[2] : false" [isSubmitted]="isSubmitted"
+      [uniData]="uniData" [isLocked]="!editable" [hideBackNext]="true" [isValid]="isStep2Valid"
+      [studentStatus]="studentStatus" (editClick)="editClick.emit(2)" (cancelClick)="cancelClick.emit(2)"
+      (updateClick)="updateClick.emit(2)">
+    </app-step-university>
+
+    <!-- Visa / English / Sponsor -->
+    <app-step-details [form]="form" [isEditing]="editable ? isEditingStep[3] : false" [isSubmitted]="isSubmitted"
+      [countries]="countries" [isLocked]="!editable" [hideBackNext]="true" [isValid]="isStep3Valid"
+      [studentStatus]="studentStatus" (editClick)="editClick.emit(3)" (cancelClick)="cancelClick.emit(3)"
+      (updateClick)="updateClick.emit(3)">
+    </app-step-details>
+
+    <!-- Documents -->
+    <app-step-documents *ngIf="showDocuments && stuApplication" [stuApplication]="stuApplication"
+      [isEditing]="editable ? isEditingStep[4] : false" [isLocked]="!editable" [hideBackNext]="true"
+      [localServerUrl]="localServerUrl" [studentStatus]="studentStatus" (editClick)="editClick.emit(4)"
+      (cancelClick)="cancelClick.emit(4)" (submitClick)="submitClick.emit()"
+      (fileSelected)="fileSelected.emit($event)">
+    </app-step-documents>
+
+  </ng-container>
+
+</div>

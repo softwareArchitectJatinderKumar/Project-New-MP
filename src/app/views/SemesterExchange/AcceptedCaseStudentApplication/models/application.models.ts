@@ -40,7 +40,7 @@ export interface StudentApplication {
   dealingHODId: string;
   dealingFaculty: string;
   dealingFacultyName: string;
-  dealingAuthority: string;
+  counsellingAuthorityName: string;
   isLocked: string;
   isApproved?: string | number | boolean | null;
   sectionCode: string;
@@ -78,6 +78,13 @@ export interface StageDetailRow {
   document: any;
   filePath: any;
   applicationId: number;  
+}
+
+export interface DocumentField {
+  key: string;
+  label: string;
+  fileName: string;
+  fileData: string | null;
 }
 
 export interface CourseRow {
@@ -125,7 +132,7 @@ export const AVAILABLE_FUNDS_OPTIONS: SelectOption[] = [
   { value: '4 to 6 Lakhs', label: '4 to 6 Lakhs' },
   { value: '6 to 8 Lakhs', label: '6 to 8 Lakhs' },
   { value: '8 to 10 Lakhs', label: '8 to 10 Lakhs' },
-  { value: '10 Lakhs and above', label: '10 Lakhs and above' },
+  { value: '10 Lakhs and Above', label: '10 Lakhs and Above' },
 ];
 
 export const STEP_LABELS: string[] = [

@@ -15,7 +15,7 @@ export class StepContactComponent {
   @Input() isLocked = false;
   @Input() isValid = true;
   @Input() hideBackNext = false;
-  @Input() studentStatus:string = "pending";
+
   @Output() editClick = new EventEmitter<void>();
   @Output() cancelClick = new EventEmitter<void>();
   @Output() updateClick = new EventEmitter<void>();

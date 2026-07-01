@@ -1,8 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { takeUntil, finalize } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
 import { SemesterExchangeStuDetailsService } from 'src/app/_services/semester-exchange-stu-details.service';
@@ -10,20 +10,28 @@ import { AuthService } from 'src/app/_services/auth.service';
 import { StorageService } from 'src/app/_services/storage.service';
 import { countries } from './countries-list';
 
-
 import {
   StudentApplication, StageDetailRow, FileSelectedEvent,
   Country, University, STEP_LABELS,
 } from './models/application.models';
 
-@Component({
-  selector: 'app-edit-application',
-  templateUrl: './Edit-applicationData.html',
-  styleUrls: ['./edit-application.component.scss'],
-})
-export class EditApplicationComponent implements OnInit, OnDestroy {
+export type ApplicationStatus = 'Approved' | 'Rejected' | 'Pending';
+
+/**
+ * Holds all application state and every webapi call for the Semester
+ * Exchange student flow. Provided at the `EditApplicationModule` level so a
+ * single instance is shared by the loader (EditApplicationComponent) and
+ * whichever status page (Approved/Rejected/Pending) it redirects to —
+ * no data is re-fetched on that redirect.
+ *
+ * All webapi-calling methods here are moved verbatim from the former
+ * EditApplicationComponent — same service, same method names, same params.
+ */
+@Injectable()
+export class ApplicationStateService implements OnDestroy {
   // ── State ──────────────────────────────────────────────────────────────────
   isLoading = true;
+  isTabSwitching = false;
   isSubmitted = false;
   isLoginFailed = false;
   currentStep = 0;
@@ -38,36 +46,26 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
   stuApplication!: StudentApplication;
   uniData: University[] = [];
   StagesDetail: StageDetailRow[] = [];
-  StageDocumentData: StageDetailRow[] = [];
 
   // ── Student display ────────────────────────────────────────────────────────
   studentName = ''; courseName = ''; cgpa = '';
   CurrentYear = ''; CurrentTerm = ''; ProgramCode = '';
-  SectionCode = '';
+  SectionCode = ''; studentStatus = '';
   StudentImage: string | null = null;
   studentDetailsWithImage: any;
 
   // ── Staff display ──────────────────────────────────────────────────────────
   DealingFacultyName = ''; CounsellingAuthorityName = '';
-  isLocked = false;
+  LockedStatus = false;
   isApprovedApplication = false;
-  /**
-   * Tri-state application status, resolved in getStudentDetail() (via the
-   * getApplicationDetails() call it triggers) as soon as the student's
-   * application record comes back. Drives which top-level component the
-   * template renders:
-   *   'Rejected' -> RejectedApplicationComponent
-   *   'Approved' -> ApprovedApplicationComponent
-   *   'Pending'  -> PendingApplicationComponent (Stage I Documents shown as a nav tab)
-   */
-  LockedStatus: 'Rejected' | 'Approved' | 'Pending' = 'Pending';
-  CounsellingAuthority: any; DealingHodId: any; DealingFaculty: any;
+  activeMainTab: 'application' | 'stage1' | 'stage2' = 'stage1';
   ApprovedUniversity: string;
-  IsApproved: string | number | boolean | null | undefined;
-  ApprovalRemarks: any;
 
   get canEditApplication(): boolean {
-    return !this.isLocked && !this.isApprovedApplication;
+    return !this.LockedStatus && !this.isApprovedApplication;
+  }
+  get showStage2Tab(): boolean {
+    return this.LockedStatus;
   }
 
   // ── Config ─────────────────────────────────────────────────────────────────
@@ -78,31 +76,39 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
   // ── Form ───────────────────────────────────────────────────────────────────
   form!: FormGroup;
 
+  /** Emits once the application's status is known/changes: 'Approved' | 'Rejected' | 'Pending'. */
+  readonly statusResolved$ = new Subject<ApplicationStatus>();
+
+  private lastEmittedStatus: ApplicationStatus | null = null;
+  private initializedForLogin: string | null = null;
   private isLoadingData = false;
+  /** Snapshot of the form as last loaded/saved from the server — restored on Cancel without a network round-trip. */
+  private lastLoadedFormValue: Record<string, any> | null = null;
   private readonly destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     private studentService: SemesterExchangeStuDetailsService,
-    private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
     private storageService: StorageService,
-  ) {}
-  
-  // ── Lifecycle ──────────────────────────────────────────────────────────────
-  ngOnInit(): void {
-    this.LoginName = this.route.snapshot.params['LoginName'];
-    this.RegistrationNo = this.route.snapshot.params['RegistrationNo'] ?? null;
-    if (this.LoginName) {
-      this.getToken(this.LoginName);
-      this.getUniversityDetails();
-    }
-  }
+  ) { }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  /** Kicks off the full load for a login/registration pair. Safe to call more than once — skips re-fetching if already loaded for this login. */
+  init(loginName: string, registrationNo: string | null): void {
+    if (this.initializedForLogin === loginName) return;
+    this.initializedForLogin = loginName;
+    this.LoginName = loginName;
+    this.RegistrationNo = registrationNo ?? (null as any);
+    if (this.LoginName) {
+      this.getToken(this.LoginName);
+      this.getUniversityDetails();
+    }
   }
 
   // ── Step validity (pure, no side-effects) ──────────────────────────────────
@@ -135,22 +141,24 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
 
   // ── Edit controls ──────────────────────────────────────────────────────────
   startEdit(step: number): void {
-    if (step < 1 || step > 4) return;
-    if (this.isLocked && !this.canEditApplication) return;
-    // Both RejectedApplicationComponent and PendingApplicationComponent step
-    // through the wizard one section at a time; PendingApplicationComponent
-    // just tracks its own currentStep locally instead of via this.currentStep,
-    // so there's nothing here to check against for it.
-    const stepIsVisible = this.LockedStatus === 'Rejected' ? this.currentStep === step : true;
-    if (!stepIsVisible) return;
-    this.isEditingStep[step] = true;
-    this.form.enable();
+
+    if (this.LockedStatus || this.LockedStatus == null) {
+      return;
+    }
+    if (step >= 1 && step <= 4 && this.currentStep === step) {
+      if (this.LockedStatus && !this.canEditApplication) return;
+      this.isEditingStep[step] = true;
+      this.form.enable();
+    }
   }
 
   cancelEdit(step: number): void {
     this.isEditingStep[step] = false;
+    // Revert any unsaved edits from the last loaded/saved snapshot — no server round-trip needed.
+    if (this.lastLoadedFormValue) {
+      this.form.patchValue(this.lastLoadedFormValue);
+    }
     this.form.disable();
-    if (this.RegistrationNo) this.getApplicationDetails(this.RegistrationNo);
   }
 
   updateStep(step: number): void {
@@ -169,7 +177,7 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
             Swal.fire('Updated', 'Details updated successfully', 'success');
             this.isEditingStep[step] = false;
             this.form.disable();
-            if (this.RegistrationNo) this.getApplicationDetails(this.RegistrationNo);
+            if (this.RegistrationNo) this.getApplicationDetails(this.RegistrationNo, true);
           } else {
             Swal.fire('Error', 'Failed to update', 'error');
           }
@@ -214,16 +222,33 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     }
   }
 
+  setMainTab(tab: 'application' | 'stage1' | 'stage2'): void {
+    if (tab === 'stage2' && !this.showStage2Tab) return;
+    if (this.isEditingStep.some((e, i) => e && i >= 1 && i <= 4)) {
+      Swal.fire('Please Update or Cancel', 'Save or cancel changes before switching tabs.', 'warning');
+      return;
+    }
+    this.isTabSwitching = true;
+    this.form.disable();
+    window.scrollTo(0, 0);
+    setTimeout(() => {
+      this.activeMainTab = tab;
+      this.isTabSwitching = false;
+    }, 80);
+  }
+
   // ── Documents ──────────────────────────────────────────────────────────────
   onFileSelected(event: FileSelectedEvent): void {
     const map: Record<string, { fileField: string; nameField: string }> = {
-      consent:           { fileField: 'ConsentLetterData',    nameField: 'ConsentLetterFileName' },
-      resume:            { fileField: 'ResumeFileData',        nameField: 'ResumeFileName' },
-      passport:          { fileField: 'PassportFileData',      nameField: 'PassportFileName' },
-      english:           { fileField: 'EnglishProofData',      nameField: 'EnglishProofFileName' },
-      fees:              { fileField: 'FeesProofData',         nameField: 'FeesProofFileName' },
-      affidavitPath:     { fileField: 'AffidavitData',         nameField: 'AffidavitPath' },
-      indeminityBondPath:{ fileField: 'IndeminityBondData',    nameField: 'IndeminityBondPath' },
+      consent: { fileField: 'ConsentLetterData', nameField: 'ConsentLetterFileName' },
+      resume: { fileField: 'ResumeFileData', nameField: 'ResumeFileName' },
+      passport: { fileField: 'PassportFileData', nameField: 'PassportFileName' },
+      english: { fileField: 'EnglishProofData', nameField: 'EnglishProofFileName' },
+      fees: { fileField: 'FeesProofData', nameField: 'FeesProofFileName' },
+      affidavitPath: { fileField: 'AffidavitData', nameField: 'AffidavitPath' },
+      offerLetter: { fileField: 'OfferLetterPath', nameField: 'OfferLetterPath' },
+      outBoundTicket: { fileField: 'OutBoundTicket', nameField: 'OutBoundTicket' },
+      returnTicket: { fileField: 'ReturnTicketPath', nameField: 'ReturnTicketPath' },
     };
     const d = map[event.key];
     if (!d) return;
@@ -241,7 +266,7 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
         next: (resp: any) => {
           if (this.isMsgSuccess(resp)) {
             Swal.fire('Uploaded', `${event.fileName} uploaded successfully`, 'success')
-              .then(() => { if (this.RegistrationNo) this.getApplicationDetails(this.RegistrationNo); });
+              .then(() => { if (this.RegistrationNo) this.getApplicationDetails(this.RegistrationNo, true); });
           } else {
             Swal.fire('Error', 'Failed to upload document', 'error');
           }
@@ -262,57 +287,13 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
         next: (resp: any) => {
           if (this.isMsgSuccess(resp)) {
             Swal.fire({ title: 'Documents Updated', icon: 'success' })
-              .then(() => { this.isEditingStep[4] = false; this.getApplicationDetails(this.RegistrationNo); });
+              .then(() => { this.isEditingStep[4] = false; this.getApplicationDetails(this.RegistrationNo, true); });
           } else {
             Swal.fire({ title: 'Error', text: 'Failed to update documents', icon: 'error' });
           }
         },
         error: () => Swal.fire({ title: 'Error', text: 'Server error', icon: 'error' }),
       });
-  }
-
-  // ── Stage II ───────────────────────────────────────────────────────────────
-  uploadStageDocumentRow(index: number): void {
-    const row = this.StagesDetail[index];
-    if (!row?.fileObject) { Swal.fire('Error', 'Please select a file first.', 'error'); return; }
-    row.isUploading = true;
-    const fd = new FormData();
-    fd.append('File', row.fileObject, row.fileName ?? '');
-    fd.append('ApplicationId', this.ApplicationId);
-    fd.append('DocumentName', row.documentName);
-    fd.append('FilePath', row.fileName);
-    fd.append('Stage', row.stage.toString());
-    fd.append('StageName', row.stageName.trim());
-    fd.append('FileData', row.fileData);
-    fd.append('RegistrationNo', this.RegistrationNo);
-
-    this.studentService.addSECheckListDocuments(fd)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => { row.isUploading = false; row.isUploaded = true; Swal.fire('Success', `${row.documentName} uploaded!`, 'success'); row.isUploading = false;},
-        error: () => { row.isUploading = false; Swal.fire('Upload Failed', 'Could not upload document.', 'error'); },
-      });
-  }
-
-  onStageFilePicked(e: { index: number; file: File; fileName: string; base64: string }): void {
-    const row = this.StagesDetail[e.index];
-    if (!row) return;
-    row.fileName = e.fileName;
-    row.fileObject = e.file;
-    row.fileData = e.base64;
-    row.isUploaded = false;
-  }
-
-  viewDocument(doc: string): void {
-    if (doc) window.open(this.localServerUrl + doc, '_blank');
-  }
-
-  GetStudentApplication(regno: string): void {
-    if (this.LoginName && regno) {
-      this.router.navigateByUrl(`ApplicationDetails/${this.LoginName}/${regno}/Student`);
-    } else {
-      Swal.fire('Navigation Error', 'Login name or registration number is missing.', 'error');
-    }
   }
 
   // ── Private: Auth + Data fetching ──────────────────────────────────────────
@@ -341,16 +322,6 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     if (logo) logo.style.width = '164px';
   }
 
-  /**
-   * Loads the signed-in student's basic record, then triggers
-   * getApplicationDetails() — which is where LockedStatus ('Rejected' |
-   * 'Approved' | 'Pending') is resolved from the fetched application and
-   * used to redirect to the matching component:
-   *   LockedStatus === 'Rejected' -> RejectedApplicationComponent
-   *   LockedStatus === 'Approved' -> ApprovedApplicationComponent
-   *   LockedStatus === 'Pending'  -> PendingApplicationComponent (Stage I
-   *                                  Documents shown as a nav tab, application editable)
-   */
   private getStudentDetail(): void {
     this.isLoading = true;
     this.studentService.getStudentById()
@@ -365,6 +336,7 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
           this.cgpa = stu.cgpa;
           this.CurrentYear = stu.currentYear;
           this.CurrentTerm = stu.currentTerm;
+
           this.ProgramCode = stu.programCode;
           this.getApplicationDetails(this.RegistrationNo ?? '');
           this.getStuDetailsWithImage(this.RegistrationNo);
@@ -373,10 +345,14 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
       });
   }
 
-  private getApplicationDetails(regNo: string): void {
-    this.isLoading = true;
+  /**
+   * @param silent Skip the full-screen loader — used when refreshing in the background right
+   * after a save/upload already showed its own loading state, to avoid a jarring double-flash.
+   */
+  private getApplicationDetails(regNo: string, silent = false): void {
+    if (!silent) this.isLoading = true;
     this.studentService.getStudentDetailsBYId(regNo)
-      .pipe(finalize(() => this.isLoading = false), takeUntil(this.destroy$))
+      .pipe(finalize(() => { if (!silent) this.isLoading = false; }), takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
           const app: StudentApplication = response?.item1?.[0];
@@ -384,24 +360,18 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
 
           const lockState = this.resolveLockState(this.readAppFlag(app, 'isLocked', 'IsLocked'));
           // Stay on Student Dashboard — show locked tabs instead of redirecting to ApplicationDetails
-          this.isLocked = lockState === 'locked';
+          this.LockedStatus = lockState === 'locked';
           this.isApprovedApplication = app.isLocked === 'True' && app.isApproved === 'True' ? true : false;
+          this.activeMainTab = 'stage1';
+
           this.stuApplication = app;
-          // Resolve LockedStatus for the getStudentDetail() redirect: Rejected /
-          // Approved / Pending, based on the application's isLocked flag.
-          this.LockedStatus = app.isLocked === 'True' ? 'Approved'
-            : app.isLocked === 'False' ? 'Rejected'
-            : 'Pending';
-          this.ApprovalRemarks = app.approvalRemarks;
+          this.studentStatus = app.isLocked === 'True' ? 'Approved' : app.isLocked === 'False' ? 'Rejected' : 'Pending';
+
           this.ApplicationId = app.applicationId;
           this.SectionCode = app.sectionCode;
-          this.DealingFacultyName = app.dealingFaculty;
-          this.CounsellingAuthorityName = app.dealingAuthority;
-          this.CounsellingAuthority = app.counsellingAuthority;
-          this.DealingHodId = app.dealingHODId;
-          this.DealingFaculty = app.dealingFaculty;
+          this.DealingFacultyName = app.dealingFacultyName;
+          this.CounsellingAuthorityName = app.counsellingAuthorityName;
           this.ApprovedUniversity = app.approvedUniversity;
-          this.IsApproved = app.isApproved;
           this.isLoadingData = true;
           this.form.patchValue({
             EmailId: app.emailId ?? '',
@@ -442,14 +412,21 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
             SponsorContact: app.sponsorContact ?? '',
             AcceptPolicy: ['true', true, 'Yes', 'yes'].includes(app.acceptPolicy as any),
           });
+          this.lastLoadedFormValue = this.form.getRawValue();
           this.isLoadingData = false;
 
-          const mayEdit = !this.isLocked || this.canEditApplication;
+          const mayEdit = !this.LockedStatus || this.canEditApplication;
           const anyFormEditing = [1, 2, 3, 4].some(i => this.isEditingStep[i]);
           const editing = anyFormEditing && mayEdit;
           editing ? this.form.enable() : this.form.disable();
 
-          this.getStageDocumentDetails();
+          // Notify listeners of the resolved tri-state status (Approved / Rejected / Pending)
+          // so the loader (or any status page) can redirect to the matching component.
+          const status = this.studentStatus as ApplicationStatus;
+          if (status !== this.lastEmittedStatus) {
+            this.lastEmittedStatus = status;
+            this.statusResolved$.next(status);
+          }
         },
         error: err => {
           console.error(err);
@@ -468,13 +445,6 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     this.studentService.GetAllCheckListDocs()
       .pipe(takeUntil(this.destroy$))
       .subscribe({ next: (r: any) => this.StagesDetail = r?.item1 ?? [] });
-  }
-
-  private getStageDocumentDetails(): void {
-    if (!this.ApplicationId) return;
-    this.studentService.GetStage2DocumentDetails(+this.ApplicationId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({ next: (r: any) => this.StageDocumentData = r?.item1 ?? [] });
   }
 
   private getStuDetailsWithImage(regno: string): void {

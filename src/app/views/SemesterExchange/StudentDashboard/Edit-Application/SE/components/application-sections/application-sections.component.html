@@ -1,0 +1,121 @@
+<!-- ── Step indicator ──────────────────────────────────────────────────── -->
+<div class="col-md-12 grid-margin stretch-card mb-3">
+  <div class="card step-indicator-card">
+    <div class="card-body py-3 px-4">
+      <div class="step-track">
+        <ng-container *ngFor="let label of stepLabels; let i = index">
+
+          <div class="step-item" [style.cursor]="i < currentStep ? 'pointer' : 'default'"
+            (click)="goToStepClick.emit(i)">
+            <div class="step-bubble" [class.done]="i < currentStep" [class.current]="i === currentStep"
+              [class.future]="i > currentStep">
+              <span *ngIf="i < currentStep">✓</span>
+              <span *ngIf="i >= currentStep">{{ i + 1 }}</span>
+            </div>
+            <span class="step-name" [class.done]="i < currentStep" [class.current]="i === currentStep"
+              [class.future]="i > currentStep">
+              {{ label }}
+            </span>
+          </div>
+
+          <div *ngIf="i < stepLabels.length - 1" class="step-connector" [class.done]="i < currentStep"
+            [class.future]="i >= currentStep">
+          </div>
+
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Step 0: Academic Summary (read-only) ───────────────────────────── -->
+<div class="col-md-12 grid-margin stretch-card mb-3" [hidden]="currentStep !== 0">
+  <app-step-nav [showBack]="false" [showEdit]="false" [isEditing]="false" [showNext]="true"
+    (nextClick)="nextClick.emit()">
+  </app-step-nav>
+
+  <app-section-card title="Academic Information">
+    <div class="row mt-2">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Student Name</label>
+        <input type="text" class="form-control" [value]="studentName" readonly />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Registration Number</label>
+        <input type="text" class="form-control" [value]="registrationNo" readonly />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Program</label>
+        <input type="text" class="form-control" [value]="courseName" readonly />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Current Year</label>
+        <input type="text" class="form-control" [value]="currentYear" readonly />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Overall Score</label>
+        <input type="text" class="form-control" [value]="cgpa" readonly />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Program Code</label>
+        <input type="text" class="form-control" [value]="programCode" readonly />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Section</label>
+        <input type="text" class="form-control" [value]="sectionCode" readonly />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Current Term</label>
+        <input type="text" class="form-control" [value]="currentTerm" readonly />
+      </div>
+    </div>
+  </app-section-card>
+</div>
+
+<ng-container *ngIf="form">
+
+  <!-- ── Step 1: Contact ──────────────────────────────────────────────── -->
+  <section [hidden]="currentStep !== 1">
+    <app-step-contact [form]="form" [isEditing]="isEditingStep[1]" [isSubmitted]="isSubmitted"
+      [countries]="countries" [isLocked]="false" [hideBackNext]="false" [isValid]="isStep1Valid"
+      [studentStatus]="studentStatus" (editClick)="editClick.emit(1)" (cancelClick)="cancelClick.emit(1)"
+      (updateClick)="updateClick.emit(1)" (nextClick)="nextClick.emit()" (prevClick)="prevClick.emit()">
+    </app-step-contact>
+  </section>
+
+  <!-- ── Step 2: University ───────────────────────────────────────────── -->
+  <section [hidden]="currentStep !== 2">
+    <app-step-university [form]="form" [isEditing]="isEditingStep[2]" [isSubmitted]="isSubmitted"
+      [uniData]="uniData" [isLocked]="false" [hideBackNext]="false" [isValid]="isStep2Valid"
+      [studentStatus]="studentStatus" (editClick)="editClick.emit(2)" (cancelClick)="cancelClick.emit(2)"
+      (updateClick)="updateClick.emit(2)" (nextClick)="nextClick.emit()" (prevClick)="prevClick.emit()">
+    </app-step-university>
+  </section>
+
+  <!-- ── Step 3: Visa / English / Sponsor ─────────────────────────────── -->
+  <section [hidden]="currentStep !== 3">
+    <app-step-details [form]="form" [isEditing]="isEditingStep[3]" [isSubmitted]="isSubmitted"
+      [countries]="countries" [isLocked]="false" [hideBackNext]="false" [isValid]="isStep3Valid"
+      [studentStatus]="studentStatus" (editClick)="editClick.emit(3)" (cancelClick)="cancelClick.emit(3)"
+      (updateClick)="updateClick.emit(3)" (nextClick)="nextClick.emit()" (prevClick)="prevClick.emit()">
+    </app-step-details>
+  </section>
+
+  <!-- ── Step 4: Documents ────────────────────────────────────────────── -->
+  <section [hidden]="currentStep !== 4" *ngIf="stuApplication">
+
+    <!-- Rejected: re-upload the core application documents -->
+    <app-step-documents *ngIf="isRejected" [stuApplication]="stuApplication" [isEditing]="isEditingStep[4]"
+      [isLocked]="false" [hideBackNext]="false" [localServerUrl]="localServerUrl" [studentStatus]="studentStatus"
+      (editClick)="editClick.emit(4)" (cancelClick)="cancelClick.emit(4)" (submitClick)="submitClick.emit()"
+      (fileSelected)="fileSelected.emit($event)" (prevClick)="prevClick.emit()">
+    </app-step-documents>
+
+    <!-- Pending: initial Stage I document upload -->
+    <stage-1-Documents *ngIf="!isRejected" [stuApplication]="stuApplication" [stagesDetail]="stagesDetail"
+      [localServerUrl]="localServerUrl" (fileSelected)="fileSelected.emit($event)">
+    </stage-1-Documents>
+
+  </section>
+
+</ng-container>

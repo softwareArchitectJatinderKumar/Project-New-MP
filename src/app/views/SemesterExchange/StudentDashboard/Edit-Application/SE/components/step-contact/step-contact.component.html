@@ -5,15 +5,11 @@
     [isValid]="isValid"
     [showBack]="!hideBackNext"
     [showNext]="!hideBackNext"
-    [showBack]="true"
-    [showNext]="true"
     (editClick)="editClick.emit()"
     (cancelClick)="cancelClick.emit()"
     (updateClick)="updateClick.emit()"
     (nextClick)="nextClick.emit()"
-    (prevClick)="prevClick.emit()"
-    [studentStatus] = "studentStatus"    >
-
+    (prevClick)="prevClick.emit()">
   </app-step-nav>
 
   <app-section-card title="Contact Information" [isEditing]="isEditing">
@@ -117,10 +113,8 @@
     [isEditing]="isEditing"
     [isLocked]="isLocked"
     [isValid]="isValid"
-    [showBack]="!hideBackNext"
-    [showNext]="!hideBackNext"
     [showBack]="false"
-    [showNext]="true"
+    [showNext]="!hideBackNext"
     [showEdit]="false"
     (cancelClick)="cancelClick.emit()"
     (updateClick)="updateClick.emit()"

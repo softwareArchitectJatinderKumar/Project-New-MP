@@ -1,0 +1,78 @@
+<div class="approved-application">
+
+  <div class="col-md-12 col-lg-10 mx-auto mb-3">
+    <div class="approved-banner">
+      <span class="material-icons md-18">check_circle</span>
+      Your application has been <strong>Approved</strong>. Please complete the Stage II documents below.
+    </div>
+  </div>
+
+  <div class="col-md-12 col-lg-10 mx-auto mb-3">
+    <div class="card section">
+      <div class="card-header">Stage II Document(s)</div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle">
+            <thead class="table-light">
+              <tr>
+                <th style="width:5%">S.No</th>
+                <th style="width:22%">Document Name</th>
+                <th style="width:18%">Sample Template</th>
+                <th style="width:35%">Uploaded Document / Replace File</th>
+                <th style="width:20%">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of stage2Rows; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td class="fw-semibold">{{ row.documentName }}</td>
+                <td>
+                  <button *ngIf="hasSampleFormat(row)" type="button" class="btn btn-success btn-sm"
+                    (click)="downloadTemplate(row)">
+                    <i class="bi bi-download me-1"></i> Download
+                  </button>
+                  <span *ngIf="!hasSampleFormat(row)" class="text-muted small">Not Available</span>
+                </td>
+                <td>
+                  <div class="d-flex flex-column gap-1">
+                    <ng-container *ngIf="existingDocPath(row) as uploaded">
+                      <span class="text-success small text-truncate" style="max-width:220px" [title]="uploaded">
+                        <i class="bi bi-file-earmark-check-fill me-1"></i>{{ uploaded }}
+                      </span>
+                    </ng-container>
+                    <input type="file" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png"
+                      [disabled]="row.isUploading" (change)="onFilePicked($event, row)" />
+                    <span *ngIf="row.fileName && !row.isUploaded" class="text-muted small text-truncate"
+                      style="max-width:200px">
+                      Selected: {{ row.fileName }}
+                    </span>
+                    <span *ngIf="row.isUploading" class="d-flex align-items-center gap-1 text-primary small">
+                      <span class="spinner-border spinner-border-sm"></span> Uploading...
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <button *ngIf="!row.isUploaded" type="button" class="btn btn-primary btn-sm w-100 mb-1"
+                    [disabled]="!row.fileObject || row.isUploading" (click)="uploadRow(row)">
+                    Upload
+                  </button>
+                  <button *ngIf="existingDocPath(row)" type="button" class="btn btn-info btn-sm w-100"
+                    (click)="view(row)">
+                    <i class="bi bi-eye-fill me-1"></i> View
+                  </button>
+                  <span *ngIf="row.isUploaded && !existingDocPath(row)" class="badge bg-success p-2 d-block text-center">
+                    <i class="bi bi-check-circle-fill me-1"></i> Saved
+                  </span>
+                </td>
+              </tr>
+              <tr *ngIf="stage2Rows.length === 0">
+                <td colspan="5" class="text-center text-muted py-3">No Stage II documents required.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

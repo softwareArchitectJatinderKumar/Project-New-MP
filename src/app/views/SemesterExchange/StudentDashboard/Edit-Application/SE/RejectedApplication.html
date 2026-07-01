@@ -1,0 +1,90 @@
+<!-- Full-screen loader -->
+<div *ngIf="s.isLoading" class="fullscreen-loader">
+  <div class="custom-spinner-overlay">
+    <div class="custom-spinner-content text-center">
+      <img src="assets/images/spinner.gif" alt="Loading..." />
+      <p>Loading...</p>
+    </div>
+  </div>
+</div>
+
+<div id="StudentDashboard" *ngIf="!s.isLoginFailed; else errorTemplate">
+  <div class="student-registration container-fluid py-4">
+
+    <!-- ── Header Card ──────────────────────────────────────────────────── -->
+    <div class="col-md-12 grid-margin stretch-card mb-3" *ngIf="s.stuApplication">
+      <div class="card header-card">
+        <div class="card-body p-3">
+
+          <div class="row align-items-center g-2">
+            <div class="col d-flex flex-column">
+              <p class="info-label">Application ID</p>
+              <p class="info-value">{{ s.ApplicationId }}</p>
+            </div>
+            <div class="col d-flex flex-column">
+              <p class="info-label">Counsellor</p>
+              <p class="info-value">{{ s.CounsellingAuthorityName || '—' }}</p>
+            </div>
+            <div class="col d-flex flex-column">
+              <p class="info-label">Faculty</p>
+              <p class="info-value">{{ s.DealingFacultyName || '—' }}</p>
+            </div>
+            <div class="col d-flex flex-column">
+              <p class="info-label">Status</p>
+              <span class="status-pill rejected">
+                {{ s.stuApplication.approvalRemarks && s.stuApplication.approvalRemarks.trim().length > 0
+                  ? 'Rejected - ' + s.stuApplication.approvalRemarks
+                  : 'Rejected' }}
+              </span>
+            </div>
+            <div class="col d-flex flex-column">
+              <p class="info-label">Student</p>
+              <p class="info-value">{{ s.studentDetailsWithImage?.studentName }}</p>
+            </div>
+            <div class="col-auto">
+              <img *ngIf="s.StudentImage; else placeholder" [src]="s.StudentImage" alt="Student" class="student-photo" />
+              <ng-template #placeholder>
+                <div class="photo-placeholder"></div>
+              </ng-template>
+            </div>
+          </div>
+
+          <div class="uni-divider row align-items-center g-2">
+            <div class="col-auto">
+              <span class="uni-section-label">University Preferences</span>
+            </div>
+            <div class="col">
+              <div class="d-flex gap-2 flex-wrap">
+                <span class="uni-tag">1. {{ s.stuApplication.universityOption1 }}</span>
+                <span class="uni-tag">2. {{ s.stuApplication.universityOption2 }}</span>
+                <span class="uni-tag">3. {{ s.stuApplication.universityOption3 }}</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Edit / Update wizard (Back / Next) ──────────────────────────────── -->
+    <app-application-sections *ngIf="s.form" [form]="s.form" [isEditingStep]="s.isEditingStep"
+      [isSubmitted]="s.isSubmitted" [countries]="s.countries" [uniData]="s.uniData" [stuApplication]="s.stuApplication"
+      [stagesDetail]="s.StagesDetail" [currentStep]="s.currentStep" [stepLabels]="s.stepLabels"
+      [localServerUrl]="s.localServerUrl" [studentStatus]="s.studentStatus" [isStep1Valid]="s.isCurrentStepValid(1)"
+      [isStep2Valid]="s.isCurrentStepValid(2)" [isStep3Valid]="s.isCurrentStepValid(3)" [studentName]="s.studentName"
+      [registrationNo]="s.RegistrationNo" [courseName]="s.courseName" [currentYear]="s.CurrentYear" [cgpa]="s.cgpa"
+      [programCode]="s.ProgramCode" [sectionCode]="s.SectionCode" [currentTerm]="s.CurrentTerm"
+      (goToStepClick)="s.goToStep($event)" (nextClick)="s.nextStep()" (prevClick)="s.prevStep()"
+      (editClick)="s.startEdit($event)" (cancelClick)="s.cancelEdit($event)" (updateClick)="s.updateStep($event)"
+      (submitClick)="s.submitDocuments()" (fileSelected)="s.onFileSelected($event)">
+    </app-application-sections>
+
+  </div>
+</div>
+
+<ng-template #errorTemplate>
+  <div class="text-center" *ngIf="s.isLoginFailed">
+    <h3 class="fs-2 m-5 text-danger pt-5">Error in User Login.</h3>
+    <p class="fs-4 text-danger">Unauthorised Access.</p>
+  </div>
+</ng-template>

@@ -10,8 +10,10 @@ import { StepContactComponent } from './components/step-contact/step-contact.com
 import { StepUniversityComponent } from './components/step-university/step-university.component';
 import { StepDetailsComponent } from './components/step-details/step-details.component';
 import { StepDocumentsComponent } from './components/step-documents/step-documents.component';
-import { StepStage2Component } from './components/step-stage2/step-stage2.component';
 import { Stage1DocumentComponent } from './components/step-documents-Stage1/Stage1Document.component';
+import { RejectedApplicationComponent } from './components/rejected-application/rejected-application.component';
+import { ApprovedApplicationComponent } from './components/approved-application/approved-application.component';
+import { PendingApplicationComponent } from './components/pending-application/pending-application.component';
 
 const routes: Routes = [{ path: '', component: EditApplicationComponent }];
 
@@ -30,8 +32,16 @@ const routes: Routes = [{ path: '', component: EditApplicationComponent }];
     StepUniversityComponent,
     StepDetailsComponent,
     StepDocumentsComponent,
-    StepStage2Component,
-    Stage1DocumentComponent
+    Stage1DocumentComponent,
+    RejectedApplicationComponent,
+    ApprovedApplicationComponent,
+    PendingApplicationComponent,
+  ],
+  exports: [
+    SectionCardComponent,
+    StepContactComponent,
+    StepDetailsComponent,
+    StepDocumentsComponent,
   ],
 })
 export class EditApplicationModule {}
