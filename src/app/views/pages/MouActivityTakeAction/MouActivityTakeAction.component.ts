@@ -41,6 +41,30 @@ interface SchoolDivision {
 
 })
 export class MouActivityTakeActionComponent implements OnInit {
+
+//2-7-26
+ getDocumentFiles(files: string): string[] {
+  // console.log('DocumentUploadedFile:', files);
+
+  if (!files) {
+    return [];
+  }
+
+  const result = files
+    .split(',')
+    .map(x => x.trim())
+    .filter(x => x);
+
+  // console.log('Files Array:', result);
+
+  return result;
+}
+getFileName(fileUrl: string): string {
+  return fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+}
+
+
+
 //26-6-26 
 // view all uploaded Document against Each Project Document
   AllProjectDocumentUploaded: any[] = [];
@@ -640,7 +664,7 @@ uploadRequiredDocument(documentName: string, index: number) {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
-          this.EmployeeCode = response.item1[0].employeeCode; //11840
+          this.EmployeeCode =  response.item1[0].employeeCode; //11840
           this.Department = response.item1[0].department;
           this.DepartmentName = response.item1[0].departmentName;
           this.loadingIndicator = false;

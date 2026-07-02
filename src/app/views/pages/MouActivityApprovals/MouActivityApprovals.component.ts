@@ -53,9 +53,31 @@ export class MouActivityApprovalsComponent implements OnInit {
   
   DocumentName: string;
 
+ getDocumentFiles(files: string): string[] {
+  // console.log('DocumentUploadedFile:', files);
+
+  if (!files) {
+    return [];
+  }
+
+  const result = files
+    .split(',')
+    .map(x => x.trim())
+    .filter(x => x);
+
+  // console.log('Files Array:', result);
+
+  return result;
+}
+getFileName(fileUrl: string): string {
+  return fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+}
+
+
 
   // added on 5-Feb-26
      onDownloadFile(remoteUrl: string): void {
+      // console.log("Downloading file from URL:", remoteUrl);
       swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); }});
   
       this.mouDocumentsService.downloadMOUFile(remoteUrl).subscribe({
@@ -64,7 +86,8 @@ export class MouActivityApprovalsComponent implements OnInit {
           const link = document.createElement('a');
           link.href = downloadUrl;
   
-          const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+          const fileName = remoteUrl.split('/').pop()?.split('?')[0] || 'Document.pdf';
+          // const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
           link.download = fileName;
   
           document.body.appendChild(link);

@@ -69,7 +69,7 @@ export class MouActivityActionPlanComponent implements OnInit {
   //====================================================
   // Open Modal
   //====================================================
-
+  ExistingUID: any;
   ModifyFaculty(row: any) {
     
 
@@ -79,7 +79,7 @@ export class MouActivityActionPlanComponent implements OnInit {
     this.recordId = row.id;
     this.StartDate3= row.startDate;
     this.EndDate3= row.endDate;
-
+    this.ExistingUID = row.uid;
     // Reset values every time modal opens
     this.employeeControl3.setValue('');
 
@@ -123,7 +123,7 @@ export class MouActivityActionPlanComponent implements OnInit {
         .toLowerCase()
         .trim();
 
-    if (inputValue) {
+    if (inputValue ) {
 
       this.filteredEmployeesData3 =
         this.EmployeeData
@@ -153,7 +153,13 @@ export class MouActivityActionPlanComponent implements OnInit {
     this.ResponsiblePerson3 = employee.employeeCode;
 
     this.AssignedToUid3 = employee.employeeCode;
-
+    if(this.AssignedToUid3 === this.ExistingUID){
+       swal.fire('Error', 'Select Different UID', 'error')
+      // alert('You have selected the same UID as existing. Please select a different UID.');
+       this.filteredEmployeesData3 = [];
+       this.showSuggestions3 = false;
+      return;
+    }
     this.employeeControl3.setValue(
       `${employee.employeeName} (${employee.employeeCode})`
     );
@@ -169,7 +175,7 @@ export class MouActivityActionPlanComponent implements OnInit {
 
   onKeydown3(event: KeyboardEvent) {
 
-    if (!this.filteredEmployeesData3?.length) {
+    if (!this.filteredEmployeesData3?.length ) {       
       return;
     }
 
@@ -251,6 +257,7 @@ export class MouActivityActionPlanComponent implements OnInit {
 
     const formData = new FormData();
     formData.append('MouId', this.newMouid );
+    formData.append('ExistingUid', this.ExistingUID );
     formData.append('RecordID',this.recordId );
     formData.append('Uid', this.ResponsiblePerson3);
     formData.append('ActionAssignedBy', this.EmployeeCode );
@@ -1464,9 +1471,17 @@ getRenewedCount(): number {
     this.mouDocumentsService.MouNewActivityPlanAddNew(formData).subscribe({
       next: (data: any) => {
         if (data?.item1?.[0]?.msg === 'success') {
-          this.showAlert('Action Planned Stored Successfully!', 'success');
+          // this.showAlert('Action Planned Stored Successfully!', 'success');
+           swal.fire('Success', 'Assigned UID Done.', 'success');
+           setTimeout(() => {
+          window.location.reload();
+        }, 1500);
         } else {
-          this.showAlert('Server Error', 'error');
+          // this.showAlert('Server Error', 'error');
+           swal.fire('Failed', 'Assigned UID Failed.', 'error');
+           setTimeout(() => {
+          window.location.reload();
+        }, 1500);
         }
       },
       complete: () => this.clearFields()

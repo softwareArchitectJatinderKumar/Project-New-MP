@@ -167,13 +167,25 @@
                                                                 <i class="bi bi-file-earmark-text"></i> </button>
                                                         </ng-container>
                                                         <ng-template #AllowsFile>
+                                                            <ng-container *ngIf="row.documentUploadedFile">
+                                                        
+                                                                <ng-container *ngFor="let file of getDocumentFiles(row.documentUploadedFile); let i = index">
+                                                                    <button class="btn btn-dark me-1 mb-1" (click)="onDownloadFile(file)" [title]="getFileName(file)">
+                                                                        <i class="bi bi-file-earmark-text"></i>
+                                                                        {{ i + 1 }}
+                                                                    </button>
+                                                                </ng-container>
+                                                        
+                                                            </ng-container>
+                                                        </ng-template>
+                                                        <!-- <ng-template #AllowsFile>
                                                             <ng-container *ngIf="row.documentUploadedFile != null">
-                                                                <!-- <button class="btn btn-dark" (click)="onSelectFileY(row)"> Download </button> -->
+                                                               
                                                                 <button class="btn btn-dark"
                                                                     (click)="onDownloadFile(row.documentUploadedFile)">
                                                                     <i class="bi bi-file-earmark-text"></i> *</button>
                                                             </ng-container>
-                                                        </ng-template>
+                                                        </ng-template> -->
                                                     </ng-template>
                                                 </ngx-datatable-column>
 
@@ -184,7 +196,7 @@
                                                         {{row.assignedToFacultyUID}}-{{row.assignedToFacultyName}}
                                                     </ng-template>
                                                 </ngx-datatable-column>
-                                                <ngx-datatable-column name="Download Format" [sortable]="false"
+                                                <!-- <ngx-datatable-column name="Download Format" [sortable]="false"
                                                     prop="Id">
                                                     <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                                         ngx-datatable-cell-template>
@@ -192,7 +204,7 @@
                                                             (click)="DownloadFormatDocument(row)"> <i
                                                                 class="bi bi-file-earmark-text"></i> </button>
                                                     </ng-template>
-                                                </ngx-datatable-column>
+                                                </ngx-datatable-column> -->
 
                                                 <ngx-datatable-column name="Approvals Actions" [sortable]="false"
                                                     prop="Id">

@@ -614,25 +614,56 @@ export class MouDocumentsReportComponent implements OnInit {
     const year = d.getFullYear();
     return [year, month.padStart(2, '0'), day.padStart(2, '0')].join('-');
   }
+  // DisapproveStatus(Id: any) {
+  //   swal.fire({
+  //     title: "Reason for Disapproval",
+  //     // text: "Disapproval reason",
+  //     input: 'text',
+  //     showCancelButton: true
+  //   }).then((result) => {
+  //     if (result.value) {
+  //       this.Reason = result.value;
+  //       const formData = new FormData();
+  //       formData.append('Id', Id);
+  //       formData.append('DisapprovalReason', this.Reason);
+  //       formData.append('Action', 'Disapprove');
+  //       this.handleStatusChange(formData, 'Disapprove');
+  //     } else {
+  //       this.showCancelledSwal();
+  //     }
+  //   });
+  // }
+
+
   DisapproveStatus(Id: any) {
-    swal.fire({
-      title: "Reason for Disapproval",
-      // text: "Disapproval reason",
-      input: 'text',
-      showCancelButton: true
-    }).then((result) => {
-      if (result.value) {
-        this.Reason = result.value;
-        const formData = new FormData();
-        formData.append('Id', Id);
-        formData.append('DisapprovalReason', this.Reason);
-        formData.append('Action', 'Disapprove');
-        this.handleStatusChange(formData, 'Disapprove');
-      } else {
-        this.showCancelledSwal();
+  swal.fire({
+    title: 'Reason for Disapproval',
+    input: 'text',
+    inputPlaceholder: 'Enter reason for disapproval',
+    showCancelButton: true,
+    confirmButtonText: 'Submit',
+    cancelButtonText: 'Cancel',
+    inputValidator: (value) => {
+      if (!value || !value.trim()) {
+        return 'Disapproval reason is required.';
       }
-    });
-  }
+      return null;
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.Reason = result.value.trim();
+
+      const formData = new FormData();
+      formData.append('Id', Id);
+      formData.append('DisapprovalReason', this.Reason);
+      formData.append('Action', 'Disapprove');
+
+      this.handleStatusChange(formData, 'Disapprove');
+    } else if (result.dismiss === swal.DismissReason.cancel) {
+      this.showCancelledSwal();
+    }
+  });
+}
 
 
   ChangeApproveStatus(Id: any) {
