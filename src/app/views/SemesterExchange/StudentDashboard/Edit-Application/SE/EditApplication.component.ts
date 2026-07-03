@@ -286,7 +286,8 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     fd.append('FileData', row.fileData);
     fd.append('RegistrationNo', this.RegistrationNo);
 
-    this.studentService.addSECheckListDocuments(fd)
+    this.studentService.UpdateDocuments(fd)
+    // this.studentService.addSECheckListDocuments(fd)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => { row.isUploading = false; row.isUploaded = true; Swal.fire('Success', `${row.documentName} uploaded!`, 'success'); row.isUploading = false;},

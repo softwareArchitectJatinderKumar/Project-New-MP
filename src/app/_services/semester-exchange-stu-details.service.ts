@@ -33,10 +33,10 @@ interface IFormattedApiResponse {
 
 
 
-//  const AUTH_API = 'https://localhost:7135/'; //'https://projectsapi.lpu.in/';
-// const AUTH_API_LOCAL = 'https://localhost:7135/'; //'https://localhost:7125/';
-const AUTH_API = 'https://projectsapi.lpu.in/';
-const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
+ const AUTH_API = 'https://localhost:7135/'; //'https://projectsapi.lpu.in/';
+const AUTH_API_LOCAL = 'https://localhost:7135/'; //'https://localhost:7125/';
+// const AUTH_API = 'https://projectsapi.lpu.in/';
+// const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
 @Injectable({
   providedIn: 'root'
 })
@@ -584,6 +584,17 @@ GetStuDetailsWithImage(RegId: string): Observable<any> {
     return this.http.get<any>(this.baseUrl + 'api/SemesterExchangeStudent/GetStage2DocumentDetails?ApplicationId=' + aplicationId , httpOptions);
   }
 
+  GetAllUploadedDocumentDetails(Id: string): Observable<any> {
+    var authToken = this.storageService.getUser();
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${authToken}`
+        // 'Authorization': `Bearer ${authToken}`
+      })
+    };
+    return this.http.get<any>(`${AUTH_API_LOCAL}api/SemesterExchangeStudent/GetAllUploadedDocumentDetails?Id=${Id}`, httpOptions);
+    // return this.http.get<any>(`${this.baseUrl}api/SemesterExchangeStudent/GetSemesterExchangeStudentDetails`, httpOptions);
+  }
 
     // getStudentMarks(regNo: string): Observable<IFormattedApiResponse> {
     //     return this.http.get<IApiTupleResponse>(`${AUTH_API_LOCAL}/GetStudentPreviousMarksDetails?RegistrationNo=${regNo}`).pipe(
