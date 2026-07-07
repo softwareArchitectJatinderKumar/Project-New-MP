@@ -277,14 +277,58 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     if (!row?.fileObject) { Swal.fire('Error', 'Please select a file first.', 'error'); return; }
     row.isUploading = true;
     const fd = new FormData();
+    // alert(row.documentName)
     fd.append('File', row.fileObject, row.fileName ?? '');
     fd.append('ApplicationId', this.ApplicationId);
-    fd.append('DocumentName', row.documentName);
-    fd.append('FilePath', row.fileName);
-    fd.append('Stage', row.stage.toString());
-    fd.append('StageName', row.stageName.trim());
-    fd.append('FileData', row.fileData);
+    // fd.append('DocumentName', row.documentName);
+    // fd.append('FilePath', row.fileName);
+    // fd.append('Stage', row.stage.toString());
+    // fd.append('StageName', row.stageName.trim());
+    // fd.append('FileData', row.fileData);
     fd.append('RegistrationNo', this.RegistrationNo);
+    if(row.documentName === 'Resume') {
+      fd.append('ResumeFileName', row.fileName);
+      fd.append('ResumeFileData', row.fileData);
+    }
+    if(row.documentName === 'Consent Letter') {
+      fd.append('ConsentLetterFileName', row.fileName);
+      fd.append('ConsentLetterData', row.fileData);
+    }
+    if(row.documentName === 'Fees Proof') {
+      fd.append('FeesProofFileName', row.fileName);
+      fd.append('FeesProofData', row.fileData);
+    }
+    if(row.documentName === 'Passport') {
+      fd.append('PassportFileName', row.fileName);
+      fd.append('PassportFileData', row.fileData);
+    } 
+    if(row.documentName === 'English Proof') {
+      fd.append('EnglishProofFileName', row.fileName);
+      fd.append('EnglishProofData', row.fileData);
+    }
+    if(row.documentName === 'Affidavit') {
+      fd.append('AffidavitPath', row.fileName);
+      fd.append('AffidavitData', row.fileData);
+    }
+    if(row.documentName === 'Indemnity Bond') {
+      fd.append('IndeminityBondPath', row.fileName);
+      fd.append('IndeminityBondData', row.fileData);
+    }
+    if(row.documentName === 'Offer Letter') {
+      fd.append('OfferLetterPath', row.fileName);
+      fd.append('OfferLetterData', row.fileData);
+    }
+    if(row.documentName === 'OutBound Ticket') {
+      fd.append('OutBoundTicket', row.fileName);
+      fd.append('OutBoundTicketData', row.fileData);
+    }
+    if(row.documentName === 'Return Ticket') {
+      fd.append('ReturnTicketPath', row.fileName);
+      fd.append('ReturnTicketData', row.fileData);
+    }
+  
+ 
+
 
     this.studentService.UpdateDocuments(fd)
     // this.studentService.addSECheckListDocuments(fd)

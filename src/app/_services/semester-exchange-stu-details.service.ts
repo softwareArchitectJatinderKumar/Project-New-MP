@@ -596,6 +596,17 @@ GetStuDetailsWithImage(RegId: string): Observable<any> {
     // return this.http.get<any>(`${this.baseUrl}api/SemesterExchangeStudent/GetSemesterExchangeStudentDetails`, httpOptions);
   }
 
+
+
+    UpdateDocumentStatus(dataSoft: FormData): Observable<any> {
+    var authToken = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      // .set('Authorization', 'Bearer ' + authToken)
+      .set('Authorization', 'Bearer ' + authToken)
+    return this.http.post(
+      AUTH_API + 'api/SemesterExchangeStudent/SemesterExchangeUpdateDocumentStatus', dataSoft, { headers });
+  }
+
     // getStudentMarks(regNo: string): Observable<IFormattedApiResponse> {
     //     return this.http.get<IApiTupleResponse>(`${AUTH_API_LOCAL}/GetStudentPreviousMarksDetails?RegistrationNo=${regNo}`).pipe(
     //         map(response => {

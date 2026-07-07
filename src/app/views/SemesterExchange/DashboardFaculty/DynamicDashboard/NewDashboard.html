@@ -143,8 +143,9 @@
                 <ngx-datatable-column name="StageIICount" prop="uploadedStageIIDocumentCount" [width]="20"></ngx-datatable-column>
                 
                 <!-- <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="115"></ngx-datatable-column> -->
-                <ngx-datatable-column name="Approved University" prop="approvedUniversity"
-                    [width]="60"></ngx-datatable-column>
+                <ngx-datatable-column name="Approved University" prop="approvedUniversity" [width]="60"></ngx-datatable-column>
+
+                 
 
                 <ngx-datatable-column name="Faculty" [width]="80">
                     <ng-template let-row="row" ngx-datatable-cell-template>
@@ -202,6 +203,12 @@
                         <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)"
                             [disabled]="approvalLabel(row.isApproved) != 'Pending'">
                             <i class="bi bi-x-circle me-1"></i>Reject
+                        </button>
+                     
+
+
+                          <button class="btn btn-danger btn-sm me-1 mb-1" (click)="viewAllDocuments(row)" >
+                            <i class="bi bi-x-circle me-1"></i>View All Documents 
                         </button>
                     </ng-template>
                 </ngx-datatable-column>
@@ -263,6 +270,13 @@
                         <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewAllRemarks(row, 'hod')"
                             [disabled]="!hasAnyRemarks(row)">
                             <i class="bi bi-chat-square-text me-1"></i>View Remarks
+                        </button>
+
+
+
+
+                          <button class="btn btn-danger btn-sm me-1 mb-1" (click)="viewAllDocuments(row)" >
+                            <i class="bi bi-x-circle me-1"></i>View All Documents 
                         </button>
                     </ng-template>
                 </ngx-datatable-column>
@@ -551,6 +565,12 @@
                             <i class="bi bi-send me-1"></i>
                             {{ isTrue(row.isForwardedtoHOW) ? 'Fwd. to HoW ✓' : 'Forward to HoW' }}
                         </button>
+
+
+
+                          <button class="btn btn-danger btn-sm me-1 mb-1" (click)="viewAllDocuments(row)" >
+                            <i class="bi bi-x-circle me-1"></i>View All Documents 
+                        </button>
                     </ng-template>
                 </ngx-datatable-column>
             </ngx-datatable>
@@ -768,6 +788,12 @@
                         <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewAllRemarks(row, 'hod')"
                             [disabled]="!hasAnyRemarks(row)">
                             <i class="bi bi-chat-square-text me-1"></i>View Remarks
+                        </button>
+
+
+
+                          <button class="btn btn-danger btn-sm me-1 mb-1" (click)="viewAllDocuments(row)" >
+                            <i class="bi bi-x-circle me-1"></i>View All Documents 
                         </button>
                     </ng-template>
                 </ngx-datatable-column>
@@ -1714,4 +1740,308 @@
 
         </form>
     </div>
+</ng-template>
+<!-- ─── Accept Modal  ──────────────────────────────────────── -->
+<ng-template #DocumentApprovalsModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">
+            <i class="bi bi-pencil-square me-2"></i>
+            Document Approvals 
+        </h5>
+
+        <button type="button" class="btn-close" (click)="modal.dismiss()">
+        </button>
+    </div>
+
+    <div class="modal-body">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-dark text-white py-3 d-flex align-items-center">
+            <i class="bi bi-shield-check me-2 fs-5"></i>
+            <h5 class="card-title mb-0">Document Verification {{SelectedDocuments.applicationId}}</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light text-secondary">
+                    <tr>
+                        <th scope="col" style="width: 5%;">#</th>
+                        <th scope="col" style="width: 35%;">Document Type</th>
+                        <th scope="col" style="width: 30%;">Document Attachment</th>
+                        <th scope="col" style="width: 30%;" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- #1 Resume  resumeFileName      consentLetterDocumentPath   feesProofDocumentPath   englishProofDocumentPath    affidavitPath   indeminityBondPath  outBoundTicket  returnTicketPath-->
+                    <tr>
+                        <td class="fw-bold text-muted">1</td>
+                        <td>
+                            <span class="fw-semibold text-dark">Resume</span>
+                        </td>
+                        <td>
+                            <ng-container *ngIf="SelectedDocuments.resumeFileName; else noResume">
+                                <button type="button" class="btn btn-link text-primary p-0 d-flex align-items-center text-decoration-none" (click)="downloadDocument(SelectedDocuments.resumeFileName)">
+                                    <i class="bi bi-file-earmark-person me-2 fs-5"></i>
+                                    <span class="text-truncate" style="max-width: 200px;">{{ SelectedDocuments.resumeFileName }}</span>
+                                </button>
+                            </ng-container>
+                            <ng-template #noResume><span class="badge bg-light text-muted border">No file uploaded</span></ng-template>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-success px-3" (click)="approveDocument(SelectedDocuments.resumeFileName, 'Resume',SelectedDocuments.applicationId,'Approve')">
+                                    <i class="bi bi-check-circle me-1"></i> Approve
+                                </button>
+                                <button type="button" class="btn btn-outline-danger px-3" (click)="approveDocument(SelectedDocuments.resumeFileName, 'Resume',SelectedDocuments.applicationId,'Disapprove')">
+                                    <i class="bi bi-x-circle me-1"></i> Reject
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- #2 Consent Letter -->
+                    <tr>
+                        <td class="fw-bold text-muted">2</td>
+                        <td>
+                            <span class="fw-semibold text-dark">Consent Letter</span>
+                        </td>
+                        <td>
+                            <ng-container *ngIf="SelectedDocuments.consentLetterDocumentPath; else noConsent">
+                                <button type="button" class="btn btn-link text-info p-0 d-flex align-items-center text-decoration-none" (click)="downloadDocument(SelectedDocuments.consentLetterDocumentPath)">
+                                    <i class="bi bi-file-earmark-text me-2 fs-5"></i>
+                                    <span class="text-truncate" style="max-width: 200px;">{{ SelectedDocuments.consentLetterDocumentPath }}</span>
+                                </button>
+                            </ng-container>
+                            <ng-template #noConsent><span class="badge bg-light text-muted border">No file uploaded</span></ng-template>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-success px-3" (click)="approveDocument(SelectedDocuments.resumeFileName, 'consentLetter',SelectedDocuments.applicationId,'Approve')">
+                                    <i class="bi bi-check-circle me-1"></i> Approve
+                                </button>
+                                <button type="button" class="btn btn-outline-danger px-3" (click)="approveDocument(SelectedDocuments.resumeFileName, 'consentLetter',SelectedDocuments.applicationId,'Disapprove')">
+                                    <i class="bi bi-x-circle me-1"></i> Reject
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- #3 Fees Proof -->
+                    <tr>
+                        <td class="fw-bold text-muted">3</td>
+                        <td>
+                            <span class="fw-semibold text-dark">Fees Proof</span>
+                        </td>
+                        <td>
+                            <ng-container *ngIf="SelectedDocuments.feesProofDocumentPath; else noFees">
+                                <button type="button" class="btn btn-link text-success p-0 d-flex align-items-center text-decoration-none" (click)="downloadDocument(SelectedDocuments.feesProofDocumentPath)">
+                                    <i class="bi bi-credit-card me-2 fs-5"></i>
+                                    <span class="text-truncate" style="max-width: 200px;">{{ SelectedDocuments.feesProofDocumentPath }}</span>
+                                </button>
+                            </ng-container>
+                            <ng-template #noFees><span class="badge bg-light text-muted border">No file uploaded</span></ng-template>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-success px-3" (click)="approveDocument(SelectedDocuments.feesProofDocumentPath, 'FeesProof',SelectedDocuments.applicationId,'Approve')">
+                                    <i class="bi bi-check-circle me-1"></i> Approve
+                                </button>
+                                <button type="button" class="btn btn-outline-danger px-3" (click)="approveDocument(SelectedDocuments.feesProofDocumentPath, 'FeesProof',SelectedDocuments.applicationId,'Disapprove')">
+                                    <i class="bi bi-x-circle me-1"></i> Reject
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- #4 Passport -->
+                    <tr>
+                        <td class="fw-bold text-muted">4</td>
+                        <td>
+                            <span class="fw-semibold text-dark">Passport</span>
+                        </td>
+                        <td>
+                            <ng-container *ngIf="SelectedDocuments.passportDocumentPath; else noPassport">
+                                <button type="button" class="btn btn-link text-warning p-0 d-flex align-items-center text-decoration-none" (click)="downloadDocument(SelectedDocuments.passportDocumentPath)">
+                                    <i class="bi bi-journal-text me-2 fs-5"></i>
+                                    <span class="text-truncate" style="max-width: 200px;">{{ SelectedDocuments.passportDocumentPath }}</span>
+                                </button>
+                            </ng-container>
+                            <ng-template #noPassport><span class="badge bg-light text-muted border">No file uploaded</span></ng-template>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-success px-3" (click)="approveDocument(SelectedDocuments.passportDocumentPath, 'Passport',SelectedDocuments.applicationId,'Approve')">
+                                    <i class="bi bi-check-circle me-1"></i> Approve
+                                </button>
+                                <button type="button" class="btn btn-outline-danger px-3" (click)="approveDocument(SelectedDocuments.passportDocumentPath, 'Passport',SelectedDocuments.applicationId,'Disapprove')">
+                                    <i class="bi bi-x-circle me-1"></i> Reject
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- #5 English Proof -->
+                    <tr>
+                        <td class="fw-bold text-muted">5</td>
+                        <td>
+                            <span class="fw-semibold text-dark">English Proof</span>
+                        </td>
+                        <td>
+                            <ng-container *ngIf="SelectedDocuments.englishProofDocumentPath; else noEnglish">
+                                <button type="button" class="btn btn-link text-secondary p-0 d-flex align-items-center text-decoration-none" (click)="downloadDocument(SelectedDocuments.englishProofDocumentPath)">
+                                    <i class="bi bi-translate me-2 fs-5"></i>
+                                    <span class="text-truncate" style="max-width: 200px;">{{ SelectedDocuments.englishProofDocumentPath }}</span>
+                                </button>
+                            </ng-container>
+                            <ng-template #noEnglish><span class="badge bg-light text-muted border">No file uploaded</span></ng-template>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-success px-3" (click)="approveDocument(SelectedDocuments.englishProofDocumentPath, 'englishProof',SelectedDocuments.applicationId,'Approve')">
+                                    <i class="bi bi-check-circle me-1"></i> Approve
+                                </button>
+                                <button type="button" class="btn btn-outline-danger px-3" (click)="approveDocument(SelectedDocuments.englishProofDocumentPath, 'englishProof',SelectedDocuments.applicationId,'Disapprove')">
+                                    <i class="bi bi-x-circle me-1"></i> Reject
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- #6 Affidavit -->
+                    <tr>
+                        <td class="fw-bold text-muted">6</td>
+                        <td>
+                            <span class="fw-semibold text-dark">Affidavit</span>
+                        </td>
+                        <td>
+                            <ng-container *ngIf="SelectedDocuments.affidavitPath; else noAffidavit">
+                                <button type="button" class="btn btn-link text-danger p-0 d-flex align-items-center text-decoration-none" (click)="downloadDocument(SelectedDocuments.affidavitPath)">
+                                    <i class="bi bi-file-earmark-gantt me-2 fs-5"></i>
+                                    <span class="text-truncate" style="max-width: 200px;">{{ SelectedDocuments.affidavitPath }}</span>
+                                </button>
+                            </ng-container>
+                            <ng-template #noAffidavit><span class="badge bg-light text-muted border">No file uploaded</span></ng-template>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-success px-3" (click)="approveDocument(SelectedDocuments.affidavitPath, 'affidavit',SelectedDocuments.applicationId,'Approve')">
+                                    <i class="bi bi-check-circle me-1"></i> Approve
+                                </button>
+                                <button type="button" class="btn btn-outline-danger px-3" (click)="approveDocument(SelectedDocuments.affidavitPath, 'affidavit',SelectedDocuments.applicationId,'Disapprove')">
+                                    <i class="bi bi-x-circle me-1"></i> Reject
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- #7 Indemnity Bond -->
+                    <tr>
+                        <td class="fw-bold text-muted">7</td>
+                        <td>
+                            <span class="fw-semibold text-dark">Indemnity Bond</span>
+                        </td>
+                        <td>
+                            <ng-container *ngIf="SelectedDocuments.indeminityBondPath; else noIndemnity">
+                                <button type="button" class="btn btn-link text-dark p-0 d-flex align-items-center text-decoration-none" (click)="downloadDocument(SelectedDocuments.indeminityBondPath)">
+                                    <i class="bi bi-file-earmark-lock me-2 fs-5"></i>
+                                    <span class="text-truncate" style="max-width: 200px;">{{ SelectedDocuments.indeminityBondPath }}</span>
+                                </button>
+                            </ng-container>
+                            <ng-template #noIndemnity><span class="badge bg-light text-muted border">No file uploaded</span></ng-template>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-success px-3" (click)="approveDocument(SelectedDocuments.indeminityBondPath, 'IndemnityBond',SelectedDocuments.applicationId,'Approve')">
+                                    <i class="bi bi-check-circle me-1"></i> Approve
+                                </button>
+                                <button type="button" class="btn btn-outline-danger px-3" (click)="approveDocument(SelectedDocuments.indeminityBondPath, 'IndemnityBond',SelectedDocuments.applicationId,'Disapprove')">
+                                    <i class="bi bi-x-circle me-1"></i> Reject
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- #8 Offer Letter -->
+                    <tr>
+                        <td class="fw-bold text-muted">8</td>
+                        <td>
+                            <span class="fw-semibold text-dark">Offer Letter</span>
+                        </td>
+                        <td>
+                            <ng-container *ngIf="SelectedDocuments.outBoundTicket; else noOffer">
+                                <button type="button" class="btn btn-link text-primary p-0 d-flex align-items-center text-decoration-none" (click)="downloadDocument(SelectedDocuments.outBoundTicket)">
+                                    <i class="bi bi-envelope-open me-2 fs-5"></i>
+                                    <span class="text-truncate" style="max-width: 200px;">{{ SelectedDocuments.outBoundTicket }}</span>
+                                </button>
+                            </ng-container>
+                            <ng-template #noOffer><span class="badge bg-light text-muted border">No file uploaded</span></ng-template>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-success px-3" (click)="approveDocument(SelectedDocuments.outBoundTicket, 'OfferLetter',SelectedDocuments.applicationId,'Approve')">
+                                    <i class="bi bi-check-circle me-1"></i> Approve
+                                </button>
+                                <button type="button" class="btn btn-outline-danger px-3" (click)="approveDocument(SelectedDocuments.outBoundTicket, 'OfferLetter',SelectedDocuments.applicationId,'Disapprove')">
+                                    <i class="bi bi-x-circle me-1"></i> Reject
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- #9 Outbound Ticket -->
+                    <tr>
+                        <td class="fw-bold text-muted">9</td>
+                        <td>
+                            <span class="fw-semibold text-dark">Outbound Ticket</span>
+                        </td>
+                        <td>
+                            <ng-container *ngIf="SelectedDocuments.returnTicketPath; else noOutbound">
+                                <button type="button" class="btn btn-link text-success p-0 d-flex align-items-center text-decoration-none" (click)="downloadDocument(SelectedDocuments.returnTicketPath)">
+                                    <i class="bi bi-airplane-engines me-2 fs-5"></i>
+                                    <span class="text-truncate" style="max-width: 200px;">{{ SelectedDocuments.returnTicketPath }}</span>
+                                </button>
+                            </ng-container>
+                            <ng-template #noOutbound><span class="badge bg-light text-muted border">No file uploaded</span></ng-template>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-success px-3" (click)="approveDocument(SelectedDocuments.returnTicketPath, 'OutboundTicket',SelectedDocuments.applicationId,'Approve')">
+                                    <i class="bi bi-check-circle me-1"></i> Approve
+                                </button>
+                                <button type="button" class="btn btn-outline-danger px-3" (click)="approveDocument(SelectedDocuments.returnTicketPath, 'OutboundTicket',SelectedDocuments.applicationId,'Disapprove')">
+                                    <i class="bi bi-x-circle me-1"></i> Reject
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- #10 Return Ticket -->
+                    <tr>
+                        <td class="fw-bold text-muted">10</td>
+                        <td>
+                            <span class="fw-semibold text-dark">Return Ticket</span>
+                        </td>
+                        <td>
+                            <ng-container *ngIf="SelectedDocuments.returnTicketPath; else noReturn">
+                                <button type="button" class="btn btn-link text-info p-0 d-flex align-items-center text-decoration-none" (click)="downloadDocument(SelectedDocuments.returnTicketPath)">
+                                    <i class="bi bi-airplane me-2 fs-5"></i>
+                                    <span class="text-truncate" style="max-width: 200px;">{{ SelectedDocuments.returnTicketPath }}</span>
+                                </button>
+                            </ng-container>
+                            <ng-template #noReturn><span class="badge bg-light text-muted border">No file uploaded</span></ng-template>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-success px-3" (click)="approveDocument(SelectedDocuments.returnTicketPath, 'ReturnTicket',SelectedDocuments.applicationId,'Approve')">
+                                    <i class="bi bi-check-circle me-1"></i> Approve
+                                </button>
+                                <button type="button" class="btn btn-outline-danger px-3" (click)="approveDocument(SelectedDocuments.returnTicketPath, 'ReturnTicket',SelectedDocuments.applicationId,'Disapprove')">
+                                    <i class="bi bi-x-circle me-1"></i> Reject
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 </ng-template>

@@ -61,10 +61,21 @@ interface Application {
   uploadedDocumentCount: string;
   cgpa: string;
   approvedUniversity: string;
-  uploadedStageIDocumentCount : any;
-  uploadedStageIIDocumentCount : any;
+  uploadedStageIDocumentCount: any;
+  uploadedStageIIDocumentCount: any;
   englishTestType: any;
 
+  resumeFileName: any;
+  resumeDocumentPath: any;
+  consentLetterDocumentPath: any;
+  feesProofDocumentPath: any;
+  passportDocumentPath: any;
+  englishProofDocumentPath: any;
+  affidavitPath: any;
+  indeminityBondPath: any;
+  offerLetterPath: any;
+  outBoundTicket: any;
+  returnTicketPath: any;
   // ── Runtime flags set by enrichAndFilterApplications() ──────────────────
   _isCounsellor: boolean;
   _isFaculty: boolean;
@@ -152,12 +163,12 @@ export class DynamicDashboardComponent implements OnInit {
   counsellorActiveTab: 'my' | 'allApproved' = 'my';
   // ── HOD Tab Switching ─────────────────────────────────────────────────────────
 
-  switchCounsellorTab(tab: 'my' |  'allApproved'): void {
+  switchCounsellorTab(tab: 'my' | 'allApproved'): void {
     this.counsellorActiveTab = tab;
     this.cd.detectChanges();
   }
   AllApprovedApplicationsforCounsellor: Application[] = [];
-  
+
 
 
 
@@ -169,7 +180,7 @@ export class DynamicDashboardComponent implements OnInit {
   searchMyHod() {
 
     const query = this.searchQueryMyHod.trim().toLowerCase();
-    
+
     this.FilterAllHOWApplications = this.AllHOWApplications.filter(item => {
       return Object.entries(item).some(([key, val]) => {
         if (val !== null && val !== undefined) {
@@ -295,7 +306,6 @@ export class DynamicDashboardComponent implements OnInit {
   }
 
   submitAcceptForm(): void {
-
     if (this.AcceptForm.invalid) {
       this.AcceptForm.markAllAsTouched();
       return;
@@ -306,49 +316,32 @@ export class DynamicDashboardComponent implements OnInit {
 
     const fd = new FormData();
 
-    fd.append(
-      'RegistrationNo',
-      this.selectedApplication.registrationNo
-    );
+    fd.append('RegistrationNo', this.selectedApplication.registrationNo);
 
-    fd.append(
-      'UniversitySelected',
-      this.AcceptForm.get('UniversitySelected')?.value
-    );
+    fd.append('UniversitySelected', this.AcceptForm.get('UniversitySelected')?.value);
 
     fd.append('Action', 'Accept');
 
-    this.studentService.SendApproveRequest(fd)
-      .pipe(
-        finalize(() => this.stopLoader(startTime))
-      )
+    this.studentService.SendApproveRequest(fd).pipe(finalize(() => this.stopLoader(startTime)))
       .subscribe({
         next: (data: any) => {
-
           const msg = data?.item1?.[0]?.msg;
-
           if (msg === 'Approved') {
             Swal.fire(
               'Success!',
               'Application accepted successfully!',
               'success'
             ).then(() => {
-
               this.modalService.dismissAll();
-
               this.getSEAllApplications();
             });
-
           } else if (msg === 'Disapproved') {
-
             Swal.fire(
               'No Change!',
               'The application status was not changed.',
               'info'
             );
-
           } else {
-
             Swal.fire(
               'Error!',
               'Failed to accept application.',
@@ -356,9 +349,7 @@ export class DynamicDashboardComponent implements OnInit {
             );
           }
         },
-
         error: () => {
-
           Swal.fire(
             'Error!',
             'An error occurred while trying to accept the application.',
@@ -469,6 +460,7 @@ export class DynamicDashboardComponent implements OnInit {
   @ViewChild('AddRemarksModal') AddRemarksModal!: TemplateRef<any>;
   @ViewChild('ViewRemarksModal') ViewRemarksModal!: TemplateRef<any>;
   @ViewChild('AcceptModal') AcceptModal!: TemplateRef<any>;
+  @ViewChild('DocumentApprovalsModal') DocumentApprovalsModal!: TemplateRef<any>;
 
   private currentModalRef: NgbModalRef | null = null;
 
@@ -605,16 +597,16 @@ export class DynamicDashboardComponent implements OnInit {
     ).subscribe({
       next: response => {
         this.AllApplications = Array.isArray(response?.item1) ? response.item1 : [];
-
-        this.AllFacultyApplications = this.FilterAllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | '',isForwardtoHOD: string | '' ; }) => app.dealingFaculty == this.EmployeeCode );
-        this.AllAuthorityApplications = this.FilterAllAuthorityApplications = response.item1.filter((app: { dealingAuthority: string | '',  dealingFaculty: string | '';approvedUniversity: string | ''; }) => app.dealingAuthority == this.EmployeeCode && app.approvedUniversity ==null);
+        console.log(JSON.stringify(this.AllApplications) + 'Main details of all applications')
+        this.AllFacultyApplications = this.FilterAllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | '', isForwardtoHOD: string | ''; }) => app.dealingFaculty == this.EmployeeCode);
+        this.AllAuthorityApplications = this.FilterAllAuthorityApplications = response.item1.filter((app: { dealingAuthority: string | '', dealingFaculty: string | ''; approvedUniversity: string | ''; }) => app.dealingAuthority == this.EmployeeCode && app.approvedUniversity == null);
 
         this.AllHODApplications = this.FilterAllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | ''; isLocked: string | ''; isApproved: string | ''; }) => app.dealingHODId == this.EmployeeCode && app.isForwardtoHOD == '1' && app.isLocked != 'True' && app.isLocked != 'False');
 
         this.AllHOWApplications = response.item1.filter((app: { dealingHow: string | ''; isForwardedtoHOW: string | ''; isLocked: string | ''; }) => app.dealingHow == this.EmployeeCode && app.isForwardedtoHOW == '1');
         this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0);
         this.AllApprovedApplicationsforCounsellor = response.item1.filter((app: { approvedUniversity: string | ''; dealingAuthority: string | ''; }) => app.approvedUniversity?.length > 0 && app.dealingAuthority == this.EmployeeCode);
-         
+
         this.enrichAndFilterApplications();
       },
       error: err => this.LoginFailed(err),
@@ -651,12 +643,12 @@ export class DynamicDashboardComponent implements OnInit {
         console.log(this.hodAllApplications)
         //  this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) =>app.approvedUniversity?.trim().length > 0 );
 
-         this.AllApprovedApplications = response.item1.filter(
-  (app: { approvedUniversity: string | null }) =>
-    app.approvedUniversity &&
-    app.approvedUniversity !== 'null' &&
-    app.approvedUniversity.trim().length > 0
-);
+        this.AllApprovedApplications = response.item1.filter(
+          (app: { approvedUniversity: string | null }) =>
+            app.approvedUniversity &&
+            app.approvedUniversity !== 'null' &&
+            app.approvedUniversity.trim().length > 0
+        );
         // this.AllApprovedApplications = response.item1.filter((app: { isLocked: any, isApproved: any ; }) => app.isLocked=='True' || app.isApproved=='True');
         console.log(JSON.stringify(this.AllApprovedApplications))
         this.cd.detectChanges();
@@ -1255,10 +1247,7 @@ export class DynamicDashboardComponent implements OnInit {
    * @param callerRole 'counsellor' → Evaluation section hidden (req #3/#4)
    *                   'faculty' | 'hod' | 'how' → Evaluation section shown
    */
-  viewAllRemarks(
-    row: Application,
-    callerRole: 'counsellor' | 'faculty' | 'hod' | 'how' = 'counsellor'
-  ): void {
+  viewAllRemarks(row: Application, callerRole: 'counsellor' | 'faculty' | 'hod' | 'how' = 'counsellor'): void {
     this.selectedRemarksCallerRole = callerRole;
 
     // ── Collect ALL remarks rows for this registration number ────────────────
@@ -1266,7 +1255,6 @@ export class DynamicDashboardComponent implements OnInit {
       x => x.registrationNo === row.registrationNo
     ) ?? [];
 
-    console.log(JSON.stringify(allRows)+ 'Remarks all ')
     // First row drives the shared header fields (counselling, HOD, HoW etc.)
     const first = allRows[0];
 
@@ -1403,5 +1391,190 @@ export class DynamicDashboardComponent implements OnInit {
     const el = document.getElementById('DealingUserDashboardId');
     if (el) el.hidden = true;
     this.cd.detectChanges();
+  }
+  SERVER_URL = 'http://172.19.2.52/umsweb/DIA/SemesterExchangedocuments/';
+
+  documents: any[] = [];
+
+  downloadDocument(fileName: string) {
+
+    if (!fileName) {
+      return;
+    }
+
+    window.open(
+      this.SERVER_URL + fileName,
+      '_blank'
+    );
+
+  }
+  //  for Counsellor to Approved / Reject the Document uploaded 
+  SelectedDocuments: any;
+  viewAllDocuments(row: Application): void {
+    const allRows: Application[] = this.AllApplications?.filter(
+      x => x.registrationNo === row.registrationNo
+    ) ?? [];
+
+    const first = allRows[0];
+
+    this.SelectedDocuments = first
+      ? {
+        applicationId: row.applicationId || first.applicationId || '',
+        dealingUId: first.dealingUId || row.dealingUId || '',
+        resumeFileName: first.resumeDocumentPath || row.resumeDocumentPath || '',
+        consentLetterDocumentPath: first.consentLetterDocumentPath || row.consentLetterDocumentPath || '',
+        feesProofDocumentPath: first.feesProofDocumentPath || row.feesProofDocumentPath || '',
+        passportDocumentPath: first.passportDocumentPath || row.passportDocumentPath || '',
+        englishProofDocumentPath: first.englishProofDocumentPath || row.englishProofDocumentPath || '',
+        affidavitPath: first.affidavitPath || row.affidavitPath || '',
+        indeminityBondPath: first.indeminityBondPath || row.indeminityBondPath || '',
+        offerLetterPath: first.offerLetterPath || row.offerLetterPath || '',
+        outBoundTicket: first.outBoundTicket || row.outBoundTicket || '',
+        returnTicketPath: first.returnTicketPath || row.returnTicketPath || ''
+      }
+      : {
+        // No remarks row at all — still show the modal with inline app data
+        registrationNo: row.registrationNo,
+        applicationId: row.applicationId || '',
+        resumeFileName: row.resumeFileName || '',
+        consentLetterDocumentPath: row.consentLetterDocumentPath || '',
+        feesProofDocumentPath: row.feesProofDocumentPath || '',
+        passportDocumentPath: row.passportDocumentPath || '',
+        englishProofDocumentPath: row.englishProofDocumentPath || '',
+        affidavitPath: row.affidavitPath || '',
+        indeminityBondPath: row.indeminityBondPath || '',
+        offerLetterPath: row.offerLetterPath || '',
+        outBoundTicket: row.outBoundTicket || '',
+        returnTicketPath: row.returnTicketPath || ''
+      };
+
+
+    console.log(JSON.stringify(this.SelectedDocuments) + 'selected Row Document details ')
+    // alert(JSON.stringify(this.selectedRemarksEvaluations));
+    // ── Open modal ───────────────────────────────────────────────────────────
+    this.currentModalRef = this.modalService.open(this.DocumentApprovalsModal, {
+      size: 'xl',
+      backdrop: 'static',
+      keyboard: false,
+    });
+    this.currentModalRef.result.catch(() => { });
+    this.cd.detectChanges();
+  }
+
+
+
+  /**
+   * Handles the approval logic for a specific document
+   * @param docType string identifier for the document type
+   */
+approveDocument(FileName: string, DocumentName: any, ApplicationId: any, Action: any): void {
+
+  Swal.fire({
+    title: `${Action} Action`,
+    text: `Application ${ApplicationId}`,
+    input: 'text',
+    inputPlaceholder: 'Enter Remarks',
+    showCancelButton: true,
+    confirmButtonText: 'Assign',
+    showLoaderOnConfirm: true,
+    preConfirm: (code) => {
+      if (!code) {
+        Swal.showValidationMessage('Remarks are required!');
+      }
+      return code;
+    },
+
+    allowOutsideClick: () => !Swal.isLoading(),
+
+  }).then((result) => {
+
+    if (result.isConfirmed && result.value) {
+
+      this.loadingIndicator = true;
+      const startTime = Date.now();
+
+      const fd = new FormData();
+      fd.append('ApplicationId', ApplicationId);
+      fd.append('DocumentName', DocumentName);
+      fd.append('FilePath', FileName);
+      fd.append('ApprovedBy', this.EmployeeCode + '  ' );
+      fd.append('ApprovalRemarks', result.value);
+      fd.append('Action', Action);
+
+      this.studentService.UpdateDocumentStatus(fd)
+        .pipe(finalize(() => this.stopLoader(startTime)))
+        .subscribe({
+
+          next: (data: any) => {
+
+            const msg = data?.item1?.[0]?.msg;
+
+            if (msg === 'Approved') {
+
+              Swal.fire(
+                'Success!',
+                'Application accepted successfully!',
+                'success'
+              ).then(() => {
+                this.modalService.dismissAll();
+                this.getSEAllApplications();
+              });
+
+            } else if (msg === 'Disapproved') {
+
+              Swal.fire(
+                'No Change!',
+                'The application status was not changed.',
+                'info'
+              );
+
+            } else {
+
+              Swal.fire(
+                'Error!',
+                'Failed to accept application.',
+                'error'
+              );
+
+            }
+
+          },
+
+          error: () => {
+
+            Swal.fire(
+              'Error!',
+              'An error occurred while trying to accept the application.',
+              'error'
+            );
+
+          }
+
+        });
+
+    }
+
+  });
+
+}
+  /**
+   * Handles the rejection logic for a specific document
+   * @param docType string identifier for the document type
+   */
+  rejectDocument(docType: string): void {
+    console.log(`Document Rejected: ${docType}`);
+
+    // 1. Update local UI state
+    // this.selectedRemarks.documentStatuses[docType] = 'REJECTED';
+
+    // OPTIONAL: Prompt the user for rejection comments
+    const reason = prompt(`Enter reason for rejecting the ${docType}:`);
+    if (reason !== null) {
+      // this.selectedRemarks.documentStatuses[`${docType}Reason`] = reason;
+
+      // 2. Add your backend API update logic here
+      // this.documentService.updateStatus(this.selectedRemarks.id, docType, 'REJECTED', reason)
+      //   .subscribe(...);
+    }
   }
 }
