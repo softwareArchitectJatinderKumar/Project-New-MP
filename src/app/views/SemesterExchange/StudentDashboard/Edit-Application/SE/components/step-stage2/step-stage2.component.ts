@@ -4,8 +4,7 @@ import {
   FileSelectedEvent,
   MAX_FILE_SIZE_BYTES,
   StageDetailRow,
-  DocumentKeyConfig,
-  DOCUMENT_KEYS,
+  // DocumentKeyConfig,
 } from '../../models/application.models';
 import Swal from 'sweetalert2';
 
@@ -26,7 +25,21 @@ export class StepStage2Component {
 
   @Output() fileSelected = new EventEmitter<FileSelectedEvent>();
 
-  readonly docKeys: DocumentKeyConfig[] = DOCUMENT_KEYS.filter(d => d.stage === '2');
+  
+
+  // readonly docKeys: DocumentKeyConfig[] = DOCUMENT_KEYS.filter(d => d.stage === '2');
+
+
+   readonly docKeys: Array<{
+    key: FileSelectedEvent['key'];
+    label: string;
+    appField: keyof StudentApplication;
+    documentName: string;
+  }> = [
+    { key: 'offerLetterPath', label: 'Offer Letter Document', appField: 'offerLetterPath', documentName: 'Offer Letter' },
+    { key: 'outBoundTicket', label: 'OutBound Ticket', appField: 'outboundTicket', documentName: 'OutBound Ticket' },
+    { key: 'returnTicketPath', label: 'Return Ticket', appField: 'returnTicketPath', documentName: 'Return Ticket' },
+  ];
 
   getFileName(field: keyof StudentApplication): string {
     return (this.stuApplication?.[field] as string) ?? '';

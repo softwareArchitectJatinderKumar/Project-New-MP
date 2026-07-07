@@ -147,6 +147,22 @@ interface AggregatedRemarks {
   // they are rendered per-row via selectedRemarksEvaluations instead.
 }
 
+  export interface DocApprovalInfo {
+  isApproved: string;        // 'True' | 'False' | '' (empty = pending, per your getDocStatus())
+  approvalRemarks: string;
+  approvedBy: string;
+}
+
+export interface DocumentRowConfig {
+  label: string;         // Display text, e.g. "Resume"
+  fileKey: string;        // Property on SelectedDocuments holding the file path
+  approvalKey: string;    // Property on SelectedDocuments holding the DocApprovalInfo object
+  docTypeParam: string;   // 'docType' string passed to approveDocument(...) — unchanged from your existing calls
+}
+
+export type RowState = 'pending' | 'approved' | 'rejected' | 'noFile';
+
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 @Component({
@@ -156,6 +172,70 @@ interface AggregatedRemarks {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DynamicDashboardComponent implements OnInit {
+
+
+documentRows: DocumentRowConfig[] = [
+  { label: 'Resume',          fileKey: 'resumeFileName',            approvalKey: 'resumeApproval',     docTypeParam: 'Resume' },
+  { label: 'Consent Letter',  fileKey: 'consentLetterDocumentPath', approvalKey: 'consentApproval',    docTypeParam: 'Consent Letter' },
+  { label: 'Fees Proof',      fileKey: 'feesProofDocumentPath',     approvalKey: 'feesApproval',       docTypeParam: 'Fees Proof' },
+  { label: 'Passport',        fileKey: 'passportDocumentPath',      approvalKey: 'passportApproval',   docTypeParam: 'Passport' },
+  { label: 'English Proof',   fileKey: 'englishProofDocumentPath',  approvalKey: 'englishApproval',    docTypeParam: 'English Proof' },
+  { label: 'Affidavit',       fileKey: 'affidavitPath',             approvalKey: 'affidavitApproval',  docTypeParam: 'Affidavit' },
+  { label: 'Indemnity Bond',  fileKey: 'indeminityBondPath',        approvalKey: 'indemnityApproval',  docTypeParam: 'Indemnity Bond' },
+  { label: 'Offer Letter',    fileKey: 'offerLetterPath',           approvalKey: 'offerLetterApproval', docTypeParam: 'Offer Letter' },
+  { label: 'Outbound Ticket', fileKey: 'outBoundTicket',            approvalKey: 'outboundApproval',   docTypeParam: 'Outbound Ticket' },
+  { label: 'Return Ticket',   fileKey: 'returnTicketPath',          approvalKey: 'outboundApproval',   docTypeParam: 'Return Ticket' },
+];
+
+getFileValue(doc: DocumentRowConfig): string {
+  return ((this.SelectedDocuments as any)?.[doc.fileKey] ?? '').toString().trim();
+}
+
+getApproval(doc: DocumentRowConfig): DocApprovalInfo {
+  return (this.SelectedDocuments as any)?.[doc.approvalKey] ?? { isApproved: '', approvalRemarks: '', approvedBy: '' };
+}
+
+/**
+ * Your getDocStatus() sends isApproved as the STRING 'True' / 'False' / '' —
+ * not real booleans and not null — so normalize on that basis.
+ */
+getRowState(doc: DocumentRowConfig): RowState {
+  if (!this.getFileValue(doc)) return 'noFile';
+
+  const status = (this.getApproval(doc)?.isApproved ?? '').toString().trim().toLowerCase();
+
+  if (!status || status === 'null') return 'pending';
+  return status === 'true' ? 'approved' : 'rejected';
+}
+
+getApprover(doc: DocumentRowConfig): string {
+  const name = (this.getApproval(doc)?.approvedBy ?? '').toString().trim();
+  return name || '—';
+}
+
+getRemarks(doc: DocumentRowConfig): string {
+  const remarks = (this.getApproval(doc)?.approvalRemarks ?? '').toString().trim();
+  return remarks && remarks.toLowerCase() !== 'null' ? remarks : '';
+}
+// Added  on 7-July-26
+AllApprovedDocuments: any[] = [];
+
+  private getAllApprovedDocuments(): void {
+    this.loadingIndicator = true;
+    const startTime = Date.now();
+
+    this.studentService.GetApprovedDocumentDetails('0').pipe(
+      finalize(() => this.stopLoader(startTime))
+    ).subscribe({
+      next: response => {
+        this.AllApprovedDocuments = Array.isArray(response?.item1) ? response.item1 : [];
+        this.cd.detectChanges();
+      },
+      error: err => this.LoginFailed(err),
+    });
+  }
+
+
 
 
   // added on 3-July-26
@@ -177,97 +257,47 @@ export class DynamicDashboardComponent implements OnInit {
   isEnglishDocumentUploaded: any; EnglishTestType: any;
   FilterAllHOWApplications: Application[] = [];
   searchQueryMyHod: any;
-  searchMyHod() {
-
-    const query = this.searchQueryMyHod.trim().toLowerCase();
-
-    this.FilterAllHOWApplications = this.AllHOWApplications.filter(item => {
-      return Object.entries(item).some(([key, val]) => {
-        if (val !== null && val !== undefined) {
-          let valueString = String(val).toLowerCase();
-
-          return valueString.includes(query);
-        }
-        return false;
-      });
-    });
-  }
-
-
-
 
   FilterAllAuthorityApplications: Application[] = [];
   searchQueryAuthority: any;
-  searchAuthority() {
-
-    const query = this.searchQueryAuthority.trim().toLowerCase();
-    // console.log(JSON.stringify(this.MouActivityData))
-    this.FilterAllAuthorityApplications = this.AllAuthorityApplications.filter(item => {
-      return Object.entries(item).some(([key, val]) => {
-        if (val !== null && val !== undefined) {
-          let valueString = String(val).toLowerCase();
-
-          return valueString.includes(query);
-        }
-        return false;
-      });
-    });
-  }
-
-
-
 
   FilterAllFacultyApplications: Application[] = [];
   searchQueryFaculty: any;
-  searchFaculty() {
-
-    const query = this.searchQueryFaculty.trim().toLowerCase();
-    // console.log(JSON.stringify(this.MouActivityData))
-    this.FilterAllFacultyApplications = this.AllFacultyApplications.filter(item => {
-      return Object.entries(item).some(([key, val]) => {
-        if (val !== null && val !== undefined) {
-          let valueString = String(val).toLowerCase();
-
-          return valueString.includes(query);
-        }
-        return false;
-      });
-    });
-  }
-
-
 
   searchQuery: any;
-  search() {
-
-    const query = this.searchQuery.trim().toLowerCase();
-    // console.log(JSON.stringify(this.MouActivityData))
-    this.FilterAllHODApplications = this.AllHODApplications.filter(item => {
-      return Object.entries(item).some(([key, val]) => {
-        if (val !== null && val !== undefined) {
-          let valueString = String(val).toLowerCase();
-
-          return valueString.includes(query);
-        }
-        return false;
-      });
-    });
-  }
   searchQuery2: any;
-  search2() {
 
-    const query = this.searchQuery2.trim().toLowerCase();
+  /**
+   * Free-text search shared by every dashboard's search box — matches the
+   * query against every field's stringified value, case-insensitively.
+   * Replaces what used to be five copy-pasted filter methods (one per role).
+   */
+  private filterBySearch(source: Application[], query: string): Application[] {
+    const q = (query ?? '').trim().toLowerCase();
+    if (!q) return source;
+    return source.filter(item =>
+      Object.values(item).some(val => val !== null && val !== undefined && String(val).toLowerCase().includes(q))
+    );
+  }
 
-    this.FilterAllApplications = this.AllApplications.filter(item => {
-      return Object.entries(item).some(([key, val]) => {
-        if (val !== null && val !== undefined) {
-          let valueString = String(val).toLowerCase();
+  searchMyHod(): void {
+    this.FilterAllHOWApplications = this.filterBySearch(this.AllHOWApplications, this.searchQueryMyHod);
+  }
 
-          return valueString.includes(query);
-        }
-        return false;
-      });
-    });
+  searchAuthority(): void {
+    this.FilterAllAuthorityApplications = this.filterBySearch(this.AllAuthorityApplications, this.searchQueryAuthority);
+  }
+
+  searchFaculty(): void {
+    this.FilterAllFacultyApplications = this.filterBySearch(this.AllFacultyApplications, this.searchQueryFaculty);
+  }
+
+  search(): void {
+    this.FilterAllHODApplications = this.filterBySearch(this.AllHODApplications, this.searchQuery);
+  }
+
+  search2(): void {
+    this.FilterAllApplications = this.filterBySearch(this.AllApplications, this.searchQuery2);
   }
 
   exportToExcel(data: any[]): void {
@@ -569,7 +599,7 @@ export class DynamicDashboardComponent implements OnInit {
           const emp = response.item1[0];
           this.EmployeeDetails = emp;
           this.EmployeeName = emp.employeeName;
-          this.EmployeeCode = '28243';//String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
+          this.EmployeeCode = '1107';//String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
           this.ContactNoX = emp.contactNo;
           this.Department = emp.department;
           this.DepartmentName = emp.departmentName;
@@ -578,6 +608,7 @@ export class DynamicDashboardComponent implements OnInit {
           // Fetch applications and remarks in parallel
           this.getSEAllApplications();
           this.getAllAuthorityRemarks();
+          this.getAllApprovedDocuments();
         } else {
           this.LoginFailed('No employee details found.');
         }
@@ -630,6 +661,8 @@ export class DynamicDashboardComponent implements OnInit {
   }
 
 
+  
+
   private GetAllApplicationsforHOD(): void {
     this.loadingIndicator = true;
     const startTime = Date.now();
@@ -640,7 +673,6 @@ export class DynamicDashboardComponent implements OnInit {
       next: response => {
         this.hodAllApplications = Array.isArray(response?.item1) ? response.item1 : [];
 
-        console.log(this.hodAllApplications)
         //  this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) =>app.approvedUniversity?.trim().length > 0 );
 
         this.AllApprovedApplications = response.item1.filter(
@@ -650,7 +682,6 @@ export class DynamicDashboardComponent implements OnInit {
             app.approvedUniversity.trim().length > 0
         );
         // this.AllApprovedApplications = response.item1.filter((app: { isLocked: any, isApproved: any ; }) => app.isLocked=='True' || app.isApproved=='True');
-        console.log(JSON.stringify(this.AllApprovedApplications))
         this.cd.detectChanges();
       },
       error: err => this.LoginFailed(err),
@@ -1415,12 +1446,48 @@ export class DynamicDashboardComponent implements OnInit {
       x => x.registrationNo === row.registrationNo
     ) ?? [];
 
+    // 1. Get all individual document approvals matching this application
+    const appDocsApprovalList = this.AllApprovedDocuments?.filter(
+      x => x.applicationId == row.applicationId
+    ) ?? [];
+
+    console.log('appDocsApprovalList **--', JSON.stringify(this.AllApprovedDocuments));
+
+    // Matches a documentRows entry (via its docTypeParam) against the DB's
+    // DocumentName column, ignoring case and whitespace differences — the
+    // DB has been observed to store the same doc type with inconsistent
+    // casing across rows (e.g. 'consentLetter' vs 'ConsentLetter').
+    const normaliseDocKey = (val: string | null | undefined): string =>
+      (val ?? '').toLowerCase().replace(/\s+/g, '');
+
+    const getDocStatus = (docTypeParam: string): DocApprovalInfo => {
+      const key = normaliseDocKey(docTypeParam);
+      const matchedDoc = appDocsApprovalList.find(d => normaliseDocKey(d.documentName) === key);
+      return {
+        isApproved: matchedDoc?.approvalStatus || '',
+        approvalRemarks: matchedDoc?.approvalRemarks || '',
+        approvedBy: matchedDoc?.approvedBy || ''
+      };
+    };
+
     const first = allRows[0];
 
-    this.SelectedDocuments = first
-      ? {
+    // Build one DocApprovalInfo per row directly from documentRows (the
+    // DocumentRowConfig[] driving the modal), so every row — including any
+    // added later — gets matched the same case-insensitive way, instead of
+    // a hand-maintained keyword per document.
+    const approvalByKey: { [approvalKey: string]: DocApprovalInfo } = {};
+    this.documentRows.forEach(doc => {
+      approvalByKey[doc.approvalKey] = getDocStatus(doc.docTypeParam);
+    });
+
+    // 2. Build the document details maps matching the UI structure
+    if (first) {
+      this.SelectedDocuments = {
         applicationId: row.applicationId || first.applicationId || '',
         dealingUId: first.dealingUId || row.dealingUId || '',
+
+        // Document paths / filenames
         resumeFileName: first.resumeDocumentPath || row.resumeDocumentPath || '',
         consentLetterDocumentPath: first.consentLetterDocumentPath || row.consentLetterDocumentPath || '',
         feesProofDocumentPath: first.feesProofDocumentPath || row.feesProofDocumentPath || '',
@@ -1430,13 +1497,21 @@ export class DynamicDashboardComponent implements OnInit {
         indeminityBondPath: first.indeminityBondPath || row.indeminityBondPath || '',
         offerLetterPath: first.offerLetterPath || row.offerLetterPath || '',
         outBoundTicket: first.outBoundTicket || row.outBoundTicket || '',
-        returnTicketPath: first.returnTicketPath || row.returnTicketPath || ''
-      }
-      : {
-        // No remarks row at all — still show the modal with inline app data
+        returnTicketPath: first.returnTicketPath || row.returnTicketPath || '',
+
+        // Per-document approval info, keyed by DocumentRowConfig.approvalKey
+        ...approvalByKey,
+
+        // Fallback variables for backwards compatibility if needed elsewhere
+        isApproved: appDocsApprovalList[0]?.approvalStatus || '',
+        approvalRemarks: appDocsApprovalList[0]?.approvalRemarks || '',
+        approvedBy: appDocsApprovalList[0]?.approvedBy || ''
+      };
+    } else {
+      this.SelectedDocuments = {
         registrationNo: row.registrationNo,
         applicationId: row.applicationId || '',
-        resumeFileName: row.resumeFileName || '',
+        resumeFileName: row.resumeFileName || row.resumeDocumentPath || '',
         consentLetterDocumentPath: row.consentLetterDocumentPath || '',
         feesProofDocumentPath: row.feesProofDocumentPath || '',
         passportDocumentPath: row.passportDocumentPath || '',
@@ -1445,13 +1520,14 @@ export class DynamicDashboardComponent implements OnInit {
         indeminityBondPath: row.indeminityBondPath || '',
         offerLetterPath: row.offerLetterPath || '',
         outBoundTicket: row.outBoundTicket || '',
-        returnTicketPath: row.returnTicketPath || ''
+        returnTicketPath: row.returnTicketPath || '',
+
+        // Per-document approval info, keyed by DocumentRowConfig.approvalKey
+        ...approvalByKey
       };
-
-
-    console.log(JSON.stringify(this.SelectedDocuments) + 'selected Row Document details ')
-    // alert(JSON.stringify(this.selectedRemarksEvaluations));
-    // ── Open modal ───────────────────────────────────────────────────────────
+    }
+    console.log('SelectedDocuments', JSON.stringify(this.SelectedDocuments));
+    // Open modal
     this.currentModalRef = this.modalService.open(this.DocumentApprovalsModal, {
       size: 'xl',
       backdrop: 'static',
@@ -1460,8 +1536,6 @@ export class DynamicDashboardComponent implements OnInit {
     this.currentModalRef.result.catch(() => { });
     this.cd.detectChanges();
   }
-
-
 
   /**
    * Handles the approval logic for a specific document
@@ -1523,10 +1597,12 @@ approveDocument(FileName: string, DocumentName: any, ApplicationId: any, Action:
             } else if (msg === 'Disapproved') {
 
               Swal.fire(
-                'No Change!',
-                'The application status was not changed.',
+                'Rejected!',
+                'The Document was rejected.',
                 'info'
-              );
+              ).then(() => {
+                window.location.reload();
+              });
 
             } else {
 
@@ -1534,7 +1610,9 @@ approveDocument(FileName: string, DocumentName: any, ApplicationId: any, Action:
                 'Error!',
                 'Failed to accept application.',
                 'error'
-              );
+              ).then(() => {
+                window.location.reload();
+              });
 
             }
 
@@ -1546,7 +1624,9 @@ approveDocument(FileName: string, DocumentName: any, ApplicationId: any, Action:
               'Error!',
               'An error occurred while trying to accept the application.',
               'error'
-            );
+            ).then(() => {
+               window.location.reload();
+              });
 
           }
 
@@ -1562,7 +1642,6 @@ approveDocument(FileName: string, DocumentName: any, ApplicationId: any, Action:
    * @param docType string identifier for the document type
    */
   rejectDocument(docType: string): void {
-    console.log(`Document Rejected: ${docType}`);
 
     // 1. Update local UI state
     // this.selectedRemarks.documentStatuses[docType] = 'REJECTED';

@@ -125,7 +125,8 @@
       </app-rejected-application>
 
       <app-approved-application *ngIf="LockedStatus === 'Approved'"
-        [stagesDetail]="StagesDetail" [stageDocumentData]="StageDocumentData" [localServerUrl]="localServerUrl"
+        [stagesDetail]="StagesDetail" [stageDocumentData]="StageDocumentData" [documentApprovals]="DocumentApprovals"
+        [localServerUrl]="localServerUrl"
         (uploadStage)="uploadStageDocumentRow($event)" (stageFilePicked)="onStageFilePicked($event)"
         (viewDocument)="viewDocument($event)">
       </app-approved-application>
@@ -138,7 +139,7 @@
         [countries]="countries" [uniData]="uniData" [stuApplication]="stuApplication"
         [localServerUrl]="localServerUrl"
         [isValid1]="isCurrentStepValid(1)" [isValid2]="isCurrentStepValid(2)" [isValid3]="isCurrentStepValid(3)"
-        [stagesDetail]="StagesDetail"
+        [stagesDetail]="StagesDetail" [documentApprovals]="DocumentApprovals"
         (editClick)="startEdit($event)" (cancelClick)="cancelEdit($event)" (updateClick)="updateStep($event)"
         (fileSelected)="onFileSelected($event)" (submitClick)="submitDocuments()">
       </app-pending-application>

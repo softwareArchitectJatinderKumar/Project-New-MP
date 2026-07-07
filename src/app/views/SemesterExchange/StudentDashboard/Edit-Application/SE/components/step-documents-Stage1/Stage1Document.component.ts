@@ -10,7 +10,10 @@ import {
   StudentApplication,
   FileSelectedEvent,
   MAX_FILE_SIZE_BYTES,
-  StageDetailRow
+  StageDetailRow,
+  DocumentApproval,
+  isDocumentDecided,
+  documentApprovalLabel,
 }
   from '../../models/application.models';
 import Swal from 'sweetalert2';
@@ -31,9 +34,20 @@ import Swal from 'sweetalert2';
 export class Stage1DocumentComponent {
   @Input() stuApplication!: StudentApplication;
   @Input() stagesDetail: StageDetailRow[] = [];
+  @Input() documentApprovals: DocumentApproval[] = [];
   @Input() localServerUrl = '';
 
   @Output() fileSelected = new EventEmitter<FileSelectedEvent>();
+
+  /** Once a document has been Approved or Rejected, its upload/replace input is disabled. */
+  isUploadDisabled(documentName: string): boolean {
+    return isDocumentDecided(this.documentApprovals, documentName);
+  }
+
+  /** 'Approved' | 'Rejected' | '' — shown next to the upload input once a decision exists. */
+  approvalLabel(documentName: string): string {
+    return documentApprovalLabel(this.documentApprovals, documentName);
+  }
 
   readonly docKeys: Array<{
     key: FileSelectedEvent['key'];
@@ -42,7 +56,7 @@ export class Stage1DocumentComponent {
     documentName: string;
   }> = [
     { key: 'fees', label: 'Fees Proof Document', appField: 'feesProofFileName', documentName: 'Fees Paid' },
-    { key: 'resume', label: 'Resume Document', appField: 'resumeFileName', documentName: 'Resume/Cv' },
+    { key: 'resume', label: 'Resume Document', appField: 'resumeFileName', documentName: 'Resume' },
     { key: 'consent', label: 'Consent Letter', appField: 'consentLetterFileName', documentName: 'Consent Letter' },
     { key: 'passport', label: 'Passport File', appField: 'passportFileName', documentName: 'Passport' },
     { key: 'english', label: 'English Test Proof', appField: 'englishTestDocumentFile', documentName: 'English Test Proof' },

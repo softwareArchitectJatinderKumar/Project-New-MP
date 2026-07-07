@@ -41,7 +41,7 @@
                       </span>
                     </ng-container>
                     <input type="file" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png"
-                      [disabled]="row.isUploading" (change)="onFilePicked($event, row)" />
+                      [disabled]="row.isUploading || isUploadDisabled(row)" (change)="onFilePicked($event, row)" />
                     <span *ngIf="row.fileName && !row.isUploaded" class="text-muted small text-truncate"
                       style="max-width:200px">
                       Selected: {{ row.fileName }}
@@ -49,11 +49,15 @@
                     <span *ngIf="row.isUploading" class="d-flex align-items-center gap-1 text-primary small">
                       <span class="spinner-border spinner-border-sm"></span> Uploading...
                     </span>
+                    <span *ngIf="approvalLabel(row) as label" class="badge"
+                      [ngClass]="label === 'Approved' ? 'bg-success' : 'bg-danger'">
+                      {{ label }}
+                    </span>
                   </div>
                 </td>
                 <td>
                   <button *ngIf="!row.isUploaded" type="button" class="btn btn-primary btn-sm w-100 mb-1"
-                    [disabled]="!row.fileObject || row.isUploading" (click)="uploadRow(row)">
+                    [disabled]="!row.fileObject || row.isUploading || isUploadDisabled(row)" (click)="uploadRow(row)">
                     Upload
                   </button>
                   <button *ngIf="existingDocPath(row)" type="button" class="btn btn-info btn-sm w-100"

@@ -13,7 +13,7 @@ import { countries } from './countries-list';
 
 import {
   StudentApplication, StageDetailRow, FileSelectedEvent,
-  Country, University, STEP_LABELS,
+  Country, University, STEP_LABELS, DocumentApproval,
 } from './models/application.models';
 
 @Component({
@@ -39,6 +39,8 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
   uniData: University[] = [];
   StagesDetail: StageDetailRow[] = [];
   StageDocumentData: StageDetailRow[] = [];
+  /** Per-document Approved/Rejected decisions (GetApprovedDocumentDetails) — drives disabling the upload input for Stage I/II documents that are already decided. */
+  DocumentApprovals: DocumentApproval[] = [];
 
   // ── Student display ────────────────────────────────────────────────────────
   studentName = ''; courseName = ''; cgpa = '';
@@ -495,6 +497,7 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
           editing ? this.form.enable() : this.form.disable();
 
           this.getStageDocumentDetails();
+          this.getDocumentApprovals();
         },
         error: err => {
           console.error(err);
@@ -517,9 +520,29 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
 
   private getStageDocumentDetails(): void {
     if (!this.ApplicationId) return;
-    this.studentService.GetStage2DocumentDetails(+this.ApplicationId)
+    this.studentService.GetApprovedDocumentDetails(this.ApplicationId)
+    // this.studentService.GetStage2DocumentDetails(+this.ApplicationId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({ next: (r: any) => this.StageDocumentData = r?.item1 ?? [] });
+  }
+
+  /**
+   * Loads every document's Approved/Rejected decision so the Stage I/II
+   * upload inputs can be disabled once a document has already been decided.
+   * Same webapi + calling convention already used for this on the staff
+   * dashboard (fetch everything with Id='0', then narrow to this application
+   * client-side) — GetApprovedDocumentDetails itself is unchanged.
+   */
+  private getDocumentApprovals(): void {
+    if (!this.ApplicationId) return;
+    this.studentService.GetApprovedDocumentDetails('0')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (r: any) => {
+          const all: DocumentApproval[] = Array.isArray(r?.item1) ? r.item1 : [];
+          this.DocumentApprovals = all.filter(d => d.applicationId == this.ApplicationId);
+        },
+      });
   }
 
   private getStuDetailsWithImage(regno: string): void {

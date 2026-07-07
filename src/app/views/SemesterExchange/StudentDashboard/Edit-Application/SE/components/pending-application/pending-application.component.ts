@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Country, University, StudentApplication, StageDetailRow, FileSelectedEvent } from '../../models/application.models';
+import { Country, University, StudentApplication, StageDetailRow, FileSelectedEvent, DocumentApproval } from '../../models/application.models';
 import Swal from 'sweetalert2';
 
 /**
@@ -44,6 +44,7 @@ export class PendingApplicationComponent {
   @Input() isValid2 = true;
   @Input() isValid3 = true;
   @Input() stagesDetail: StageDetailRow[] = [];
+  @Input() documentApprovals: DocumentApproval[] = [];
 
   @Output() editClick = new EventEmitter<number>();
   @Output() cancelClick = new EventEmitter<number>();

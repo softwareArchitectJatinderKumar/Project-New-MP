@@ -57,7 +57,7 @@ export interface StudentApplication {
   affidavitPath: string;
   indeminityBondPath: string;
   offerLetterPath :string;
-  outBoundTicket :string ; 
+  outboundTicket :string ; 
   returnTicketPath:string
   
 }
@@ -78,6 +78,43 @@ export interface StageDetailRow {
   document: any;
   filePath: any;
   applicationId: number;  
+}
+
+/** One row from the GetApprovedDocumentDetails webapi. */
+export interface DocumentApproval {
+  documentName?: string;
+  approvalStatus?: string | number | boolean | null;
+  approvalRemarks?: string;
+  approvedBy?: string;
+  applicationId?: string | number;
+}
+
+/** Case/whitespace-insensitive key for matching a document name against the DB's DocumentName column. */
+export function normaliseDocKey(val: string | null | undefined): string {
+  return (val ?? '').toString().toLowerCase().replace(/\s+/g, '');
+}
+
+/** Finds this document's approval record, if a decision has been recorded for it, ignoring case/whitespace. */
+export function findDocumentApproval(
+  list: DocumentApproval[] | null | undefined,
+  documentName: string,
+): DocumentApproval | undefined {
+  const key = normaliseDocKey(documentName);
+  return (list ?? []).find(d => normaliseDocKey(d.documentName) === key);
+}
+
+/** True once a document has been Approved or Rejected — no further upload/replace should be allowed. */
+export function isDocumentDecided(list: DocumentApproval[] | null | undefined, documentName: string): boolean {
+  const status = String(findDocumentApproval(list, documentName)?.approvalStatus ?? '').trim().toLowerCase();
+  return status === '1' || status === 'true' || status === '0' || status === 'false';
+}
+
+/** 'Approved' | 'Rejected' | '' (no decision yet) — for an optional status badge next to the upload control. */
+export function documentApprovalLabel(list: DocumentApproval[] | null | undefined, documentName: string): 'Approved' | 'Rejected' | '' {
+  const status = String(findDocumentApproval(list, documentName)?.approvalStatus ?? '').trim().toLowerCase();
+  if (status === '1' || status === 'true') return 'Approved';
+  if (status === '0' || status === 'false') return 'Rejected';
+  return '';
 }
 
 export interface CourseRow {

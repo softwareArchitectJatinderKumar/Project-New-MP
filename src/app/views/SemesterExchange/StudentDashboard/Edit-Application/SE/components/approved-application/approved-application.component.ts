@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { StageDetailRow, MAX_FILE_SIZE_BYTES } from '../../models/application.models';
+import {
+  StageDetailRow, MAX_FILE_SIZE_BYTES, DocumentApproval, isDocumentDecided, documentApprovalLabel,
+} from '../../models/application.models';
 import Swal from 'sweetalert2';
 
 /**
@@ -20,11 +22,22 @@ import Swal from 'sweetalert2';
 export class ApprovedApplicationComponent {
   @Input() stagesDetail: StageDetailRow[] = [];
   @Input() stageDocumentData: StageDetailRow[] = [];
+  @Input() documentApprovals: DocumentApproval[] = [];
   @Input() localServerUrl = '';
 
   @Output() uploadStage = new EventEmitter<number>();
   @Output() stageFilePicked = new EventEmitter<{ index: number; file: File; fileName: string; base64: string }>();
   @Output() viewDocument = new EventEmitter<string>();
+
+  /** Once a document has been Approved or Rejected, its upload/replace input is disabled. */
+  isUploadDisabled(row: StageDetailRow): boolean {
+    return isDocumentDecided(this.documentApprovals, row.documentName);
+  }
+
+  /** 'Approved' | 'Rejected' | '' — shown next to the upload input once a decision exists. */
+  approvalLabel(row: StageDetailRow): string {
+    return documentApprovalLabel(this.documentApprovals, row.documentName);
+  }
 
   get stage2Rows(): StageDetailRow[] {
     const master = (this.stagesDetail ?? []).filter(r => {

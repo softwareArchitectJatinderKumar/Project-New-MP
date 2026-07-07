@@ -139,7 +139,8 @@
 
     <!-- Stage I Documents -->
     <div *ngIf="activeTab === 'stage1'">
-      <stage-1-Documents [stuApplication]="stuApplication" [stagesDetail]="stagesDetail" [localServerUrl]="localServerUrl"
+      <stage-1-Documents [stuApplication]="stuApplication" [stagesDetail]="stagesDetail"
+        [documentApprovals]="documentApprovals" [localServerUrl]="localServerUrl"
         (fileSelected)="fileSelected.emit($event)">
       </stage-1-Documents>
     </div>

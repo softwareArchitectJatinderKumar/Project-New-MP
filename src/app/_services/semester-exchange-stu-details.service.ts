@@ -607,6 +607,17 @@ GetStuDetailsWithImage(RegId: string): Observable<any> {
       AUTH_API + 'api/SemesterExchangeStudent/SemesterExchangeUpdateDocumentStatus', dataSoft, { headers });
   }
 
+  GetApprovedDocumentDetails(Id: string): Observable<any> {
+    var authToken = this.storageService.getUser();
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${authToken}`
+        // 'Authorization': `Bearer ${authToken}`
+      })
+    };
+    return this.http.get<any>(`${AUTH_API_LOCAL}api/SemesterExchangeStudent/GetApprovedDocumentDetails?Id=${Id}`, httpOptions);
+    // return this.http.get<any>(`${this.baseUrl}api/SemesterExchangeStudent/GetSemesterExchangeStudentDetails`, httpOptions);
+  }
     // getStudentMarks(regNo: string): Observable<IFormattedApiResponse> {
     //     return this.http.get<IApiTupleResponse>(`${AUTH_API_LOCAL}/GetStudentPreviousMarksDetails?RegistrationNo=${regNo}`).pipe(
     //         map(response => {
