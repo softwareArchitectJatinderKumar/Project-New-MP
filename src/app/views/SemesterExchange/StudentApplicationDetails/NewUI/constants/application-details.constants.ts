@@ -31,8 +31,8 @@ export const DOCUMENT_UPLOADS: ReadonlyArray<DocumentUpload> = [
   { key: 'indeminityBondPath', label: 'Indemnity Bond',  icon: 'bi-file-earmark-check' },
   { key: 'affidavitPath', label: 'Affidavit',  icon: 'bi-file-earmark-check' },
   { key: 'offerLetterPath', label: 'Offer Letter',  icon: 'bi-file-earmark-check' },
-  { key: 'OutBoundTicket', label: 'OutBound Ticket',  icon: 'bi-translate'          },
-  { key: 'ReturnTicketPath', label: 'Return Ticket',  icon: 'bi-translate'          },
+  { key: 'outBoundTicket', label: 'OutBound Ticket',  icon: 'bi-translate'          },
+  { key: 'returnTicketPath', label: 'Return Ticket',  icon: 'bi-translate'          },
 ];
 
 // ── Section → Bootstrap Icon mapping ─────────────────────────

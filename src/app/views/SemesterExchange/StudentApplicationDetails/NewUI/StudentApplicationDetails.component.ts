@@ -271,6 +271,7 @@ export class StudentApplicationDetailsComponent implements OnInit, OnDestroy {
             this.cgPA= this.application['cgpa'];
             this.ApprovedUniversity= this.application['approvedUniversity']
 
+            console.log('Application data loaded:', this.application);
             // Both derived structures depend on form values — build once here
             this.filteredSections = this.buildFilteredSections();
             this.displayValues = this.buildDisplayValues();
@@ -351,7 +352,7 @@ export class StudentApplicationDetailsComponent implements OnInit, OnDestroy {
 
 
   isPassportMissing(): boolean {
-    const pNo = this.studentForm.get('passportNo')?.value;
+    const pNo = this.studentForm.get('passportNumber')?.value;
     const pIssue = this.studentForm.get('passportIssueDate')?.value;
     const pValid = this.studentForm.get('passportValidUpto')?.value;
 
