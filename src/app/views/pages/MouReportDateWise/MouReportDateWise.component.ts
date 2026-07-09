@@ -65,6 +65,165 @@ export class MouReportDateWiseComponent implements OnInit {
   allSchoolDivisions: any[];
   AssignedToUid: string[];
 Number: any;
+
+// added on 8-7-26
+selectedSchoolDivision: string = '';
+
+
+// Approval Filter
+approvalFilter: string = 'all';
+
+// Master Data
+allMouDocumentsLists: any[] = [];
+
+// Counts
+approvedCount = 0;
+disapprovedCount = 0;
+pendingCount = 0;
+
+// Top Scrollbar
+@ViewChild('topScrollbar') topScrollbar!: ElementRef;
+@ViewChild('topScrollbarContent') topScrollbarContent!: ElementRef;
+@ViewChild('gridContainer') gridContainer!: ElementRef;
+
+private scrollInitialized = false;
+
+
+ 
+updateCounts() {
+
+    this.approvedCount = this.filteredMouDocumentsLists.filter(x =>
+        x.isApproved === true ||
+        x.isApproved === 'True' ||
+        x.isApproved == 1
+    ).length;
+
+    this.disapprovedCount = this.filteredMouDocumentsLists.filter(x =>
+        x.isApproved === false ||
+        x.isApproved === 'False' ||
+        x.isApproved == 0
+    ).length;
+
+    this.pendingCount = this.filteredMouDocumentsLists.filter(x =>
+        x.isApproved == null ||
+        x.isApproved === ''
+    ).length;
+
+}
+
+applyFilters(): void {
+
+  let filtered = [...this.allMouDocumentsLists];
+
+  switch (this.approvalFilter) {
+
+    case 'approved':
+
+      filtered = filtered.filter(x =>
+        x.isApproved === true ||
+        x.isApproved === 'True' ||
+        x.isApproved == 1);
+
+      break;
+
+    case 'disapproved':
+
+      filtered = filtered.filter(x =>
+        x.isApproved === false ||
+        x.isApproved === 'False' ||
+        x.isApproved == 0);
+
+      break;
+
+    case 'pending':
+
+      filtered = filtered.filter(x =>
+        x.isApproved == null ||
+        x.isApproved === '');
+
+      break;
+
+  }
+
+  const query = (this.searchQuery || '').trim().toLowerCase();
+
+  if (query) {
+
+    filtered = filtered.filter(item =>
+
+      Object.values(item).some((value: any) =>
+
+        value != null &&
+        String(value).toLowerCase().includes(query)
+
+      )
+
+    );
+
+  }
+
+  // School Division Filter
+if (this.selectedSchoolDivision) {
+
+    filtered = filtered.filter(item => {
+
+        if (!item.schoolDivisionInvolved) {
+            return false;
+        }
+
+        const ids = item.schoolDivisionInvolved
+            .split(',')
+            .map((x: string) => x.trim());
+
+        return ids.includes(this.selectedSchoolDivision);
+
+    });
+
+}
+
+  this.filteredMouDocumentsLists = filtered;
+
+  this.updateCounts();
+
+  setTimeout(() => this.initializeTopScrollbar(), 50);
+
+}
+
+initializeTopScrollbar() {
+
+    const body = this.gridContainer?.nativeElement
+        ?.querySelector('.datatable-body');
+
+    if (!body) return;
+
+    this.topScrollbarContent.nativeElement.style.width =
+        body.scrollWidth + 'px';
+
+    this.topScrollbar.nativeElement.onscroll = () => {
+
+        body.scrollLeft =
+            this.topScrollbar.nativeElement.scrollLeft;
+
+    };
+
+    body.onscroll = () => {
+
+        this.topScrollbar.nativeElement.scrollLeft =
+            body.scrollLeft;
+
+    };
+
+}
+
+onApprovalFilterChange() {
+
+    this.applyFilters();
+
+}
+
+
+
+
   constructor(private http: HttpClient, private MOUService: MouDocumentsService, private route: ActivatedRoute,
     private storageService: StorageService,
     private authService: AuthService,
@@ -349,7 +508,17 @@ Number: any;
         if (this.MouData?.length > 0) {
           this.MouDataColumns = Object.keys(this.MouData[0]);
           
-          this.filteredMouDocumentsLists = this.MouDocumentsLists = data.item1;
+          // this.filteredMouDocumentsLists = this.MouDocumentsLists = data.item1;
+
+          this.allMouDocumentsLists = [...data.item1];
+
+          this.MouDocumentsLists = [...data.item1];
+
+          this.filteredMouDocumentsLists = [...data.item1];
+
+          this.updateCounts();
+
+          setTimeout(() => this.initializeTopScrollbar(), 100);
           // console.log(JSON.stringify(this.filteredMouDocumentsLists))
           this.dataSources.data = this.MouDocumentsLists;
           this.loadingIndicator = false;

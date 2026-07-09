@@ -104,7 +104,7 @@ export class DashboardFacultyComponent implements OnInit {
     this.studentService.getAllApplications().subscribe({
       next: response => {
         this.AllApplications = response.item1;
-        console.log(JSON.stringify(this.AllApplications))
+        // console.log(JSON.stringify(this.AllApplications))
         this.loadingIndicator = false;
         this.checkUserRole();
       },

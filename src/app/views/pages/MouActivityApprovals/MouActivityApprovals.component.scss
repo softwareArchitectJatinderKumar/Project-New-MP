@@ -1,47 +1,134 @@
-$cell-padding: 8px;
+// $cell-padding: 8px;
 
 
 
-.ng-select .ng-select-container {
-  min-height: 20px;
-}
+// .ng-select .ng-select-container {
+//   min-height: 20px;
+// }
 
-.ng-select.ng-select-single .ng-select-container {
-  height: 20px;
-}
+// .ng-select.ng-select-single .ng-select-container {
+//   height: 20px;
+// }
 
-table.tid-table {
-  tr {
-    &.tid-detail-row {
-      > td {
+// table.tid-table {
+//   tr {
+//     &.tid-detail-row {
+//       > td {
         
-        > div {
-         // width: 100%;
-         // box-sizing: border-box;
-          max-height: 0;
-          transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
-          overflow: hidden;
+//         > div {
+//          // width: 100%;
+//          // box-sizing: border-box;
+//           max-height: 0;
+//           transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+//           overflow: hidden;
           
-        }
-      }
-      &.show  > td > div {
-        max-height: 1000px;
-        transition: max-height 1s ease-in-out;
-      }
-    }
+//         }
+//       }
+//       &.show  > td > div {
+//         max-height: 1000px;
+//         transition: max-height 1s ease-in-out;
+//       }
+//     }
    
+//   }
+// }
+
+
+// .table-striped > tbody > tr:nth-of-type(odd) > *{
+//   --bs-table-accent-bg:#FD6C04 !important;
+//   color: #f9f9f9 !important;
+// }
+// .btn-outline-dark {
+//   color: #f9f9f9 !important;
+//   --bs-btn-border-color:white !important;
+// }
+// .btn-primary, .swal2-container .swal2-popup .swal2-actions button.swal2-confirm{
+//   --bs-btn-color:#f9f9f9 !important;
+// }
+
+// .top-scrollbar{
+//     position: sticky;
+//     top: 0;
+//     z-index: 999;
+//     overflow-x: auto;
+//     overflow-y: hidden;
+//     height:18px;
+//     background:#fff;
+//     border:1px solid #ddd;
+// }
+
+// .top-scrollbar div{
+//     height:1px;
+// }
+
+// .datatable-container{
+//     width:100%;
+// }
+
+.top-scrollbar {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  overflow-x: auto;
+  overflow-y: hidden;
+  height: 16px;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  margin-bottom: 6px;
+
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #FD6C04 #f1f1f1;
+
+  div {
+    height: 1px;
+  }
+
+  /* Chrome / Edge / Safari */
+  &::-webkit-scrollbar {
+    height: 14px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #FD6C04;
+    border-radius: 10px;
+    border: 2px solid #f1f1f1;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #e55f00;
   }
 }
 
+.datatable-container {
+  width: 100%;
+}
 
-.table-striped > tbody > tr:nth-of-type(odd) > *{
-  --bs-table-accent-bg:#FD6C04 !important;
-  color: #f9f9f9 !important;
+
+::ng-deep .datatable-body {
+  scrollbar-width: thin;
+  scrollbar-color: #FD6C04 #f1f1f1;
 }
-.btn-outline-dark {
-  color: #f9f9f9 !important;
-  --bs-btn-border-color:white !important;
+
+::ng-deep .datatable-body::-webkit-scrollbar {
+  height: 14px;
 }
-.btn-primary, .swal2-container .swal2-popup .swal2-actions button.swal2-confirm{
-  --bs-btn-color:#f9f9f9 !important;
+
+::ng-deep .datatable-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::ng-deep .datatable-body::-webkit-scrollbar-thumb {
+  background: #FD6C04;
+  border-radius: 10px;
+}
+
+::ng-deep .datatable-body::-webkit-scrollbar-thumb:hover {
+  background: #e55f00;
 }

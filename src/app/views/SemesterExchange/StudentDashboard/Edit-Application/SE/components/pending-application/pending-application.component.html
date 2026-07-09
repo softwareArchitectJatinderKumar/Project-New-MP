@@ -128,11 +128,15 @@
       </section>
 
       <section [hidden]="currentStep !== 4">
-        <app-step-documents [stuApplication]="stuApplication" [isEditing]="isEditingStep[4]" [isLocked]="false"
+        <!-- <app-step-documents [stuApplication]="stuApplication" [isEditing]="isEditingStep[4]" [isLocked]="false"
           [hideBackNext]="false" [localServerUrl]="localServerUrl"
           (editClick)="editClick.emit(4)" (cancelClick)="cancelClick.emit(4)" (submitClick)="submitClick.emit()"
           (fileSelected)="fileSelected.emit($event)" (prevClick)="prevStep()">
-        </app-step-documents>
+        </app-step-documents> -->
+        <stage-1-Documents [stuApplication]="stuApplication" [stagesDetail]="stagesDetail"
+        [documentApprovals]="documentApprovals" [localServerUrl]="localServerUrl"
+        (fileSelected)="fileSelected.emit($event)">
+      </stage-1-Documents>
       </section>
 
     </div>

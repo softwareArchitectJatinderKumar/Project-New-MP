@@ -18,7 +18,7 @@ import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
 import { LpuPlannerServiceService } from 'src/app/_services/lpu-planner-service.service';
 import { mouActivities } from './mouActivities';
 import { MouActivity } from './MouActivity';
-import { finalize } from 'rxjs';
+import { filter, finalize } from 'rxjs';
 
 interface SchoolDivision {
   id: number;
@@ -34,6 +34,11 @@ interface SchoolDivision {
 })
 
 export class MouActivityApprovalsComponent implements OnInit {
+
+
+
+
+
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
   @ViewChild('fileInput') fileInput!: ElementRef;
   isLogin: boolean = false;
@@ -50,66 +55,217 @@ export class MouActivityApprovalsComponent implements OnInit {
   ServerUrl: any;
   ResponsiblePerson: any = ''; ColumnMode = ColumnMode; columns: any; headHtmlData: any[] = []; responsiblePerson: string = '';
   searchQuery: any;
-  
+
   DocumentName: string;
 
- getDocumentFiles(files: string): string[] {
-  // console.log('DocumentUploadedFile:', files);
 
-  if (!files) {
-    return [];
+
+
+
+
+
+  // added on 8-7-26
+
+
+  @ViewChild('topScrollbar')
+topScrollbar!: ElementRef;
+
+@ViewChild('topScrollbarContent')
+topScrollbarContent!: ElementRef;
+
+@ViewChild('gridContainer')
+gridContainer!: ElementRef;
+
+private scrollInitialized = false;
+
+ngAfterViewInit(): void {
+
+    setTimeout(() => {
+        this.initializeTopScrollbar();
+    });
+
+}
+
+ngAfterViewChecked(): void {
+
+    if (!this.scrollInitialized && this.filteredMouActivityData.length) {
+
+        this.initializeTopScrollbar();
+
+    }
+
+}
+
+initializeTopScrollbar(): void {
+
+    const body = this.gridContainer.nativeElement.querySelector('.datatable-body');
+
+    if (!body) {
+        return;
+    }
+
+    this.scrollInitialized = true;
+
+    this.topScrollbarContent.nativeElement.style.width =
+        body.scrollWidth + 'px';
+
+    // Top → Grid
+    this.topScrollbar.nativeElement.onscroll = () => {
+        body.scrollLeft = this.topScrollbar.nativeElement.scrollLeft;
+    };
+
+    // Grid → Top
+    body.onscroll = () => {
+        this.topScrollbar.nativeElement.scrollLeft = body.scrollLeft;
+    };
+
+}
+  allMouActivityData: any[] = [];
+
+  approvedCount = 0;
+  disapprovedCount = 0;
+  pendingCount = 0;
+
+
+  statusFilter: string = 'all';
+  approvalFilter: string = 'all';
+  //   onApprovalFilterChange(event: any): void {
+  //   this.applyFilters();
+  // }
+
+  onApprovalFilterChange(): void {
+    this.applyFilters();
+  }
+  applyFilters(): void {
+
+    let filtered = [...this.allMouActivityData];
+
+    // Approval Filter
+    switch (this.approvalFilter) {
+
+      case 'approved':
+        filtered = filtered.filter(x =>
+          x.isApproved === true ||
+          x.isApproved === 'True' ||
+          x.isApproved == 1
+        );
+        break;
+
+      case 'disapproved':
+        filtered = filtered.filter(x =>
+          x.isApproved === false ||
+          x.isApproved === 'False' ||
+          x.isApproved == 0
+        );
+        break;
+
+      default:
+        break;
+    }
+
+    // Search
+    const query = (this.searchQuery || '').trim().toLowerCase();
+
+    if (query) {
+      filtered = filtered.filter(item =>
+        Object.values(item).some((value: any) =>
+          value !== null &&
+          value !== undefined &&
+          String(value).toLowerCase().includes(query)
+        )
+      );
+
+    }
+
+    this.filteredMouActivityData = filtered;
+
+    this.updateCounts();
+
+    this.scrollInitialized = false;
+
+setTimeout(() => {
+    this.initializeTopScrollbar();
+},100);
   }
 
-  const result = files
-    .split(',')
-    .map(x => x.trim())
-    .filter(x => x);
+  updateCounts(): void {
 
-  // console.log('Files Array:', result);
+    this.approvedCount = this.filteredMouActivityData.filter(x =>
+      x.isApproved === true ||
+      x.isApproved === 'True' ||
+      x.isApproved == 1
+    ).length;
 
-  return result;
-}
-getFileName(fileUrl: string): string {
-  return fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
-}
+    this.disapprovedCount = this.filteredMouActivityData.filter(x =>
+      x.isApproved === false ||
+      x.isApproved === 'False' ||
+      x.isApproved == 0
+    ).length;
+
+    this.pendingCount = this.filteredMouActivityData.filter(x =>
+      x.isApproved == null
+    ).length;
+
+  }
+
+
+  getDocumentFiles(files: string): string[] {
+    // console.log('DocumentUploadedFile:', files);
+
+    if (!files) {
+      return [];
+    }
+
+    const result = files
+      .split(',')
+      .map(x => x.trim())
+      .filter(x => x);
+
+    // console.log('Files Array:', result);
+
+    return result;
+  }
+  getFileName(fileUrl: string): string {
+    return fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+  }
 
 
 
   // added on 5-Feb-26
-     onDownloadFile(remoteUrl: string): void {
-      // console.log("Downloading file from URL:", remoteUrl);
-      swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); }});
-  
-      this.mouDocumentsService.downloadMOUFile(remoteUrl).subscribe({
-        next: (blob: Blob) => {
-          const downloadUrl = window.URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = downloadUrl;
-  
-          const fileName = remoteUrl.split('/').pop()?.split('?')[0] || 'Document.pdf';
-          // const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
-          link.download = fileName;
-  
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(downloadUrl);
-  
-          swal.close();
-        },
-        error: async (err) => {
-          swal.close();
-          if (err.error instanceof Blob) {
-            const errorMsg = JSON.parse(await err.error.text());
-            swal.fire('Error', errorMsg.message || 'Download failed', 'error');
-          } else {
-            swal.fire('Error', 'Could not connect to the server', 'error');
-          }
-        }
-      });
-    }
+  onDownloadFile(remoteUrl: string): void {
+    // console.log("Downloading file from URL:", remoteUrl);
+    swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
 
-    //Ended logic 
+    this.mouDocumentsService.downloadMOUFile(remoteUrl).subscribe({
+      next: (blob: Blob) => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+
+        const fileName = remoteUrl.split('/').pop()?.split('?')[0] || 'Document.pdf';
+        // const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        swal.close();
+      },
+      error: async (err) => {
+        swal.close();
+        if (err.error instanceof Blob) {
+          const errorMsg = JSON.parse(await err.error.text());
+          swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+        } else {
+          swal.fire('Error', 'Could not connect to the server', 'error');
+        }
+      }
+    });
+  }
+
+  //Ended logic 
   constructor(
     private lpuPlannerServiceService: LpuPlannerServiceService,
     private storageService: StorageService, private mouDocumentsService: MouDocumentsService,
@@ -119,7 +275,7 @@ getFileName(fileUrl: string): string {
 
   ngOnInit(): void {
     // this.ServerUrl = 'http://172.19.2.52/umsweb/webftp/MOUDocuments/';
-         
+
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML = '<span class="themeClr"> MOU  </span> Activities <span class="themeClr"> Approvals</span>';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
     this.loadingIndicator = false;
@@ -141,7 +297,7 @@ getFileName(fileUrl: string): string {
         this.storageService.saveUser(data);
         this.getAllPlannerSession();
         this.GetEmployeeDetails();
-        
+
         (<HTMLInputElement>document.getElementById('stMain')).innerHTML = '<span class="themeClr"> MOU  </span> Activities <span class="themeClr"> Approvals</span>';
         (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
       },
@@ -163,56 +319,68 @@ getFileName(fileUrl: string): string {
       element.hidden = true;
     }
   }
-// 29-May-25 Logic start 
+  // 29-May-25 Logic start 
 
-selectedSessionId: any = ''; // Default to 'All'
-isLoading: boolean = false;
+  selectedSessionId: any = ''; // Default to 'All'
+  isLoading: boolean = false;
 
-onSessionChange(): void {
-  this.GetAllUploadsDetails(this.selectedSessionId);
-}
+  onSessionChange(): void {
+    this.GetAllUploadsDetails(this.selectedSessionId);
+  }
 
-GetAllUploadsDetails(SessionId: any): void {
-  this.isLoading = true;
-  const minLoadingTime = 2500; // 12.5 seconds
-  const startTime = Date.now();
+  GetAllUploadsDetails(SessionId: any): void {
+    this.isLoading = true;
+    const minLoadingTime = 2500; // 12.5 seconds
+    const startTime = Date.now();
 
-  this.mouDocumentsService.MouActionsTakenData(this.EmployeeCode, SessionId)
-    .pipe(
-      finalize(() => {
-        const elapsed = Date.now() - startTime;
-        const remaining = Math.max(minLoadingTime - elapsed, 0);
-        setTimeout(() => {
-          this.isLoading = false;
-        }, remaining);
-      })
-    )
-    .subscribe({
-      next: response => {
-        if (response.item1 && response.item1.length > 0) {
-          this.MouActivityData = response.item1;
-          this.showNoDataFoundMessage = false;
-          this.dataSource.data = this.MouActivityData;
-          this.filteredMouActivityData = this.MouActivityData;
-          // this.columns = Object.keys(this.MouActivityData[0]);
-        } else {
+    this.mouDocumentsService.MouActionsTakenData(this.EmployeeCode, SessionId)
+      .pipe(
+        finalize(() => {
+          const elapsed = Date.now() - startTime;
+          const remaining = Math.max(minLoadingTime - elapsed, 0);
+          setTimeout(() => {
+            this.isLoading = false;
+          }, remaining);
+        })
+      )
+      .subscribe({
+        next: response => {
+          if (response.item1 && response.item1.length > 0) {
+            this.MouActivityData = response.item1;
+
+            this.allMouActivityData = [...response.item1];
+            this.MouActivityData = [...response.item1];
+            this.filteredMouActivityData = [...response.item1];
+
+            this.updateCounts();
+            this.showNoDataFoundMessage = false;
+            this.dataSource.data = this.MouActivityData;
+            this.filteredMouActivityData = this.MouActivityData;
+            // this.columns = Object.keys(this.MouActivityData[0]);
+
+            this.scrollInitialized = false;
+
+setTimeout(() => {
+    this.initializeTopScrollbar();
+},100);
+          } else {
+            this.MouActivityData = [];
+            this.filteredMouActivityData = [];
+            this.showNoDataFoundMessage = true;
+          }
+        },
+        error: err => {
+          console.error("Error fetching MOU data", err);
           this.MouActivityData = [];
           this.filteredMouActivityData = [];
           this.showNoDataFoundMessage = true;
         }
-      },
-      error: err => {
-        console.error("Error fetching MOU data", err);
-        this.MouActivityData = [];
-        this.filteredMouActivityData = [];
-        this.showNoDataFoundMessage = true;
-      }
-    });
-}
-// 29-May-25 Logic ended 
+      });
+  }
+  // 29-May-25 Logic ended 
 
-// 28-May-25 Logic start 
-  
+  // 28-May-25 Logic start 
+
   allPlannerSessions: any[] = [];
   selectedPlannerSession: any = '0';  // default selected value
   allOBPStaffData: any[] = [];
@@ -221,7 +389,7 @@ GetAllUploadsDetails(SessionId: any): void {
     this.mouDocumentsService.GetAllOBPPlannerSessions().subscribe({
       next: response => {
         if (response.item1) {
-          this.allPlannerSessions = response.item1;           
+          this.allPlannerSessions = response.item1;
         }
       }
     });
@@ -233,7 +401,7 @@ GetAllUploadsDetails(SessionId: any): void {
     this.GetAllUploadsDetails(this.selectedPlannerSession);
   }
 
-// 28-May-25 Logic ended 
+  // 28-May-25 Logic ended 
 
   GetEmployeeDetails(): void {
     this.mouDocumentsService.GetEmployeeDetails().subscribe({
@@ -303,34 +471,37 @@ GetAllUploadsDetails(SessionId: any): void {
   //   });
   //   this.GetAllActivities();
   // }
- 
-  search() {
-   
-    const query = this.searchQuery.trim().toLowerCase();
-    // console.log(JSON.stringify(this.MouActivityData))
-    this.filteredMouActivityData = this.MouActivityData.filter(item => {
-      return Object.entries(item).some(([key, val]) => {
-        if (val !== null && val !== undefined) {
-          let valueString = String(val).toLowerCase();
-  
-          // Special handling for mouid (Numeric & "MOU/x" String Comparison)
-          if (key === 'mouId') {
-            const numericId = Number(val); // Convert mouid to a number
-            
-            // Handle cases where user searches with "MOU/x" or just a number
-            if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
-              return true;
-            }
-          }
-  
-          // General search for all other fields
-          return valueString.includes(query);
-        }
-        return false;
-      });
-    });
+  search(): void {
+    this.applyFilters();
   }
-  
+
+  // search() {
+
+  //   const query = this.searchQuery.trim().toLowerCase();
+  //   // console.log(JSON.stringify(this.MouActivityData))
+  //   this.filteredMouActivityData = this.MouActivityData.filter(item => {
+  //     return Object.entries(item).some(([key, val]) => {
+  //       if (val !== null && val !== undefined) {
+  //         let valueString = String(val).toLowerCase();
+
+  //         // Special handling for mouid (Numeric & "MOU/x" String Comparison)
+  //         if (key === 'mouId') {
+  //           const numericId = Number(val); // Convert mouid to a number
+
+  //           // Handle cases where user searches with "MOU/x" or just a number
+  //           if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
+  //             return true;
+  //           }
+  //         }
+
+  //         // General search for all other fields
+  //         return valueString.includes(query);
+  //       }
+  //       return false;
+  //     });
+  //   });
+  // }
+
   allSchoolDivisions: SchoolDivision[] = []; CurrentSchool: any[] = []
 
   GetAllActivities(): void {
@@ -342,7 +513,7 @@ GetAllUploadsDetails(SessionId: any): void {
       }
     });
   }
- 
+
 
   getDivisionNameById(id: number): string {
     const idStr = id.toString();
@@ -367,28 +538,28 @@ GetAllUploadsDetails(SessionId: any): void {
       'Name of Mou Organisation': item.mouPartnerName,
       'MOU Activity Assigned to Uid': item.assignedToFacultyUID,
       'School Division Name': item.schoolDivisionInvolved
-      ? this.getDivisionNamesByIds(item.schoolDivisionInvolved.split(',').map(Number))
-      : 'N/A', // Handle null case
+        ? this.getDivisionNamesByIds(item.schoolDivisionInvolved.split(',').map(Number))
+        : 'N/A', // Handle null case
       'Details of MOU Activity Assigned': item.activityDetails,
       'Start Date of MOU Assigned By HOS': item.activityStartDate,
       'End Date of MOU Assigned By HOS': item.activityEndDate,
       'Detail of Proof Submitted': item.documentUploaded,
-      'Session Academic/ Calender Year': item.sessionAcademicYear?.length> 0 ? item.sessionAcademicYear: 'NA',
-      'Activity Title': item.activityTitle?.length> 0 ? item.activityTitle: 'NA',
-      'Participants Count': item.participantsCount>0 ?item.participantsCount: 'NA' ,
-      'Activity Count': item.activityCount>0? item.activityCount: 'NA',
-      'Uploaded Activity Date': item.uploadActivityDate,       
-      'MOU ApprovalStatus': item.approvalStatus == 'True' ? 'Approved': item.approvalStatus =='False' ? 'Disapproved': 'N/A' ,
-      'MOU Activity Rejection Remarks ': item.disapprovalReason?.length >5 ? item.disapprovalReason: 'N/A' ,
-      'MOU Activity Approval/ Rejection By Faculty Id ': item.mouApprovedByFacultyUID?.length >2 ? item.mouApprovedByFacultyUID: 'N/A' ,
-      'MOU Activity Approval/ Rejection Date ': item.approvalDate?.length >2 ? item.approvalDate: 'N/A' ,
+      'Session Academic/ Calender Year': item.sessionAcademicYear?.length > 0 ? item.sessionAcademicYear : 'NA',
+      'Activity Title': item.activityTitle?.length > 0 ? item.activityTitle : 'NA',
+      'Participants Count': item.participantsCount > 0 ? item.participantsCount : 'NA',
+      'Activity Count': item.activityCount > 0 ? item.activityCount : 'NA',
+      'Uploaded Activity Date': item.uploadActivityDate,
+      'MOU ApprovalStatus': item.approvalStatus == 'True' ? 'Approved' : item.approvalStatus == 'False' ? 'Disapproved' : 'N/A',
+      'MOU Activity Rejection Remarks ': item.disapprovalReason?.length > 5 ? item.disapprovalReason : 'N/A',
+      'MOU Activity Approval/ Rejection By Faculty Id ': item.mouApprovedByFacultyUID?.length > 2 ? item.mouApprovedByFacultyUID : 'N/A',
+      'MOU Activity Approval/ Rejection Date ': item.approvalDate?.length > 2 ? item.approvalDate : 'N/A',
       'Document Uploaded File': item.documentUploadedFile
     }));
     const header = [
       'New MOU Id',
       'Old MOU Id',
       'Name of Mou Organisation',
-      'MOU Activity Assigned to' ,
+      'MOU Activity Assigned to',
       'School Division Name',
       'Details of MOU Activity Assigned',
       'Start Date of MOU Assigned By HOS',
@@ -482,7 +653,7 @@ GetAllUploadsDetails(SessionId: any): void {
       cancelButtonText: 'No, do not change it'
     }).then((result: any) => {
       if (result.value) {
-       
+
         this.handleStatusChange(formData, 'Approve');
       } else {
         this.showCancelledSwal();
@@ -492,7 +663,7 @@ GetAllUploadsDetails(SessionId: any): void {
 
   private handleStatusChange(formData: FormData, action: string) {
 
-       formData.forEach((value, key) => {
+    formData.forEach((value, key) => {
       console.log(key, value);
     });
     this.mouDocumentsService.ApproveMouActionTakenDocument(formData).subscribe((data: any) => {
@@ -523,17 +694,17 @@ GetAllUploadsDetails(SessionId: any): void {
   }
 
   Activities: any;
-  Activity: any='';
-  selectedActivityType: string = '';  selectedActivityId: number;  mouActivities: MouActivity[] = []; 
+  Activity: any = '';
+  selectedActivityType: string = ''; selectedActivityId: number; mouActivities: MouActivity[] = [];
 
-  
+
   DownloadFormatDocument(activity: any): void {
-  
+
     if (!activity || !activity.activityDetails) {
       console.error("Invalid activity data.");
       return;
     }
-  
+
     const activityDetailsParts = activity.activityDetails.match(/^(\d+)-/);
     if (!activityDetailsParts) {
       const extractedTitle = activity.activityDetails.split("-")[1]?.trim() || "";
@@ -547,41 +718,41 @@ GetAllUploadsDetails(SessionId: any): void {
       })
       return;
     }
-  
+
     const selectedActivityId = parseInt(activityDetailsParts[1], 10);
     // console.log("Extracted Activity ID:", selectedActivityId);
-  
+
     if (isNaN(selectedActivityId)) {
       // console.error("Invalid extracted Activity ID."+ selectedActivityId);
       return;
     }
-  
+
     // // Find the matching MOU activity by ID
     // const matchedActivity = this.mouActivities.find(mouActivity => mouActivity.id === selectedActivityId);
-  
+
     // if (!selectedActivityId) {
     //   console.warn(`No matching MOU activity found for ID: ${selectedActivityId}`);
     //   return;
     // }
-  
+
     // console.log("Matched MOU Activity:", matchedActivity);
-  
+
     // Generate file URL
     const fileUrl = `assets/MouTemplateDocuments/${selectedActivityId}.zip`;
     // console.log("Generated File URL:", fileUrl);
-  
+
     // Create and trigger the download
     const link = document.createElement('a');
     link.href = fileUrl;
     link.download = `${selectedActivityId}.zip`;
-  
+
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   }
-  
-  
-  
+
+
+
   // DownloadFormatDocument(a: any): void {
   //   console.log(JSON.stringify(a))
   //   // const fileUrl = `assets/MouTemplateDocuments/${this.selectedActivityId}.zip`;
@@ -599,9 +770,9 @@ GetAllUploadsDetails(SessionId: any): void {
   getAllMouActivities(): void {
     this.mouDocumentsService.GetAllMouActivities().subscribe({
       next: response => {
-        if (response.item1 ) {
-          this.Activities = response.item1;  
-           //console.log(JSON.stringify(this.Activities))
+        if (response.item1) {
+          this.Activities = response.item1;
+          //console.log(JSON.stringify(this.Activities))
         }
       }
     })

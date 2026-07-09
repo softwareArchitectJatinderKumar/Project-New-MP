@@ -556,7 +556,7 @@ export class DynamicDashboardComponent implements OnInit {
   private buildVisibleApplications(): void {
     // HOD section — rows where DealingHODId === empCode
     this.hodMyApplications = this.AllApplications.filter(a => a._isHOD);
-    console.log('HOD Tab I applications:', this.hodMyApplications);
+    // console.log('HOD Tab I applications:', this.hodMyApplications);
     // HOD Tab II — dedicated API (only call if HOD role is active)
     if (this.isHOD) {
       this.GetAllApplicationsforHOD();

@@ -175,13 +175,13 @@ export class DynamicDashboardComponent implements OnInit {
 
 
 documentRows: DocumentRowConfig[] = [
-  { label: 'Resume',          fileKey: 'resumeFileName',            approvalKey: 'resumeApproval',     docTypeParam: 'Resume' },
-  { label: 'Consent Letter',  fileKey: 'consentLetterDocumentPath', approvalKey: 'consentApproval',    docTypeParam: 'Consent Letter' },
-  { label: 'Fees Proof',      fileKey: 'feesProofDocumentPath',     approvalKey: 'feesApproval',       docTypeParam: 'Fees Proof' },
-  { label: 'Passport',        fileKey: 'passportDocumentPath',      approvalKey: 'passportApproval',   docTypeParam: 'Passport' },
-  { label: 'English Proof',   fileKey: 'englishProofDocumentPath',  approvalKey: 'englishApproval',    docTypeParam: 'English Proof' },
-  { label: 'Affidavit',       fileKey: 'affidavitPath',             approvalKey: 'affidavitApproval',  docTypeParam: 'Affidavit' },
-  { label: 'Indemnity Bond',  fileKey: 'indeminityBondPath',        approvalKey: 'indemnityApproval',  docTypeParam: 'Indemnity Bond' },
+  // { label: 'Resume',          fileKey: 'resumeFileName',            approvalKey: 'resumeApproval',     docTypeParam: 'Resume' },
+  // { label: 'Consent Letter',  fileKey: 'consentLetterDocumentPath', approvalKey: 'consentApproval',    docTypeParam: 'Consent Letter' },
+  // { label: 'Fees Proof',      fileKey: 'feesProofDocumentPath',     approvalKey: 'feesApproval',       docTypeParam: 'Fees Proof' },
+  // { label: 'Passport',        fileKey: 'passportDocumentPath',      approvalKey: 'passportApproval',   docTypeParam: 'Passport' },
+  // { label: 'English Proof',   fileKey: 'englishProofDocumentPath',  approvalKey: 'englishApproval',    docTypeParam: 'English Proof' },
+  // { label: 'Affidavit',       fileKey: 'affidavitPath',             approvalKey: 'affidavitApproval',  docTypeParam: 'Affidavit' },
+  // { label: 'Indemnity Bond',  fileKey: 'indeminityBondPath',        approvalKey: 'indemnityApproval',  docTypeParam: 'Indemnity Bond' },
   { label: 'Offer Letter',    fileKey: 'offerLetterPath',           approvalKey: 'offerLetterApproval', docTypeParam: 'Offer Letter' },
   { label: 'Outbound Ticket', fileKey: 'outBoundTicket',            approvalKey: 'outboundApproval',   docTypeParam: 'Outbound Ticket' },
   { label: 'Return Ticket',   fileKey: 'returnTicketPath',          approvalKey: 'outboundApproval',   docTypeParam: 'Return Ticket' },
@@ -599,7 +599,7 @@ AllApprovedDocuments: any[] = [];
           const emp = response.item1[0];
           this.EmployeeDetails = emp;
           this.EmployeeName = emp.employeeName;
-          this.EmployeeCode ='33333';// String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
+          this.EmployeeCode = String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
           this.ContactNoX = emp.contactNo;
           this.Department = emp.department;
           this.DepartmentName = emp.departmentName;
@@ -1451,7 +1451,7 @@ AllApprovedDocuments: any[] = [];
       x => x.applicationId == row.applicationId
     ) ?? [];
 
-    console.log('appDocsApprovalList **--', JSON.stringify(this.AllApprovedDocuments));
+    // console.log('appDocsApprovalList **--', JSON.stringify(this.AllApprovedDocuments));
 
     // Matches a documentRows entry (via its docTypeParam) against the DB's
     // DocumentName column, ignoring case and whitespace differences — the
@@ -1526,7 +1526,7 @@ AllApprovedDocuments: any[] = [];
         ...approvalByKey
       };
     }
-    console.log('SelectedDocuments', JSON.stringify(this.SelectedDocuments));
+    // console.log('SelectedDocuments', JSON.stringify(this.SelectedDocuments));
     // Open modal
     this.currentModalRef = this.modalService.open(this.DocumentApprovalsModal, {
       size: 'xl',

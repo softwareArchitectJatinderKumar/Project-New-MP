@@ -31,16 +31,25 @@
         <div class="card">
             <div class="card-body">
                 <div class="col-md-12 d-flex justify-content-center">
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                         <div class="mb-3">
                             <button (click)="exportToExcel()" class="btn btn-dark"
                                 [disabled]="filteredMouActivityData.length == 0">
                                 Export to Excel
                             </button>
                         </div>
-                    </div>
 
-                    <div class="col-sm-3">
+                    </div>
+                     <div class="col-sm-2">
+                                    <select class="form-select" [(ngModel)]="approvalFilter"
+                                        (change)="onApprovalFilterChange()">
+                                        <option value="all">All</option>
+                                        <option value="approved">Approved</option>
+                                        <option value="disapproved">Disapproved</option>
+                                    </select>
+                                </div>
+
+                    <div class="col-sm-2">
                         <div class="mb-3">
                             <input [(ngModel)]="searchQuery" (keyup)="search()" id="search" type="text"
                                 [disabled]="filteredMouActivityData.length == 0" style="width: auto;"
@@ -61,6 +70,21 @@
                             </option>
                         </select>
                     </div>
+                </div>
+                <div class="col-sm-4">
+                
+                    <span class="badge bg-success me-2">
+                        Approved : {{approvedCount}}
+                    </span>
+                
+                    <span class="badge bg-danger me-2">
+                        Disapproved : {{disapprovedCount}}
+                    </span>
+                
+                    <span class="badge bg-warning text-dark">
+                        Pending : {{pendingCount}}
+                    </span>
+                
                 </div>
 
                 <!-- Show loader if loading -->
@@ -85,12 +109,24 @@
                             <div class="col-md-12 grid-margin stretch-card">
                                 <div class="card">
                                     <div class="card-body ">
-                                        <div class="table-responsive">
+                                        <div class="datatable-container">
+                                        
+                                            <!-- Fixed Top Horizontal Scrollbar -->
+                                            <div class="top-scrollbar" #topScrollbar>
+                                                <div #topScrollbarContent></div>
+                                            </div>
+                                        
+                                            <!-- Datatable -->
+                                            <div #gridContainer>
+                                                <ngx-datatable class="bootstrap table table-striped material" [rows]="filteredMouActivityData"
+                                                    [loadingIndicator]="loadingIndicator" [limit]="10" [columnMode]="ColumnMode.force" [footerHeight]="80"
+                                                    [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true">
+                                        <!-- <div class="table-responsive">
                                             <ngx-datatable class="bootstrap table table-striped material"
                                                 [rows]="filteredMouActivityData" [loadingIndicator]="loadingIndicator"
                                                 [limit]="10" [columnMode]="ColumnMode.force" [footerHeight]="80"
                                                 [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true"
-                                                rowHeight="auto">
+                                                rowHeight="auto"> -->
 
                                                  <ngx-datatable-column name="Record Id" [sortable]="false" prop="Id">
                                                     <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
@@ -239,6 +275,7 @@
                                                 </ngx-datatable-column>
 
                                             </ngx-datatable>
+                                        </div>
                                         </div>
                                     </div>
                                 </div>

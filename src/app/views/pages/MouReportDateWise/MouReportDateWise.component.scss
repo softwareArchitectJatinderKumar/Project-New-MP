@@ -62,3 +62,61 @@ tr:nth-child(even) {
 tr:hover {
     background-color: #ddd;
 }
+
+.top-scrollbar {
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 1000;
+
+    overflow-x: auto;
+
+    overflow-y: hidden;
+
+    height: 16px;
+
+    margin-bottom: 5px;
+
+    background: #fff;
+
+    border: 1px solid #ddd;
+
+    scrollbar-width: thin;
+
+    scrollbar-color: #FD6C04 #f3f3f3;
+
+    div {
+
+        height: 1px;
+
+    }
+
+    &::-webkit-scrollbar {
+
+        height: 14px;
+
+    }
+
+    &::-webkit-scrollbar-track {
+
+        background: #f3f3f3;
+
+    }
+
+    &::-webkit-scrollbar-thumb {
+
+        background: #FD6C04;
+
+        border-radius: 10px;
+
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+
+        background: #e55f00;
+
+    }
+
+}

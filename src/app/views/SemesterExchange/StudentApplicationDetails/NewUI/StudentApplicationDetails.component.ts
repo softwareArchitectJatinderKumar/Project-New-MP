@@ -271,7 +271,7 @@ export class StudentApplicationDetailsComponent implements OnInit, OnDestroy {
             this.cgPA= this.application['cgpa'];
             this.ApprovedUniversity= this.application['approvedUniversity']
 
-            console.log('Application data loaded:', this.application);
+            // console.log('Application data loaded:', this.application);
             // Both derived structures depend on form values — build once here
             this.filteredSections = this.buildFilteredSections();
             this.displayValues = this.buildDisplayValues();

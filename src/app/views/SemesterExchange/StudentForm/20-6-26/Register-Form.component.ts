@@ -330,7 +330,7 @@ StageIDocuments: any; StageIIDocuments: any; LockedStatus: any;   ApprovedUniver
       .subscribe({
         next: (response) => {
           const stuApplication = response.item1?.[0];
-          console.log(JSON.stringify(stuApplication)+'Application details ')
+          // console.log(JSON.stringify(stuApplication)+'Application details ')
           this.ApplicationID = stuApplication?.applicationId;
           this.StageIDocuments = stuApplication?.stageIDocuments;
           this.StageIIDocuments = stuApplication?.stageIIDocuments;
@@ -727,9 +727,9 @@ StageIDocuments: any; StageIIDocuments: any; LockedStatus: any;   ApprovedUniver
             }
         }
 
-    formData.forEach((value, key) => {
-      console.log(`${key}: ${value}`);
-    });
+    // formData.forEach((value, key) => {
+    //   console.log(`${key}: ${value}`);
+    // });
     this.servicesSM.SemesterExchangeNewRegistrationForm(formData)
       .pipe(
         finalize(() => this.isLoading = false)
