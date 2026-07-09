@@ -363,45 +363,180 @@ export class StudentApplicationDetailsComponent implements OnInit, OnDestroy {
   }
 
   private buildDisplayValues(): Record<string, string> {
-    const map: Record<string, string> = {
-      relativeNotApplicable: 'No relative abroad on record.',
-      acceptPolicy: this.studentForm.get('acceptPolicy')?.value ? 'Accepted' : 'Not Accepted',
-    };
 
-    const allKeys = new Set(FORM_SECTIONS.flatMap(s => [...s.keys]));
+  const map: Record<string, string> = {};
 
-    for (const key of allKeys) {
-      if (key in map) continue;
+  const allKeys = new Set(FORM_SECTIONS.flatMap(section => [...section.keys]));
 
-      if (key === 'isSelfFunded') {
-        map[key] = this.sponsorTypeLabel();
-        continue;
-      }
+  const normalize = (value: any): string => {
 
-      if (['sponsorName', 'sponsorRelation', 'sponsorContact', 'sponsorEmail'].includes(key)) {
-        map[key] = this.hasMeaningfulValue(this.fv(key)) ? this.fv(key) : '';
-        continue;
-      }
-
-      if (['relativeEmail', 'relativePhone'].includes(key)) {
-        map[key] = this.hasMeaningfulValue(this.fv(key)) ? this.fv(key) : '';
-        continue;
-      }
-
-      if (key === 'passportNumber' || key === 'passportIssueDate' || key === 'passportValidUpto') {
-        const pNo = this.fv('passportNumber');
-        const pIssue = this.fv('passportIssueDate');
-        const pValid = this.fv('passportValidUpto');
-        const isMissing = (v: string) => !this.hasMeaningfulValue(v);
-        map[key] = (isMissing(pNo) || isMissing(pIssue) || isMissing(pValid)) ? 'Not Available' : this.fv(key);
-        continue;
-      }
-
-      map[key] = this.hasMeaningfulValue(this.fv(key)) ? this.fv(key) : 'N/A';
+    if (value === null || value === undefined) {
+      return 'N/A';
     }
 
-    return map;
+    const str = String(value).trim();
+
+    if (
+      str === '' ||
+      str.toLowerCase() === 'null' ||
+      str.toLowerCase() === 'undefined'
+    ) {
+      return 'N/A';
+    }
+
+    return str;
+  };
+
+  const formatDate = (value: any): string => {
+
+    const val = normalize(value);
+
+    if (val === 'N/A') {
+      return val;
+    }
+
+    // Handles: 11/01/2023 00:00:00
+    return val.split(' ')[0];
+  };
+
+  for (const key of allKeys) {
+
+    switch (key) {
+
+      case 'relativeNotApplicable':
+        map[key] = 'No relative abroad on record.';
+        break;
+
+      case 'acceptPolicy': {
+
+        const value = normalize(this.fv('acceptPolicy')).toLowerCase();
+
+        map[key] =
+          value === 'yes' || value === 'true'
+            ? 'Accepted'
+            : 'Not Accepted';
+
+        break;
+      }
+
+      case 'isSelfFunded':
+        map[key] = this.sponsorTypeLabel();
+        break;
+
+      case 'sponsorName':
+      case 'sponsorRelation':
+      case 'sponsorContact':
+      case 'sponsorEmail':
+      case 'relativeEmail':
+      case 'relativePhone':
+
+        map[key] = normalize(this.fv(key));
+        break;
+        case 'passportNumber':
+  map[key] = this.hasMeaningfulValue(this.fv('passportNumber'))
+    ? this.fv('passportNumber')
+    : 'Not Available';
+  break;
+
+case 'passportIssueDate':
+  map[key] = this.hasMeaningfulValue(this.fv('passportNumber'))
+    ? formatDate(this.fv('passportIssueDate'))
+    : 'Not Available';
+  break;
+
+case 'passportValidUpto':
+  map[key] = this.hasMeaningfulValue(this.fv('passportNumber'))
+    ? formatDate(this.fv('passportValidUpto'))
+    : 'Not Available';
+  break;
+      // case 'passportNumber':
+      // case 'passportIssueDate':
+      // case 'passportValidUpto': {
+
+      //   const passportNo = normalize(this.fv('passportNumber'));
+      //   const issueDate = normalize(this.fv('passportIssueDate'));
+      //   const validUpto = normalize(this.fv('passportValidUpto'));
+
+      //   const passportAvailable =
+      //     passportNo !== 'N/A' &&
+      //     issueDate !== 'N/A' &&
+      //     validUpto !== 'N/A';
+
+      //   if (!passportAvailable) {
+
+      //     map['passportNumber'] = 'Not Available';
+      //     map['passportIssueDate'] = 'Not Available';
+      //     map['passportValidUpto'] = 'Not Available';
+      //   }
+      //   else {
+
+      //     map['passportNumber'] = passportNo;
+      //     map['passportIssueDate'] = formatDate(issueDate);
+      //     map['passportValidUpto'] = formatDate(validUpto);
+      //   }
+
+      //   break;
+      // }
+
+      default: {
+
+        let value = normalize(this.fv(key));
+
+        if (
+          key.toLowerCase().includes('date') &&
+          value !== 'N/A'
+        ) {
+          value = formatDate(value);
+        }
+
+        map[key] = value;
+        break;
+      }
+    }
   }
+
+  return map;
+}
+  // private buildDisplayValues(): Record<string, string> {
+  //   const map: Record<string, string> = {
+  //     relativeNotApplicable: 'No relative abroad on record.',
+  //     acceptPolicy: this.studentForm.get('acceptPolicy')?.value ? 'Accepted' : 'Not Accepted',
+  //   };
+
+  //   const allKeys = new Set(FORM_SECTIONS.flatMap(s => [...s.keys]));
+
+  //   for (const key of allKeys) {
+  //     if (key in map) continue;
+
+  //     if (key === 'isSelfFunded') {
+  //       map[key] = this.sponsorTypeLabel();
+  //       continue;
+  //     }
+
+  //     if (['sponsorName', 'sponsorRelation', 'sponsorContact', 'sponsorEmail'].includes(key)) {
+  //       map[key] = this.hasMeaningfulValue(this.fv(key)) ? this.fv(key) : '';
+  //       continue;
+  //     }
+
+  //     if (['relativeEmail', 'relativePhone'].includes(key)) {
+  //       map[key] = this.hasMeaningfulValue(this.fv(key)) ? this.fv(key) : '';
+  //       continue;
+  //     }
+
+  //     if (key === 'passportNumber' || key === 'passportIssueDate' || key === 'passportValidUpto') {
+  //       const pNo = this.fv('passportNumber');
+  //       const pIssue = this.fv('passportIssueDate');
+  //       const pValid = this.fv('passportValidUpto');
+  //       const isMissing = (v: string) => !this.hasMeaningfulValue(v);
+  //       map[key] = (isMissing(pNo) || isMissing(pIssue) || isMissing(pValid)) ? 'Not Available' : this.fv(key);
+  //       continue;
+  //     }
+
+  //     map[key] = this.hasMeaningfulValue(this.fv(key)) ? this.fv(key) : 'N/A';
+  //   }
+
+  //   return map;
+  // }
 
   /** Mirrors Edit Application sponsor-type mapping (Parents vs Others) */
   private sponsorTypeLabel(): string {
@@ -545,24 +680,29 @@ export class StudentApplicationDetailsComponent implements OnInit, OnDestroy {
   //   return { ...section, keys: section.keys.filter(k => k !== 'passportStatus') };
   // }
 
-  private filterPassportSection(section: FormSection): FormSection {
-    const isEmpty = (v: string) => !v || v.toLowerCase() === 'na' || v.toLowerCase() === 'not applicable';
+private filterPassportSection(section: FormSection): FormSection {
 
-    const passportNo = this.fv('passportNo');
-    const issueDate = this.fv('passportIssueDate');
-    const validUpto = this.fv('passportValidUpto');
+  const passportNumber = this.fv('passportNumber');
 
-    // Check if all primary passport details are missing
-    const isPassportMissing = isEmpty(passportNo) || isEmpty(issueDate) || isEmpty(validUpto);
-
-    if (isPassportMissing) {
-      // Return only the section label, or a specific "Not Available" key
-      return { ...section, keys: ['passportStatus'] };
-    }
-
-    // Return all keys if data is present
-    return { ...section };
+  // Passport Number not entered
+  if (!this.hasMeaningfulValue(passportNumber)) {
+    return {
+      ...section,
+      keys: ['passportStatus']
+    };
   }
+
+  // Passport Number exists, show complete passport details
+  return {
+    ...section,
+    keys: [
+      'passportStatus',
+      'passportNumber',
+      'passportIssueDate',
+      'passportValidUpto'
+    ]
+  };
+}
   // ── Private — utilities ────────────────────────────────────
 
   /** Read a form value as a trimmed string */

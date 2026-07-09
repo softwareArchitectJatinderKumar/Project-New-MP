@@ -92,6 +92,15 @@
                                                 [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true"
                                                 rowHeight="auto">
 
+                                                 <ngx-datatable-column name="Record Id" [sortable]="false" prop="Id">
+                                                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                                        ngx-datatable-cell-template>
+                                                        <ng-container *ngIf="row.id != null">
+                                                            <span
+                                                                style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.id}}</span>
+                                                        </ng-container>
+                                                    </ng-template>
+                                                </ngx-datatable-column>
                                                 <ngx-datatable-column name="Session Year" [sortable]="false" prop="Id">
                                                     <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                                         ngx-datatable-cell-template>

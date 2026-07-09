@@ -1,6 +1,6 @@
-<!-- <div class="container-fluid" id="adminPage" *ngIf="isLoginFailed==false; else loginFailed">
+<div class="container-fluid" id="adminPage" *ngIf="isLoginFailed==false; else loginFailed">
 
-   
+    <!-- Top bar (kept as a structural header, employee details removed) -->
     <div class="page-header-bar">
         <div>
             <div class="page-header-title">
@@ -24,14 +24,14 @@
     </nav>
 
     <div class="tab-content" id="nav-tabContent">
-       
+        <!-- Tab one contents -->
         <div class="tab-pane fade active show" id="Approval" role="tabpanel" aria-labelledby="Approval-tab">
             <div class="row">
                 <div class="col-12 stretch-card">
                     <div class="card">
                         <div class="card-body">
 
-                      
+                            <!-- Filter toolbar -->
                             <div class="filter-toolbar row g-3 align-items-end">
                                 <div class="col-sm-3">
                                     <label class="filter-label">Export</label>
@@ -70,7 +70,7 @@
                                 </div>
                             </div>
 
-                   
+                            <!-- Summary Stats Row -->
                             <div class="row px-2 mb-3 summary-badges" *ngIf="statusFilter !== 'all' || approvalFilter !== 'all'">
                                 <div class="col-12">
                                     <div class="d-flex flex-wrap gap-2 align-items-center">
@@ -97,9 +97,8 @@
                                 </div>
                             </div>
 
-             
+                            <!-- Data grid: fixed scrollbars — bottom (horizontal) / right (vertical) -->
                             <div class="grid-scroll-wrapper">
-                                <div class="grid-scroll-content" appTopScrollSync=".datatable-body">
                                 <ngx-datatable class="bootstrap material" [rows]="filteredMouDocumentDetails"
                                     [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.standard"
                                     [footerHeight]="50" [limit]="15" [headerHeight]="50" [rowHeight]="'auto'"
@@ -234,7 +233,6 @@
                                         </ng-template>
                                     </ngx-datatable-column>
                                 </ngx-datatable>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -264,8 +262,7 @@
                                     </div>
                                 </div>
 
-                                <div class="grid-scroll-wrapper grid-scroll-wrapper--native-scroll"
-                                    appTopScrollSync>
+                                <div class="grid-scroll-wrapper">
                                     <table id="dataTableExample" class="table table-striped mb-0">
                                         <thead>
                                             <tr>
@@ -558,7 +555,6 @@
 
     <div class="container-fluid stretch-card">
         <div class="grid-scroll-wrapper" style="max-height: 50vh;">
-            <div class="grid-scroll-content" appTopScrollSync=".datatable-body">
             <ngx-datatable class="bootstrap material" [rows]="renewedMouDocumentDetails"
                 [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.standard" [footerHeight]="50"
                 [limit]="10" [headerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [scrollbarV]="false">
@@ -640,11 +636,10 @@
                     </ng-template>
                 </ngx-datatable-column>
             </ngx-datatable>
-            </div>
         </div>
     </div>
 
     <div class="modal-footer justify-content-center border-0 pb-4">
         <button type="button" class="btn btn-secondary px-4" (click)="modal.dismiss()">Close</button>
     </div>
-</ng-template> -->
+</ng-template>

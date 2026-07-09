@@ -1,0 +1,82 @@
+// ---------------------------------------------------------------------
+// Theming: consumers can override these custom properties on an ancestor
+// element to restyle the grid shell without editing this component.
+// ---------------------------------------------------------------------
+:host {
+  display: block;
+  --dsg-accent: #FD6C04;
+  --dsg-border: #e5e7eb;
+  --dsg-surface: #ffffff;
+  --dsg-surface-soft: #f8f9fb;
+}
+
+.dual-scroll-grid {
+  position: relative;
+  border: 1px solid var(--dsg-border);
+  border-radius: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--dsg-surface);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  scrollbar-width: thin;
+  scrollbar-color: var(--dsg-accent) var(--dsg-surface-soft);
+
+  &::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--dsg-surface-soft);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--dsg-accent);
+    border-radius: 8px;
+    border: 3px solid var(--dsg-surface-soft);
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: var(--dsg-surface-soft);
+  }
+
+  // For grids where the projected content itself is the horizontally
+  // scrolling element (e.g. a plain <table>, as opposed to a grid library
+  // like ngx-datatable that scrolls an internal descendant).
+  &--native-h {
+    overflow-x: auto;
+  }
+}
+
+.dual-scroll-grid__content {
+  display: block;
+}
+
+// Injected by [appTopScrollSync] as a sibling just above the projected
+// content — the mirrored horizontal scrollbar.
+.top-scroll-sync-bar {
+  overflow-x: auto;
+  overflow-y: hidden;
+  height: 14px;
+  margin-bottom: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--dsg-accent) var(--dsg-surface-soft);
+
+  &::-webkit-scrollbar {
+    height: 14px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--dsg-surface-soft);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--dsg-accent);
+    border-radius: 8px;
+    border: 3px solid var(--dsg-surface-soft);
+  }
+}
+
+.top-scroll-sync-spacer {
+  height: 1px;
+}

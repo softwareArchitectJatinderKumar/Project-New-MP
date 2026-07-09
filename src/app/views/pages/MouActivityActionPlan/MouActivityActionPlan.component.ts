@@ -34,16 +34,12 @@ interface SchoolDivision {
 })
 export class MouActivityActionPlanComponent implements OnInit {
 
-
-  //  Started Logic on 22-6-26 
-
   @ViewChild('ModifyFacultyModal')
   ModifyFacultyModal!: TemplateRef<any>;
 
   //====================================================
   // Existing Variables
   //====================================================
-
 
   newMouid: any; recordId:any;
   TitleS: any; StartDate3: any; EndDate3: any;
@@ -72,7 +68,6 @@ export class MouActivityActionPlanComponent implements OnInit {
   ExistingUID: any;
   ModifyFaculty(row: any) {
     
-
 
     this.newMouid = row.mouId;
     this.TitleS = row.mouTitle;
@@ -155,7 +150,6 @@ export class MouActivityActionPlanComponent implements OnInit {
     this.AssignedToUid3 = employee.employeeCode;
     if(this.AssignedToUid3 === this.ExistingUID){
        swal.fire('Error', 'Select Different UID', 'error')
-      // alert('You have selected the same UID as existing. Please select a different UID.');
        this.filteredEmployeesData3 = [];
        this.showSuggestions3 = false;
       return;
@@ -252,7 +246,6 @@ export class MouActivityActionPlanComponent implements OnInit {
       return;
     }
 
-
  
 
     const formData = new FormData();
@@ -265,12 +258,6 @@ export class MouActivityActionPlanComponent implements OnInit {
     formData.append('StartDate', this.StartDate3 );
     formData.append('EndDate', this.EndDate3 );
 
-
-    // formData.forEach((value, key) => {
-    //   console.log(key, value);
-    // });
-
-    // API Call Here
     this.mouDocumentsService.ReassignNewUID(formData).subscribe({
       next: (data: any) => {
         const resultMsg = data.item1 && data.item1.length > 0 ? data.item1[0].msg : data.responseData;
@@ -299,10 +286,6 @@ export class MouActivityActionPlanComponent implements OnInit {
     });
 
   }
-
-
-// Ended logic on 22-6-26
-
 
   resetTab1Filters(): void {
 
@@ -418,7 +401,6 @@ export class MouActivityActionPlanComponent implements OnInit {
   this.filteredMouActivityDocuments = filtered;
 }
 
-
 getActiveCount(): number {
 
   return this.filteredMouActivityDocuments.filter(item => {
@@ -451,14 +433,11 @@ getRenewedCount(): number {
   }).length;
 
 }
-  // added on 23-MAy-26 
   selectedSchoolDivision: any = '0';
 
   setSchoolDivision(event: any) {
     const selectedId = event.target.value;
     this.selectedSchoolDivision = selectedId;
-    // alert('Selected School Division ID: ' + this.selectedSchoolDivision);
-    // console.log('Selected School Division ID:', JSON.stringify(this.MouActivityDocumentsMaster) + 'Division selected '+ this.selectedSchoolDivision);
    let filtered = this.MouActivityDocumentsMaster.filter(item => {
       if (this.selectedSchoolDivision === '-1') {
         return false;
@@ -497,7 +476,6 @@ getRenewedCount(): number {
       });
     }
 
-    // this.filteredMouActivityAssignedMeMaster = filtered;
     this.filteredMouActivityDocuments = filtered;
   }
 
@@ -529,14 +507,12 @@ getRenewedCount(): number {
     return null;
   }
 
-  // aded on 21-May26
   formatDate(date: Date): string {
     const DateX = new Date(date).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
     return DateX;
   }
   @ViewChild('OpenMouRenewalModal', { read: TemplateRef, static: false })
   OpenMouRenewalModal!: TemplateRef<any> | null;
-
 
   LPUSpocEmail: any = '';
   AssignedToUidName: any = '';
@@ -564,7 +540,6 @@ getRenewedCount(): number {
     }
   }
 
-
   onInput2() {
     const query = this.mouForm.get('lpuSpocName')?.value?.toLowerCase();
 
@@ -579,7 +554,6 @@ getRenewedCount(): number {
       this.showSuggestions = false;
     }
   }
-
 
    selectEmployee2(employee: Employee) {
     // This updates the variables used in your console.log/HTML
@@ -600,7 +574,6 @@ getRenewedCount(): number {
     this.showSuggestions = false;
     this.checkUIDValidity();
   }
-
 
   
   
@@ -696,9 +669,6 @@ getRenewedCount(): number {
       formData.append('UID', this.EmployeeCode);
       formData.append('MasterMouId', this.mouId);
       formData.append('RenewalRemark', val.remarks);
-      // formData.append('MouTitle', val.mouOrganisation);
-      // formData.append('MouPartnerName', val.mouOrganisation);
-      // formData.append('FacultyName', this.EmployeeName);
       formData.append('FilePath', this.renewalFileName);
       formData.append('File', this.renewalFileBase64);
       formData.append('MouStartDate', val.startDate);
@@ -788,7 +758,6 @@ getRenewedCount(): number {
     return fieldNames[fieldName] || fieldName;
   }
 
-
     // Updates the MOU status based on the date logic
   updateMouStatus(): void {
     const today = new Date();
@@ -810,9 +779,7 @@ getRenewedCount(): number {
     }
   }
 
-
   openRenewModal(row: any): void {
-    // console.log('openRenewModal called for MOU ID:', JSON.stringify(row));
      this.isRenewalMode = true;
      this.showSuggestions = false;
      this.filteredEmployeesData = [];
@@ -865,13 +832,10 @@ getRenewedCount(): number {
          setTimeout(() => {
            window.dispatchEvent(new Event('resize'));
          }, 200);
-         // this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'lg', backdrop: 'static' }).result.then(() => {
          // Modal closed
        }).catch(() => { });
      }, 0);
    }
-
-  // Added on 14-May-26
 
   statusFilter: string = 'all';
   Tab1statusFilter: string = 'all';
@@ -882,61 +846,12 @@ getRenewedCount(): number {
   @ViewChild('ViewRenewedMouDetailsModal') ViewRenewedMouDetailsModal: TemplateRef<any>;
   renewedMouDocumentDetails: any[] = [];
 
-  // onStatusChange(event: any): void {
-  //   this.applyFilters();
-  // }
-
-  // applyFilters(): void {
-  //   // First filter by status
-  //   let filtered = this.MouActivityAssignedMeMaster.filter(item => {
-  //     if (this.statusFilter === 'all') {
-  //       return true;
-  //     }
-
-  //     if (this.statusFilter === 'active') {
-  //       return item.mouStatus === 'Active';
-  //     } else if (this.statusFilter === 'expired') {
-  //       return item.mouStatus === 'Expired' && item.renewalCount == null && item.renewalCount != 0;
-  //     } else if (this.statusFilter === 'renewed') {
-  //       return item.renewalCount > 0 || item.renewalCount !== 'null' && item.renewalCount !== null && item.renewalCount !== undefined && item.renewalCount !== '0';
-  //     }
-  //     return true;
-  //   });
-
-  //   // Then apply search filter if exists
-  //   const query = this.searchQuery.trim().toLowerCase();
-  //   if (query) {
-  //     filtered = filtered.filter(item => {
-  //       return Object.entries(item).some(([key, val]) => {
-  //         if (val !== null && val !== undefined) {
-  //           let valueString = String(val).toLowerCase();
-
-  //           // Special handling for mouid (Numeric & "MOU/x" String Comparison)
-  //           if (key === 'id') {
-  //             const numericId = Number(val);
-  //             if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
-  //               return true;
-  //             }
-  //           }
-
-  //           // General search for all other fields
-  //           return valueString.includes(query);
-  //         }
-  //         return false;
-  //       });
-  //     });
-  //   }
-
-  //   // this.filteredMouActivityAssignedMeMaster = filtered;
-  //   this.filteredMouActivityAssignedMe = filtered;
-  // }
   onStatusChangeTab1(event: any): void {
     this.applyFiltersTab1();
   }
 
   applyFiltersTab1(): void {
     // First filter by status
-    // alert(JSON.stringify(this.MouActivityAssignedMeMaster) + "ALL RECORDS ")
     let filtered = this.MouActivityDocumentsMaster.filter(item => {
       if (this.Tab1statusFilter === 'all') {
         return true;
@@ -976,27 +891,8 @@ getRenewedCount(): number {
       });
     }
 
-    // this.filteredMouActivityAssignedMeMaster = filtered;
     this.filteredMouActivityDocuments = filtered;
   }
-
-
-  // getActiveCount(): number {
-  //   return this.MouActivityDocumentsMaster.filter(item => {
-  //     return item.mouStatus === 'Active';
-  //   }).length;
-  // }
-
-  // getExpiredCount(): number {
-  //   return this.MouActivityDocumentsMaster.filter(item => {
-  //     return item.mouStatus === 'Expired';
-  //   }).length;
-  // }
-  // getRenewedCount(): number {
-  //   return this.MouActivityDocumentsMaster.filter(item => {
-  //     return item.renewalCount > 0 || item.renewalCount != null && item.renewalCount !== undefined && item.renewalCount !== '0' && item.renewalCount !== 'null';
-  //   }).length;
-  // }
 
   OpenAllMouRenewalHistory(row: any): void {
     this.mouId = row.id;
@@ -1008,7 +904,6 @@ getRenewedCount(): number {
 
     });
   }
-
 
   // Tab 2 Filters 
 
@@ -1023,7 +918,6 @@ getRenewedCount(): number {
           this.filteredMouActivityAssignedMe = this.filteredMouActivityAssignedMe.filter((activity: any) => {
             return activity.actionAssignedBy == this.EmployeeCode;
           });
-          // console.log("Assigned By Me Records: ", JSON.stringify(this.filteredMouActivityAssignedMe));
     let filtered = this.filteredMouActivityAssignedMe.filter(item => {
       if (this.Tab2statusFilter === 'all') {
         return true;
@@ -1063,10 +957,8 @@ getRenewedCount(): number {
       });
     }
 
-    // this.filteredMouActivityAssignedMeMaster = filtered;
     this.filteredMouActivityAssignedMe = filtered;
   }
-
 
   
   getActiveCountTab2(): number {
@@ -1096,7 +988,6 @@ getRenewedCount(): number {
 
     });
   }
-
 
 //  Tab -3 Filters
 
@@ -1145,8 +1036,6 @@ getRenewedCount(): number {
         });
       });
     }
-    // console.log(  "ALL RECORDS " + this.filteredMouActivityAssignedOthers.length);
-    // this.filteredMouActivityAssignedMeMaster = filtered;
     this.filteredMouActivityAssignedOthers = filtered;
   }
 
@@ -1168,11 +1057,6 @@ getRenewedCount(): number {
     }).length;
   }
 
-
-
-
-
-
   getRenewedMouDetails(mouId: any): void {
     this.mouDocumentsService.GetRenewedMouDetails(mouId).subscribe((response) => {
       if (response.item1.length > 0) {
@@ -1182,9 +1066,6 @@ getRenewedCount(): number {
       }
     });
   }
-
-
-
 
   @ViewChild('ngSelectComponent') ngSelectComponent: NgSelectComponent;
   @ViewChild('viewDescModal') viewDescModal: TemplateRef<any>;
@@ -1197,11 +1078,9 @@ getRenewedCount(): number {
   MouActivityDocumentsMaster: any[] = [];
   filteredMouActivityDocuments: any[] = [];
 
-
   searchTextTab2: string = '';
   MouActivityAssignedMeMaster: any[] = [];
   filteredMouActivityAssignedMe: any[] = [];
-
 
   searchTextTab3: string = '';
   MouActivityAssignedOthersMaster: any[] = [];
@@ -1383,7 +1262,6 @@ getRenewedCount(): number {
         if (response.item1 && response.item1.length > 0) {
 
           this.MouActivityAssignedMeMaster = response.item1;
-          // console.log(JSON.stringify(this.MouActivityAssignedMeMaster))
           this.filteredMouActivityAssignedMe = [...this.MouActivityAssignedMeMaster];
           this.filteredMouActivityAssignedMe = response.item1.filter((activity: any) => {
             return activity.actionAssignedBy == this.EmployeeCode;
@@ -1392,7 +1270,6 @@ getRenewedCount(): number {
           this.filteredMouActivityAssignedMe.sort((a, b) => b.id - a.id); // Assuming ID exists, mostly checks createdOn usually
           this.setupColumns(this.MouActivityAssignedMeMaster[0], 'assigned');
           this.showNoDataFoundMessage = false;
-          // console.log(JSON.stringify(this.filteredMouActivityAssignedMe) + "Assigned To Me Records: ");
         } else {
           this.MouActivityAssignedMeMaster = [];
           this.filteredMouActivityAssignedMe = [];
@@ -1406,7 +1283,6 @@ getRenewedCount(): number {
       }
     });
   }
-
 
   reloadGrid() {
     this.selectedPlannerSession = "0";
@@ -1467,17 +1343,14 @@ getRenewedCount(): number {
     formData.append('Remarks', this.remarks);
     formData.append('StartDate', this.startDate);
     formData.append('EndDate', this.endDate);
-    // formData.append('ActivityDetails', this.selectedActivityId); -- removed on 23-May-26 as per new srs requirement
     this.mouDocumentsService.MouNewActivityPlanAddNew(formData).subscribe({
       next: (data: any) => {
         if (data?.item1?.[0]?.msg === 'success') {
-          // this.showAlert('Action Planned Stored Successfully!', 'success');
            swal.fire('Success', 'Assigned UID Done.', 'success');
            setTimeout(() => {
           window.location.reload();
         }, 1500);
         } else {
-          // this.showAlert('Server Error', 'error');
            swal.fire('Failed', 'Assigned UID Failed.', 'error');
            setTimeout(() => {
           window.location.reload();
@@ -1508,9 +1381,6 @@ UploadUID() {
       } else {
         this.showAlert('Failed to Update UID!', 'error');
 
-        // setTimeout(() => {
-        //   window.location.reload();
-        // }, 1500);
       }
     },
      error: (err) => {
@@ -1519,7 +1389,6 @@ UploadUID() {
       complete: () => {
         this.clearFields();
         this.reloadGrid2();
-        // window.location.reload();
       }
      
   });
@@ -1560,7 +1429,6 @@ UploadUID() {
   filterTab3() {
     this.filteredMouActivityAssignedOthers = this.genericSearch(this.MouActivityAssignedOthersMaster, this.searchTextTab3);
   }
-
 
   setSessionId(event: any) {
     const selectedId = event.target.value;
@@ -1638,18 +1506,10 @@ UploadUID() {
   }
 
   checkFormValidity(): boolean {
-    // this.uploadEnabled = !!(this.mouId && this.mouId !== 'select Id'
-    //   && this.partnerName && this.ResponsiblePerson
-    //   && this.startDate && this.endDate
-    //   && this.AssignedToUid && this.AssignedToUid.length > 4
-    //   && this.remarks && this.remarks.length > 5);
-
-
     return !!(
       this.startDate &&
       this.endDate &&
       this.remarks &&
-      // this.selectedActivityId && Removed on 23-May-26 as per new SRS 
       this.AssignedToUid > 0 // Ensures a faculty was selected from suggestions
     );
   }
@@ -1664,7 +1524,6 @@ UploadUID() {
   }
 
   onSelect(a: any) {
-    // alert(JSON.stringify(a))
     this.mouId = a['mouId'];
     this.CurrentMouTitle = a['mouTitle'];
     // this.startDate = a['mouStartDate'];
@@ -1683,7 +1542,6 @@ UploadUID() {
     this.RemarksX = rows['remarks'];
     this.modalService.open(this.AssignNewUIDModal, { size: 'lg' }).result.then(() => window.location.reload()).catch(() => { });
   }
-
 
   ViewAllActionTaken(rows: any) {
     this.MouidX = rows['mouId'];
@@ -1708,7 +1566,6 @@ UploadUID() {
     this.modalService.open(this.activityModal, { size: 'lg' }).result.then((result) => {
     });
   }
-
 
   exportToExcel(data: any[], type: 'tab2' | 'tab3'): void {
     const fileName = 'Mou Plan Report.xlsx';
@@ -1791,7 +1648,6 @@ UploadUID() {
   MouPartner: any;
   allMouActionTakenDetails: any;
 
-  // Added: per-row state for Reminder button
   reminderDisabled: { [key: string]: boolean } = {};
   reminderSending: { [key: string]: boolean } = {};
 
@@ -1858,7 +1714,6 @@ UploadUID() {
 
     this.ActivityDetailsX = rows?.activityDetails ?? '';
     this.RemarksX = rows?.remarks ?? '';
-// alert(rows.id)
     const formData = new FormData();
 
     formData.append('MouId', this.MouidX);
@@ -1872,10 +1727,7 @@ UploadUID() {
     formData.append('ActionAssignedBy', AssignedBy);
     formData.append('ActivityDetails', this.ActivityDetailsX);
 
-    //   formData.forEach((value, key) => {
-    //   console.log(`${key}: ${value}`);
     // });
-
 
     this.mouDocumentsService.MouReminderEmail(formData).subscribe({
       next: (data: any) => {
@@ -1947,7 +1799,6 @@ UploadUID() {
         if (data?.item1?.[0]?.msg === 'success') {
           this.showAlert('Reminder Email Sent Successfully!', 'success');
         } else {
-          // this.showAlert('Server Error', 'error');
         }
 
       },

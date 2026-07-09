@@ -1,0 +1,1101 @@
+<div class="container-fluid" id="ActivityPage" *ngIf="isLoginFailed==false; else loginFailed">
+  <div class="row">
+    <div class="col-6 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <div class="row d-flex justify-content-around">
+            <label class="col-6 form-label text-danger fw-bold">Employee Name / UID</label>
+            <label class="col-6 form-label text-dark text-end fw-bold">{{EmployeeName}} / {{this.EmployeeCode}}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <div class="row d-flex justify-content-around">
+            <label class="col-5 form-label text-danger fw-bold">Department Name</label>
+            <label class="col-7 form-label text-dark text-end fw-bold">{{this.DepartmentName}}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav>
+    <div class="nav nav-tabs mou-tabs d-flex justify-content-center active" id="nav-tab" role="tablist">
+      <button class="btn mou-tab-btn me-5 active" id="AssignActivities-tab" data-bs-toggle="tab" (click)="reloadGrid1()"
+        data-bs-target="#AssignActivities" type="button" role="tab">Assign Activity</button>
+
+      <button class="btn mou-tab-btn ms-5" id="MyAllAssignActivities-tab" data-bs-toggle="tab" (click)="reloadGrid2()"
+        data-bs-target="#MyAllAssignActivities" type="button" role="tab">Activities Assigned (by
+        Me)</button>
+
+      <button class="btn mou-tab-btn ms-5" id="OthersAllAssignActivities-tab" data-bs-toggle="tab"
+        (click)="reloadGrid()" data-bs-target="#OthersAllAssignActivities" type="button" role="tab">Activities Assigned
+        (by Others)</button>
+    </div>
+  </nav>
+
+  <div class="tab-content" id="nav-tabContent">
+
+    <div class="tab-pane fade active show" id="AssignActivities" role="tabpanel">
+      <div class="row vh-100">
+        <div class="col-12 stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <div class="row d-flex justify-content-center p-3 mx-5">
+                <div class="col-sm-3">
+                  <button (click)="exportTab1()" class="btn btn-dark"
+                    [disabled]="filteredMouActivityDocuments.length==0">
+                    Export to Excel
+                    <i class="ms-3 bi bi-download"></i>
+
+                  </button>
+                </div>
+                <div class="col-sm-3 ">
+
+
+                  <select class="form-select fs-5 text-danger" [(ngModel)]="selectedSchoolDivision">
+                    <option value="-1" selected>Select School Division</option>
+                    <option value="0">All Divisions</option>
+                    <option *ngFor="let division of allSchoolDivisions" [value]="division.id">{{ division.schoolDivision
+                      }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-sm-3 ">
+                  <select class="form-select" [(ngModel)]="Tab1statusFilter">
+                    <option value="all">All MOU</option>
+                    <option value="active">Active</option>
+                    <option value="expired">Expired</option>
+                    <option value="renewed">Renewed</option>
+                  </select>
+                </div>
+                <div class="col-sm-3">
+                  <button class="btn btn-danger mx-5 me-4 " (click)="applyCombinedFiltersTab1()">
+                    Apply Filter
+                  </button><button class="btn btn-dark" (click)="resetTab1Filters()" *ngIf="(selectedSchoolDivision != '-1' && selectedSchoolDivision != '0')
+                              || Tab1statusFilter != 'all'
+                              || searchTextTab1">
+                    Reset
+                  </button>
+                </div>
+              </div>
+              <div class="row p-3 mx-5">
+                <div class="col-12">
+                  <div class="d-flex gap-3 align-items-center">
+                    <span class="fw-bold me-2">Summary:</span>
+                    <span class="badge bg-success" [class.bg-primary]="Tab1statusFilter === 'active'">
+                      Active: {{ getActiveCount() }}
+                    </span>
+                    <span class="badge bg-danger" [class.bg-primary]="Tab1statusFilter === 'expired'">
+                      Expired: {{ getExpiredCount() }}
+                    </span>
+                    <span class="badge bg-info" [class.bg-primary]="Tab1statusFilter === 'renewed'">
+                      Renewed: {{ getRenewedCount() }}
+                    </span>
+                    <span class="badge bg-dark" *ngIf="searchQuery">
+                      Filtered: {{ filteredMouActivityDocuments.length }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="container-fluid" *ngIf="filteredMouActivityDocuments.length > 0; else DataRecords">
+                <ngx-datatable class="bootstrap table table-striped material" [rows]="filteredMouActivityDocuments"
+                  [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.standard" [footerHeight]="50"
+                  [limit]="20" [headerHeight]="100" [rowHeight]="'auto'" [scrollbarH]="true" [scrollbarV]="true"
+                  [virtualization]="false">
+
+                  <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="Id">
+                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                      <ng-container *ngIf="row.newMouId != null">
+                        <span class="cell-value">{{row.newMouId}}</span>
+                      </ng-container>
+                    </ng-template>
+                  </ngx-datatable-column>
+                  <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id">
+                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                      <ng-container *ngIf="row.mouId != null">
+                        <span class="cell-value">MOU/{{row.mouId}}</span>
+                      </ng-container>
+                    </ng-template>
+                  </ngx-datatable-column>
+                  <ngx-datatable-column name="School Division " prop="schoolDivisionInvolved" [width]="240">
+                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                      <ng-container *ngIf="row.mouStartDate != null; ">
+                        <ul class="school-involved-list" id="SchoolInvolvedData">
+                          <li [value]="getDivisionNameById(schoolId)"
+                            *ngFor="let schoolId of row.schoolDivisionInvolved.split(',')">
+                            {{getDivisionNameById(schoolId)}} -{{schoolId}}
+                          </li>
+                        </ul>
+                      </ng-container>
+                    </ng-template>
+                  </ngx-datatable-column>
+                  <ngx-datatable-column name="Mou Title" prop="mouTitle" [width]="200"></ngx-datatable-column>
+                  <ngx-datatable-column name="MOU Status" [sortable]="false" prop="Id" [width]="150">
+                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                      <ng-container *ngIf="row.mouStatus != null; else NoFound">
+                        <span class="cell-value" *ngIf="row.renewalCount == 0; else Statuss">
+                          {{ row.mouStatus?.length>0 ? row.mouStatus: 'NA'
+                          }}
+                        </span>
+                        <ng-template #Statuss>
+                          <td class="fw-bold fs-6 text-info">Renewed</td>
+                        </ng-template>
+
+                        <!-- Renewal action  -->
+                        <span class="fw-bold fs-6 d-none" *ngIf="row.mouStatus == 'Expired'  && row.renewalCount ==0 ">
+                          <a class="btn btn-dark me-4" (click)="openRenewModal(row)"
+                            *ngIf="row.mouStatus == 'Expired' ">
+                            <i class="bi bi-arrow-repeat"></i>
+                          </a>
+                        </span>
+                      </ng-container>
+                      <ng-template #NoFound>
+                        <span class="cell-value cell-value--na">NA</span>
+                      </ng-template>
+                    </ng-template>
+                  </ngx-datatable-column>
+
+                  <ngx-datatable-column name="MOU Start Date" [sortable]="false" prop="Id" [width]="140">
+                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                      <ng-container *ngIf="row.mouStartDate != null; else NoFound">
+                        <span class="cell-value">{{row.mouStartDate}}</span>
+                      </ng-container>
+                      <ng-template #NoFound>
+                        <span class="cell-value cell-value--na">NA</span>
+                      </ng-template>
+                    </ng-template>
+                  </ngx-datatable-column>
+
+                  <ngx-datatable-column name="MOU End Date" [sortable]="false" prop="Id" [width]="140">
+                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                      <ng-container *ngIf="row.mouEndDate != null;else NoFound">
+                        <span class="cell-value">{{row.mouEndDate}}</span>
+                      </ng-container>
+                      <ng-template #NoFound>
+                        <span *ngIf="row.mouEndDate == null && row.mouStartDate != null; "
+                          class="cell-value cell-value--na">Indefinite
+                        </span>
+                        <span *ngIf="row.mouEndDate == null && row.mouStartDate == null; "> NA
+                        </span>
+                      </ng-template>
+                    </ng-template>
+                  </ngx-datatable-column>
+                  <ngx-datatable-column name="Activities" [sortable]="false" [width]="110">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                      <button class="btn btn-sm btn-dark" (click)="openActivityModal(row)">
+                        <i class="bi bi-eye fs-5"></i>
+
+                      </button>
+                    </ng-template>
+                  </ngx-datatable-column>
+                  <ngx-datatable-column name="Action Details" [sortable]="false" prop="Id" [width]="130">
+                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                      <button class="btn btn-dark" (click)="ViewAllActionTaken(row)">
+                        <i class="bi bi-search"></i>
+                      </button>
+                    </ng-template>
+                  </ngx-datatable-column>
+
+                  <ngx-datatable-column name="MOU Docuement Link" [sortable]="false" prop="Id" [width]="160">
+                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                      <ng-container *ngIf="row.filePath != null">
+                        <button class="btn btn-dark" (click)="onDownloadFile(row.filePath)">
+                          <i class="bi bi-file-earmark-text"></i>
+                        </button>
+                      </ng-container>
+                      <ng-container *ngIf="row.filePath == null">
+                        <span class="cell-value">No
+                          FIle</span>
+                      </ng-container>
+                    </ng-template>
+                  </ngx-datatable-column>
+
+                  <ngx-datatable-column name="Actions" [sortable]="false" prop="Id" [width]="110">
+                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                      <button class="btn btn-warning" (click)="onSelect(row)">
+                        <i class="bi bi-person-plus fs-5"></i>
+                      </button>
+                    </ng-template>
+                  </ngx-datatable-column>
+                </ngx-datatable>
+              </div>
+              <ng-template #DataRecords>
+                <div class="text-center p-5">
+                  <h1 class="text-danger">No MOU for Action.</h1>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="MyAllAssignActivities" role="tabpanel">
+      <div class="row vh-100">
+        <div class="col-12 stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <div class="row d-flex justify-content-between p-3 mx-5">
+                <div class="col-sm-2">
+                  <button (click)="exportTab2()" class="btn btn-dark"
+                    [disabled]="filteredMouActivityAssignedMe.length === 0">
+                    Export to Excel <i class="ms-3 bi bi-download"></i>
+                  </button>
+                </div>
+                <div class="col-sm-2 ">
+                  <select class="form-select" [(ngModel)]="Tab2statusFilter" (change)="onStatusChangeTab2($event)">
+                    <option value="all">All MOU</option>
+                    <option value="active">Active</option>
+                    <option value="expired">Expired</option>
+                    <option value="renewed">Renewed</option>
+                  </select>
+                </div>
+                <div class="col-sm-2">
+                  <input [(ngModel)]="searchTextTab2" (keyup)="filterTab2()" type="text" class="form-control"
+                    placeholder="Search" />
+                </div>
+                <div class="col-sm-3 "><label class="fs-5 me-5 d-none">Select Session:</label>
+                  <select class="form-select fs-5 text-danger" [(ngModel)]="selectedPlannerSession"
+                    (change)="setSessionId($event)">
+                    <option value="1" selected>Select Session</option>
+                    <option value="0">All</option>
+                    <option *ngFor="let session of allPlannerSessions" [value]="session.id">{{ session.session }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <ng-container *ngIf="loadingIndicator">
+                <div class="text-center">
+                  <div class="spinner-grow text-danger loading-spinner"></div>
+                </div>
+              </ng-container>
+
+              <div class="row p-3 mx-5">
+                <div class="col-12">
+                  <div class="d-flex gap-3 align-items-center">
+                    <span class="fw-bold me-2">Summary:</span>
+                    <span class="badge bg-success" [class.bg-primary]="Tab2statusFilter === 'active'">
+                      Active: {{ getActiveCountTab2() }}
+                    </span>
+                    <span class="badge bg-danger" [class.bg-primary]="Tab2statusFilter === 'expired'">
+                      Expired: {{ getExpiredCountTab2() }}
+                    </span>
+                    <span class="badge bg-info" [class.bg-primary]="Tab2statusFilter === 'renewed'">
+                      Renewed: {{ getRenewedCountTab2() }}
+                    </span>
+                    <span class="badge bg-dark" *ngIf="searchQuery">
+                      Filtered: {{ filteredMouActivityAssignedMe.length }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="fixed-viewport-grid"
+                *ngIf="!loadingIndicator && filteredMouActivityAssignedMe.length > 0; else noDataBlock">
+                <ng-container *ngIf="filteredMouActivityAssignedMe.length > 0; else noDataBlock">
+                  <ngx-datatable class="bootstrap table table-striped material" [rows]="filteredMouActivityAssignedMe"
+                    [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.standard" [footerHeight]="50"
+                    [limit]="10" [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true" [scrollbarV]="true"
+                    [virtualization]="false">
+
+                    <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="Id">
+                      <ng-template let-row="row" ngx-datatable-cell-template>
+                        <ng-container *ngIf="row.mouId != null">
+                          <span class="fw-bold ps-2">{{ row.newMouId }}</span>
+                        </ng-container>
+                      </ng-template>
+                    </ngx-datatable-column>
+
+                    <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id">
+                      <ng-template let-row="row" ngx-datatable-cell-template>
+                        <ng-container *ngIf="row.mouId != null">
+                          <span class="fw-bold ps-2">MOU/{{ row.mouId }}</span>
+                        </ng-container>
+                      </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="Mou Title" prop="mouTitle" [width]="200"></ngx-datatable-column>
+                    <ngx-datatable-column name="Mou Status" [sortable]="false" prop="Id" [width]="140">
+                      <ng-template let-row="row" ngx-datatable-cell-template>
+                        <ng-container *ngIf="row.mouStatus != null">
+                          <span class="cell-value"
+                            *ngIf="row.renewalVersionCount == 0 || row.renewalVersionCount == null ; else Statuss">
+                            {{ row.mouStatus }}
+                          </span>
+                          <ng-template #Statuss>
+                            <td class="fw-bold fs-6 text-info">Renewed</td>
+                          </ng-template>
+                        </ng-container>
+                      </ng-template>
+                    </ngx-datatable-column>
+
+                    <ngx-datatable-column name="Assigned To" [sortable]="false" prop="Id" [width]="220">
+                      <ng-template let-row="row" ngx-datatable-cell-template>
+                        <ng-container *ngIf="row.uid != null && row.uid !== 'undefined'; else noFaculty">
+                          <span class="fw-bold ps-2 ">{{ row.uid }}</span> <br />
+                          <div class="col-3">
+
+                            <ng-container *ngIf="selectedRow?.activityPerformed?.length > 0; else ReminderEmails">
+                              <p><strong>Activity Performed:</strong></p>
+                              <p class="text-danger fw-bold">
+                                {{ selectedRow?.activityPerformed }}
+                              </p>
+                            </ng-container>
+
+                            <ng-template #ReminderEmails>
+                              <button type="button" [disabled]="row.reminderEmailSentOn != null " class="btn btn-danger"
+                                (click)="ReminderEmailTab2(row)">
+                                <i class="bi bi-file-earmark-text"></i>
+                              </button>
+                            </ng-template>
+                          </div>
+
+                        </ng-container>
+                        <ng-template #noFaculty>
+                          <span class="text-danger fw-bold ps-2">No Faculty Assigned</span> <br />
+                          <button class="btn btn-danger" (click)="AssignUid(row)">
+                            Assign UID
+                          </button>
+                        </ng-template>
+                      </ng-template>
+                    </ngx-datatable-column>
+
+                    <ngx-datatable-column name="Assigned By" [sortable]="false" prop="Id" [width]="140">
+                      <ng-template let-row="row" ngx-datatable-cell-template>
+                        <ng-container *ngIf="row.actionAssignedBy != null">
+                          <span class="fw-bold ps-2">{{ row.actionAssignedBy }}</span>
+                        </ng-container>
+                      </ng-template>
+                    </ngx-datatable-column>
+
+                    <ngx-datatable-column name="Assigned Date" [sortable]="false" prop="Id" [width]="140">
+                      <ng-template let-row="row" ngx-datatable-cell-template>
+                        <ng-container *ngIf="row.createdOn != null">
+                          <span class="fw-bold ps-2">{{ row.createdOn }}</span>
+                        </ng-container>
+                      </ng-template>
+                    </ngx-datatable-column>
+
+                    <ngx-datatable-column name="Modify Faculty" [sortable]="false" prop="Id" [width]="130">
+                      <ng-template let-row="row" ngx-datatable-cell-template>
+                        <button class="btn btn-dark" (click)="ModifyFaculty(row)">
+                          <i class="bi bi-people"></i>
+                        </button>
+                      </ng-template>
+                    </ngx-datatable-column>
+
+                    <ngx-datatable-column name="Activity Details" [sortable]="false" prop="activityDetails"
+                      [width]="220">
+                      <ng-template let-row="row" ngx-datatable-cell-template>
+                        <span class="fw-bold ps-2">
+                          {{ removeNumberPrefix(row.activityDetails) }}
+                        </span>
+                      </ng-template>
+                    </ngx-datatable-column>
+
+                    <ngx-datatable-column name="Session Year" [sortable]="false" prop="Id" [width]="160">
+                      <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                        <ng-container *ngIf="row.sessionAcademicYear != null; else NotFilled">
+                          <span class="cell-value">{{row.sessionAcademicYear}}</span>
+                        </ng-container>
+                        <ng-template #NotFilled>
+                          <span class="cell-value cell-value--na">NA</span>
+                        </ng-template>
+                      </ng-template>
+                    </ngx-datatable-column>
+
+                  </ngx-datatable>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="OthersAllAssignActivities" role="tabpanel">
+      <div class="row vh-100">
+        <div class="col-12 stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <div class="row d-flex justify-content-center p-3 mx-5">
+                <div class="col-sm-2">
+                  <button (click)="exportTab3()" class="btn btn-dark"
+                    [disabled]="filteredMouActivityAssignedOthers.length === 0">
+                    Export to Excel <i class="ms-3 bi bi-download"></i>
+                  </button>
+                </div>
+                <div class="col-sm-2 ">
+                  <select class="form-select" [(ngModel)]="Tab3statusFilter" (change)="onStatusChangeTab3($event)">
+                    <option value="all">All MOU</option>
+                    <option value="active">Active</option>
+                    <option value="expired">Expired</option>
+                  </select>
+                </div>
+                <div class="col-sm-2">
+                  <input [(ngModel)]="searchTextTab3" (keyup)="filterTab3()" type="text" class="form-control"
+                    placeholder="Search" />
+                </div>
+
+                <div class="col-sm-2"><label class="fs-5">Select Session:</label></div>
+                <div class="col-sm-2">
+                  <select class="form-select fs-5 text-danger" [(ngModel)]="selectedPlannerSession"
+                    (change)="setSessionId($event)">
+                    <option value="0" selected>All</option>
+                    <option *ngFor="let session of allPlannerSessions" [value]="session.id">{{ session.session }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <ng-container *ngIf="loadingIndicator">
+                <div class="text-center">
+                  <div class="spinner-grow text-danger loading-spinner"></div>
+                </div>
+              </ng-container>
+
+              <div *ngIf="!loadingIndicator && filteredMouActivityAssignedOthers.length > 0; else noDataBlock">
+
+                <ng-container *ngIf="filteredMouActivityAssignedOthers.length > 0; else noDataBlock">
+                  <div class="row p-3 mx-5">
+                    <div class="col-12">
+                      <div class="d-flex gap-3 align-items-center">
+                        <span class="fw-bold me-2">Summary:</span>
+                        <span class="badge bg-success" [class.bg-primary]="Tab3statusFilter === 'active'">
+                          Active: {{ getActiveCountTab3() }}
+                        </span>
+                        <span class="badge bg-danger" [class.bg-primary]="Tab3statusFilter === 'expired'">
+                          Expired: {{ getExpiredCountTab3() }}
+                        </span>
+                        <span class="badge bg-info" *ngIf="searchQuery">
+                          Filtered: {{ filteredMouActivityAssignedOthers.length }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="fixed-viewport-grid">
+                    <ngx-datatable class="bootstrap table table-striped material"
+                      [rows]="filteredMouActivityAssignedOthers" [loadingIndicator]="loadingIndicator"
+                      [columnMode]="ColumnMode.standard" [footerHeight]="50" [limit]="10" [headerHeight]="80"
+                      [rowHeight]="'auto'" [scrollbarH]="true" [scrollbarV]="true" [virtualization]="false">
+
+                      <ngx-datatable-column name="New MOU Id" prop="newMouId" [width]="130">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <span class="fw-bold">{{row.newMouId}}</span>
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <ng-container *ngIf="row.mouId != null">
+                            <span class="fw-bold ps-2">MOU/{{ row.mouId }}</span>
+                          </ng-container>
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column name="Mou Title" prop="mouTitle" [width]="200"></ngx-datatable-column>
+
+                      <ngx-datatable-column name="Assigned To" prop="uid" [width]="150">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <span *ngIf="row.uid && row.uid !== 'undefined'" class="fw-bold">{{ row.uid }}</span>
+                          <ng-container *ngIf="!row.uid || row.uid === 'undefined'">
+                            <span class="text-danger fw-bold">No Faculty</span> <br />
+                            <button class="btn btn-danger btn-sm" (click)="AssignUid(row)">Assign</button>
+                          </ng-container>
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column name="Assigned By" prop="actionAssignedBy" [width]="140">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <span class="fw-bold text-muted">{{ row.actionAssignedBy }}</span>
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column name="Assigned Date" [sortable]="false" prop="Id" [width]="140">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <ng-container *ngIf="row.createdOn != null">
+                            <span class="fw-bold ps-2">{{ row.createdOn }}</span>
+                          </ng-container>
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column name="Activity Details" prop="activityDetails" [width]="220">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <span>{{ removeNumberPrefix(row.activityDetails) || 'NA' }}</span>
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column name="Remarks" prop="remarks" [width]="200"></ngx-datatable-column>
+
+                      <ngx-datatable-column name="Activity Dates" [width]="180">
+                        <ng-template let-row="row" ngx-datatable-cell-template>
+                          <small class="text-muted">
+                            Start: {{row.startDate}} <br> End: {{row.endDate}}
+                          </small>
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column name="Session" prop="sessionAcademicYear"
+                        [width]="150"></ngx-datatable-column>
+
+                    </ngx-datatable>
+                  </div>
+                </ng-container>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<ng-template #loginFailed>
+  <div class="text-center" *ngIf="isLoginFailed">
+    <h3 class="text-center fs-2 m-5 text-warn pt-2"> Unauthorised Access </h3>
+    <div class="row mt-4 mb-4 d-flex justify-content-center">
+      <div class="col-3">
+        <label class="form-label fs-4 badge bg-white themeClr">Try logging in again.</label>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #noDataBlock>
+  <div class="text-center p-5"><label class="form-label fs-4 badge bg-info">No MOU activities found.</label></div>
+</ng-template>
+
+<ng-template #viewDescModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">MOU Action Plan Screen</h5>
+    <button type="button" class="btn-close" (click)="modal.close()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <form #PlanAnAction="ngForm" (ngSubmit)="UploadActivity()">
+          <div class="row mb-4">
+            <div class="col-6"><label>MOU ID</label><input class="form-control" value="MOU/{{mouId}}" disabled></div>
+            <div class="col-6"><label>Title</label><input class="form-control" [value]="CurrentMouTitle" disabled></div>
+          </div>
+
+          <div class="mb-4 position-relative">
+            <label>Concerned Faculty</label>
+            <input type="text" class="form-control" [formControl]="employeeControl" (input)="onInput()"
+              (keydown)="onKeydown($event)" (focus)="showSuggestions=true" (blur)="hideSuggestions()">
+            <div *ngIf="showSuggestions && filteredEmployeesData.length" class="suggestions-list border bg-white">
+              <div *ngFor="let emp of filteredEmployeesData; let i=index" class="p-2 cursor-pointer"
+                [class.bg-light]="i===activeSuggestionIndex" (mousedown)="selectEmployee(emp)">
+                {{emp.employeeName}} ({{emp.employeeCode}})
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-6">
+              <label>Start Date</label>
+              <input type="date" class="form-control" [(ngModel)]="startDate" name="start" required
+                (change)="checkFormValidity()">
+            </div>
+            <div class="col-6">
+              <label>End Date</label>
+              <input type="date" class="form-control" [(ngModel)]="endDate" name="end" required
+                (change)="checkFormValidity()">
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label>Remarks</label>
+            <textarea class="form-control" [(ngModel)]="remarks" name="rmk" required
+              (change)="checkFormValidity()"></textarea>
+          </div>
+
+          <button type="submit" [disabled]="!checkFormValidity()" class="btn btn-primary">
+            Plan Action
+          </button>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #AssignNewUIDModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">MOU Action Plan Re-Assign UID Screen </h5>
+    <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+  </div>
+  <div class="modal-body ">
+    <div class="col-12 grid-margin stretch-card ">
+      <div class="card ">
+        <div class="card-body vh-100">
+          <h2 class="modal-title text-center" id="exampleModalLabel">MOU Action Plan Re-Assign UID </h2>
+          <form #UpdateUIDForm="ngForm" (ngSubmit)="UploadUID()" class="p-4 bg-white rounded shadow-sm">
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">MOU ID</label>
+                <div class="form-control bg-light">{{ 'MOU/' + MouidX }} </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-bold">MOU Title</label>
+                <div class="form-control bg-light">{{ MouTitleX }}</div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="responsiblePerson" class="form-label fw-bold">Concerned Faculty</label>
+              <div class="position-relative">
+                <input type="text" id="responsiblePerson" name="responsiblePerson" required class="form-control"
+                  [(ngModel)]="ResponsiblePerson" [formControl]="employeeControl" placeholder="Search by name or code"
+                  (input)="onInput()" (keydown)="onKeydown($event)" (change)="checkUIDValidity()"
+                  (focus)="showSuggestions = true" (blur)="hideSuggestions()" />
+                <div class="text-danger mt-1 small" *ngIf="employeeControl.invalid && employeeControl.touched">
+                  Faculty is required.
+                </div>
+
+                <!-- Suggestions -->
+                <div *ngIf="showSuggestions && filteredEmployeesData.length"
+                  class="list-group position-absolute w-100 shadow-sm z-3">
+                  <button type="button" class="list-group-item list-group-item-action"
+                    *ngFor="let employee of filteredEmployeesData; let i = index"
+                    [class.active]="i === activeSuggestionIndex" (mousedown)="selectEmployee(employee)">
+                    {{ employee.employeeName }} ({{ employee.employeeCode }})
+                  </button>
+                </div>
+              </div>
+              <div *ngIf="AssignedToUid > 0" class="text-primary mt-2 small">
+                Applying to UID: <strong>{{ AssignedToUid }}</strong>
+              </div>
+            </div>
+
+            <!-- Dates & Activity Info in Single Row -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <label class="form-label fw-bold">Start Date</label>
+                <div class="form-control bg-light">{{ StartDateX }}</div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-bold">End Date</label>
+                <div class="form-control bg-light">{{ EndDateX }}</div>
+              </div>
+            </div>
+
+            <!-- Remarks in One Line -->
+            <div class="mb-3">
+              <label class="form-label fw-bold">Remarks</label>
+              <div class="form-control bg-light">{{ RemarksX }}</div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-end mt-4">
+              <button type="submit" class="btn btn-success px-4" [disabled]="!uploadEnabled">
+                Update UID
+              </button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #activityModalXX let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Activity Details</h5><button class="btn-close" (click)="modal.close()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-4"><strong>Approved By:</strong> {{selectedRow?.approvedBy}}</div>
+      <div class="col-4"><strong>Assigned To:</strong> {{selectedRow?.uid}}</div>
+      <div class="col-4"><strong>Activity:</strong> {{removeNumberPrefix(selectedRow?.activityDetails)}}</div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #activityModal let-modal>
+  <div class="container-fluid">
+    <div class="modal-header">
+      <h5 class="modal-title" id="activityModalLabel"> Activity Details </h5>
+      <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body ">
+            <h2 class="modal-title text-start fs-3 fw-bold  " id="exampleModalLabel">MOU/{{selectedRow?.mouId}}</h2>
+            <div class="row d-flex justify-content-center">
+              <div class="col-3">
+                <p><strong>Approved By:</strong></p>
+                <p class="text-primary fw-bold">{{ selectedRow?.approvedBy }}</p>
+              </div>
+              <div class="col-3">
+                <p><strong>Activity Assigned:</strong></p>
+                <p class="text-primary fw-bold">{{ removeNumberPrefix(selectedRow?.activityDetails ||
+                  'Not Assigned Yet')
+                  }}</p>
+              </div>
+              <div class="col-3">
+                <p><strong>Assigned To:</strong></p>
+                <p class="text-danger fw-bold">{{ selectedRow?.uid }}</p>
+              </div>
+
+              <div class="col-3">
+
+                <ng-container *ngIf="selectedRow?.activityPerformed?.length > 0; else ReminderEmails">
+                  <p><strong>Activity Performed:</strong></p>
+                  <p class="text-danger fw-bold">
+                    {{ selectedRow?.activityPerformed }}
+                  </p>
+                </ng-container>
+
+                <ng-template #ReminderEmails>
+                  <p><strong>Send Reminder Email</strong></p>
+                  <button type="button" class="btn btn-danger" (click)="ReminderEmailTab1(selectedRow)">
+                    <i class="bi bi-envelope-exclamation"></i>
+                  </button>
+                </ng-template>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #viewMouActivityActionTakenModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="viewMouActivityActionTakenModal"> View Activity Action Taken /{{this.MouidX}} </h5>
+    <button type="button" class="btn-close" (click)="modal.close('by: close icon')" aria-label="Close"></button>
+  </div>
+  <div class="modal-body vh-50">
+    <div class="col-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body ">
+          <h2 class="modal-title text-center" id="exampleModalLabel">Action Taken Details</h2>
+          <div class="table-responsive" id="dataTableMouReport"
+            *ngIf="allMouActionTakenDetails?.length > 0; else DataRecords">
+            <ngx-datatable class="bootstrap table table-striped material" [rows]="allMouActionTakenDetails"
+              [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50"
+              [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="10">
+
+              <ngx-datatable-column name="Assigned To" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                  <ng-container *ngIf="row.uid != null">
+                    <span class="cell-value">{{row.uid}}</span>
+                  </ng-container>
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column name="Proof Details" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                  <ng-container *ngIf="row.remarks != null">
+                    <span class="cell-value">{{row.remarks}}</span>
+                  </ng-container>
+                </ng-template>
+              </ngx-datatable-column>
+
+              <ngx-datatable-column name="Activity StartDate" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                  <ng-container *ngIf="row.activityStartDate != null">
+                    <span class="cell-value">{{row.activityStartDate}}</span>
+                  </ng-container>
+                </ng-template>
+              </ngx-datatable-column>
+              <ngx-datatable-column name="Activity EndDate" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                  <ng-container *ngIf="row.activityEndDate != null">
+                    <span class="cell-value">{{row.activityEndDate}}</span>
+                  </ng-container>
+                </ng-template>
+              </ngx-datatable-column>
+
+              <ngx-datatable-column name="Participants Count" [sortable]="false" prop="Id">
+                <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                  <ng-container *ngIf="row.participantsCount != null">
+                    <span class="cell-value">{{row.participantsCount}}</span>
+                  </ng-container>
+                  <ng-container *ngIf="row.participantsCount == null">
+                    <span class="cell-value">No
+                      Data</span>
+                  </ng-container>
+                </ng-template>
+              </ngx-datatable-column>
+
+              <ngx-datatable-column name="Uploaded Document" [sortable]="false" prop="actionTakenDocument">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  <ng-container *ngIf="row.actionTakenDocument; else noFile">
+                    <button class="btn btn-dark" (click)="onSelectActivityDocument(row)">View</button>
+                  </ng-container>
+                  <ng-template #noFile>
+                    <span class="font-weight-bold p-2">No File</span>
+                  </ng-template>
+                </ng-template>
+              </ngx-datatable-column>
+            </ngx-datatable>
+          </div>
+          <ng-template #DataRecords>
+            <div class="col-12 stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h1 class="text-center text-danger">No Data Found.</h1>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #OpenMouRenewalModal let-modal>
+  <div class="modal-header bg-dark text-white">
+    <h5 class="modal-title">{{isRenewalMode ? 'Renew MOU - ' + mouId : 'MOU Update: MOU/' + mouId}}</h5>
+    <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body bg-light" [formGroup]="mouForm">
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body py-2">
+        <div class="row g-3 mb-4">
+          <div class="col-md-7">
+            <label class="form-label fw-bold small">Partner Organisation Name</label>
+            <input type="text" class="form-control" formControlName="mouOrganisation"
+              [class.is-invalid]="isInvalid('mouOrganisation')">
+            <div class="invalid-feedback">Organisation name is required.</div>
+          </div>
+          <div class="col-md-5">
+            <label class="form-label fw-bold small">Divisions Involved</label>
+            <ng-select [items]="allSchoolDivisions" [multiple]="true" bindLabel="schoolDivision" bindValue="id"
+              formControlName="selectedDivisions" [class.is-invalid]="isInvalid('selectedDivisions')"></ng-select>
+            <div class="text-danger small mt-1" *ngIf="isInvalid('selectedDivisions')">Select at least one
+              division.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body py-2">
+        <div class="row g-3 mb-4 align-items-end">
+          <div class="col-md-3">
+            <label class="small fw-bold">Start Date</label>
+            <input type="date" class="form-control" formControlName="startDate" (change)="updateMouStatus()">
+          </div>
+          <div class="col-md-3">
+            <label class="small fw-bold">End Date</label>
+            <input type="date" class="form-control" formControlName="endDate" (change)="updateMouStatus()">
+          </div>
+          <div class="col-md-2">
+            <div class="form-check pt-2">
+              <input class="form-check-input" type="checkbox" id="isIndefinite" formControlName="isIndefinite"
+                (change)="toggleEndDate()">
+              <label class="form-check-label small" for="isIndefinite">Indefinite MOU</label>
+            </div>
+          </div>
+          <div class="col-md-2 text-start">
+            <span class="badge w-20 p-2"
+              [ngClass]="moustatus === 'Active' ? 'bg-success' : 'bg-danger'">{{moustatus}}</span>
+          </div>
+          <div class="col-md-2 text-start" *ngIf="isRenewalMode">
+            <label class="small fw-bold">Renewal Remarks</label>
+            <input type="text" class="form-control" formControlName="remarks">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body py-2">
+        <h6 class="text-primary small fw-bold text-uppercase mb-3 mt-1">External SPOC (Partner)</h6>
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="fw-bold small text-primary small fw-bold text-uppercase mb-3 mt-1">SPOC
+              Name</label>
+            <input type="text" class="form-control form-control-sm" placeholder="SPOC Name" formControlName="spocName"
+              [class.is-invalid]="isInvalid('spocName')">
+          </div>
+          <div class="col-md-4">
+            <label class="fw-bold small text-primary small fw-bold text-uppercase mb-3 mt-1">SPOC
+              Email</label>
+            <input type="email" class="form-control form-control-sm" placeholder="SPOC Email"
+              formControlName="spocEmail" [class.is-invalid]="isInvalid('spocEmail')">
+          </div>
+          <div class="col-md-4">
+            <label class="fw-bold small text-primary small fw-bold text-uppercase mb-3 mt-1">SPOC
+              Contact</label>
+            <input type="text" class="form-control form-control-sm" placeholder="SPOC Contact"
+              formControlName="spocContact" [class.is-invalid]="isInvalid('spocContact')">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body py-2">
+        <div class="row mt-3" [formGroup]="mouForm">
+          <div class="col-md-5 position-relative">
+            <label class="fw-bold small text-primary small fw-bold text-uppercase mb-3 mt-1 ">LPU SPOC Name
+              (Search) <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="lpuSpocName" (input)="onInput2()"
+              (focus)="showSuggestions = true" placeholder="Search by Name or UID..."
+              [class.is-invalid]="isInvalid('lpuSpocName')">
+            <div class="invalid-feedback">LPU SPOC Name is required.</div>
+
+            <div *ngIf="showSuggestions && filteredEmployeesData.length"
+              class="list-group position-absolute w-100 shadow-lg z-3 mt-1">
+              <button type="button" *ngFor="let emp of filteredEmployeesData" (mousedown)="selectEmployee2(emp)"
+                class="list-group-item list-group-item-action d-flex justify-content-between">
+                <span>{{ emp.employeeName }}</span>
+                <span class="text-muted small">ID: {{ emp.employeeCode }}</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <label class="fw-bold small text-primary small fw-bold text-uppercase mb-3 mt-1">LPU SPOC
+              UID <span class="text-danger">*</span></label>
+            <input type="text" class="form-control bg-light" formControlName="lpuSpocUid" readonly
+              placeholder="Auto-filled" [class.is-invalid]="isInvalid('lpuSpocUid')">
+            <div class="invalid-feedback">LPU SPOC UID is required.</div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="fw-bold small text-primary small fw-bold text-uppercase mb-3 mt-1">LPU SPOC
+              Email <span class="text-danger">*</span></label>
+            <input type="email" class="form-control" formControlName="lpuSpocEmail"
+              placeholder="internal-email@lpu.co.in" [class.is-invalid]="isInvalid('lpuSpocEmail')">
+            <div class="invalid-feedback">Valid LPU SPOC Email is required.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4 shadow-sm" *ngIf="isRenewalMode">
+      <div class="card-body py-2">
+        <label class="form-label fw-bold small">Upload New MOU Document</label>
+        <input type="file" class="form-control" (change)="onRenewFileSelected($event)" accept=".pdf,.doc,.docx" />
+        <small class="text-muted" *ngIf="renewalFileName">{{renewalFileName}}</small>
+        <div *ngIf="renewalFileError" class="text-danger small">{{renewalFileError}}</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer justify-content-center border-0 pb-4">
+    <button type="button" class="btn btn-secondary px-4" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-dark px-4" (click)="onSubmitModal()">
+      <i class="bi bi-cloud-upload me-1"></i> {{isRenewalMode ? 'Renew MOU' : 'Save Changes'}}
+    </button>
+  </div>
+</ng-template>
+
+<!-- New Modal to Change faculty of the MOU Activity Action Plan -->
+<ng-template #ModifyFacultyModal let-modal>
+
+  <div class="modal-header">
+    <h5 class="modal-title">
+      Modify Faculty
+    </h5>
+
+    <button type="button" class="btn-close" (click)="modal.dismiss()">
+    </button>
+  </div>
+
+  <div class="modal-body">
+
+    <div class="card shadow-sm">
+
+      <div class="card-body">
+
+        <form #PUpdateUid="ngForm" (ngSubmit)="UpdateUID()">
+
+          <div class="row mb-4">
+
+            <div class="col-md-6">
+
+              <label class="form-label">
+                MOU ID
+              </label>
+
+              <input class="form-control" [value]="'MOU/' + newMouid" disabled>
+
+            </div>
+
+            <div class="col-md-6">
+
+              <label class="form-label">
+                Title
+              </label>
+
+              <input class="form-control" [value]="TitleS" disabled>
+
+            </div>
+
+          </div>
+
+          <!-- Employee Search -->
+
+          <div class="mb-4 position-relative">
+
+            <label class="form-label">
+              New Concerned Faculty
+            </label>
+
+            <input type="text" class="form-control" [formControl]="employeeControl3" (input)="onInput3()"
+              (keydown)="onKeydown3($event)" (focus)="showSuggestions3=true" (blur)="hideSuggestions3()"
+              autocomplete="off" placeholder="Search Faculty">
+
+            <div *ngIf="showSuggestions3 && filteredEmployeesData3?.length"
+              class="position-absolute bg-white border rounded shadow-sm w-100 faculty-suggestions">
+              <div *ngFor="let emp of filteredEmployeesData3; let i = index" class="p-2 border-bottom cursor-pointer"
+                [class.bg-light]="i === activeSuggestionIndex3" (mousedown)="selectEmployee3(emp)">
+                {{ emp.employeeName }} ({{ emp.employeeCode }})
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Remarks -->
+
+          <div class="mb-4">
+
+            <label class="form-label">
+              Remarks
+            </label>
+
+            <textarea class="form-control" rows="4" name="remarks3" [(ngModel)]="remarks3" required>
+            </textarea>
+
+          </div>
+
+          <!-- Buttons -->
+
+          <div class="text-end">
+
+            <button type="button" class="btn btn-secondary me-2" (click)="modal.dismiss()">
+
+              Close
+
+            </button>
+
+            <button type="submit" class="btn btn-primary" [disabled]="!checkFormValidity3()">
+
+              Update Faculty
+
+            </button>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</ng-template>

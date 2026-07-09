@@ -28,7 +28,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MouDocumentsUploadsComponent } from './views/pages/mou-documents-uploads/mou-documents-uploads.component';
-import { MouDocumentsReportComponent } from './views/pages/mou-documents-report/mou-documents-report.component';
+// import { MouDocumentsReportComponent } from './views/pages/mou-documents-report/mou-documents-report.component';
 import { StudentFormComponent } from './views/SemesterExchange/StudentForm/StudentForm.component';
 import { CriteriaMasterComponent } from './components/criteria-master/criteria-master.component';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';

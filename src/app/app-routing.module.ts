@@ -211,7 +211,7 @@ const routes: Routes = [
       // MOU APPROVALS From HOS OR HEAD
       {
         path: 'MouApprovals/:loginName', ////22-sep-25 added new mouid 1 // 23-sep-25 added newmouid , ExportExcel fixed on 12-May-26 added Mou Renewal Page
-        loadChildren: () => import('./views/pages/mou-documents-report/mou-documents-report.module').then(m => m.MouDocumentsReportModule)
+        loadChildren: () => import('./views/pages/mou-documents-report/New-Changes/mou-documents-report.module').then(m => m.MouDocumentsReportModule)
       }, // ok  sp pGetAllUploadedMOUDocuments  //Bug sheet Point 1 Export to Excel is Working   18-March-25
 
       // MOU ACtivity Action From HOS OR HEAD

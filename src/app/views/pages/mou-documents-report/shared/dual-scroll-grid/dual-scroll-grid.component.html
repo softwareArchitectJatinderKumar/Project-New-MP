@@ -1,0 +1,5 @@
+<div class="dual-scroll-grid" [class.dual-scroll-grid--native-h]="nativeHorizontalScroll" [style.maxHeight]="maxHeight">
+    <div class="dual-scroll-grid__content" [appTopScrollSync]="scrollTargetSelector">
+        <ng-content></ng-content>
+    </div>
+</div>

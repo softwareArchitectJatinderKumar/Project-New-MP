@@ -194,7 +194,7 @@ GetAllUploadsDetails(SessionId: any): void {
           this.showNoDataFoundMessage = false;
           this.dataSource.data = this.MouActivityData;
           this.filteredMouActivityData = this.MouActivityData;
-          // console.log("Filter Activity data "+ JSON.stringify(this.filteredMouActivityData))
+          // this.columns = Object.keys(this.MouActivityData[0]);
         } else {
           this.MouActivityData = [];
           this.filteredMouActivityData = [];
@@ -434,8 +434,10 @@ GetAllUploadsDetails(SessionId: any): void {
 
   DisapproveStatus(RowData: any) {
     let aa = RowData;
-    let xmouId = aa['mouId'];
-    let CompletedDateD = aa['completedDate'];
+    let ActivityDate = aa['activityDate'];
+    let UId = aa['assignedToFacultyUID'];
+    let xmouId = aa['id'];
+    let CompletedDateA = aa['uploadActivityDate'];
     swal.fire({
       title: "Reason for Disapproval",
       input: 'text',
@@ -446,8 +448,10 @@ GetAllUploadsDetails(SessionId: any): void {
         const formData = new FormData();
         formData.append('Id', xmouId);
         formData.append('DisapprovalReason', this.Reason);
+        formData.append('ActivityDate', ActivityDate);
+        formData.append('UId', UId);
         formData.append('Action', 'Disapprove');
-        formData.append('CompletedDate', CompletedDateD);
+        formData.append('CompletedDate', CompletedDateA);
         this.handleStatusChange(formData, 'Disapprove');
       } else {
         this.showCancelledSwal();
@@ -458,11 +462,15 @@ GetAllUploadsDetails(SessionId: any): void {
 
   ApproveAction(RowData: any) {
     let aa = RowData;
-    let ymouId = aa['mouId'];
+    let ymouId = aa['id'];
+    let ActivityDate = aa['activityDate'];
+    let UId = aa['assignedToFacultyUID'];
     let CompletedDateA = aa['uploadActivityDate'];
-    // alert(JSON.stringify(RowData))
+    alert(JSON.stringify(RowData))
     const formData = new FormData();
     formData.append('Id', ymouId);
+    formData.append('ActivityDate', ActivityDate);
+    formData.append('UId', UId);
     formData.append('Action', 'Approve');
     formData.append('CompletedDate', CompletedDateA);
     swal.fire({
@@ -474,6 +482,7 @@ GetAllUploadsDetails(SessionId: any): void {
       cancelButtonText: 'No, do not change it'
     }).then((result: any) => {
       if (result.value) {
+       
         this.handleStatusChange(formData, 'Approve');
       } else {
         this.showCancelledSwal();
@@ -482,6 +491,10 @@ GetAllUploadsDetails(SessionId: any): void {
   }
 
   private handleStatusChange(formData: FormData, action: string) {
+
+       formData.forEach((value, key) => {
+      console.log(key, value);
+    });
     this.mouDocumentsService.ApproveMouActionTakenDocument(formData).subscribe((data: any) => {
       if (action === 'Approve' && data.responseData === 'Cancel') {
         swal.fire(

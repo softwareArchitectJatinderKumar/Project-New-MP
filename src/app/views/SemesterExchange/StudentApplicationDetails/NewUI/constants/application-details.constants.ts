@@ -15,6 +15,7 @@ export const FORM_SECTIONS: ReadonlyArray<FormSection> = [
   { label: 'University Preferences',  keys: ['applyingOption', 'universityOption1', 'universityOption2', 'universityOption3'] },
   { label: 'Relative at Abroad',      keys: ['relativeName', 'relativeRelation', 'relativeCountry', 'relativeEmail', 'relativePhone'] },
   { label: 'Passport Details',        keys: ['passportStatus', 'passportNumber', 'passportIssueDate', 'passportValidUpto'] },
+  // { label: 'Passport Details',        keys: ['passportStatus', 'passportNumber', 'passportIssueDate', 'passportValidUpto'] },
   { label: 'Visa Details',            keys: ['isVisaRejected', 'visaRejectedReason', 'visaRejectedCountry'] },
   { label: 'English Test Details',    keys: ['englishTestType', 'speakingScore', 'listeningScore', 'readingScore', 'writingScore', 'overallScore', 'englishTestYear'] },
   { label: 'Sponsor Details',         keys: ['isSelfFunded', 'sponsorName', 'sponsorRelation', 'sponsorContact', 'sponsorEmail'] },
