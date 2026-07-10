@@ -132,6 +132,8 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
+                                  
+
                                     <ngx-datatable-column name="Old MOU Id" [width]="130" [sortable]="false" prop="Id">
                                         <ng-template let-row="row" ngx-datatable-cell-template>
                                             <span class="cell-value" *ngIf="row.id != null">MOU/{{row.id}}</span>
@@ -202,6 +204,12 @@
                                             <a class="btn btn-warning me-4" *ngIf="row.id != null" (click)="ChangeSchool(row)">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                      <ngx-datatable-column name="Approval Remarks" [width]="140" [sortable]="false" prop="Id">
+                                        <ng-template let-row="row" ngx-datatable-cell-template>
+                                            <span class="cell-value" >{{row.disapprovalReason?.length>0 ? row.disapprovalReason : 'No Remarks '}}</span>
                                         </ng-template>
                                     </ngx-datatable-column>
 

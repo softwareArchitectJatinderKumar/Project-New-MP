@@ -151,6 +151,12 @@ initializeTopScrollbar(): void {
         );
         break;
 
+      case 'pending':
+        filtered = filtered.filter(x =>
+          x.isApproved === null ||
+          x.isApproved === 'null'           
+        );
+        break;
       case 'disapproved':
         filtered = filtered.filter(x =>
           x.isApproved === false ||
@@ -604,11 +610,11 @@ setTimeout(() => {
   }
 
   DisapproveStatus(RowData: any) {
-    let aa = RowData;
-    let ActivityDate = aa['activityDate'];
-    let UId = aa['assignedToFacultyUID'];
-    let xmouId = aa['id'];
-    let CompletedDateA = aa['uploadActivityDate'];
+   let aa = RowData;
+    let IDX = aa['recordId'];    
+    let UId = aa['assignedToFacultyUID'];    
+ 
+ 
     swal.fire({
       title: "Reason for Disapproval",
       input: 'text',
@@ -617,12 +623,10 @@ setTimeout(() => {
       if (result.value) {
         this.Reason = result.value;
         const formData = new FormData();
-        formData.append('Id', xmouId);
+        formData.append('Id', IDX);
         formData.append('DisapprovalReason', this.Reason);
-        formData.append('ActivityDate', ActivityDate);
         formData.append('UId', UId);
         formData.append('Action', 'Disapprove');
-        formData.append('CompletedDate', CompletedDateA);
         this.handleStatusChange(formData, 'Disapprove');
       } else {
         this.showCancelledSwal();
@@ -633,17 +637,13 @@ setTimeout(() => {
 
   ApproveAction(RowData: any) {
     let aa = RowData;
-    let ymouId = aa['id'];
-    let ActivityDate = aa['activityDate'];
-    let UId = aa['assignedToFacultyUID'];
-    let CompletedDateA = aa['uploadActivityDate'];
-    alert(JSON.stringify(RowData))
+    let ymouId = aa['recordId'];    
+    let UId = aa['assignedToFacultyUID'];    
     const formData = new FormData();
-    formData.append('Id', ymouId);
-    formData.append('ActivityDate', ActivityDate);
+    formData.append('Id', ymouId);    
     formData.append('UId', UId);
     formData.append('Action', 'Approve');
-    formData.append('CompletedDate', CompletedDateA);
+    
     swal.fire({
       title: 'Are you sure you want to Approve this?',
       text: 'Kindly confirm if the document is valid!',

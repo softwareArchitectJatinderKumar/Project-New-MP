@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import {    AfterViewInit} from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute } from '@angular/router';
@@ -34,6 +35,77 @@ interface SchoolDivision {
 })
 export class MouActivityActionPlanComponent implements OnInit {
 
+  @ViewChild('topScroll')
+topScroll!: ElementRef<HTMLDivElement>;
+
+@ViewChild('tableWrapper')
+tableWrapper!: ElementRef<HTMLDivElement>;
+
+tableScrollWidth = 0;
+
+syncTopScroll(): void {
+
+    if (this.syncing) {
+        return;
+    }
+
+    this.syncing = true;
+
+    this.tableWrapper.nativeElement.scrollLeft =
+        this.topScroll.nativeElement.scrollLeft;
+
+    requestAnimationFrame(() => this.syncing = false);
+
+}
+
+syncBottomScroll(): void {
+
+    if (this.syncing) {
+        return;
+    }
+
+    this.syncing = true;
+
+    this.topScroll.nativeElement.scrollLeft =
+        this.tableWrapper.nativeElement.scrollLeft;
+
+    requestAnimationFrame(() => this.syncing = false);
+
+}
+
+private syncing = false;
+  FilterDataRow2() {
+    this.applyFiltersTab2();
+  }
+ 
+  ngAfterViewInit(): void {
+
+    setTimeout(() => {
+
+        this.calculateScrollWidth();
+
+    });
+
+}
+
+
+
+calculateScrollWidth(): void {
+
+    if (!this.tableWrapper) {
+        return;
+    }
+
+    const body =
+        this.tableWrapper.nativeElement.querySelector('.datatable-body');
+
+    if (!body) {
+        return;
+    }
+
+    this.tableScrollWidth = body.scrollWidth;
+
+}
   @ViewChild('ModifyFacultyModal')
   ModifyFacultyModal!: TemplateRef<any>;
 
@@ -41,7 +113,7 @@ export class MouActivityActionPlanComponent implements OnInit {
   // Existing Variables
   //====================================================
 
-  newMouid: any; recordId:any;
+  newMouid: any; recordId: any;
   TitleS: any; StartDate3: any; EndDate3: any;
 
   //====================================================
@@ -49,17 +121,11 @@ export class MouActivityActionPlanComponent implements OnInit {
   //====================================================
 
   employeeControl3 = new FormControl('');
-
   remarks3: any = '';
-
   filteredEmployeesData3: Employee[] = [];
-
   showSuggestions3 = false;
-
   activeSuggestionIndex3 = -1;
-
   ResponsiblePerson3: any = '';
-
   AssignedToUid3: any = '';
 
   //====================================================
@@ -67,29 +133,20 @@ export class MouActivityActionPlanComponent implements OnInit {
   //====================================================
   ExistingUID: any;
   ModifyFaculty(row: any) {
-    
-
     this.newMouid = row.mouId;
     this.TitleS = row.mouTitle;
     this.recordId = row.id;
-    this.StartDate3= row.startDate;
-    this.EndDate3= row.endDate;
+    this.StartDate3 = row.startDate;
+    this.EndDate3 = row.endDate;
     this.ExistingUID = row.uid;
     // Reset values every time modal opens
     this.employeeControl3.setValue('');
-
     this.remarks3 = '';
-
     this.filteredEmployeesData3 = [];
-
     this.showSuggestions3 = false;
-
     this.activeSuggestionIndex3 = -1;
-
     this.ResponsiblePerson3 = '';
-
     this.AssignedToUid3 = '';
-
     this.modalService.open(
       this.ModifyFacultyModal,
       {
@@ -111,15 +168,12 @@ export class MouActivityActionPlanComponent implements OnInit {
   //====================================================
 
   onInput3() {
-
     const inputValue =
       (this.employeeControl3.value || '')
         .toString()
         .toLowerCase()
         .trim();
-
-    if (inputValue ) {
-
+    if (inputValue) {
       this.filteredEmployeesData3 =
         this.EmployeeData
           .filter(employee =>
@@ -127,14 +181,10 @@ export class MouActivityActionPlanComponent implements OnInit {
             employee.employeeCode.toLowerCase().includes(inputValue)
           )
           .slice(0, 10);
-
     }
     else {
-
       this.filteredEmployeesData3 = [];
-
     }
-
     this.showSuggestions3 = true;
     this.activeSuggestionIndex3 = -1;
   }
@@ -144,14 +194,12 @@ export class MouActivityActionPlanComponent implements OnInit {
   //====================================================
 
   selectEmployee3(employee: Employee) {
-
     this.ResponsiblePerson3 = employee.employeeCode;
-
     this.AssignedToUid3 = employee.employeeCode;
-    if(this.AssignedToUid3 === this.ExistingUID){
-       swal.fire('Error', 'Select Different UID', 'error')
-       this.filteredEmployeesData3 = [];
-       this.showSuggestions3 = false;
+    if (this.AssignedToUid3 === this.ExistingUID) {
+      swal.fire('Error', 'Select Different UID', 'error')
+      this.filteredEmployeesData3 = [];
+      this.showSuggestions3 = false;
       return;
     }
     this.employeeControl3.setValue(
@@ -169,7 +217,7 @@ export class MouActivityActionPlanComponent implements OnInit {
 
   onKeydown3(event: KeyboardEvent) {
 
-    if (!this.filteredEmployeesData3?.length ) {       
+    if (!this.filteredEmployeesData3?.length) {
       return;
     }
 
@@ -241,41 +289,36 @@ export class MouActivityActionPlanComponent implements OnInit {
   //====================================================
 
   UpdateUID() {
-
     if (!this.checkFormValidity3()) {
       return;
     }
-
- 
-
     const formData = new FormData();
-    formData.append('MouId', this.newMouid );
-    formData.append('ExistingUid', this.ExistingUID );
-    formData.append('RecordID',this.recordId );
+    formData.append('MouId', this.newMouid);
+    formData.append('ExistingUid', this.ExistingUID);
+    formData.append('RecordID', this.recordId);
     formData.append('Uid', this.ResponsiblePerson3);
-    formData.append('ActionAssignedBy', this.EmployeeCode );
-    formData.append('Remarks', this.remarks3 );
-    formData.append('StartDate', this.StartDate3 );
-    formData.append('EndDate', this.EndDate3 );
-
+    formData.append('ActionAssignedBy', this.EmployeeCode);
+    formData.append('Remarks', this.remarks3);
+    formData.append('StartDate', this.StartDate3);
+    formData.append('EndDate', this.EndDate3);
     this.mouDocumentsService.ReassignNewUID(formData).subscribe({
       next: (data: any) => {
         const resultMsg = data.item1 && data.item1.length > 0 ? data.item1[0].msg : data.responseData;
         if (resultMsg === 'success') {
           swal.fire('Success', 'Assigned UID Done.', 'success');
-           setTimeout(() => {
-          window.location.reload();
-        }, 1500);
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
         } else if (data.responseData == 'Failed') {
           swal.fire('Error', 'Failed to Assign New UID. Please try again.', 'error');
-           setTimeout(() => {
-          window.location.reload();
-        }, 1500);
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
         }
       },
       error: (err) => {
         swal.fire('Error', 'Failed to Assign New UID .', 'error');
-         setTimeout(() => {
+        setTimeout(() => {
           window.location.reload();
         }, 1500);
       },
@@ -289,63 +332,116 @@ export class MouActivityActionPlanComponent implements OnInit {
 
   resetTab1Filters(): void {
 
-  // Reset dropdowns
-  this.selectedSchoolDivision = '0';
-  this.Tab1statusFilter = 'all';
+    // Reset dropdowns
+    this.selectedSchoolDivision = '0';
+    this.Tab1statusFilter = 'all';
 
-  // Reset search
-  this.searchTextTab1 = '';
-  this.searchQuery = '';
+    // Reset search
+    this.searchTextTab1 = '';
+    this.searchQuery = '';
 
-  // Reload all records
-  this.filteredMouActivityDocuments = [
-    ...this.MouActivityDocumentsMaster
-  ];
-}
-
-  applyCombinedFiltersTab1(): void {
-
-  let filtered = [...this.MouActivityDocumentsMaster];
-
- 
-  if (this.selectedSchoolDivision === '-1') {
-
-    filtered = [];
-
-  } else if (this.selectedSchoolDivision !== '0') {
-
-    filtered = filtered.filter(item => {
-
-      if (!item.schoolDivisionInvolved) {
-        return false;
-      }
-
-      return item.schoolDivisionInvolved
-        .split(',')
-        .map((id: string) => id.trim())
-        .includes(this.selectedSchoolDivision);
-
-    });
+    // Reload all records
+    this.filteredMouActivityDocuments = [
+      ...this.MouActivityDocumentsMaster
+    ];
   }
 
-  // =========================
-  // Filter By MOU Status
-  // =========================
-  filtered = filtered.filter(item => {
+  applyCombinedFiltersTab1(): void {
+    let filtered = [...this.MouActivityDocumentsMaster];
+    if (this.selectedSchoolDivision === '-1') {
+      filtered = [];
+    } else if (this.selectedSchoolDivision !== '0') {
+      filtered = filtered.filter(item => {
+        if (!item.schoolDivisionInvolved) {
+          return false;
+        }
+        return item.schoolDivisionInvolved
+          .split(',')
+          .map((id: string) => id.trim())
+          .includes(this.selectedSchoolDivision);
+      });
+    }
 
-    if (this.Tab1statusFilter === 'all') {
+    // =========================
+    // Filter By MOU Status
+    // =========================
+    filtered = filtered.filter(item => {
+      if (this.Tab1statusFilter === 'all') {
+        return true;
+      }
+      if (this.Tab1statusFilter === 'active') {
+        return item.mouStatus === 'Active';
+      }
+      if (this.Tab1statusFilter === 'expired') {
+        return item.mouStatus === 'Expired' && item.renewalCount == 0;
+      }
+      if (this.Tab1statusFilter === 'renewed') {
+        return item.renewalCount > 0 ||
+          (
+            item.renewalCount !== null &&
+            item.renewalCount !== undefined &&
+            item.renewalCount !== '0' &&
+            item.renewalCount !== 'null'
+          );
+      }
       return true;
+    });
+
+    // =========================
+    // Search Filter
+    // =========================
+    const query = this.searchTextTab1?.trim().toLowerCase();
+    if (query) {
+      filtered = filtered.filter(item => {
+        return Object.entries(item).some(([key, val]) => {
+          if (val !== null && val !== undefined) {
+            const valueString = String(val).toLowerCase();
+            // Special handling for MOU ID
+            if (key === 'id') {
+              const numericId = Number(val);
+              if (
+                !isNaN(numericId) &&
+                (
+                  numericId.toString().includes(query) ||
+                  `mou/${numericId}`.includes(query)
+                )
+              ) {
+                return true;
+              }
+            }
+
+            return valueString.includes(query);
+          }
+
+          return false;
+        });
+      });
     }
 
-    if (this.Tab1statusFilter === 'active') {
+    // Final Bind
+    this.filteredMouActivityDocuments = filtered;
+  }
+
+  getActiveCount(): number {
+    return this.filteredMouActivityDocuments.filter(item => {
       return item.mouStatus === 'Active';
-    }
+    }).length;
 
-    if (this.Tab1statusFilter === 'expired') {
-      return item.mouStatus === 'Expired' && item.renewalCount == 0;
-    }
+  }
 
-    if (this.Tab1statusFilter === 'renewed') {
+  getExpiredCount(): number {
+
+    return this.filteredMouActivityDocuments.filter(item => {
+      return item.mouStatus === 'Expired' &&
+        item.renewalCount == 0;
+    }).length;
+
+  }
+
+  getRenewedCount(): number {
+
+    return this.filteredMouActivityDocuments.filter(item => {
+
       return item.renewalCount > 0 ||
         (
           item.renewalCount !== null &&
@@ -353,92 +449,17 @@ export class MouActivityActionPlanComponent implements OnInit {
           item.renewalCount !== '0' &&
           item.renewalCount !== 'null'
         );
-    }
 
-    return true;
-  });
+    }).length;
 
-  // =========================
-  // Search Filter
-  // =========================
-  const query = this.searchTextTab1?.trim().toLowerCase();
-
-  if (query) {
-
-    filtered = filtered.filter(item => {
-
-      return Object.entries(item).some(([key, val]) => {
-
-        if (val !== null && val !== undefined) {
-
-          const valueString = String(val).toLowerCase();
-
-          // Special handling for MOU ID
-          if (key === 'id') {
-
-            const numericId = Number(val);
-
-            if (
-              !isNaN(numericId) &&
-              (
-                numericId.toString().includes(query) ||
-                `mou/${numericId}`.includes(query)
-              )
-            ) {
-              return true;
-            }
-          }
-
-          return valueString.includes(query);
-        }
-
-        return false;
-      });
-    });
   }
-
-  // Final Bind
-  this.filteredMouActivityDocuments = filtered;
-}
-
-getActiveCount(): number {
-
-  return this.filteredMouActivityDocuments.filter(item => {
-    return item.mouStatus === 'Active';
-  }).length;
-
-}
-
-getExpiredCount(): number {
-
-  return this.filteredMouActivityDocuments.filter(item => {
-    return item.mouStatus === 'Expired' &&
-           item.renewalCount == 0;
-  }).length;
-
-}
-
-getRenewedCount(): number {
-
-  return this.filteredMouActivityDocuments.filter(item => {
-
-    return item.renewalCount > 0 ||
-      (
-        item.renewalCount !== null &&
-        item.renewalCount !== undefined &&
-        item.renewalCount !== '0' &&
-        item.renewalCount !== 'null'
-      );
-
-  }).length;
-
-}
   selectedSchoolDivision: any = '0';
+  selectedSchoolDivision2: any = '0';
 
   setSchoolDivision(event: any) {
     const selectedId = event.target.value;
     this.selectedSchoolDivision = selectedId;
-   let filtered = this.MouActivityDocumentsMaster.filter(item => {
+    let filtered = this.MouActivityDocumentsMaster.filter(item => {
       if (this.selectedSchoolDivision === '-1') {
         return false;
       }
@@ -447,7 +468,7 @@ getRenewedCount(): number {
       }
 
       if (this.selectedSchoolDivision !== '1') {
-        return item.schoolDivisionInvolved && item.schoolDivisionInvolved.split(',').map((id: string) => id.trim()).includes(this.selectedSchoolDivision);    
+        return item.schoolDivisionInvolved && item.schoolDivisionInvolved.split(',').map((id: string) => id.trim()).includes(this.selectedSchoolDivision);
       }
       return true;
     });
@@ -479,7 +500,7 @@ getRenewedCount(): number {
     this.filteredMouActivityDocuments = filtered;
   }
 
- 
+
   // Helper: convert various API date formats (e.g. "26 Mar 2026" or ISO) to "yyyy-MM-dd"
   private parseApiDateToIso(dateVal: any): string | null {
     if (!dateVal) return null;
@@ -497,7 +518,7 @@ getRenewedCount(): number {
     if (m) {
       const day = m[1].padStart(2, '0');
       const monthName = m[2].toLowerCase().slice(0, 3);
-      const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+      const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
       const monthIndex = months.indexOf(monthName);
       if (monthIndex >= 0) {
         const year = m[3];
@@ -529,7 +550,7 @@ getRenewedCount(): number {
   renewalFileName: string = '';
   renewalFileError: string = '';
   originalMouData: any = null;
-    // Toggles the disabled state of the MouEndDate field and sets MOU status
+  // Toggles the disabled state of the MouEndDate field and sets MOU status
   toggleEndDate(): void {
     if (this.isIndefiniteMou) {
       this.MouEndDate = '';
@@ -555,7 +576,7 @@ getRenewedCount(): number {
     }
   }
 
-   selectEmployee2(employee: Employee) {
+  selectEmployee2(employee: Employee) {
     // This updates the variables used in your console.log/HTML
     this.ResponsiblePerson = employee.employeeCode;
     this.AssignedToUid = employee.employeeCode;
@@ -575,145 +596,145 @@ getRenewedCount(): number {
     this.checkUIDValidity();
   }
 
-  
-  
-    
-    onRenewFileSelected(event: any): void {
-      const file = event.target.files[0];
-      if (!file) {
-        return;
-      }
-      
-      // Validate file type (PDF and Word documents only)
-      const allowedTypes = [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      ];
-      if (!allowedTypes.includes(file.type)) {
-        this.renewalFileError = 'Only PDF and Word documents are allowed.';
-        return;
-      }
-      
-      this.renewalFile = file;
-      this.renewalFileName = file.name;
-      this.renewalFileError = '';
-      
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = reader.result as string;
-        // Data URL format: "data:application/pdf;base64,<base64string>"
-        const base64Data = result.split(',')[1];
-        this.renewalFileBase64 = base64Data;
-      };
-      reader.readAsDataURL(file);
+
+
+
+  onRenewFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (!file) {
+      return;
     }
-  
-      onSubmitModal(): void {
-      if (this.isRenewalMode) {
-        this.onSubmitRenew();
-      } 
+
+    // Validate file type (PDF and Word documents only)
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    if (!allowedTypes.includes(file.type)) {
+      this.renewalFileError = 'Only PDF and Word documents are allowed.';
+      return;
     }
-  
-    onSubmitRenew(): void {
-      if (this.mouForm.invalid) {
-        this.mouForm.markAllAsTouched();
-        const invalidFields: string[] = [];
-        const controls = this.mouForm.controls;
-        for (const name in controls) {
-          if (controls[name].invalid) {
-            invalidFields.push(name);
-          }
+
+    this.renewalFile = file;
+    this.renewalFileName = file.name;
+    this.renewalFileError = '';
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      // Data URL format: "data:application/pdf;base64,<base64string>"
+      const base64Data = result.split(',')[1];
+      this.renewalFileBase64 = base64Data;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  onSubmitModal(): void {
+    if (this.isRenewalMode) {
+      this.onSubmitRenew();
+    }
+  }
+
+  onSubmitRenew(): void {
+    if (this.mouForm.invalid) {
+      this.mouForm.markAllAsTouched();
+      const invalidFields: string[] = [];
+      const controls = this.mouForm.controls;
+      for (const name in controls) {
+        if (controls[name].invalid) {
+          invalidFields.push(name);
         }
-        swal.fire({
-          title: 'Validation Error',
-          html: `<p>Please fill in all required fields:</p><ul class="text-start">${invalidFields.map(f => `<li>${this.getFieldDisplayName(f)}</li>`).join('')}</ul>`,
-          icon: 'error'
-        });
-        return;
       }
-      
-      if (!this.renewalFile) {
-        swal.fire('Error', 'Please upload a MOU document for renewal.', 'error');
-        return;
-      }
-      
-      if (!this.renewalFileBase64) {
-        swal.fire('Error', 'File is still being processed. Please try again.', 'error');
-        return;
-      }
-      
-      const val = this.mouForm.getRawValue();
-      
-      // Compute new MOU status based on dates
-      let newMouStatus = 'Active';
-      const today = new Date();
-      const startDate = val.startDate ? new Date(val.startDate) : null;
-      const endDate = val.isIndefinite ? null : (val.endDate ? new Date(val.endDate) : null);
-      
-      if (val.isIndefinite) {
+      swal.fire({
+        title: 'Validation Error',
+        html: `<p>Please fill in all required fields:</p><ul class="text-start">${invalidFields.map(f => `<li>${this.getFieldDisplayName(f)}</li>`).join('')}</ul>`,
+        icon: 'error'
+      });
+      return;
+    }
+
+    if (!this.renewalFile) {
+      swal.fire('Error', 'Please upload a MOU document for renewal.', 'error');
+      return;
+    }
+
+    if (!this.renewalFileBase64) {
+      swal.fire('Error', 'File is still being processed. Please try again.', 'error');
+      return;
+    }
+
+    const val = this.mouForm.getRawValue();
+
+    // Compute new MOU status based on dates
+    let newMouStatus = 'Active';
+    const today = new Date();
+    const startDate = val.startDate ? new Date(val.startDate) : null;
+    const endDate = val.isIndefinite ? null : (val.endDate ? new Date(val.endDate) : null);
+
+    if (val.isIndefinite) {
+      newMouStatus = 'Active';
+    } else if (startDate) {
+      if (!endDate || (today >= startDate && today <= endDate)) {
         newMouStatus = 'Active';
-      } else if (startDate) {
-        if (!endDate || (today >= startDate && today <= endDate)) {
-          newMouStatus = 'Active';
-        } else {
-          newMouStatus = 'Expired';
-        }
       } else {
         newMouStatus = 'Expired';
       }
-      
-      // Prepare FormData for new MOU upload
-      const formData = new FormData();
-  
-      formData.append('UID', this.EmployeeCode);
-      formData.append('MasterMouId', this.mouId);
-      formData.append('RenewalRemark', val.remarks);
-      formData.append('FilePath', this.renewalFileName);
-      formData.append('File', this.renewalFileBase64);
-      formData.append('MouStartDate', val.startDate);
-      formData.append('MouEndDate', val.endDate);
-      formData.append('MouStatus', newMouStatus);
-      formData.append('SchoolDivisionInvolved', val.selectedDivisions.join(','));
-      formData.append('SPOCName', val.spocName);
-      formData.append('SPOCEmailId', val.spocEmail);
-      formData.append('SPOCContactNo', val.spocContact);
-      formData.append('LPUSpocName', val.lpuSpocName);
-      formData.append('LPUSpocUID', val.lpuSpocUid);
-      formData.append('LPUSpocEmail', val.lpuSpocEmail);
-     
-      formData.append('CreatedBy', this.EmployeeCode);
-       
-      swal.fire({
-        title: 'Renew MOU',
-        text: 'Are you sure you want to renew this MOU? This will create a new MOU and mark the old one as Renewed.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, renew MOU',
-        cancelButtonText: 'Cancel'
-      }).then((result) => {
-        if (result.value) {
-          this.mouDocumentsService.MouRenewalDetails(formData).subscribe({
-            next: (data: any) => {
-              const resultMsg = data.item1 && data.item1.length > 0 ? data.item1[0].msg : data.responseData;
-              if (resultMsg === 'success' ) {
-               swal.fire('Success', 'Renewed MOU.', 'success');
-               window.location.reload();
-              } else if( data.responseData == 'Failed') {
-                swal.fire('Error', 'Failed to create new MOU. Please try again.', 'error');
-                window.location.reload();
-              }
-            },
-            error: (err) => {
-              swal.fire('Error', 'Failed to upload new MOU document.', 'error');
-            }
-          });
-        }
-      });
-      
+    } else {
+      newMouStatus = 'Expired';
     }
 
-    
+    // Prepare FormData for new MOU upload
+    const formData = new FormData();
+
+    formData.append('UID', this.EmployeeCode);
+    formData.append('MasterMouId', this.mouId);
+    formData.append('RenewalRemark', val.remarks);
+    formData.append('FilePath', this.renewalFileName);
+    formData.append('File', this.renewalFileBase64);
+    formData.append('MouStartDate', val.startDate);
+    formData.append('MouEndDate', val.endDate);
+    formData.append('MouStatus', newMouStatus);
+    formData.append('SchoolDivisionInvolved', val.selectedDivisions.join(','));
+    formData.append('SPOCName', val.spocName);
+    formData.append('SPOCEmailId', val.spocEmail);
+    formData.append('SPOCContactNo', val.spocContact);
+    formData.append('LPUSpocName', val.lpuSpocName);
+    formData.append('LPUSpocUID', val.lpuSpocUid);
+    formData.append('LPUSpocEmail', val.lpuSpocEmail);
+
+    formData.append('CreatedBy', this.EmployeeCode);
+
+    swal.fire({
+      title: 'Renew MOU',
+      text: 'Are you sure you want to renew this MOU? This will create a new MOU and mark the old one as Renewed.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, renew MOU',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.value) {
+        this.mouDocumentsService.MouRenewalDetails(formData).subscribe({
+          next: (data: any) => {
+            const resultMsg = data.item1 && data.item1.length > 0 ? data.item1[0].msg : data.responseData;
+            if (resultMsg === 'success') {
+              swal.fire('Success', 'Renewed MOU.', 'success');
+              window.location.reload();
+            } else if (data.responseData == 'Failed') {
+              swal.fire('Error', 'Failed to create new MOU. Please try again.', 'error');
+              window.location.reload();
+            }
+          },
+          error: (err) => {
+            swal.fire('Error', 'Failed to upload new MOU document.', 'error');
+          }
+        });
+      }
+    });
+
+  }
+
+
   initForm() {
     this.mouForm = this.fb.group({
       mouId: [{ value: '', disabled: true }], // Locked field
@@ -727,12 +748,12 @@ getRenewedCount(): number {
       spocContact: [''],
       lpuSpocName: ['', [Validators.required]], // Internal SPOC Name
       lpuSpocUid: ['', [Validators.required]],  // Internal SPOC UID
-      lpuSpocEmail: ['', [Validators.required, Validators.email]] ,// Internal SPOC Email
+      lpuSpocEmail: ['', [Validators.required, Validators.email]],// Internal SPOC Email
       remarks: ['', [Validators.required]] // Internal SPOC Email
     });
   }
 
-  
+
   // Helper for Template to check validation
   isInvalid(controlName: string): boolean {
     const control = this.mouForm.get(controlName);
@@ -758,7 +779,7 @@ getRenewedCount(): number {
     return fieldNames[fieldName] || fieldName;
   }
 
-    // Updates the MOU status based on the date logic
+  // Updates the MOU status based on the date logic
   updateMouStatus(): void {
     const today = new Date();
     const startDate = this.MouStartDate ? new Date(this.MouStartDate) : null;
@@ -780,62 +801,62 @@ getRenewedCount(): number {
   }
 
   openRenewModal(row: any): void {
-     this.isRenewalMode = true;
-     this.showSuggestions = false;
-     this.filteredEmployeesData = [];
-     this.originalMouData = { ...row };
- 
-     // Reset file upload fields
-     this.renewalFile = null;
-     this.renewalFileBase64 = null;
-     this.renewalFileName = '';
-     this.renewalFileError = '';
- 
-     // Populate form with existing MOU data
+    this.isRenewalMode = true;
+    this.showSuggestions = false;
+    this.filteredEmployeesData = [];
+    this.originalMouData = { ...row };
+
+    // Reset file upload fields
+    this.renewalFile = null;
+    this.renewalFileBase64 = null;
+    this.renewalFileName = '';
+    this.renewalFileError = '';
+
+    // Populate form with existing MOU data
     // convert API date strings to ISO (yyyy-MM-dd) so <input type="date" ...> or reactive date controls receive valid values
     const startIso = this.parseApiDateToIso(row.mouStartDate) ?? '';
     const endIso = this.parseApiDateToIso(row.mouEndDate) ?? '';
- 
-     this.mouForm.patchValue({
-       mouId: row.id,
-       selectedDivisions: row.schoolDivisionInvolved ? row.schoolDivisionInvolved.split(',') : [],
-       mouOrganisation: row.mouTitle,
-       startDate: startIso,
-       endDate: endIso,
-       isIndefinite: row.mouStatus === 'Active' && !row.mouEndDate,
-       spocName: row.spocName,
-       spocEmail: row.spocEmailId,
-       spocContact: row.spocContactNo,
-       lpuSpocName: row.lpuSpocName,
-       lpuSpocUid: row.lpuSpocUID,
-       lpuSpocEmail: row.lpuSpocEmail
-     });
- 
-     // Set display variables
-     this.mouId = row.id;
-     this.AssignedToUid = row.lpuSpocUID;
-     this.AssignedToUidName = row.lpuSpocName;
-     this.moustatus = row.mouStatus;
+
+    this.mouForm.patchValue({
+      mouId: row.id,
+      selectedDivisions: row.schoolDivisionInvolved ? row.schoolDivisionInvolved.split(',') : [],
+      mouOrganisation: row.mouTitle,
+      startDate: startIso,
+      endDate: endIso,
+      isIndefinite: row.mouStatus === 'Active' && !row.mouEndDate,
+      spocName: row.spocName,
+      spocEmail: row.spocEmailId,
+      spocContact: row.spocContactNo,
+      lpuSpocName: row.lpuSpocName,
+      lpuSpocUid: row.lpuSpocUID,
+      lpuSpocEmail: row.lpuSpocEmail
+    });
+
+    // Set display variables
+    this.mouId = row.id;
+    this.AssignedToUid = row.lpuSpocUID;
+    this.AssignedToUidName = row.lpuSpocName;
+    this.moustatus = row.mouStatus;
     // keep component-level date strings in ISO format (useful for other logic / display)
-     this.MouStartDate = startIso || row.mouStartDate;
-     this.MouEndDate = endIso || row.mouEndDate;
-     this.isIndefiniteMou = row.mouStatus === 'Active' && !row.mouEndDate;
-     this.CurrentSchool = row.schoolDivisionInvolved;
- 
-     if (!this.OpenMouRenewalModal) {
-       console.error('OpenMouRenewalModal template not found. Ensure the template has #OpenMouRenewalModal in the component HTML and is not blocked by *ngIf.');
-       return;
-     }
-     // defer open to next tick so ViewChild is resolved if template rendered conditionally
-     setTimeout(() => {
-       this.modalService.open(this.OpenMouRenewalModal!, { size: 'xl', windowClass: 'modal-xl', backdrop: 'static' }).result.then(() => {
-         setTimeout(() => {
-           window.dispatchEvent(new Event('resize'));
-         }, 200);
-         // Modal closed
-       }).catch(() => { });
-     }, 0);
-   }
+    this.MouStartDate = startIso || row.mouStartDate;
+    this.MouEndDate = endIso || row.mouEndDate;
+    this.isIndefiniteMou = row.mouStatus === 'Active' && !row.mouEndDate;
+    this.CurrentSchool = row.schoolDivisionInvolved;
+
+    if (!this.OpenMouRenewalModal) {
+      console.error('OpenMouRenewalModal template not found. Ensure the template has #OpenMouRenewalModal in the component HTML and is not blocked by *ngIf.');
+      return;
+    }
+    // defer open to next tick so ViewChild is resolved if template rendered conditionally
+    setTimeout(() => {
+      this.modalService.open(this.OpenMouRenewalModal!, { size: 'xl', windowClass: 'modal-xl', backdrop: 'static' }).result.then(() => {
+        setTimeout(() => {
+          window.dispatchEvent(new Event('resize'));
+        }, 200);
+        // Modal closed
+      }).catch(() => { });
+    }, 0);
+  }
 
   statusFilter: string = 'all';
   Tab1statusFilter: string = 'all';
@@ -911,56 +932,179 @@ getRenewedCount(): number {
     this.applyFiltersTab2();
   }
 
+  // applyFiltersTab2(): void {
+  //   // First filter by status
+
+  //   this.filteredMouActivityAssignedMe = [...this.MouActivityAssignedMeMaster];
+  //         this.filteredMouActivityAssignedMe = this.filteredMouActivityAssignedMe.filter((activity: any) => {
+  //           return activity.actionAssignedBy == this.EmployeeCode;
+  //         });
+  //   let filtered = this.filteredMouActivityAssignedMe.filter(item => {
+  //     if (this.Tab2statusFilter === 'all') {
+  //       return true;
+  //     }
+
+  //     if (this.Tab2statusFilter === 'active') {
+  //       return item.mouStatus === 'Active';
+  //     } else if (this.Tab2statusFilter === 'expired') {
+  //       return item.mouStatus === 'Expired';
+  //     } else if (this.Tab2statusFilter === 'renewed') {
+  //       return item.mouStatus ==='Renewed' ;
+  //     }
+  //     return true;
+  //   });
+
+  //   // Then apply search filter if exists
+  //   const query = this.searchTextTab2.trim().toLowerCase();
+  // if (query) {
+  //   filtered = filtered.filter(item => {
+  //     return Object.entries(item).some(([key, val]) => {
+  //       if (val !== null && val !== undefined) {
+  //         let valueString = String(val).toLowerCase();
+
+  //         // Special handling for mouid (Numeric & "MOU/x" String Comparison)
+  //         if (key === 'id') {
+  //           const numericId = Number(val);
+  //           if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
+  //             return true;
+  //           }
+  //         }
+
+  //         // General search for all other fields
+  //         return valueString.includes(query);
+  //       }
+  //       return false;
+  //     });
+  //   });
+  // }
+
+  //   this.filteredMouActivityAssignedMe = filtered;
+  // }
+
   applyFiltersTab2(): void {
-    // First filter by status
 
-    this.filteredMouActivityAssignedMe = [...this.MouActivityAssignedMeMaster];
-          this.filteredMouActivityAssignedMe = this.filteredMouActivityAssignedMe.filter((activity: any) => {
-            return activity.actionAssignedBy == this.EmployeeCode;
-          });
-    let filtered = this.filteredMouActivityAssignedMe.filter(item => {
-      if (this.Tab2statusFilter === 'all') {
-        return true;
-      }
+    let filtered = this.MouActivityAssignedMeMaster.filter(
+      x => x.actionAssignedBy === this.EmployeeCode
+    );
 
-      if (this.Tab2statusFilter === 'active') {
-        return item.mouStatus === 'Active';
-      } else if (this.Tab2statusFilter === 'expired') {
-        return item.mouStatus === 'Expired';
-      } else if (this.Tab2statusFilter === 'renewed') {
-        return item.mouStatus ==='Renewed' ;
-      }
-      return true;
-    });
+    // -----------------------------
+    // School Division Filter
+    // -----------------------------
 
-    // Then apply search filter if exists
-    const query = this.searchQuery.trim().toLowerCase();
-    if (query) {
-      filtered = filtered.filter(item => {
-        return Object.entries(item).some(([key, val]) => {
-          if (val !== null && val !== undefined) {
-            let valueString = String(val).toLowerCase();
+    filtered = filtered.filter(item => this.matchSchoolDivision(item));
 
-            // Special handling for mouid (Numeric & "MOU/x" String Comparison)
-            if (key === 'id') {
-              const numericId = Number(val);
-              if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
-                return true;
-              }
-            }
+    // -----------------------------
+    // Status Filter
+    // -----------------------------
 
-            // General search for all other fields
-            return valueString.includes(query);
-          }
-          return false;
-        });
-      });
+    switch (this.Tab2statusFilter) {
+
+      case 'active':
+        filtered = filtered.filter(
+          x => x.mouStatus === 'Active'
+        );
+        break;
+
+      case 'expired':
+        filtered = filtered.filter(
+          x => x.mouStatus === 'Expired'
+        );
+        break;
+
+      case 'renewed':
+        filtered = filtered.filter(
+          x =>
+            x.mouStatus === 'Renewed' ||
+            x.renewalVersionCount > 0
+        );
+        break;
     }
 
+    // -----------------------------
+    // Search Filter
+    // -----------------------------
+
+    const query = (this.searchTextTab2 || '')
+      .trim()
+      .toLowerCase();
+
+    if (query) {
+
+      // Normalize search
+      const normalizedQuery = query.replace(/\s+/g, '');
+
+      filtered = filtered.filter(item => {
+
+        // Search by Old MOU Id
+        if (item.mouId != null) {
+
+          const oldId = item.mouId.toString().toLowerCase();
+
+          if (
+            oldId.includes(normalizedQuery) ||
+            (`mou/${oldId}`).includes(normalizedQuery)
+          ) {
+            return true;
+          }
+        }
+
+        // Search by New MOU Id
+        if (item.newMouId != null) {
+
+          const newId = item.newMouId.toString().toLowerCase();
+
+          if (
+            newId.includes(normalizedQuery) ||
+            (`mou/${newId}`).includes(normalizedQuery)
+          ) {
+            return true;
+          }
+        }
+
+        // Search remaining fields
+        return Object.entries(item).some(([_, value]) => {
+
+          if (value == null) {
+            return false;
+          }
+
+          return String(value)
+            .toLowerCase()
+            .includes(normalizedQuery);
+
+        });
+
+      });
+
+    }
+
+    // -----------------------------
+    // Sort Latest First
+    // -----------------------------
+
+    filtered.sort((a, b) => b.id - a.id);
+
     this.filteredMouActivityAssignedMe = filtered;
+
+  }
+  private matchSchoolDivision(item: any): boolean {
+
+    if (this.selectedSchoolDivision2 === '0' || this.selectedSchoolDivision2 === '-1') {
+      return true;
+    }
+
+    if (!item.schoolDivisionId) {
+      return false;
+    }
+
+    const divisions = item.schoolDivisionId
+      .toString()
+      .split(',')
+      .map((x: string) => x.trim());
+
+    return divisions.includes(this.selectedSchoolDivision2.toString());
   }
 
-  
   getActiveCountTab2(): number {
     return this.filteredMouActivityAssignedMe.filter(item => {
       return item.mouStatus === 'Active';
@@ -974,7 +1118,7 @@ getRenewedCount(): number {
   }
   getRenewedCountTab2(): number {
     return this.filteredMouActivityAssignedMe.filter(item => {
-      return item.mouStatus === 'Renewed' ;
+      return item.mouStatus === 'Renewed';
     }).length;
   }
 
@@ -989,15 +1133,15 @@ getRenewedCount(): number {
     });
   }
 
-//  Tab -3 Filters
+  //  Tab -3 Filters
 
   onStatusChangeTab3(event: any): void {
     this.applyFiltersTab3();
-  } 
+  }
 
   applyFiltersTab3(): void {
     // First filter by status
-    
+
     let filtered = this.MouActivityAssignedOthersMaster.filter(item => {
       if (this.Tab3statusFilter === 'all') {
         return true;
@@ -1006,9 +1150,9 @@ getRenewedCount(): number {
       if (this.Tab3statusFilter === 'active') {
         return item.mouStatus === 'Active';
       } else if (this.Tab3statusFilter === 'expired') {
-        return item.mouStatus === 'Expired' ;
+        return item.mouStatus === 'Expired';
       } else if (this.Tab3statusFilter === 'renewed') {
-        return item.mouStatus === 'Renewed' ;
+        return item.mouStatus === 'Renewed';
       }
       return true;
     });
@@ -1039,7 +1183,7 @@ getRenewedCount(): number {
     this.filteredMouActivityAssignedOthers = filtered;
   }
 
-  
+
   getActiveCountTab3(): number {
     return this.filteredMouActivityAssignedOthers.filter(item => {
       return item.mouStatus === 'Active';
@@ -1053,7 +1197,7 @@ getRenewedCount(): number {
   }
   getRenewedCountTab3(): number {
     return this.filteredMouActivityAssignedOthers.filter(item => {
-      return item.mouStatus === 'Renewed' ;
+      return item.mouStatus === 'Renewed';
     }).length;
   }
 
@@ -1087,7 +1231,7 @@ getRenewedCount(): number {
   filteredMouActivityAssignedOthers: any[] = [];
 
   employeeControl = new FormControl();
-  
+
   EmployeeData: Employee[] = [];
   filteredEmployeesData: Employee[] = [];
   showSuggestions = false;
@@ -1198,7 +1342,7 @@ getRenewedCount(): number {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
-          this.EmployeeCode =  response.item1[0].employeeCode; // // Hardcoded as per original
+          this.EmployeeCode = response.item1[0].employeeCode; // // Hardcoded as per original
           this.ContactNoX = response.item1[0].contactNo;
           this.Department = response.item1[0].department;
           this.DepartmentName = response.item1[0].departmentName;
@@ -1346,53 +1490,53 @@ getRenewedCount(): number {
     this.mouDocumentsService.MouNewActivityPlanAddNew(formData).subscribe({
       next: (data: any) => {
         if (data?.item1?.[0]?.msg === 'success') {
-           swal.fire('Success', 'Assigned UID Done.', 'success');
-           setTimeout(() => {
-          window.location.reload();
-        }, 1500);
+          swal.fire('Success', 'Assigned UID Done.', 'success');
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
         } else {
-           swal.fire('Failed', 'Assigned UID Failed.', 'error');
-           setTimeout(() => {
-          window.location.reload();
-        }, 1500);
+          swal.fire('Failed', 'Assigned UID Failed.', 'error');
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
         }
       },
       complete: () => this.clearFields()
     });
   }
 
-UploadUID() {
-  const formData = new FormData();
-  formData.append('RecordId', this.IdX);
-  formData.append('Uid', this.AssignedToUid);
-  formData.append('MouId', this.MouidX);
- 
+  UploadUID() {
+    const formData = new FormData();
+    formData.append('RecordId', this.IdX);
+    formData.append('Uid', this.AssignedToUid);
+    formData.append('MouId', this.MouidX);
 
-  this.mouDocumentsService.ActivityPlanUpdateUID(formData).subscribe({
-    next: (data: any) => {
-      const result = data?.item1?.[0]?.msg;
 
-      if (result === 'Success') {
-        this.showAlert('UID Updated Successfully!', 'success');
+    this.mouDocumentsService.ActivityPlanUpdateUID(formData).subscribe({
+      next: (data: any) => {
+        const result = data?.item1?.[0]?.msg;
 
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
-      } else {
-        this.showAlert('Failed to Update UID!', 'error');
+        if (result === 'Success') {
+          this.showAlert('UID Updated Successfully!', 'success');
 
-      }
-    },
-     error: (err) => {
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        } else {
+          this.showAlert('Failed to Update UID!', 'error');
+
+        }
+      },
+      error: (err) => {
         swal.fire('Error', 'Failed to Assign New UID .', 'error');
       },
       complete: () => {
         this.clearFields();
         this.reloadGrid2();
       }
-     
-  });
-}
+
+    });
+  }
 
   genericSearch(data: any[], query: string): any[] {
     if (!query || query.trim() === '') {
@@ -1632,9 +1776,21 @@ UploadUID() {
     return activityDetails ? activityDetails.replace(/^\d+-\s*/, '') : '';
   }
 
-  getDivisionNameById(id: number): string {
-    const division = this.allSchoolDivisions.find(s => +s.id === +id);
-    return division ? division.schoolDivision : `ID ${id} not found`;
+  // getDivisionNameById(id: number): string {
+  //   const division = this.allSchoolDivisions.find(s => +s.id === +id);
+  //   return division ? division.schoolDivision : `ID ${id} not found`;
+  // }
+  getDivisionNameById(id: any): string {
+
+    if (!id) {
+      return '';
+    }
+
+    const division = this.allSchoolDivisions.find(
+      x => x.id.toString() === id.toString().trim()
+    );
+
+    return division ? division.schoolDivision : '';
   }
 
   onSelectFile(a: any) { window.open(a.filePath, '_blank'); }

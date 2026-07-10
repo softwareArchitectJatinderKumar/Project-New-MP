@@ -60,3 +60,44 @@
   //   color: #000;  
   //   background-color: #fff;
   // }
+
+.datatable-top-scroll{
+
+    position:sticky;
+
+    top:70px;      /* below navbar */
+
+    z-index:1000;
+
+    background:#fff;
+
+    border-bottom:1px solid #ddd;
+
+}
+
+.grid-container{
+    width:100%;
+}
+
+.top-scroll{
+
+    overflow-x:auto;
+    overflow-y:hidden;
+
+    height:18px;
+
+    margin-bottom:6px;
+}
+
+.top-scroll div{
+
+    height:1px;
+
+}
+
+.table-wrapper{
+
+    width:100%;
+    overflow-x:auto;
+
+}

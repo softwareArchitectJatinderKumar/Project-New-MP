@@ -45,6 +45,7 @@
                                         (change)="onApprovalFilterChange()">
                                         <option value="all">All</option>
                                         <option value="approved">Approved</option>
+                                        <option value="pending">Pending</option>
                                         <option value="disapproved">Disapproved</option>
                                     </select>
                                 </div>
@@ -131,9 +132,9 @@
                                                  <ngx-datatable-column name="Record Id" [sortable]="false" prop="Id">
                                                     <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                                         ngx-datatable-cell-template>
-                                                        <ng-container *ngIf="row.id != null">
+                                                        <ng-container *ngIf="row.recordId != null">
                                                             <span
-                                                                style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.id}}</span>
+                                                                style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.recordId}}</span>
                                                         </ng-container>
                                                     </ng-template>
                                                 </ngx-datatable-column>
@@ -166,7 +167,7 @@
                                                 <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id">
                                                     <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
                                                         ngx-datatable-cell-template>
-                                                        <ng-container *ngIf="row.id != null">
+                                                        <ng-container *ngIf="row.mouId != null">
                                                             <span
                                                                 style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">MOU/{{row.mouId}}</span>
                                                         </ng-container>
@@ -241,6 +242,13 @@
                                                         {{row.assignedToFacultyUID}}-{{row.assignedToFacultyName}}
                                                     </ng-template>
                                                 </ngx-datatable-column>
+                                                <ngx-datatable-column name="Remarks" [sortable]="false"
+                                                    prop="Id">
+                                                    <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                                                        ngx-datatable-cell-template>
+                                                        {{row.disapprovalReason?.length>0 ? row.disapprovalReason: 'No Remarks'}}
+                                                    </ng-template>
+                                                </ngx-datatable-column>
                                                 <!-- <ngx-datatable-column name="Download Format" [sortable]="false"
                                                     prop="Id">
                                                     <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
@@ -257,9 +265,8 @@
                                                         ngx-datatable-cell-template>
                                                         <ng-container
                                                             *ngIf="row.isApproved==='False' || row.isApproved==='True' ; else AllowsA">
-                                                            <span
-                                                                style="margin: auto;float: left; padding: 10px 10px 10px 10px; font-weight: bold; color: red">Action
-                                                                Already Taken</span>
+                                                            <span style="margin: auto;float: left; padding: 10px 10px 10px 10px; font-weight: bold; color: red">Action Already Taken</span>
+                                                            <!-- <span style="margin: auto;float: left; padding: 10px 10px 10px 10px; font-weight: bold; color: red">{{row.disapprovalReason?.length>0 ? row.disapprovalReason : 'NO Remarks'}}</span> -->
                                                         </ng-container>
                                                         <ng-template #AllowsA>
                                                             <button class="btn btn-success me-2"
