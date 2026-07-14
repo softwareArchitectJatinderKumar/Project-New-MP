@@ -1,9 +1,9 @@
 <div class="approved-application">
-
   <div class="col-md-12 col-lg-10 mx-auto mb-3">
     <div class="approved-banner">
       <span class="material-icons md-18">check_circle</span>
-      Your application has been <strong>Approved</strong>. Please complete the Stage II documents below.
+      Your application has been <strong>Approved</strong>. Please complete the Stage II documents
+      below.
     </div>
   </div>
 
@@ -33,7 +33,64 @@
                   </button>
                   <span *ngIf="!hasSampleFormat(row)" class="text-muted small">Not Available</span>
                 </td>
-                <td>
+              <td>
+  <div class="d-flex flex-column gap-1">
+
+    <!-- Uploaded document -->
+    <ng-container *ngIf="hasDocument(row); else uploadSection">
+
+      <span class="text-success small text-truncate"
+            style="max-width:220px"
+            [title]="getDocumentPath(row)">
+        <i class="bi bi-file-earmark-check-fill me-1"></i>
+        {{ getDocumentPath(row) }}
+      </span>
+
+      <button
+        type="button"
+        class="btn btn-info btn-sm"
+        (click)="viewDocuments(row.documentName)">
+        <i class="bi bi-eye-fill me-1"></i>
+        View
+      </button>
+
+    </ng-container>
+
+    <!-- Upload section -->
+    <ng-template #uploadSection>
+
+      <input
+        type="file"
+        class="form-control form-control-sm"
+        accept=".pdf,.jpg,.jpeg,.png"
+        [disabled]="row.isUploading || isUploadDisabled(row)"
+        (change)="onFilePicked($event, row)" />
+
+      <span
+        *ngIf="row.fileName && !row.isUploaded"
+        class="text-muted small text-truncate">
+        Selected: {{ row.fileName }}
+      </span>
+
+      <span
+        *ngIf="row.isUploading"
+        class="d-flex align-items-center gap-1 text-primary small">
+        <span class="spinner-border spinner-border-sm"></span>
+        Uploading...
+      </span>
+
+      <span
+        *ngIf="approvalLabel(row) as label"
+        class="badge"
+        [ngClass]="label === 'Approved' ? 'bg-success' : 'bg-danger'">
+        {{ label }}
+      </span>
+
+    </ng-template>
+
+  </div>
+</td>
+                <!-- <td>
                   <div class="d-flex flex-column gap-1">
                     <ng-container *ngIf="existingDocPath(row) as uploaded">
                       <span class="text-success small text-truncate" style="max-width:220px" [title]="uploaded">
@@ -53,8 +110,12 @@
                       [ngClass]="label === 'Approved' ? 'bg-success' : 'bg-danger'">
                       {{ label }}
                     </span>
+
+                    <button type="button" class="btn btn-info btn-sm w-100" (click)="viewDocuments(row.documentName)">
+                      <i class="bi bi-eye-fill me-1"></i> View
+                    </button>
                   </div>
-                </td>
+                </td> -->
                 <td>
                   <button *ngIf="!row.isUploaded" type="button" class="btn btn-primary btn-sm w-100 mb-1"
                     [disabled]="!row.fileObject || row.isUploading || isUploadDisabled(row)" (click)="uploadRow(row)">
@@ -64,13 +125,16 @@
                     (click)="view(row)">
                     <i class="bi bi-eye-fill me-1"></i> View
                   </button>
-                  <span *ngIf="row.isUploaded && !existingDocPath(row)" class="badge bg-success p-2 d-block text-center">
+                  <span *ngIf="row.isUploaded && !existingDocPath(row)"
+                    class="badge bg-success p-2 d-block text-center">
                     <i class="bi bi-check-circle-fill me-1"></i> Saved
                   </span>
                 </td>
               </tr>
               <tr *ngIf="stage2Rows.length === 0">
-                <td colspan="5" class="text-center text-muted py-3">No Stage II documents required.</td>
+                <td colspan="5" class="text-center text-muted py-3">
+                  No Stage II documents required.
+                </td>
               </tr>
             </tbody>
           </table>
@@ -78,5 +142,4 @@
       </div>
     </div>
   </div>
-
 </div>

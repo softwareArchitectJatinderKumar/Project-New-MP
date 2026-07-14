@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import {
+  StudentApplication,
   StageDetailRow, MAX_FILE_SIZE_BYTES, DocumentApproval, isDocumentDecided, documentApprovalLabel,
 } from '../../models/application.models';
 import Swal from 'sweetalert2';
-
 /**
  * Shown once an application is Approved. Presents Stage II documents only
  * (per requirement scope) with sample-template download, replace/update
@@ -21,13 +21,20 @@ import Swal from 'sweetalert2';
 })
 export class ApprovedApplicationComponent {
   @Input() stagesDetail: StageDetailRow[] = [];
-  @Input() stageDocumentData: StageDetailRow[] = [];
+  @Input() stageDocumentData: StageDetailRow[] = [];//DocumentApprovals
   @Input() documentApprovals: DocumentApproval[] = [];
   @Input() localServerUrl = '';
-
+  @Input() stuApplication!: StudentApplication;
   @Output() uploadStage = new EventEmitter<number>();
   @Output() stageFilePicked = new EventEmitter<{ index: number; file: File; fileName: string; base64: string }>();
   @Output() viewDocument = new EventEmitter<string>();
+
+
+  docsPathMap = {
+    "Offer Letter": "offerLetterPath",
+    "OutBound Ticket": "outBoundTicket",
+    "Return Ticket": "returnTicketPath",
+  } as const;
 
   /** Once a document has been Approved or Rejected, its upload/replace input is disabled. */
   isUploadDisabled(row: StageDetailRow): boolean {
@@ -40,6 +47,9 @@ export class ApprovedApplicationComponent {
   }
 
   get stage2Rows(): StageDetailRow[] {
+    console.log('stagesDetail', JSON.stringify(this.stagesDetail));
+    console.log('stuApplication', JSON.stringify(this.stuApplication));
+    console.log('stageDocumentData', JSON.stringify(this.stageDocumentData));
     const master = (this.stagesDetail ?? []).filter(r => {
       const name = String((r as any)?.stageName ?? '').trim().toLowerCase();
       return name === 'stage ii' || name === 'stage2';
@@ -114,5 +124,34 @@ export class ApprovedApplicationComponent {
       r.readAsDataURL(file);
     });
     return { raw: file, fileName: file.name, base64 };
+  }
+
+  getField(key: keyof typeof this.docsPathMap) {
+    return this.docsPathMap[key];
+  }
+
+  viewDocuments(doc: any): void {
+    const fieldKey = this.getField(doc);
+    const path = this.stuApplication[fieldKey];
+
+    if (path) {
+      window.open(this.localServerUrl + path, '_blank');
+    }
+  }
+
+  //  hasDocument(row: any): boolean {
+  //   const fieldKey = this.getField(row.documentName);
+  //   const path = this.stuApplication?.[fieldKey];
+  //   return !!(path && path.trim().length > 3);
+  // }
+
+  getDocumentPath(row: any): string {
+    const fieldKey = this.getField(row.documentName);
+    return this.stuApplication?.[fieldKey] || '';
+  }
+
+  hasDocument(row: any): boolean {
+    const path = this.getDocumentPath(row);
+    return path != null && path.trim().length > 3;
   }
 }

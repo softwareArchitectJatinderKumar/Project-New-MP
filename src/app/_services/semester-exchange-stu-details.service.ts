@@ -553,7 +553,7 @@ GetStuDetailsWithImage(RegId: string): Observable<any> {
     const httpOptions = {
       headers: new HttpHeaders({
         // 'Authorization': `Bearer ${token}`
-        'Authorization': `Bearer ${this.authToken}`
+        'Authorization': `Bearer ${authToken}`
       })
     };
     return this.http.get<any>(`${this.baseUrl}api/SemesterExchangeStudent/GetUniversityLists`, httpOptions);

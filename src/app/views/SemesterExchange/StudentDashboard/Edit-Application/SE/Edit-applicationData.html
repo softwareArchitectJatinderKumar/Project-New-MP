@@ -126,7 +126,7 @@
 
       <app-approved-application *ngIf="LockedStatus === 'Approved'"
         [stagesDetail]="StagesDetail" [stageDocumentData]="StageDocumentData" [documentApprovals]="DocumentApprovals"
-        [localServerUrl]="localServerUrl"
+        [localServerUrl]="localServerUrl"  [stuApplication]="stuApplication"
         (uploadStage)="uploadStageDocumentRow($event)" (stageFilePicked)="onStageFilePicked($event)"
         (viewDocument)="viewDocument($event)">
       </app-approved-application>

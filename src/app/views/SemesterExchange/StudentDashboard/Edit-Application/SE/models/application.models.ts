@@ -57,7 +57,7 @@ export interface StudentApplication {
   affidavitPath: string;
   indeminityBondPath: string;
   offerLetterPath :string;
-  outboundTicket :string ; 
+  outBoundTicket :string ; 
   returnTicketPath:string
   
 }

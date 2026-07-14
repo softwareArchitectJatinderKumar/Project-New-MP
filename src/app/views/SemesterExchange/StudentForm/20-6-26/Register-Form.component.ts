@@ -659,7 +659,7 @@ StageIDocuments: any; StageIIDocuments: any; LockedStatus: any;   ApprovedUniver
       formData.append("EnglishTestYear", formValue.EnglishTestYear);
       formData.append("TestDate", formValue.TestDate);
     }
-    if (formValue.EnglishTestType === 'Appeared') {
+    if (formValue.EnglishTestType === 'Appeared' || formValue.EnglishTestType === 'Applied') {
       formData.append("EnglishTestName", formValue.TestName );
       formData.append("SpeakingScore", formValue.SpeakingScore );
       formData.append("ListeningScore", formValue.ListeningScore);
