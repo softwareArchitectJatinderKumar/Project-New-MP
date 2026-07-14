@@ -599,7 +599,7 @@ AllApprovedDocuments: any[] = [];
           const emp = response.item1[0];
           this.EmployeeDetails = emp;
           this.EmployeeName = emp.employeeName;
-          this.EmployeeCode =  String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
+          this.EmployeeCode = String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
           this.ContactNoX = emp.contactNo;
           this.Department = emp.department;
           this.DepartmentName = emp.departmentName;
@@ -632,7 +632,7 @@ AllApprovedDocuments: any[] = [];
         this.AllFacultyApplications = this.FilterAllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | '', isForwardtoHOD: string | ''; }) => app.dealingFaculty == this.EmployeeCode);
         this.AllAuthorityApplications = this.FilterAllAuthorityApplications = response.item1.filter((app: { dealingAuthority: string | '', dealingFaculty: string | ''; approvedUniversity: string | ''; }) => app.dealingAuthority == this.EmployeeCode && app.approvedUniversity == null);
 
-        this.AllHODApplications = this.FilterAllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | ''; isLocked: string | ''; isApproved: string | ''; }) => app.dealingHODId == this.EmployeeCode && app.isForwardtoHOD == '1');// && app.isLocked != 'True' && app.isLocked != 'False'
+        this.AllHODApplications = this.FilterAllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | ''; isLocked: string | ''; isApproved: string | ''; }) => app.dealingHODId == this.EmployeeCode && app.isForwardtoHOD == '1' && app.isLocked != 'True' && app.isLocked != 'False');
 
         this.AllHOWApplications = response.item1.filter((app: { dealingHow: string | ''; isForwardedtoHOW: string | ''; isLocked: string | ''; }) => app.dealingHow == this.EmployeeCode && app.isForwardedtoHOW == '1');
         this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0);
