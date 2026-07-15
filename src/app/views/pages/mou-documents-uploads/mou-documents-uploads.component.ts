@@ -9,6 +9,10 @@ interface SchoolDivision {
   id: number;
   schoolDivision: string;
 }
+interface MouCategory{
+  id: number;
+  CategoryName: string;
+}
 interface Employee {
   employeeName: string;
   employeeCode: string;
@@ -22,14 +26,54 @@ import swal from 'sweetalert2';
 import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
 import { LpuPlannerServiceService } from 'src/app/_services/lpu-planner-service.service';
 import { ColumnMode } from '@swimlane/ngx-datatable';
+import { json } from 'ngx-custom-validators/src/app/json/validator';
 @Component({
   selector: 'app-mou-documents-uploads',
   templateUrl: './mou-documents-uploads.component.html',
   styleUrls: ['./mou-documents-uploads.component.scss']
 })
 export class MouDocumentsUploadsComponent implements OnInit {
+  AllMouCategories: MouCategory[] = [];
+  SelectedMouCategory: any = null;
+  selectedCategory: number[] = [];
+  hasCategoryError: boolean = true;
 
-newMouid: any;
+
+  GetAllCategories(): void {
+  this.mouDocumentsService.GetMouCategories().subscribe(response => {
+
+    this.AllMouCategories = response.item1.map((x: any, index: number) => ({
+      id: index + 1,
+      CategoryName: x.items
+    }));
+
+  });
+}
+  // GetAllCategories(): void {
+  //   this.mouDocumentsService.GetMouCategories().subscribe((response) => {
+  //     if (response.item1.length > 0) {
+  //       this.AllMouCategories = response.item1;
+  //     } else {
+  //       this.AllMouCategories = [];
+  //     }
+  //   });
+  // }
+
+changeCategory(event: any) {
+  this.SelectedMouCategory= event['items'];
+  this.hasCategoryError = !event;
+}
+
+
+  CategoryFilter: string = 'all';
+  
+
+
+
+
+// ended Logic 15-7-26
+
+  newMouid: any;
 
 
   getRecordsForRenewedPage(): any[] {
@@ -52,49 +96,119 @@ newMouid: any;
     this.applyFilters();
   }
 
-  applyFilters(): void {
-    // First filter by status
-    let filtered = this.MouDocumentsData.filter(item => {
-      if (this.statusFilter === 'all') {
-        return true;
+applyFilters(): void {
+
+  let filtered = [...this.MouDocumentsData];
+
+  // Status Filter
+  if (this.statusFilter !== 'all') {
+
+    filtered = filtered.filter(item => {
+
+      switch (this.statusFilter) {
+
+        case 'active':
+          return item.mouStatus === 'Active';
+
+        case 'expired':
+          return item.mouStatus === 'Expired'
+            && (item.renewalCount == null || Number(item.renewalCount) === 0);
+
+        case 'renewed':
+          return item.renewalCount != null
+            && Number(item.renewalCount) > 0;
+
+        default:
+          return true;
       }
 
-      if (this.statusFilter === 'active') {
-        return item.mouStatus === 'Active';
-      } else if (this.statusFilter === 'expired') {
-        return item.mouStatus === 'Expired' && item.renewalCount == null && item.renewalCount != 0  ;
-      } else if (this.statusFilter === 'renewed') {
-        return item.renewalCount > 0 || item.renewalCount !== 'null' && item.renewalCount !== null && item.renewalCount !== undefined && item.renewalCount !== '0';
-      }
-      return true;
     });
 
-    // Then apply search filter if exists
-    const query = this.searchQuery.trim().toLowerCase();
-    if (query) {
-      filtered = filtered.filter(item => {
-        return Object.entries(item).some(([key, val]) => {
-          if (val !== null && val !== undefined) {
-            let valueString = String(val).toLowerCase();
-
-            // Special handling for mouid (Numeric & "MOU/x" String Comparison)
-            if (key === 'id') {
-              const numericId = Number(val);
-              if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
-                return true;
-              }
-            }
-
-            // General search for all other fields
-            return valueString.includes(query);
-          }
-          return false;
-        });
-      });
-    }
-
-    this.filteredMouDocumentsData = filtered;
   }
+
+  // Category Filter
+  if (this.SelectedMouCategory != null) {
+
+    filtered = filtered.filter(item =>
+      String(item.mouCategory ?? '').toLowerCase() ===
+      this.SelectedMouCategory.CategoryName.toLowerCase()
+    );
+
+  }
+
+  // Search Filter
+  const query = this.searchQuery.trim().toLowerCase();
+
+  if (query) {
+
+    filtered = filtered.filter(item =>
+      Object.entries(item).some(([key, value]) => {
+
+        if (value == null) {
+          return false;
+        }
+
+        // Search by MOU Id
+        if (key === 'id') {
+          const id = Number(value);
+
+          return !isNaN(id) &&
+            (id.toString().includes(query) ||
+              `mou/${id}`.includes(query));
+        }
+
+        return String(value).toLowerCase().includes(query);
+
+      })
+    );
+
+  }
+
+  this.filteredMouDocumentsData = filtered;
+}
+  // applyFilters(): void {
+  //   // First filter by status
+  //   let filtered = this.MouDocumentsData.filter(item => {
+  //     if (this.statusFilter === 'all') {
+  //       return true;
+  //     }
+
+  //     if (this.statusFilter === 'active') {
+  //       return item.mouStatus === 'Active';
+  //     } else if (this.statusFilter === 'expired') {
+  //       return item.mouStatus === 'Expired' && item.renewalCount == null && item.renewalCount != 0  ;
+  //     } else if (this.statusFilter === 'renewed') {
+  //       return item.renewalCount > 0 || item.renewalCount !== 'null' && item.renewalCount !== null && item.renewalCount !== undefined && item.renewalCount !== '0';
+  //     } 
+  //     return true;
+  //   });
+
+  //   // Then apply search filter if exists
+  //   const query = this.searchQuery.trim().toLowerCase();
+  //   if (query) {
+  //     filtered = filtered.filter(item => {
+  //       return Object.entries(item).some(([key, val]) => {
+  //         if (val !== null && val !== undefined) {
+  //           let valueString = String(val).toLowerCase();
+
+  //           // Special handling for mouid (Numeric & "MOU/x" String Comparison)
+  //           if (key === 'id') {
+  //             const numericId = Number(val);
+  //             if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
+  //               return true;
+  //             }
+  //           }
+
+  //           // General search for all other fields
+  //           return valueString.includes(query);
+  //         }
+  //         return false;
+  //       });
+  //     });
+  //   }
+
+  //   this.filteredMouDocumentsData = filtered;
+  // }
 
   getActiveCount(): number {
     return this.MouDocumentsData.filter(item => {
@@ -575,6 +689,8 @@ initForm() {
   selectedId: number;
   selectedSchoolDivisions: any[] = [];
   allSchoolDivisions: SchoolDivision[] = [];
+  
+
   selectedDivisions: number[] = [];
   isDropdownOpen: boolean = false;
   allDepartmentName: any;
@@ -629,6 +745,7 @@ initForm() {
     private fb: FormBuilder) { }
 
   ngOnInit(): void {
+
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML = '<span class="themeClr" >MOU </span> Document<span class="themeClr" > Upload </span>';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
     // this.serverUrl = 'http://172.19.2.52/umsweb/webftp/MOUDocuments/';
@@ -648,6 +765,7 @@ initForm() {
     this.authService.loginTemp(id).subscribe({
       next: data => {
         this.initForm();
+        this.GetAllCategories();
         this.storageService.saveUser(data);
         this.GetEmployeeDetails();
         this.GetAllActivities();
@@ -697,7 +815,7 @@ initForm() {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
           this.Email = response.item1[0].email;
-          this.EmployeeCode = response.item1[0].employeeCode;
+          this.EmployeeCode = '31930';// response.item1[0].employeeCode;
           this.OfficialEmailId = response.item1[0].officialEmailId;
           this.ContactNoX = response.item1[0].contactNo;
           this.Department = response.item1[0].department;
@@ -885,6 +1003,7 @@ initForm() {
     this.SchoolInvolved = arrayUniqueByKey.join(',');
     const formData = new FormData();
     formData.append('UID', this.EmployeeCode);
+    formData.append('MouCategory', this.SelectedMouCategory);
     formData.append('MouTitle', this.MouPartner);
     formData.append('MouPartnerName', this.MouPartner);
     formData.append('FacultyName', this.EmployeeName);
