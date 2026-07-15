@@ -33,6 +33,12 @@ import { json } from 'ngx-custom-validators/src/app/json/validator';
   styleUrls: ['./mou-documents-uploads.component.scss']
 })
 export class MouDocumentsUploadsComponent implements OnInit {
+
+
+   onCategoryChange(event: any): void {
+    this.applyFilters();
+  }
+
   AllMouCategories: MouCategory[] = [];
   SelectedMouCategory: any = null;
   selectedCategory: number[] = [];
@@ -60,7 +66,8 @@ export class MouDocumentsUploadsComponent implements OnInit {
   // }
 
 changeCategory(event: any) {
-  this.SelectedMouCategory= event['items'];
+  this.SelectedMouCategory= event['CategoryName'];
+  // console.log(this.SelectedMouCategory+' ' + JSON.stringify(event))
   this.hasCategoryError = !event;
 }
 
@@ -82,6 +89,7 @@ changeCategory(event: any) {
     return this.AllRenewedMouDetails.slice(startIndex, endIndex);
   }
 
+  
   // Added on 14-May-25
 
   statusFilter: string = 'all';
@@ -127,7 +135,7 @@ applyFilters(): void {
   }
 
   // Category Filter
-  if (this.SelectedMouCategory != null) {
+  if (this.SelectedMouCategory != 'All') {
 
     filtered = filtered.filter(item =>
       String(item.mouCategory ?? '').toLowerCase() ===
@@ -815,7 +823,7 @@ initForm() {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
           this.Email = response.item1[0].email;
-          this.EmployeeCode = '31930';// response.item1[0].employeeCode;
+          this.EmployeeCode = response.item1[0].employeeCode;
           this.OfficialEmailId = response.item1[0].officialEmailId;
           this.ContactNoX = response.item1[0].contactNo;
           this.Department = response.item1[0].department;
@@ -1085,33 +1093,75 @@ initForm() {
   ngOnChanges() {
     this.filterData();
   }
+filterData(): void {
 
+  let filtered = [...this.AllRenewedMouDetails];
 
-  filterData() {
-    const lowerCaseFilter = this.filterText.toLowerCase();
+  // Category Filter
+  if (this.SelectedMouCategory && this.SelectedMouCategory !== 'All') {
 
-    this.filteredMouDocumentsData = this.MouDocumentsData.filter(item => {
-      return Object.entries(item).some(([key, val]) => {
-        if (val !== null && val !== undefined) {
-          let valueString = String(val).toLowerCase();
+    filtered = filtered.filter(item =>
+      item.mouCategory === this.SelectedMouCategory.CategoryName
+    );
 
-          if (key === 'id') {
-            const numericId = Number(val); // Convert mouid to a number
+  }
 
-            if (!isNaN(numericId) && (numericId.toString().includes(lowerCaseFilter) || `mou/${numericId}`.includes(lowerCaseFilter))) {
-              return true;
-            }
-          }
+  // Search Filter
+  const search = this.filterText?.trim().toLowerCase();
 
-          // General search for all other fields
-          return valueString.includes(lowerCaseFilter);
+  if (search) {
+
+    filtered = filtered.filter(item =>
+      Object.entries(item).some(([key, val]) => {
+
+        if (val == null) {
+          return false;
         }
-        return false;
-      });
-    });
+
+        if (key === 'id') {
+          const id = Number(val);
+
+          return !isNaN(id) &&
+            (
+              id.toString().includes(search) ||
+              `mou/${id}`.includes(search)
+            );
+        }
+
+        return String(val).toLowerCase().includes(search);
+
+      })
+    );
+
+  }
+
+  this.currentPage = 1;
+  this.filteredMouDocumentsData = filtered;
+}
+
+  // filterData() {    
+  //   const lowerCaseFilter = this.filterText.toLowerCase();
+  //   this.filteredMouDocumentsData = this.MouDocumentsData.filter(item => {
+  //     return Object.entries(item).some(([key, val]) => {
+  //       if (val !== null && val !== undefined) {
+  //         let valueString = String(val).toLowerCase();
+
+  //         if (key === 'id') {
+  //           const numericId = Number(val); // Convert mouid to a number
+
+  //           if (!isNaN(numericId) && (numericId.toString().includes(lowerCaseFilter) || `mou/${numericId}`.includes(lowerCaseFilter))) {
+  //             return true;
+  //           }
+  //         } 
+  //         // General search for all other fields
+  //         return valueString.includes(lowerCaseFilter);
+  //       }
+  //       return false;
+  //     });
+  //   });
 
  
-  }
+  // }
 
 
   recordsPerPage = 5;

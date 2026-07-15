@@ -35,7 +35,44 @@ interface SchoolDivision {
 })
 export class MouActivityActionPlanComponent implements OnInit {
 
-  @ViewChild('topScroll')
+
+  
+   onCategoryChange2(event: any): void {
+     this.SelectedMouCategory2= event['CategoryName'];
+    this.applyFiltersTab3();
+  }
+   onCategoryChange1(event: any): void {
+     this.SelectedMouCategory1= event['CategoryName'];
+    this.applyFiltersTab2();
+  }
+   onCategoryChange(event: any): void {
+     this.SelectedMouCategory= event['CategoryName'];
+    this.applyCombinedFiltersTab1();
+  }
+
+  AllMouCategories: any[] = [];
+  SelectedMouCategory: any = null;
+  SelectedMouCategory1: any = null;
+  SelectedMouCategory2: any = null;
+  selectedCategory: number[] = [];
+  hasCategoryError: boolean = true;
+
+
+  GetAllCategories(): void {
+  this.mouDocumentsService.GetMouCategories().subscribe(response => {
+
+    this.AllMouCategories = response.item1.map((x: any, index: number) => ({
+      id: index + 1,
+      CategoryName: x.items
+    }));
+
+  });
+}
+
+
+
+
+@ViewChild('topScroll')
 topScroll!: ElementRef<HTMLDivElement>;
 
 @ViewChild('tableWrapper')
@@ -360,6 +397,13 @@ calculateScrollWidth(): void {
           .map((id: string) => id.trim())
           .includes(this.selectedSchoolDivision);
       });
+    } 
+
+    if(this.SelectedMouCategory && this.SelectedMouCategory !== 'All') {
+      filtered = filtered.filter(item =>
+        String(item.mouCategory ?? '').toLowerCase() ===
+        this.SelectedMouCategory.toLowerCase()
+      );
     }
 
     // =========================
@@ -997,6 +1041,14 @@ calculateScrollWidth(): void {
     // Status Filter
     // -----------------------------
 
+    
+    if(this.SelectedMouCategory1 && this.SelectedMouCategory1 !== 'All') {
+      filtered = filtered.filter(item =>
+        String(item.mouCategory ?? '').toLowerCase() ===
+        this.SelectedMouCategory1.toLowerCase()
+      );
+    }
+
     switch (this.Tab2statusFilter) {
 
       case 'active':
@@ -1157,6 +1209,13 @@ calculateScrollWidth(): void {
       return true;
     });
 
+
+      if(this.SelectedMouCategory2 && this.SelectedMouCategory2 !== 'All') {
+      filtered = filtered.filter(item =>
+        String(item.mouCategory ?? '').toLowerCase() ===
+        this.SelectedMouCategory2.toLowerCase()
+      );
+    }
     // Then apply search filter if exists
     const query = this.searchQuery.trim().toLowerCase();
     if (query) {
@@ -1314,6 +1373,7 @@ calculateScrollWidth(): void {
         if (this.storageService.isLoggedIn() == false && authToken == 'Token Expired') {
           this.LoginFailed('Token Expired');
         }
+        this.GetAllCategories();
         this.getAllPlannerSession();
         this.GetEmployeeDetails();
         this.GetAllActivities();

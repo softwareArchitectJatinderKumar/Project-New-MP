@@ -1,4 +1,4 @@
-<app-mou-menu></app-mou-menu>
+<!-- <app-mou-menu></app-mou-menu> -->
 <div class="container-fluid" id="ActivityPage" *ngIf="isLoginFailed==false; else loginFailed">
   <div class="row">
     <div class="col-6 grid-margin stretch-card">
@@ -71,7 +71,7 @@
                     </option>
                   </select>
                 </div>
-                <div class="col-sm-3 ">
+                <div class="col-sm-2 ">
                   <select class="form-select" [(ngModel)]="Tab1statusFilter">
                     <!-- <select class="form-select" [(ngModel)]="Tab1statusFilter" (change)="onStatusChangeTab1($event)"> -->
                     <option value="all">All MOU</option>
@@ -80,7 +80,17 @@
                     <option value="renewed">Renewed</option>
                   </select>
                 </div>
-                <div class="col-sm-3">
+                <div class="col-sm-2 ">
+                  <ng-select [(ngModel)]="SelectedMouCategory" [multiple]="false" placeholder="Select Category" class="w-50"
+                    (change)="onCategoryChange($event)">
+                    <ng-option [value]="'All'">All</ng-option>
+                    <ng-option *ngFor="let category of AllMouCategories" [value]="category">
+                      {{ category.CategoryName }}
+                    </ng-option>
+                  </ng-select>
+                
+                </div>
+                <div class="col-sm-2">
                   <button class="btn btn-danger mx-5 me-4 " (click)="applyCombinedFiltersTab1()">
                     Apply Filter
                   </button><button class="btn btn-dark" (click)="resetTab1Filters()" *ngIf="(selectedSchoolDivision != '-1' && selectedSchoolDivision != '0')
@@ -150,7 +160,10 @@
                     </ng-template>
                   </ngx-datatable-column>
 
+                  <ngx-datatable-column name="Mou Category" prop="mouCategory" [width]="200"></ngx-datatable-column>
+
                   <ngx-datatable-column name="Mou Title" prop="mouTitle" [width]="200"></ngx-datatable-column>
+                  
                   <ngx-datatable-column name="MOU Status" [sortable]="false" prop="Id">
                     <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                       <ng-container *ngIf="row.mouStatus != null; else NoFound">
@@ -278,7 +291,7 @@
                   </button>
                 </div>
 
-                 <div class="col-sm-3 ">
+                 <div class="col-sm-2 ">
                   <select class="form-select fs-5 text-danger" [(ngModel)]="selectedSchoolDivision2" (change)="FilterDataRow2()">
                     <!-- (change)="setSchoolDivision($event)"> -->
                     <option value="-1" selected>Select School Division</option>
@@ -296,12 +309,22 @@
                     <option value="renewed">Renewed</option>
                   </select>
                 </div>
+                 <div class="col-sm-2 ">
+                  <ng-select [(ngModel)]="SelectedMouCategory1" [multiple]="false" placeholder="Select Category" class="w-50"
+                    (change)="onCategoryChange1($event)">
+                    <ng-option [value]="'All'">All</ng-option>
+                    <ng-option *ngFor="let category of AllMouCategories" [value]="category">
+                      {{ category.CategoryName }}
+                    </ng-option>
+                  </ng-select>
+                
+                </div>
                 <div class="col-sm-2">
                   <!-- <input [(ngModel)]="searchTextTab2" (keyup)="filterTab2()" type="text" class="form-control"                   
                     placeholder="Search" /> -->
                     <input     [(ngModel)]="searchTextTab2"    (keyup)="applyFiltersTab2()"    class="form-control"    placeholder="Search">
                 </div>
-                <div class="col-sm-3 "><label class="fs-5 me-5 d-none">Select Session:</label>
+                <div class="col-sm-2 "><label class="fs-5 me-5 d-none">Select Session:</label>
                   <select class="form-select fs-5 text-danger" [(ngModel)]="selectedPlannerSession"
                     (change)="setSessionId($event)">
                     <option value="1" selected>Select Session</option>
@@ -395,7 +418,7 @@
                       </ngx-datatable-column>
 
 
-                      <ngx-datatable-column name="Mou Title" prop="mouTitle" [width]="200"></ngx-datatable-column>
+                       <ngx-datatable-column name="Mou Category" prop="mouCategory" [width]="200"></ngx-datatable-column>
                       
                       <ngx-datatable-column name="Mou Status" [sortable]="false" prop="Id">
                         <ng-template let-row="row" ngx-datatable-cell-template>
@@ -543,6 +566,17 @@
                     </option>
                   </select>
                 </div>
+                
+                <div class="col-sm-2 ">
+                  <ng-select [(ngModel)]="SelectedMouCategory2" [multiple]="false" placeholder="Select Category" class="w-50"
+                    (change)="onCategoryChange2($event)">
+                    <ng-option [value]="'All'">All</ng-option>
+                    <ng-option *ngFor="let category of AllMouCategories" [value]="category">
+                      {{ category.CategoryName }}
+                    </ng-option>
+                  </ng-select>
+                
+                </div>
               </div>
 
               <ng-container *ngIf="loadingIndicator">
@@ -596,6 +630,7 @@
                         </ng-template>
                       </ngx-datatable-column>
                       <ngx-datatable-column name="Mou Title" prop="mouTitle" [width]="200"></ngx-datatable-column>
+                      <ngx-datatable-column name="Mou Category" prop="mouCategory" [width]="200"></ngx-datatable-column>
 
                       <ngx-datatable-column name="Assigned To" prop="uid" [width]="120">
                         <ng-template let-row="row" ngx-datatable-cell-template>

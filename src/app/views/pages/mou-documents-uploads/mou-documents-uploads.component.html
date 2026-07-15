@@ -58,17 +58,10 @@
                             <div class="row mb-4 mt-4">
                                 <div class="col-3 "><label class=" form-label">Select Mou Category </label></div>
                                 <div class="col-3">
-                                    <!-- <ng-select [items]="AllMouCategories" bindLabel="items" [(ngModel)]="SelectedMouCategory" placeholder="Select"
-                                        [multiple]="false" (change)="changeCategory($event)">
-                                    </ng-select> -->
-
-                                       <ng-select [(ngModel)]="SelectedMouCategory" [multiple]="false" placeholder="Select" (change)="changeCategory($event)">                                  
-                                                
-                                            
+                                       <ng-select [(ngModel)]="SelectedMouCategory" name="SelectedMouCategory" [multiple]="false" placeholder="Select" (change)="changeCategory($event)">                                  
                                                     <ng-option *ngFor="let category of AllMouCategories" [value]="category">
                                                         {{ category.CategoryName }}
-                                                    </ng-option>
-                                            
+                                                    </ng-option>                                            
                                                 </ng-select>
                                     <div *ngIf="hasCategoryError" class="themeClr">Mou Category is Required
                                     </div>
@@ -291,30 +284,27 @@
                                         </div>
                                     </div>
                                     <div class="col-sm-3 ">
-                                        
-                                        <select class="form-select" [(ngModel)]="statusFilter"
-                                            (change)="onStatusChange($event)">
+                                
+                                        <select class="form-select" [(ngModel)]="statusFilter" (change)="onStatusChange($event)">
                                             <option value="all">All MOU</option>
                                             <option value="active">Active</option>
                                             <option value="expired">Expired</option>
                                             <option value="renewed">Renewed</option>
-                                            </select>
-                                            </div>
-                                            <div class="col-sm-3 ">
-                                                <!-- <ng-select [items]="AllMouCategories" bindLabel="items" [(ngModel)]="SelectedMouCategory" placeholder="Select"
-                                                                                                                                [multiple]="false" (change)="applyFilters()">
-                                                                                                                            </ng-select> -->
-                                                <ng-select [(ngModel)]="SelectedMouCategory" [multiple]="false" placeholder="Select" (change)="applyFilters()">
-                                            
-                                                    <ng-option [value]="null">All</ng-option>
-                                            
-                                                    <ng-option *ngFor="let category of AllMouCategories" [value]="category">
-                                                        {{ category.CategoryName }}
-                                                    </ng-option>
-                                            
-                                                </ng-select>
-                                            
-                                            </div>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-3 ">
+                                        <!-- <ng-select [items]="AllMouCategories" bindLabel="items" [(ngModel)]="SelectedMouCategory" placeholder="Select"
+                                                                                                                                                                                                    [multiple]="false" (change)="applyFilters()">
+                                                                                                                                                                                                </ng-select> -->
+                                         <ng-select [(ngModel)]="SelectedMouCategory" [multiple]="false" placeholder="Select Category"  class="w-50"
+                                            (change)="applyFilters()">                                    
+                                            <ng-option [value]="'All'">All</ng-option>                                    
+                                            <ng-option *ngFor="let category of AllMouCategories" [value]="category">
+                                                {{ category.CategoryName }}
+                                            </ng-option>                                    
+                                        </ng-select>  
+                                    
+                                    </div>
                                     <div class="col-sm-3 ">
                                         <input type="text" [(ngModel)]="filterText" (ngModelChange)="filterData()"
                                             placeholder="Search by any Field Text " class="form-control" />
@@ -552,15 +542,15 @@
                             <div class="card-body">
                                 <h6 class="card-title d-flex justify-content-center fs-4 "> MOU Uploads Details</h6>
                                 <div class="col-12 d-flex justify-content-center">
-                                    <div class="col-sm-4 ">
+                                    <div class="col-sm-3 ">
                                         <div class="mb-3 ms-5">
                                             <button (click)="exportToExcel()" class="btn btn-dark ">Export to
                                                 Excel</button>
                                         </div>
                                     </div>
-
-                                    <div class="col-sm-4 ">
-                                        <input type="text" [(ngModel)]="filterText" (ngModelChange)="filterData()"
+                                     
+                                    <div class="col-sm-3 ">
+                                        <input type="text" [(ngModel)]="filterText"  name="filterText" (ngModelChange)="filterData()"
                                             placeholder="Search by any Field Text " class="form-control" />
                                     </div>
                                 </div>

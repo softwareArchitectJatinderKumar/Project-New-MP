@@ -281,6 +281,7 @@
                                             <tr>
                                                 <th class="form-label fs-6">New MOU Id</th>
                                                 <th class="form-label fs-6">Old MOU Id</th>
+                                                <th class="form-label fs-6">Mou Category</th>
                                                 <th class="form-label fs-6">MOU Renewals</th>
                                                 <th class="form-label fs-6">Partner Organisation</th>
                                                 <th class="form-label fs-6">MOU Start Date</th>
@@ -303,6 +304,7 @@
                                                     </ng-template>
         
                                                     <td class="fw-bold fs-6">MOU/{{DocumentRow.id}}</td>
+                                                    <td class="fw-bold fs-6">{{DocumentRow.mouCategory}}</td>
         
                                                     <td class="fw-bold fs-6"
                                                         *ngIf="DocumentRow.hasRenewal == null; else NotPossible">
