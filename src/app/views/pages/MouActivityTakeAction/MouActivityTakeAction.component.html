@@ -227,10 +227,10 @@
         <div class="col-12 stretch-card">
           <div class="card">
             <div class="card-body">
-              <div class="row  p-3 mx-5 ">
+               <div class="row g-2 align-items-center justify-content-center mb-3">
                 <h2 class="modal-title text-center fs-2 mb-4" id="exampleModalLabel">My Action Taken Screen </h2>
-                <div class="col-sm-3 ">
-                  <select class="form-select" [(ngModel)]="Tab1statusFilter"
+                <div class="col-sm-2">
+                  <select class="form-select w-100" [(ngModel)]="Tab1statusFilter"
                     (ngModelChange)="onStatusChangeTab1($event)">
                     <option value="all">All MOU</option>
                     <option value="active">Active</option>
@@ -238,25 +238,30 @@
                     <option value="renewed">Renewed</option>
                   </select>
                 </div>
+
                 <div class="col-sm-3">
-                  <label class="fs-5">Select Session:</label>
+                  <select class="form-select w-100" [(ngModel)]="selectedMouCategory"
+                    (change)="onCategoryChange($event)">
+                    <option value="0">All Categories</option>
+                    <option *ngFor="let cat of mouCategories" [value]="cat">
+                      {{ cat }}
+                    </option>
+                  </select>
                 </div>
 
                 <div class="col-sm-3">
-                  <select class="form-select fs-5 text-danger" id="SessionId" name="PlannerSession"
+                  <select class="form-select fs-5 text-danger w-100" id="SessionId" name="PlannerSession"
                     [(ngModel)]="selectedPlannerSession" (change)="setSessionId($event)">
-                    <option value="0" selected>All</option>
+                    <option value="0" selected>All Sessions</option>
                     <option *ngFor="let session of allPlannerSessions" [value]="session.id">
                       {{ session.session }}
                     </option>
                   </select>
                 </div>
 
-                <div class="col-sm-3">
-                  <div class="mb-3">
-                    <input [(ngModel)]="searchQuery" (keyup)="searchData()" id="search" type="text" class="form-control"
-                      placeholder="Search" aria-label="Search" aria-describedby="basic-addon1" />
-                  </div>
+                <div class="col-sm-4">
+                  <input [(ngModel)]="searchQuery" (keyup)="searchData()" id="search" type="text" class="form-control w-100"
+                    placeholder="Search" aria-label="Search" aria-describedby="basic-addon1" />
                 </div>
               </div>
 

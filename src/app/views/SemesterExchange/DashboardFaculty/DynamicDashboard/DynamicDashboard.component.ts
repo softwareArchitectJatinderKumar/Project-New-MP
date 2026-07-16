@@ -6,7 +6,7 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import Swal from 'sweetalert2';
@@ -147,7 +147,7 @@ interface AggregatedRemarks {
   // they are rendered per-row via selectedRemarksEvaluations instead.
 }
 
-  export interface DocApprovalInfo {
+export interface DocApprovalInfo {
   isApproved: string;        // 'True' | 'False' | '' (empty = pending, per your getDocStatus())
   approvalRemarks: string;
   approvedBy: string;
@@ -161,7 +161,10 @@ export interface DocumentRowConfig {
 }
 
 export type RowState = 'pending' | 'approved' | 'rejected' | 'noFile';
-
+interface Employee {
+  employeeName: string;
+  employeeCode: string;
+}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -172,53 +175,223 @@ export type RowState = 'pending' | 'approved' | 'rejected' | 'noFile';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DynamicDashboardComponent implements OnInit {
+  // added on 16-July-26
+  @ViewChild('ForwardToUIDModal') ForwardToUIDModal!: TemplateRef<any>;
+  SelectedRegNo: any;
+  SelectedAID: any;
+  employeeControl3 = new FormControl('');
+  remarks3: any = '';
+  filteredEmployeesData3: Employee[] = [];
+  EmployeeData: Employee[] = [];
+  showSuggestions3 = false;
+  activeSuggestionIndex3 = -1;
+  ResponsiblePerson3: any = '';
+  AssignedToUid3: any = '';
+  isForwardToUIDFormSubmitted: any;
+
+  onKeydown3(event: KeyboardEvent) {
+
+    if (!this.filteredEmployeesData3?.length) {
+      return;
+    }
+
+    if (event.key === 'ArrowDown') {
+
+      event.preventDefault();
+
+      this.activeSuggestionIndex3 =
+        (this.activeSuggestionIndex3 + 1)
+        % this.filteredEmployeesData3.length;
+    }
+
+    else if (event.key === 'ArrowUp') {
+
+      event.preventDefault();
+
+      this.activeSuggestionIndex3 =
+        (this.activeSuggestionIndex3 - 1 +
+          this.filteredEmployeesData3.length)
+        % this.filteredEmployeesData3.length;
+    }
+
+    else if (event.key === 'Enter') {
+
+      event.preventDefault();
+
+      if (
+        this.activeSuggestionIndex3 >= 0 &&
+        this.activeSuggestionIndex3 < this.filteredEmployeesData3.length
+      ) {
+
+        this.selectEmployee3(
+          this.filteredEmployeesData3[
+          this.activeSuggestionIndex3
+          ]
+        );
+      }
+    }
+  }
 
 
-documentRows: DocumentRowConfig[] = [
-  // { label: 'Resume',          fileKey: 'resumeFileName',            approvalKey: 'resumeApproval',     docTypeParam: 'Resume' },
-  // { label: 'Consent Letter',  fileKey: 'consentLetterDocumentPath', approvalKey: 'consentApproval',    docTypeParam: 'Consent Letter' },
-  // { label: 'Fees Proof',      fileKey: 'feesProofDocumentPath',     approvalKey: 'feesApproval',       docTypeParam: 'Fees Proof' },
-  // { label: 'Passport',        fileKey: 'passportDocumentPath',      approvalKey: 'passportApproval',   docTypeParam: 'Passport' },
-  // { label: 'English Proof',   fileKey: 'englishProofDocumentPath',  approvalKey: 'englishApproval',    docTypeParam: 'English Proof' },
-  // { label: 'Affidavit',       fileKey: 'affidavitPath',             approvalKey: 'affidavitApproval',  docTypeParam: 'Affidavit' },
-  // { label: 'Indemnity Bond',  fileKey: 'indeminityBondPath',        approvalKey: 'indemnityApproval',  docTypeParam: 'Indemnity Bond' },
-  { label: 'Offer Letter',    fileKey: 'offerLetterPath',           approvalKey: 'offerLetterApproval', docTypeParam: 'Offer Letter' },
-  { label: 'Outbound Ticket', fileKey: 'outBoundTicket',            approvalKey: 'outboundApproval',   docTypeParam: 'Outbound Ticket' },
-  { label: 'Return Ticket',   fileKey: 'returnTicketPath',          approvalKey: 'outboundApproval',   docTypeParam: 'Return Ticket' },
-];
+  selectEmployee3(employee: Employee) {
+    this.ResponsiblePerson3 = employee.employeeCode;
+    this.AssignedToUid3 = employee.employeeCode;
 
-getFileValue(doc: DocumentRowConfig): string {
-  return ((this.SelectedDocuments as any)?.[doc.fileKey] ?? '').toString().trim();
+    this.employeeControl3.setValue(
+      `${employee.employeeName} (${employee.employeeCode})`
+    );
+
+    this.filteredEmployeesData3 = [];
+
+    this.showSuggestions3 = false;
+    
+  }
+newId: any;
+onInput3() {
+  const inputValue = (this.employeeControl3.value || '')
+    .toString()
+    .toLowerCase()
+    .trim();
+
+  if (inputValue) {
+
+    this.filteredEmployeesData3 = this.EmployeeData
+      .filter(employee =>
+        employee.employeeName.toLowerCase().includes(inputValue) ||
+        employee.employeeCode.toLowerCase().includes(inputValue)
+      )
+      .slice(0, 10);
+
+    if (this.filteredEmployeesData3.length > 0) {
+      this.newId = this.filteredEmployeesData3[0].employeeCode;
+      
+    }
+
+    this.isForwardToUIDFormSubmitted = true;
+
+  } else {
+    this.filteredEmployeesData3 = [];
+    this.newId = '';
+  }
+
+  this.showSuggestions3 = true;
+  this.activeSuggestionIndex3 = -1;
+
+  // if (this.CdealingFaculty === this.newId) {
+  //   alert('Cannot be same UID');
+  //   return;
+  // }
 }
 
-getApproval(doc: DocumentRowConfig): DocApprovalInfo {
-  return (this.SelectedDocuments as any)?.[doc.approvalKey] ?? { isApproved: '', approvalRemarks: '', approvedBy: '' };
-}
 
-/**
- * Your getDocStatus() sends isApproved as the STRING 'True' / 'False' / '' —
- * not real booleans and not null — so normalize on that basis.
- */
-getRowState(doc: DocumentRowConfig): RowState {
-  if (!this.getFileValue(doc)) return 'noFile';
+  hideSuggestions3() {
 
-  const status = (this.getApproval(doc)?.isApproved ?? '').toString().trim().toLowerCase();
+    setTimeout(() => {
 
-  if (!status || status === 'null') return 'pending';
-  return status === 'true' ? 'approved' : 'rejected';
-}
+      this.showSuggestions3 = false;
 
-getApprover(doc: DocumentRowConfig): string {
-  const name = (this.getApproval(doc)?.approvedBy ?? '').toString().trim();
-  return name || '—';
-}
+    }, 200);
+  }
 
-getRemarks(doc: DocumentRowConfig): string {
-  const remarks = (this.getApproval(doc)?.approvalRemarks ?? '').toString().trim();
-  return remarks && remarks.toLowerCase() !== 'null' ? remarks : '';
-}
-// Added  on 7-July-26
-AllApprovedDocuments: any[] = [];
+
+  ForwardToUIDForm!: FormGroup;
+
+CdealingFaculty:any;
+  ForwardToFaculty(application: Application): void {
+    this.CdealingFaculty= application.dealingFaculty;
+    this.SelectedRegNo = application.registrationNo;
+    this.SelectedAID = application.applicationId;    
+    this.isForwardToUIDFormSubmitted = false;
+    this.currentModalRef = this.modalService.open(this.ForwardToUIDModal, {
+      size: 'lg', backdrop: 'static', keyboard: false,
+    });
+    // this.currentModalRef.result.then(() => this.getSEAllApplications()).catch(() => { });
+    // this.cd.detectChanges();
+    // Swal.fire({
+    //   title: 'Forward To Faculty',
+    //   input: 'text',
+    //   inputPlaceholder: 'Enter Employee Code...',
+    //   showCancelButton: true,
+    //   confirmButtonText: 'Forward',
+    //   showLoaderOnConfirm: true,
+    //   preConfirm: uid => {
+    //     if (!uid) Swal.showValidationMessage('Employee Code is required!');
+    //     return uid;
+    //   },
+    //   allowOutsideClick: () => !Swal.isLoading(),
+    // }).then(result => {
+    //   if (result.isConfirmed && result.value) {
+    //     const fd = new FormData();
+    //     fd.append('RegistrationNo', application.registrationNo);
+    //     fd.append('HODUID', result.value);
+    //     fd.append('UserAction', 'Faculty');
+    //     this.sendForwardRequest(fd);
+    //   }
+    // });
+  }
+
+  submitForwardToUIDForm(): void {
+    if (!this.isForwardToUIDFormSubmitted) {
+      this.ForwardToUIDForm.markAllAsTouched();
+      return;
+    } else if(this.newId==this.CdealingFaculty)
+      {
+        alert('use different uid');
+         return;
+      }
+    const fd = new FormData();
+    fd.append('RegistrationNo', this.SelectedRegNo);
+    fd.append('HODUID', this.newId);
+    fd.append('UserAction', 'Faculty');
+    this.sendForwardRequest(fd);
+  }
+
+
+  documentRows: DocumentRowConfig[] = [
+    // { label: 'Resume',          fileKey: 'resumeFileName',            approvalKey: 'resumeApproval',     docTypeParam: 'Resume' },
+    // { label: 'Consent Letter',  fileKey: 'consentLetterDocumentPath', approvalKey: 'consentApproval',    docTypeParam: 'Consent Letter' },
+    // { label: 'Fees Proof',      fileKey: 'feesProofDocumentPath',     approvalKey: 'feesApproval',       docTypeParam: 'Fees Proof' },
+    // { label: 'Passport',        fileKey: 'passportDocumentPath',      approvalKey: 'passportApproval',   docTypeParam: 'Passport' },
+    // { label: 'English Proof',   fileKey: 'englishProofDocumentPath',  approvalKey: 'englishApproval',    docTypeParam: 'English Proof' },
+    // { label: 'Affidavit',       fileKey: 'affidavitPath',             approvalKey: 'affidavitApproval',  docTypeParam: 'Affidavit' },
+    // { label: 'Indemnity Bond',  fileKey: 'indeminityBondPath',        approvalKey: 'indemnityApproval',  docTypeParam: 'Indemnity Bond' },
+    { label: 'Offer Letter', fileKey: 'offerLetterPath', approvalKey: 'offerLetterApproval', docTypeParam: 'Offer Letter' },
+    { label: 'Outbound Ticket', fileKey: 'outBoundTicket', approvalKey: 'outboundApproval', docTypeParam: 'Outbound Ticket' },
+    { label: 'Return Ticket', fileKey: 'returnTicketPath', approvalKey: 'outboundApproval', docTypeParam: 'Return Ticket' },
+  ];
+
+  getFileValue(doc: DocumentRowConfig): string {
+    return ((this.SelectedDocuments as any)?.[doc.fileKey] ?? '').toString().trim();
+  }
+
+  getApproval(doc: DocumentRowConfig): DocApprovalInfo {
+    return (this.SelectedDocuments as any)?.[doc.approvalKey] ?? { isApproved: '', approvalRemarks: '', approvedBy: '' };
+  }
+
+  /**
+   * Your getDocStatus() sends isApproved as the STRING 'True' / 'False' / '' —
+   * not real booleans and not null — so normalize on that basis.
+   */
+  getRowState(doc: DocumentRowConfig): RowState {
+    if (!this.getFileValue(doc)) return 'noFile';
+
+    const status = (this.getApproval(doc)?.isApproved ?? '').toString().trim().toLowerCase();
+
+    if (!status || status === 'null') return 'pending';
+    return status === 'true' ? 'approved' : 'rejected';
+  }
+
+  getApprover(doc: DocumentRowConfig): string {
+    const name = (this.getApproval(doc)?.approvedBy ?? '').toString().trim();
+    return name || '—';
+  }
+
+  getRemarks(doc: DocumentRowConfig): string {
+    const remarks = (this.getApproval(doc)?.approvalRemarks ?? '').toString().trim();
+    return remarks && remarks.toLowerCase() !== 'null' ? remarks : '';
+  }
+  // Added  on 7-July-26
+  AllApprovedDocuments: any[] = [];
 
   private getAllApprovedDocuments(): void {
     this.loadingIndicator = true;
@@ -559,8 +732,11 @@ AllApprovedDocuments: any[] = [];
     this.AddRemarksForm = this.fb.group({
       Comments: ['', Validators.required],
     });
-    this.AcceptForm = this.fb.group({
-      UniversitySelected: ['', Validators.required],
+  this.AcceptForm = this.fb.group({
+  UniversitySelected: [null, Validators.required]
+});
+    this.ForwardToUIDForm = this.fb.group({
+      FacultyUId: ['', Validators.required],
     });
   }
 
@@ -581,12 +757,21 @@ AllApprovedDocuments: any[] = [];
         } else {
           this.isLoginFailed = false;
           this.GetEmployeeDetails();
+          this.GetEmployeeData();
         }
       },
       error: () => this.LoginFailed('Database Error'),
     });
   }
 
+  GetEmployeeData(): void {
+    this.mouDocumentsService.GetEmployeeData().subscribe({
+      next: response => {
+        this.EmployeeData = response.item1.length > 0 ? response.item1 : [];
+      },
+      error: err => console.error(err)
+    });
+  }
   private GetEmployeeDetails(): void {
     this.loadingIndicator = true;
     const startTime = Date.now();
@@ -599,7 +784,7 @@ AllApprovedDocuments: any[] = [];
           const emp = response.item1[0];
           this.EmployeeDetails = emp;
           this.EmployeeName = emp.employeeName;
-          this.EmployeeCode = String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
+          this.EmployeeCode = '28243';// String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
           this.ContactNoX = emp.contactNo;
           this.Department = emp.department;
           this.DepartmentName = emp.departmentName;
@@ -661,7 +846,7 @@ AllApprovedDocuments: any[] = [];
   }
 
 
-  
+
 
   private GetAllApplicationsforHOD(): void {
     this.loadingIndicator = true;
@@ -926,29 +1111,6 @@ AllApprovedDocuments: any[] = [];
       }
     });
   }
-  ForwardToFaculty(application: Application): void {
-    Swal.fire({
-      title: 'Forward To Faculty',
-      input: 'text',
-      inputPlaceholder: 'Enter Employee Code...',
-      showCancelButton: true,
-      confirmButtonText: 'Forward',
-      showLoaderOnConfirm: true,
-      preConfirm: uid => {
-        if (!uid) Swal.showValidationMessage('Employee Code is required!');
-        return uid;
-      },
-      allowOutsideClick: () => !Swal.isLoading(),
-    }).then(result => {
-      if (result.isConfirmed && result.value) {
-        const fd = new FormData();
-        fd.append('RegistrationNo', application.registrationNo);
-        fd.append('HODUID', result.value);
-        fd.append('UserAction', 'Faculty');
-        this.sendForwardRequest(fd);
-      }
-    });
-  }
 
   ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
     const label = userAction === 'Hod' ? 'HOD' : 'How';
@@ -989,6 +1151,7 @@ AllApprovedDocuments: any[] = [];
       },
       error: () => Swal.fire('Error!', 'An error occurred while forwarding the application.', 'error'),
     });
+    this.modalService.dismissAll();
   }
 
   // ── HOD: Assign Counsellor (Tab XX) ──────────────────────────────────────────
@@ -1541,74 +1704,88 @@ AllApprovedDocuments: any[] = [];
    * Handles the approval logic for a specific document
    * @param docType string identifier for the document type
    */
-approveDocument(FileName: string, DocumentName: any, ApplicationId: any, Action: any): void {
+  approveDocument(FileName: string, DocumentName: any, ApplicationId: any, Action: any): void {
 
-  Swal.fire({
-    title: `${Action} Action`,
-    text: `Application ${ApplicationId}`,
-    input: 'text',
-    inputPlaceholder: 'Enter Remarks',
-    showCancelButton: true,
-    confirmButtonText: 'Submit',
-    showLoaderOnConfirm: true,
-    preConfirm: (code) => {
-      if (!code) {
-        Swal.showValidationMessage('Remarks are required!');
-      }
-      return code;
-    },
+    Swal.fire({
+      title: `${Action} Action`,
+      text: `Application ${ApplicationId}`,
+      input: 'text',
+      inputPlaceholder: 'Enter Remarks',
+      showCancelButton: true,
+      confirmButtonText: 'Submit',
+      showLoaderOnConfirm: true,
+      preConfirm: (code) => {
+        if (!code) {
+          Swal.showValidationMessage('Remarks are required!');
+        }
+        return code;
+      },
 
-    allowOutsideClick: () => !Swal.isLoading(),
+      allowOutsideClick: () => !Swal.isLoading(),
 
-  }).then((result) => {
+    }).then((result) => {
 
-    if (result.isConfirmed && result.value) {
+      if (result.isConfirmed && result.value) {
 
-      this.loadingIndicator = true;
-      const startTime = Date.now();
+        this.loadingIndicator = true;
+        const startTime = Date.now();
 
-      const fd = new FormData();
-      fd.append('ApplicationId', ApplicationId);
-      fd.append('DocumentName', DocumentName);
-      fd.append('FilePath', FileName);
-      fd.append('ApprovedBy', this.EmployeeCode + '  ' );
-      fd.append('ApprovalRemarks', result.value);
-      fd.append('Action', Action);
+        const fd = new FormData();
+        fd.append('ApplicationId', ApplicationId);
+        fd.append('DocumentName', DocumentName);
+        fd.append('FilePath', FileName);
+        fd.append('ApprovedBy', this.EmployeeCode + '  ');
+        fd.append('ApprovalRemarks', result.value);
+        fd.append('Action', Action);
 
-      this.studentService.UpdateDocumentStatus(fd)
-        .pipe(finalize(() => this.stopLoader(startTime)))
-        .subscribe({
+        this.studentService.UpdateDocumentStatus(fd)
+          .pipe(finalize(() => this.stopLoader(startTime)))
+          .subscribe({
 
-          next: (data: any) => {
+            next: (data: any) => {
 
-            const msg = data?.item1?.[0]?.msg;
+              const msg = data?.item1?.[0]?.msg;
 
-            if (msg === 'Approved') {
+              if (msg === 'Approved') {
 
-              Swal.fire(
-                'Success!',
-                'Application accepted successfully!',
-                'success'
-              ).then(() => {
-                this.modalService.dismissAll();
-                this.getSEAllApplications();
-              });
+                Swal.fire(
+                  'Success!',
+                  'Application accepted successfully!',
+                  'success'
+                ).then(() => {
+                  this.modalService.dismissAll();
+                  this.getSEAllApplications();
+                });
 
-            } else if (msg === 'Disapproved') {
+              } else if (msg === 'Disapproved') {
 
-              Swal.fire(
-                'Rejected!',
-                'The Document was rejected.',
-                'info'
-              ).then(() => {
-                window.location.reload();
-              });
+                Swal.fire(
+                  'Rejected!',
+                  'The Document was rejected.',
+                  'info'
+                ).then(() => {
+                  window.location.reload();
+                });
 
-            } else {
+              } else {
+
+                Swal.fire(
+                  'Error!',
+                  'Failed to accept application.',
+                  'error'
+                ).then(() => {
+                  window.location.reload();
+                });
+
+              }
+
+            },
+
+            error: () => {
 
               Swal.fire(
                 'Error!',
-                'Failed to accept application.',
+                'An error occurred while trying to accept the application.',
                 'error'
               ).then(() => {
                 window.location.reload();
@@ -1616,27 +1793,13 @@ approveDocument(FileName: string, DocumentName: any, ApplicationId: any, Action:
 
             }
 
-          },
+          });
 
-          error: () => {
+      }
 
-            Swal.fire(
-              'Error!',
-              'An error occurred while trying to accept the application.',
-              'error'
-            ).then(() => {
-               window.location.reload();
-              });
+    });
 
-          }
-
-        });
-
-    }
-
-  });
-
-}
+  }
   /**
    * Handles the rejection logic for a specific document
    * @param docType string identifier for the document type

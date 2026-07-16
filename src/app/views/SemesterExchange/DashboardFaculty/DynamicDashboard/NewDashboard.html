@@ -175,6 +175,7 @@
                 <!-- Common columns -->
                 <!-- <ngx-datatable-column name="App. ID" prop="applicationId" [width]="80"></ngx-datatable-column> -->
                 <ngx-datatable-column name="Student Name" prop="studentName" [width]="20"></ngx-datatable-column>
+                <ngx-datatable-column name="Application Date" prop="createdOn" [width]="50"></ngx-datatable-column>
                 <ngx-datatable-column name="Reg. No" prop="registrationNo" [width]="20"></ngx-datatable-column>
                 <ngx-datatable-column name="Contact No" prop="phoneNumber" [width]="20"></ngx-datatable-column>
                 <ngx-datatable-column name="CGPA" prop="cgpa" [width]="20"></ngx-datatable-column>
@@ -255,6 +256,7 @@
                 [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true">
 
                 <ngx-datatable-column name="Student Name" prop="studentName" [width]="20"></ngx-datatable-column>
+                <ngx-datatable-column name="Application Date" prop="createdOn" [width]="50"></ngx-datatable-column>
                 <ngx-datatable-column name="Reg. No" prop="registrationNo" [width]="20"></ngx-datatable-column>
                 <ngx-datatable-column name="CGPA" prop="cgpa" [width]="20"></ngx-datatable-column>
                 <ngx-datatable-column name="StageICount" prop="uploadedStageIDocumentCount"
@@ -337,6 +339,7 @@
             [scrollbarH]="true">
             <!-- <ngx-datatable-column name="App. ID" prop="applicationId" [width]="80"></ngx-datatable-column> -->
             <ngx-datatable-column name="Student Name" prop="studentName" [width]="80"></ngx-datatable-column>
+            <ngx-datatable-column name="Application Date" prop="createdOn" [width]="50"></ngx-datatable-column>
             <ngx-datatable-column name="Reg. No" prop="registrationNo" [width]="80"></ngx-datatable-column>
             <ngx-datatable-column name="CGPA" prop="cgpa" [width]="80"></ngx-datatable-column>
             <ngx-datatable-column name="UploadedDocumentCount" prop="uploadedDocumentCount"
@@ -456,8 +459,8 @@
             <ngx-datatable class="bootstrap table table-striped material" [rows]="FilterAllHODApplications"
                 [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
                 [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true">
-
-                <ngx-datatable-column name="App. Id" prop="applicationId" [width]="60"></ngx-datatable-column>
+                <ngx-datatable-column name="Application Date" prop="createdOn" [width]="50"></ngx-datatable-column>
+                <!-- <ngx-datatable-column name="App. Id" prop="applicationId" [width]="60"></ngx-datatable-column> -->
                 <ngx-datatable-column name="Student Name" prop="studentName" [width]="60"></ngx-datatable-column>
                 <ngx-datatable-column name="Reg. No" prop="registrationNo" [width]="60"></ngx-datatable-column>
                 <ngx-datatable-column name="CGPA" prop="cgpa" [width]="60"></ngx-datatable-column>
@@ -599,7 +602,7 @@
                 [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
                 [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true">
 
-                <ngx-datatable-column name="App. ID" prop="applicationId" [width]="50"></ngx-datatable-column>
+                <ngx-datatable-column name="Application Date" prop="createdOn" [width]="50"></ngx-datatable-column>
                 <ngx-datatable-column name="Student Name" prop="studentName" [width]="50"></ngx-datatable-column>
                 <ngx-datatable-column name="Reg. No" prop="registrationNo" [width]="50"></ngx-datatable-column>
                 <ngx-datatable-column name="CGPA" prop="cgpa" [width]="80"></ngx-datatable-column>
@@ -619,14 +622,11 @@
                         <ng-container *ngIf="row.dealingAuthority; else noCounsellors">
                             <span class="badge bg-success">{{ row.dealingAuthority }}</span>
                             <br />
-                            <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToCounsellor(row)">
-                                Change</button>
+                            <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToCounsellor(row)"> Change</button>
                         </ng-container>
                         <ng-template #noCounsellors>
-                            <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToCounsellor(row)"
-                                [disabled]="row.dealingAuthority?.length > 0">
-                                <i class="bi bi-send me-1"></i>Assign Faculty
-                            </button>
+                            <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToCounsellor(row)" [disabled]="row.dealingAuthority?.length > 0">
+                                <i class="bi bi-send me-1"></i>Assign Faculty </button>
                         </ng-template>
                     </ng-template>
                 </ngx-datatable-column>
@@ -1480,7 +1480,9 @@
 
                 <select class="form-select" formControlName="UniversitySelected">
 
-                    <option value=""> Select University </option>
+                    <option [ngValue]="null" disabled selected>
+        Select University
+    </option>
 
                     <option *ngIf="UniversityOption1" [value]="UniversityOption1">
                         {{ UniversityOption1 }}
@@ -1641,5 +1643,79 @@
                 </table>
             </div>
         </div>
+    </div>
+</ng-template>
+
+
+
+
+
+<!-- ─── Accept Modal  ──────────────────────────────────────── -->
+<ng-template #ForwardToUIDModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">
+            <i class="bi bi-pencil-square me-2"></i>
+           Forward Application To User
+        </h5>
+
+        <button type="button" class="btn-close" (click)="modal.dismiss()">
+        </button>
+    </div>
+
+    <div class="modal-body">
+        <form [formGroup]="ForwardToUIDForm" (ngSubmit)="submitForwardToUIDForm()" novalidate>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label"> Application ID: </label>
+                    <input type="text" class="form-control" [value]="this.SelectedAID" disabled />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"> Registration Number: </label>
+                    <input type="text" class="form-control" [value]="this.SelectedRegNo" disabled />
+                </div>
+            </div>
+        
+            <div class="mb-3">
+                <label class="form-label"> Select Employee <span class="text-danger">*</span>
+                </label>
+        
+                <input type="text" class="form-control" [formControl]="employeeControl3" (input)="onInput3()"
+                    (keydown)="onKeydown3($event)" (focus)="showSuggestions3=true" (blur)="hideSuggestions3()"
+                    autocomplete="off" placeholder="Search Faculty">
+        
+                <div *ngIf="showSuggestions3 && filteredEmployeesData3?.length"
+                    class="position-absolute bg-white border rounded shadow-sm w-100" style="
+                        max-height:250px;
+                        overflow-y:auto;
+                        z-index:9999;
+                      ">
+        
+                    <div *ngFor="
+                          let emp of filteredEmployeesData3;
+                          let i=index
+                        " class="p-2 border-bottom cursor-pointer" [class.bg-light]="
+                          i===activeSuggestionIndex3
+                        " (mousedown)="selectEmployee3(emp)">
+        
+                        {{ emp.employeeName }}
+                        ({{ emp.employeeCode }})
+        
+                    </div>
+        
+                </div>
+        
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
+                        Cancel
+                    </button>
+        
+                    <button type="submit" class="btn btn-success" [disabled]="!isForwardToUIDFormSubmitted">
+                        <i class="bi bi-check-circle me-1"></i>
+                        Accept Application
+                    </button>
+                </div>
+            </div>
+        
+        </form>
     </div>
 </ng-template>

@@ -1,12 +1,7 @@
-<div class="dropdown">
+<div class="dropdown p-3 mt-2 ">
 
-    <button
-        class="btn btn-light dropdown-toggle shadow-sm"
-        type="button"
-        data-bs-toggle="dropdown">
-
-        <i class="bi bi-list"></i>
-        MOU Menu
+    <button class="btn btn-light dropdown-toggle shadow-sm" type="button" data-bs-toggle="dropdown">
+        <i class="bi bi-list"></i> MOU Menu
 
     </button>
 
@@ -14,10 +9,7 @@
 
         <li *ngFor="let menu of menus">
 
-            <a
-                *ngIf="menu.visible"
-                class="dropdown-item"
-                (click)="navigate(menu)">
+            <a *ngIf="menu.visible" class="dropdown-item" (click)="navigate(menu)">
 
                 <i [class]="menu.icon + ' me-2'"></i>
 

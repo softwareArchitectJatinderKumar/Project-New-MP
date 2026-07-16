@@ -7,6 +7,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { FooterComponent } from './footer/footer.component';
 import { PhysioHeaderComponent } from './header/header.component';
+import { MouMenuModule } from '../pages/Mou-Menu-Bar/mou-menu.module';
 
 import { ContentAnimateDirective } from '../../core/content-animate/content-animate.directive';
 
@@ -29,6 +30,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     CommonModule,
     RouterModule,
     FormsModule,
+    MouMenuModule,
     NgbDropdownModule,
     NgbCollapseModule,
     PerfectScrollbarModule,

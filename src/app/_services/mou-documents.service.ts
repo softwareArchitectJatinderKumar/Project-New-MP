@@ -498,4 +498,16 @@ downloadMOUFile(fileUrl: string): Observable<Blob> {
     
     
   }
+    GetAllCategories(): Observable<any> {
+       let authToken = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + authToken)
+    return this.http.get(
+      //  'https://localhost:7135/api/Mou/MouActionTakenDocumentsOperations',
+      AUTH_API+ 'api/Mou/GetMouCategoriesProperties',
+      { headers }
+    );
+    
+    
+  }
 }

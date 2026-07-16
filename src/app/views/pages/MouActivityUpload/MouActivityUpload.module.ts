@@ -18,6 +18,7 @@ import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 // Ng-select
 import { NgSelectModule } from '@ng-select/ng-select';
 import { MaterialModule } from 'src/material.module';
+import { MouMenuModule } from '../Mou-Menu-Bar/mou-menu.module';
 const routes: Routes = [
   {
     path: '',
@@ -44,7 +45,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     NgbModule,
     ReactiveFormsModule,
     NgSelectModule,
-    MaterialModule
+    MaterialModule,
+    MouMenuModule
 
     
 

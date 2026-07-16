@@ -455,6 +455,26 @@ calculateScrollWidth(): void {
   }
   selectedSchoolDivision: any = '0';
   selectedSchoolDivision2: any = '0';
+  selectedSchoolDivision3: any = '0';
+  selectedMouCategory: string = '0';
+  selectedMouCategory2: string = '0';
+  selectedMouCategory3: string = '0';
+  mouCategories: string[] = [];
+
+  GetAllCategories(): void {
+    this.mouDocumentsService.GetAllCategories().subscribe({
+      next: response => {
+        if (response.item1 && response.item1.length > 0) {
+          this.mouCategories = [...response.item1];
+        } else {
+          this.mouCategories = [];
+          this.showNoDataFoundMessage = true;
+          this.isLoginFailed = true;
+        }
+      },
+      error: err => { this.LoginFailed(err); }
+    });
+  }
 
   setSchoolDivision(event: any) {
     const selectedId = event.target.value;
@@ -867,6 +887,18 @@ calculateScrollWidth(): void {
   @ViewChild('ViewRenewedMouDetailsModal') ViewRenewedMouDetailsModal: TemplateRef<any>;
   renewedMouDocumentDetails: any[] = [];
 
+  onCategoryChange(event: any): void {
+    this.applyFiltersTab1();
+  }
+
+  onCategory2Change(event: any): void {
+    this.applyFiltersTab2();
+  }
+
+  onCategory3Change(event: any): void {
+    this.applyFiltersTab3();
+  }
+
   onStatusChangeTab1(event: any): void {
     this.applyFiltersTab1();
   }
@@ -1139,47 +1171,71 @@ calculateScrollWidth(): void {
     this.applyFiltersTab3();
   }
 
-  applyFiltersTab3(): void {
-    // First filter by status
+  onSchoolDivisionChangeTab3(event: any): void {
+    this.applyFiltersTab3();
+  }
 
-    let filtered = this.MouActivityAssignedOthersMaster.filter(item => {
-      if (this.Tab3statusFilter === 'all') {
-        return true;
-      }
-
-      if (this.Tab3statusFilter === 'active') {
-        return item.mouStatus === 'Active';
-      } else if (this.Tab3statusFilter === 'expired') {
-        return item.mouStatus === 'Expired';
-      } else if (this.Tab3statusFilter === 'renewed') {
-        return item.mouStatus === 'Renewed';
-      }
+  private matchSchoolDivision3(item: any): boolean {
+    if (this.selectedSchoolDivision3 === '0' || this.selectedSchoolDivision3 === '-1') {
       return true;
-    });
+    }
+    if (!item.schoolDivisionId) {
+      return false;
+    }
+    const divisions = item.schoolDivisionId
+      .toString()
+      .split(',')
+      .map((x: string) => x.trim());
+    return divisions.includes(this.selectedSchoolDivision3.toString());
+  }
+
+  applyFiltersTab3(): void {
+    let filtered = this.MouActivityAssignedOthersMaster.filter(
+      x => x.actionAssignedBy !== this.EmployeeCode
+    );
+
+    // Filter by School Division
+    filtered = filtered.filter(item => this.matchSchoolDivision3(item));
+
+    // Filter by Status
+    if (this.Tab3statusFilter !== 'all') {
+      filtered = filtered.filter(item => {
+        if (this.Tab3statusFilter === 'active') {
+          return item.mouStatus === 'Active';
+        } else if (this.Tab3statusFilter === 'expired') {
+          return item.mouStatus === 'Expired';
+        } else if (this.Tab3statusFilter === 'renewed') {
+          return item.mouStatus === 'Renewed';
+        }
+        return true;
+      });
+    }
 
     // Then apply search filter if exists
-    const query = this.searchQuery.trim().toLowerCase();
+    const query = (this.searchTextTab3 || '').trim().toLowerCase();
     if (query) {
+      const normalizedQuery = query.replace(/\s+/g, '');
       filtered = filtered.filter(item => {
-        return Object.entries(item).some(([key, val]) => {
-          if (val !== null && val !== undefined) {
-            let valueString = String(val).toLowerCase();
-
-            // Special handling for mouid (Numeric & "MOU/x" String Comparison)
-            if (key === 'id') {
-              const numericId = Number(val);
-              if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
-                return true;
-              }
-            }
-
-            // General search for all other fields
-            return valueString.includes(query);
+        if (item.mouId != null) {
+          const oldId = item.mouId.toString().toLowerCase();
+          if (oldId.includes(normalizedQuery) || (`mou/${oldId}`).includes(normalizedQuery)) {
+            return true;
           }
-          return false;
+        }
+        if (item.newMouId != null) {
+          const newId = item.newMouId.toString().toLowerCase();
+          if (newId.includes(normalizedQuery) || (`mou/${newId}`).includes(normalizedQuery)) {
+            return true;
+          }
+        }
+        return Object.entries(item).some(([_, value]) => {
+          if (value == null) return false;
+          return String(value).toLowerCase().includes(normalizedQuery);
         });
       });
     }
+
+    filtered.sort((a, b) => b.id - a.id);
     this.filteredMouActivityAssignedOthers = filtered;
   }
 
@@ -1319,6 +1375,7 @@ calculateScrollWidth(): void {
         this.GetAllActivities();
         this.GetEmployeeData();
         this.setupEmployeeControl();
+        this.GetAllCategories();
       },
       error: _err => {
         this.LoginFailed(_err);
@@ -1571,7 +1628,7 @@ calculateScrollWidth(): void {
   }
 
   filterTab3() {
-    this.filteredMouActivityAssignedOthers = this.genericSearch(this.MouActivityAssignedOthersMaster, this.searchTextTab3);
+    this.applyFiltersTab3();
   }
 
   setSessionId(event: any) {

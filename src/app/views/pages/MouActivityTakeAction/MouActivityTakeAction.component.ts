@@ -639,6 +639,7 @@ uploadRequiredDocument(documentName: string, index: number) {
         this.storageService.saveUser(data);
         this.getAllPlannerSession();
         this.GetEmployeeDetails();
+        this.GetAllCategories();
       },
       error: _err => {
         this.LoginFailed(_err);
@@ -692,6 +693,28 @@ uploadRequiredDocument(documentName: string, index: number) {
   // master copy for Take Action tab
   MouActivityDocumentsMaster: any[] = [];
   Tab1StatusFilterTakeAction: string = 'all';
+  selectedMouCategory: string = '0';
+  mouCategories: string[] = [];
+
+  GetAllCategories(): void {
+    this.mouDocumentsService.GetAllCategories().subscribe({
+      next: response => {
+        if (response.item1 && response.item1.length > 0) {
+          this.mouCategories = [...response.item1];
+        } else {
+          this.mouCategories = [];
+          this.showNoDataFoundMessage = true;
+          this.isLoginFailed = true;
+        }
+      },
+      error: err => { this.LoginFailed(err); }
+    });
+  }
+
+
+  onCategoryChange(event: any): void {
+    this.applyFiltersTakeAction();
+  }
 
   onStatusChangeTakeAction(value: string): void {
     this.Tab1StatusFilterTakeAction = value;
@@ -709,6 +732,12 @@ uploadRequiredDocument(documentName: string, index: number) {
         if (status === 'expired') return mouStatus === 'expired';
         if (status === 'renewed') return mouStatus === 'renewed';
         return true;
+      });
+    }
+
+    if (this.selectedMouCategory && this.selectedMouCategory !== '0') {
+      filtered = filtered.filter(item => {
+        return item.mouCategory === this.selectedMouCategory || item.category === this.selectedMouCategory;
       });
     }
 

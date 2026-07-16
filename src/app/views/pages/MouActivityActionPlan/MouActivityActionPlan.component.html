@@ -1,4 +1,3 @@
-<app-mou-menu></app-mou-menu>
 <div class="container-fluid" id="ActivityPage" *ngIf="isLoginFailed==false; else loginFailed">
   <div class="row">
     <div class="col-6 grid-margin stretch-card">
@@ -526,7 +525,13 @@
                     <option value="all">All MOU</option>
                     <option value="active">Active</option>
                     <option value="expired">Expired</option>
-                    <!-- <option value="renewed">Renewed</option> -->
+                  </select>
+                </div>
+                <div class="col-sm-2 ">
+                  <select class="form-select fs-5 text-danger" [(ngModel)]="selectedSchoolDivision3"
+                    (change)="onSchoolDivisionChangeTab3($event)">
+                    <option value="0">All School / Division</option>
+                    <option *ngFor="let division of allSchoolDivisions" [value]="division.id">{{ division.schoolDivision }}</option>
                   </select>
                 </div>
                 <div class="col-sm-2">
@@ -534,7 +539,7 @@
                     placeholder="Search" />
                 </div>
 
-                <div class="col-sm-2"><label class="fs-5">Select Session:</label></div>
+                <div class="col-sm-2 text-end"><label class="fs-5 mt-1">Select Session:</label></div>
                 <div class="col-sm-2">
                   <select class="form-select fs-5 text-danger" [(ngModel)]="selectedPlannerSession"
                     (change)="setSessionId($event)">

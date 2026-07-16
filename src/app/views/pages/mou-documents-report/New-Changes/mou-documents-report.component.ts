@@ -54,24 +54,56 @@ export class MouDocumentsReportComponent implements OnInit {
     this.recordsPerPage = event.pageSize;
   }
 
-  filterData() {
-    const lowerCaseFilter = this.filterText.toLowerCase();
-    this.AllRenewedMouDetails = this.MouDocumentDetails.filter(item => {
-      return Object.entries(item).some(([key, val]) => {
-        if (val !== null && val !== undefined) {
-          const valueString = String(val).toLowerCase();
+  onCategoryChange(event: any): void {
+    this.applyFilters();
+  }
 
-          if (key === 'id') {
-            const numericId = Number(val);
-            if (!isNaN(numericId) && (numericId.toString().includes(lowerCaseFilter) || `mou/${numericId}`.includes(lowerCaseFilter))) {
-              return true;
-            }
-          }
-          return valueString.includes(lowerCaseFilter);
-        }
-        return false;
-      });
+  onCategory2Change(event: any): void {
+    this.filterData();
+  }
+
+  filterData() {
+    const lowerCaseFilter = (this.filterText || '').toLowerCase().trim();
+    
+    let baseRenewed = this.MouDocumentDetails.filter(item => {
+      return item.hasRenewal === true || item.hasRenewal === 'true';
     });
+
+    if (this.selectedSchoolDivision2 && this.selectedSchoolDivision2 !== '0') {
+      baseRenewed = baseRenewed.filter(item => {
+        if (!item.schoolDivisionInvolved) return false;
+        return item.schoolDivisionInvolved
+          .split(',')
+          .map((id: string) => id.trim())
+          .includes(this.selectedSchoolDivision2.toString());
+      });
+    }
+
+    if (this.selectedMouCategory2 && this.selectedMouCategory2 !== '0') {
+      baseRenewed = baseRenewed.filter(item => {
+        return item.mouCategory === this.selectedMouCategory2 || item.category === this.selectedMouCategory2;
+      });
+    }
+
+    if (lowerCaseFilter) {
+      baseRenewed = baseRenewed.filter(item => {
+        return Object.entries(item).some(([key, val]) => {
+          if (val !== null && val !== undefined) {
+            const valueString = String(val).toLowerCase();
+            if (key === 'id') {
+              const numericId = Number(val);
+              if (!isNaN(numericId) && (numericId.toString().includes(lowerCaseFilter) || `mou/${numericId}`.includes(lowerCaseFilter))) {
+                return true;
+              }
+            }
+            return valueString.includes(lowerCaseFilter);
+          }
+          return false;
+        });
+      });
+    }
+
+    this.AllRenewedMouDetails = baseRenewed;
   }
 
   // ---------------------------------------------------------------------
@@ -242,6 +274,26 @@ export class MouDocumentsReportComponent implements OnInit {
   searchQuery: any = '';
   statusFilter: string = 'all';
   approvalFilter: string = 'all';
+  selectedSchoolDivision: any = '0';
+  selectedSchoolDivision2: any = '0';
+  selectedMouCategory: string = '0';
+  selectedMouCategory2: string = '0';
+  mouCategories: string[] = [];
+
+  GetAllCategories(): void {
+    this.mouDocumentsService.GetAllCategories().subscribe({
+      next: response => {
+        if (response.item1 && response.item1.length > 0) {
+          this.mouCategories = [...response.item1];
+        } else {
+          this.mouCategories = [];
+          this.showNoDataFoundMessage = true;
+          this.isLoginFailed = true;
+        }
+      },
+      error: err => { this.LoginFailed(err); }
+    });
+  }
 
   ResponsiblePerson: any = '';
   columns: any;
@@ -299,6 +351,7 @@ export class MouDocumentsReportComponent implements OnInit {
         this.GetAllUploadsDetails();
         this.GetEmployeeDetails();
         this.GetEmployeeData();
+        this.GetAllCategories();
       },
       error: err => {
         this.LoginFailed(err);
@@ -429,6 +482,14 @@ export class MouDocumentsReportComponent implements OnInit {
     this.applyFilters();
   }
 
+  onSchoolDivisionChange(event: any): void {
+    this.applyFilters();
+  }
+
+  onSchoolDivision2Change(event: any): void {
+    this.filterData();
+  }
+
   applyFilters(): void {
     // Filter by MOU lifecycle status
     let filtered = this.MouDocumentDetails.filter(item => {
@@ -458,6 +519,24 @@ export class MouDocumentsReportComponent implements OnInit {
       }
       return true;
     });
+
+    // Filter by School Division
+    if (this.selectedSchoolDivision && this.selectedSchoolDivision !== '0') {
+      filtered = filtered.filter(item => {
+        if (!item.schoolDivisionInvolved) return false;
+        return item.schoolDivisionInvolved
+          .split(',')
+          .map((id: string) => id.trim())
+          .includes(this.selectedSchoolDivision.toString());
+      });
+    }
+
+    // Filter by Category
+    if (this.selectedMouCategory && this.selectedMouCategory !== '0') {
+      filtered = filtered.filter(item => {
+        return item.mouCategory === this.selectedMouCategory || item.category === this.selectedMouCategory;
+      });
+    }
 
     // Free text search
     const query = this.searchQuery.trim().toLowerCase();
@@ -492,9 +571,7 @@ export class MouDocumentsReportComponent implements OnInit {
   }
 
   getRenewedCount(): number {
-    this.AllRenewedMouDetails = this.MouDocumentDetails.filter(item => {
-      return item.hasRenewal === true || item.hasRenewal === 'true';
-    });
+    this.filterData();
     return this.AllRenewedMouDetails.length;
   }
 

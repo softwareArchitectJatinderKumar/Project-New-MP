@@ -129,13 +129,37 @@ initializeTopScrollbar(): void {
 
   statusFilter: string = 'all';
   approvalFilter: string = 'all';
-  //   onApprovalFilterChange(event: any): void {
-  //   this.applyFilters();
-  // }
+  selectedSchoolDivision: any = '0';
+  selectedMouCategory: string = '0';
+  mouCategories: string[] = [];
+
+  GetAllCategories(): void {
+    this.mouDocumentsService.GetAllCategories().subscribe({
+      next: response => {
+        if (response.item1 && response.item1.length > 0) {
+          this.mouCategories = [...response.item1];
+        } else {
+          this.mouCategories = [];
+          this.showNoDataFoundMessage = true;
+          this.isLoginFailed = true;
+        }
+      },
+      error: err => { this.LoginFailed(err); }
+    });
+  }
 
   onApprovalFilterChange(): void {
     this.applyFilters();
   }
+
+  onSchoolDivisionChange(event: any): void {
+    this.applyFilters();
+  }
+
+  onCategoryChange(event: any): void {
+    this.applyFilters();
+  }
+
   applyFilters(): void {
 
     let filtered = [...this.allMouActivityData];
@@ -167,6 +191,24 @@ initializeTopScrollbar(): void {
 
       default:
         break;
+    }
+
+    // School Division Filter
+    if (this.selectedSchoolDivision && this.selectedSchoolDivision !== '0') {
+      filtered = filtered.filter(item => {
+        if (!item.schoolDivisionInvolved) return false;
+        return item.schoolDivisionInvolved
+          .split(',')
+          .map((id: string) => id.trim())
+          .includes(this.selectedSchoolDivision.toString());
+      });
+    }
+
+    // Category Filter
+    if (this.selectedMouCategory && this.selectedMouCategory !== '0') {
+      filtered = filtered.filter(item => {
+        return item.mouCategory === this.selectedMouCategory || item.category === this.selectedMouCategory;
+      });
     }
 
     // Search
@@ -303,6 +345,8 @@ setTimeout(() => {
         this.storageService.saveUser(data);
         this.getAllPlannerSession();
         this.GetEmployeeDetails();
+        this.GetAllActivities();
+        this.GetAllCategories();
 
         (<HTMLInputElement>document.getElementById('stMain')).innerHTML = '<span class="themeClr"> MOU  </span> Activities <span class="themeClr"> Approvals</span>';
         (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';

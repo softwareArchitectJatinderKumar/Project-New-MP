@@ -29,7 +29,7 @@ import { ColumnMode } from '@swimlane/ngx-datatable';
 })
 export class MouDocumentsUploadsComponent implements OnInit {
 
-newMouid: any;
+  newMouid: any;
 
 
   getRecordsForRenewedPage(): any[] {
@@ -42,6 +42,8 @@ newMouid: any;
 
   statusFilter: string = 'all';
   searchQuery: any = '';
+  selectedSchoolDivision: any = '0';
+  selectedSchoolDivision3: any = '0';
 
   @ViewChild('ViewRenewedMouDetailsModal') ViewRenewedMouDetailsModal: TemplateRef<any>;
   renewedMouDocumentDetails: any[] = [];
@@ -52,48 +54,133 @@ newMouid: any;
     this.applyFilters();
   }
 
+  onSchoolDivisionChange(event: any): void {
+    this.applyFilters();
+  }
+
+  onSchoolDivision3Change(event: any): void {
+    this.applyFilters();
+  }
+
+  onCategoryChange(event: any): void {
+    this.applyFilters();
+  }
+
+
+
+  onCategory3Change(event: any): void {
+    this.applyFilters();
+  }
+
   applyFilters(): void {
-    // First filter by status
-    let filtered = this.MouDocumentsData.filter(item => {
-      if (this.statusFilter === 'all') {
+    const lowerCaseFilter = (this.filterText || '').toLowerCase().trim();
+
+    // 1. Filter Tab 2 (filteredMouDocumentsData)
+    let tempTab2 = [...this.MouDocumentsData];
+
+    // Filter by Status
+    if (this.statusFilter !== 'all') {
+      tempTab2 = tempTab2.filter(item => {
+        if (this.statusFilter === 'active') {
+          return item.mouStatus === 'Active';
+        } else if (this.statusFilter === 'expired') {
+          return item.mouStatus === 'Expired' && item.renewalCount == null && item.renewalCount != 0;
+        } else if (this.statusFilter === 'renewed') {
+          return item.renewalCount > 0 || (item.renewalCount !== 'null' && item.renewalCount !== null && item.renewalCount !== undefined && item.renewalCount !== '0');
+        }
         return true;
-      }
+      });
+    }
 
-      if (this.statusFilter === 'active') {
-        return item.mouStatus === 'Active';
-      } else if (this.statusFilter === 'expired') {
-        return item.mouStatus === 'Expired' && item.renewalCount == null && item.renewalCount != 0  ;
-      } else if (this.statusFilter === 'renewed') {
-        return item.renewalCount > 0 || item.renewalCount !== 'null' && item.renewalCount !== null && item.renewalCount !== undefined && item.renewalCount !== '0';
-      }
-      return true;
-    });
+    // Filter by School Division
+    if (this.selectedSchoolDivision && this.selectedSchoolDivision !== '0') {
+      tempTab2 = tempTab2.filter(item => {
+        if (!item.schoolDivisionInvolved) return false;
+        return item.schoolDivisionInvolved
+          .split(',')
+          .map((id: string) => id.trim())
+          .includes(this.selectedSchoolDivision.toString());
+      });
+    }
 
-    // Then apply search filter if exists
-    const query = this.searchQuery.trim().toLowerCase();
-    if (query) {
-      filtered = filtered.filter(item => {
+    // Filter by Category
+
+    // Category Filter
+    if (this.selectedMouCategory) {
+      tempTab2 = tempTab2.filter(item =>
+        item.mouCategory === this.selectedMouCategory.items
+      );
+    }
+    // if (this.selectedMouCategory && this.selectedMouCategory !== '0') {
+    //   tempTab2 = tempTab2.filter(item => {
+    //     return item.mouCategory === this.selectedMouCategory || item.category === this.selectedMouCategory;
+    //   });
+    // }
+
+    // Filter by search text
+    if (lowerCaseFilter) {
+      tempTab2 = tempTab2.filter(item => {
         return Object.entries(item).some(([key, val]) => {
           if (val !== null && val !== undefined) {
             let valueString = String(val).toLowerCase();
-
-            // Special handling for mouid (Numeric & "MOU/x" String Comparison)
             if (key === 'id') {
               const numericId = Number(val);
-              if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
+              if (!isNaN(numericId) && (numericId.toString().includes(lowerCaseFilter) || `mou/${numericId}`.includes(lowerCaseFilter))) {
                 return true;
               }
             }
-
-            // General search for all other fields
-            return valueString.includes(query);
+            return valueString.includes(lowerCaseFilter);
           }
           return false;
         });
       });
     }
 
-    this.filteredMouDocumentsData = filtered;
+    this.filteredMouDocumentsData = tempTab2;
+
+    // 2. Filter Tab 3 (AllRenewedMouDetails)
+    let tempTab3 = this.MouDocumentsData.filter(item => {
+      return item.renewalCount > 0 || (item.renewalCount !== 'null' && item.renewalCount !== null && item.renewalCount !== undefined && item.renewalCount !== '0');
+    });
+
+    // Filter by School Division
+    if (this.selectedSchoolDivision3 && this.selectedSchoolDivision3 !== '0') {
+      tempTab3 = tempTab3.filter(item => {
+        if (!item.schoolDivisionInvolved) return false;
+        return item.schoolDivisionInvolved
+          .split(',')
+          .map((id: string) => id.trim())
+          .includes(this.selectedSchoolDivision3.toString());
+      });
+    }
+
+    // Filter by Category
+    if (this.selectedMouCategory3 && this.selectedMouCategory3 !== '0') {
+      tempTab3 = tempTab3.filter(item => {
+        return item.mouCategory === this.selectedMouCategory3 || item.category === this.selectedMouCategory3;
+      });
+    }
+
+    // Filter by search text
+    if (lowerCaseFilter) {
+      tempTab3 = tempTab3.filter(item => {
+        return Object.entries(item).some(([key, val]) => {
+          if (val !== null && val !== undefined) {
+            let valueString = String(val).toLowerCase();
+            if (key === 'id') {
+              const numericId = Number(val);
+              if (!isNaN(numericId) && (numericId.toString().includes(lowerCaseFilter) || `mou/${numericId}`.includes(lowerCaseFilter))) {
+                return true;
+              }
+            }
+            return valueString.includes(lowerCaseFilter);
+          }
+          return false;
+        });
+      });
+    }
+
+    this.AllRenewedMouDetails = tempTab3;
   }
 
   getActiveCount(): number {
@@ -107,64 +194,60 @@ newMouid: any;
       return item.mouStatus === 'Expired';
     }).length;
   }
-  AllRenewedMouDetails :any[] = [];
+  AllRenewedMouDetails: any[] = [];
   getRenewedCount(): number {
-    this.AllRenewedMouDetails = this.MouDocumentsData.filter(item => {
-      return item.renewalCount >0  || item.renewalCount != null && item.renewalCount !== undefined && item.renewalCount !== '0' && item.renewalCount !== 'null';
-    });
-    return this.MouDocumentsData.filter(item => {
-      return item.renewalCount >0  || item.renewalCount != null && item.renewalCount !== undefined && item.renewalCount !== '0' && item.renewalCount !== 'null';
-    }).length;
+    this.applyFilters();
+    return this.AllRenewedMouDetails.length;
   }
 
-   onDownloadFile(remoteUrl: string): void {
-      swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); }});
-  
-      this.mouDocumentsService.downloadMOUFile(remoteUrl).subscribe({
-        next: (blob: Blob) => {
-          const downloadUrl = window.URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = downloadUrl;
-  
-          const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
-          link.download = fileName;
-  
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(downloadUrl);
-  
-          swal.close();
-        },
-        error: async (err) => {
-          swal.close();
-          if (err.error instanceof Blob) {
-            const errorMsg = JSON.parse(await err.error.text());
-            swal.fire('Error', errorMsg.message || 'Download failed', 'error');
-          } else {
-            swal.fire('Error', 'Could not connect to the server', 'error');
-          }
+  onDownloadFile(remoteUrl: string): void {
+    swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
+
+    this.mouDocumentsService.downloadMOUFile(remoteUrl).subscribe({
+      next: (blob: Blob) => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+
+        const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        swal.close();
+      },
+      error: async (err) => {
+        swal.close();
+        if (err.error instanceof Blob) {
+          const errorMsg = JSON.parse(await err.error.text());
+          swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+        } else {
+          swal.fire('Error', 'Could not connect to the server', 'error');
         }
-      });
-    }
+      }
+    });
+  }
 
   OpenAllMouRenewalHistory(row: any): void {
     this.mouId = row.id;
-    this.newMouid= row.newMouId;
+    this.newMouid = row.newMouId;
     this.getRenewedMouDetails(row.id);
-    
-     this.modalService.open(this.ViewRenewedMouDetailsModal,  { size: 'xl', windowClass: 'modal-xl' ,backdrop: 'static'} ).result.then(() => {
+
+    this.modalService.open(this.ViewRenewedMouDetailsModal, { size: 'xl', windowClass: 'modal-xl', backdrop: 'static' }).result.then(() => {
       setTimeout(() => {
-    window.dispatchEvent(new Event('resize'));
-  }, 200);
+        window.dispatchEvent(new Event('resize'));
+      }, 200);
       // Modal closed
-    }).catch(() => { 
+    }).catch(() => {
       window.location.reload()
 
     });
   }
 
- 
+
 
   getRenewedMouDetails(mouId: any): void {
     this.mouDocumentsService.GetRenewedMouDetails(mouId).subscribe((response) => {
@@ -179,10 +262,10 @@ newMouid: any;
 
 
 
-// added on 12-May-26 
-@ViewChild('ChangeSchoolDivisionModal') ChangeSchoolDivisionModal: TemplateRef<any>;
-CurrentSchool: any;
- mouForm: FormGroup;
+  // added on 12-May-26 
+  @ViewChild('ChangeSchoolDivisionModal') ChangeSchoolDivisionModal: TemplateRef<any>;
+  CurrentSchool: any;
+  mouForm: FormGroup;
   mouId: any;
   isRenewalMode: boolean = false;
   renewalFile: File | null = null;
@@ -191,7 +274,7 @@ CurrentSchool: any;
   renewalFileError: string = '';
   originalMouData: any = null;
 
-  
+
   onInput2() {
     const query = this.mouForm.get('lpuSpocName')?.value?.toLowerCase();
 
@@ -208,7 +291,7 @@ CurrentSchool: any;
   }
 
 
-   selectEmployee2(employee: Employee) {
+  selectEmployee2(employee: Employee) {
     // This updates the variables used in your console.log/HTML
     this.ResponsiblePerson = employee.employeeCode;
     this.AssignedToUid = employee.employeeCode;
@@ -229,13 +312,13 @@ CurrentSchool: any;
   }
 
 
-  
+
   onRenewFileSelected(event: any): void {
     const file = event.target.files[0];
     if (!file) {
       return;
     }
-    
+
     // Validate file type (PDF and Word documents only)
     const allowedTypes = [
       'application/pdf',
@@ -246,11 +329,11 @@ CurrentSchool: any;
       this.renewalFileError = 'Only PDF and Word documents are allowed.';
       return;
     }
-    
+
     this.renewalFile = file;
     this.renewalFileName = file.name;
     this.renewalFileError = '';
-    
+
     const reader = new FileReader();
     reader.onload = () => {
       const result = reader.result as string;
@@ -261,10 +344,10 @@ CurrentSchool: any;
     reader.readAsDataURL(file);
   }
 
-    onSubmitModal(): void {
+  onSubmitModal(): void {
     if (this.isRenewalMode) {
       this.onSubmitRenew();
-    } 
+    }
   }
 
   onSubmitRenew(): void {
@@ -284,25 +367,25 @@ CurrentSchool: any;
       });
       return;
     }
-    
+
     if (!this.renewalFile) {
       swal.fire('Error', 'Please upload a MOU document for renewal.', 'error');
       return;
     }
-    
+
     if (!this.renewalFileBase64) {
       swal.fire('Error', 'File is still being processed. Please try again.', 'error');
       return;
     }
-    
+
     const val = this.mouForm.getRawValue();
-    
+
     // Compute new MOU status based on dates
     let newMouStatus = 'Active';
     const today = new Date();
     const startDate = val.startDate ? new Date(val.startDate) : null;
     const endDate = val.isIndefinite ? null : (val.endDate ? new Date(val.endDate) : null);
-    
+
     if (val.isIndefinite) {
       newMouStatus = 'Active';
     } else if (startDate) {
@@ -314,7 +397,7 @@ CurrentSchool: any;
     } else {
       newMouStatus = 'Expired';
     }
-    
+
     // Prepare FormData for new MOU upload
     const formData = new FormData();
 
@@ -336,9 +419,9 @@ CurrentSchool: any;
     formData.append('LPUSpocName', val.lpuSpocName);
     formData.append('LPUSpocUID', val.lpuSpocUid);
     formData.append('LPUSpocEmail', val.lpuSpocEmail);
-   
+
     formData.append('CreatedBy', this.EmployeeCode);
-     
+
     swal.fire({
       title: 'Renew MOU',
       text: 'Are you sure you want to renew this MOU? This will create a new MOU and mark the old one as Renewed.',
@@ -351,10 +434,10 @@ CurrentSchool: any;
         this.mouDocumentsService.MouRenewalDetails(formData).subscribe({
           next: (data: any) => {
             const resultMsg = data.item1 && data.item1.length > 0 ? data.item1[0].msg : data.responseData;
-            if (resultMsg === 'success' ) {
-             swal.fire('Success', 'Renewed MOU.', 'success');
-             window.location.reload();
-            } else if( data.responseData == 'Failed') {
+            if (resultMsg === 'success') {
+              swal.fire('Success', 'Renewed MOU.', 'success');
+              window.location.reload();
+            } else if (data.responseData == 'Failed') {
               swal.fire('Error', 'Failed to create new MOU. Please try again.', 'error');
               window.location.reload();
             }
@@ -365,7 +448,7 @@ CurrentSchool: any;
         });
       }
     });
-    
+
   }
 
   // Helper for Template to check validation
@@ -393,7 +476,7 @@ CurrentSchool: any;
     return fieldNames[fieldName] || fieldName;
   }
 
-initForm() {
+  initForm() {
     this.mouForm = this.fb.group({
       mouId: [{ value: '', disabled: true }], // Locked field
       selectedDivisions: [[], [Validators.required]],
@@ -406,7 +489,7 @@ initForm() {
       spocContact: [''],
       lpuSpocName: ['', [Validators.required]], // Internal SPOC Name
       lpuSpocUid: ['', [Validators.required]],  // Internal SPOC UID
-      lpuSpocEmail: ['', [Validators.required, Validators.email]] ,// Internal SPOC Email
+      lpuSpocEmail: ['', [Validators.required, Validators.email]],// Internal SPOC Email
       remarks: ['', [Validators.required]] // Internal SPOC Email
     });
   }
@@ -590,6 +673,10 @@ initForm() {
   MouEndDate: string = ''; // Bound to End Date input
   isIndefiniteMou: boolean = false; // For Indefinite Mou checkbox
   moustatus: string = 'Expired';
+  mouCategory: string = '';
+  selectedMouCategory: any;
+  selectedMouCategory3: string = '0';
+  mouCategories: any;
   // Toggles the disabled state of the MouEndDate field and sets MOU status
   toggleEndDate(): void {
     if (this.isIndefiniteMou) {
@@ -652,7 +739,29 @@ initForm() {
         this.GetEmployeeDetails();
         this.GetAllActivities();
         this.GetEmployeeData();
-        
+        this.GetAllCategories();
+
+      },
+      error: err => {
+        this.LoginFailed(err);
+      }
+    });
+  }
+  GetAllCategories(): void {
+    this.mouDocumentsService.GetAllCategories().subscribe({
+      next: response => {
+        if (response.item1.length > 0) {
+
+          this.mouCategories = [
+            ...response.item1
+          ];
+
+
+        } else {
+          this.mouCategories = [];
+          this.showNoDataFoundMessage = true;
+          this.isLoginFailed = true;
+        }
       },
       error: err => {
         this.LoginFailed(err);
@@ -889,6 +998,7 @@ initForm() {
     formData.append('MouPartnerName', this.MouPartner);
     formData.append('FacultyName', this.EmployeeName);
     formData.append('MouStartDate', this.MouStartDate);
+    formData.append('MouCategory', this.mouCategory);
     formData.append('MouEndDate', this.MouEndDate.length > 0 ? this.MouEndDate : 'null');
     formData.append('MouStatus', this.moustatus);
     formData.append('FilePath', this.fileName);
@@ -950,7 +1060,7 @@ initForm() {
           this.filteredMouDocumentsData = this.MouDocumentsData;
           this.dataSource.data = this.filteredMouDocumentsData;
           this.showNoDataFoundMessage = this.filteredMouDocumentsData.length === 0;
-          
+
           this.isLoginFailed = false;
         } else {
           this.dataSource.data = this.MouDocumentsData = [];
@@ -969,29 +1079,7 @@ initForm() {
 
 
   filterData() {
-    const lowerCaseFilter = this.filterText.toLowerCase();
-
-    this.filteredMouDocumentsData = this.MouDocumentsData.filter(item => {
-      return Object.entries(item).some(([key, val]) => {
-        if (val !== null && val !== undefined) {
-          let valueString = String(val).toLowerCase();
-
-          if (key === 'id') {
-            const numericId = Number(val); // Convert mouid to a number
-
-            if (!isNaN(numericId) && (numericId.toString().includes(lowerCaseFilter) || `mou/${numericId}`.includes(lowerCaseFilter))) {
-              return true;
-            }
-          }
-
-          // General search for all other fields
-          return valueString.includes(lowerCaseFilter);
-        }
-        return false;
-      });
-    });
-
- 
+    this.applyFilters();
   }
 
 
@@ -1043,6 +1131,7 @@ initForm() {
       NewMouid: (item.newMouId ?? 'Disapproved'),//1
       OldMOUId: "MOU/" + (item.id ?? 'N/A'),//1
       'Mou Partner Name': item.mouPartnerName ?? 'N/A',//2
+      'Mou Category': item.mouCategory ?? item.category ?? 'N/A',
       'Mou Start Date': item.mouStartDate ?? 'N/A',//3
       'Mou End Date': item.mouEndDate ?? 'N/A',//4
       'Mou Status': item.mouStatus ?? 'N/A',//5
@@ -1084,7 +1173,7 @@ initForm() {
     link.click();
   }
 
- 
+
   formatDate(date: Date): string {
     const DateX = new Date(date).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
     return DateX;

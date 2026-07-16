@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
 
 export interface MouMenu {
   id: number;
@@ -14,57 +15,112 @@ export interface MouMenu {
   templateUrl: './mou-menu.component.html',
   styleUrls: ['./mou-menu.component.css']
 })
-export class MouMenuComponent {
+export class MouMenuComponent implements OnInit {
+  loginName: string = '';
+  employeeCode: string = '';
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router, 
+    private route: ActivatedRoute,
+    private mouDocumentsService: MouDocumentsService
+  ) { }
+
+  ngOnInit(): void {
+    this.extractLoginName();
+    this.checkMenuAccess();
+  }
+
+  extractLoginName(): void {
+    let activeRoute = this.route;
+    while (activeRoute.firstChild) {
+      activeRoute = activeRoute.firstChild;
+    }
+    const params = activeRoute.snapshot.params;
+    this.loginName = params['loginName'] || params['LoginName'] || '';
+
+    if (!this.loginName) {
+      const urlSegments = this.router.url.split('/');
+      if (urlSegments.length > 0) {
+        const lastSegment = urlSegments[urlSegments.length - 1];
+        if (lastSegment && !lastSegment.includes('?') && lastSegment !== 'home' && lastSegment !== '') {
+          this.loginName = lastSegment;
+        }
+      }
+    }
+  }
+
+  checkMenuAccess(): void {
+    this.mouDocumentsService.GetEmployeeDetails().subscribe({
+      next: response => {
+        if (response && response.item1 && response.item1.length > 0) {
+          this.employeeCode = response.item1[0].employeeCode ? response.item1[0].employeeCode.toString().trim() : '';
+        }
+        this.updateMenuVisibility();
+      },
+      error: () => {
+        this.updateMenuVisibility();
+      }
+    });
+  }
+
+  updateMenuVisibility(): void {
+    const allowedCodes = ['34350', '16865', '31309', '34589', '31930'];
+    const hasFullAccess = allowedCodes.includes(this.employeeCode);
+
+    this.menus.forEach(menu => {
+      if (hasFullAccess) {
+        menu.visible = true;
+      } else {
+        menu.visible = (menu.route === '/MouNewRequest' || menu.route === '/MouActivityTakeAction');
+      }
+    });
+  }
 
   menus: MouMenu[] = [
     {
       id: 1,
-      title: 'Home',
-      route: '/home',
+      title: 'New MOU Request ',
+      route: '/MouNewRequest',
       icon: 'bi bi-house-door-fill',
-      visible: true
-    },
-    {
-      id: 2,
-      title: 'New MOU Request',
-      route: '/new-mou-request',
-      icon: 'bi bi-file-earmark-plus-fill',
       visible: true
     },
     {
       id: 3,
       title: 'MOU Approval',
-      route: '/mou-approval',
+      route: '/MouApprovals',
       icon: 'bi bi-check-circle-fill',
       visible: true
     },
     {
       id: 4,
       title: 'MOU Plan Activity',
-      route: '/mou-plan-activity',
+      route: '/MouActivityPlan',
       icon: 'bi bi-calendar-event-fill',
       visible: true
     },
     {
       id: 5,
       title: 'MOU Take Action',
-      route: '/mou-take-action',
+      route: '/MouActivityTakeAction',
       icon: 'bi bi-lightning-charge-fill',
       visible: true
     },
     {
       id: 6,
       title: 'MOU Activity Approval',
-      route: '/mou-activity-approval',
+      route: '/MouActivityApprovals',
       icon: 'bi bi-clipboard-check-fill',
       visible: true
     }
   ];
 
   navigate(menu: MouMenu): void {
-    this.router.navigate([menu.route]);
+    this.extractLoginName();
+    if (this.loginName) {
+      this.router.navigate([menu.route, this.loginName]);
+    } else {
+      this.router.navigate([menu.route]);
+    }
   }
 }
 

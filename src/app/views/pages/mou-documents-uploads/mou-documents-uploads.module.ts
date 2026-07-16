@@ -22,6 +22,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
 };
 import { MouDocumentsUploadsComponent } from './mou-documents-uploads.component';
+import { MouMenuModule } from '../Mou-Menu-Bar/mou-menu.module';
 
 const routes: Routes = [
   {
@@ -47,7 +48,8 @@ const routes: Routes = [
     NgSelectModule,
     RouterModule.forChild(routes),
     ArchwizardModule,ReactiveFormsModule,
-    MaterialModule
+    MaterialModule,
+    MouMenuModule
 
 
   ],
