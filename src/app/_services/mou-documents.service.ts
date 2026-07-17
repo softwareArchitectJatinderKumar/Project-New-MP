@@ -30,7 +30,18 @@ export class MouDocumentsService {
 
   // added on 14-May-26
 
-
+    GetMouCategories(): Observable<any> {
+      let token = this.storageService.getUser();
+      let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
+      return this.http.get(
+        AUTH_API + 'api/Mou/GetMouCategoriesProperties',
+       {headers}
+      );
+  
+     
+    }
   GetRenewedMouDetails(Id: any): Observable<any> {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders()

@@ -56,18 +56,6 @@
 
 
                             <div class="row mb-4 mt-4">
-                                <div class="col-3 "><label class=" form-label">Select Mou Category </label></div>
-                                <div class="col-3">
-                                       <ng-select [(ngModel)]="SelectedMouCategory" name="SelectedMouCategory" [multiple]="false" placeholder="Select" (change)="changeCategory($event)">                                  
-                                                    <ng-option *ngFor="let category of AllMouCategories" [value]="category">
-                                                        {{ category.CategoryName }}
-                                                    </ng-option>                                            
-                                                </ng-select>
-                                    <div *ngIf="hasCategoryError" class="themeClr">Mou Category is Required
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-4 mt-4">
                                 <div class="col-3 "><label class=" form-label"> MOU Partner
                                         Organisation Name </label></div>
                                 <div class="col-3">
@@ -81,15 +69,18 @@
                                 </div>
 
                                 <div class="col-3">
-                                    <label class="form-label">SPOC Person Name <br />(MOU Partner
-                                        Organisation) </label>
+                                    <label class="form-label">MOU Category</label>
                                 </div>
-                                <div class="col-3 ">
-                                    <input type="text" class="form-control" [style]="{ width: '89%' }" name="SOPCName"
-                                        autocomplete="off" placeholder="Provide SOPC Name" required ngModel
-                                        [(ngModel)]="SOPCName" #sopcName="ngModel" />
-                                    <div *ngIf="sopcName.invalid && sopcName.touched" class="themeClr">
-                                        SPOC Person Name is required.
+                                <div class="col-3">
+                                    <select class="form-select text-dark" name="MouCategory" required
+                                        [(ngModel)]="mouCategory" #mouCategoryCtrl="ngModel" [style]="{ width: '89%' }">
+                                        <option value="" disabled selected>Select MOU Category</option>
+                                        <option *ngFor="let category of mouCategories" [value]="category">
+                                               {{ category.items }}
+                                            </option>
+                                    </select>
+                                    <div *ngIf="mouCategoryCtrl.invalid && mouCategoryCtrl.touched" class="themeClr">
+                                        MOU Category is required.
                                     </div>
                                 </div>
                             </div>
@@ -135,11 +126,39 @@
 
                             <div class="row mb-4 mt-5">
                                 <div class="col-3">
+                                    <label class="form-label">SPOC Person Name <br />(MOU Partner
+                                        Organisation) </label>
+                                </div>
+                                <div class="col-3 ">
+                                    <input type="text" class="form-control" [style]="{ width: '89%' }" name="SOPCName"
+                                        autocomplete="off" placeholder="Provide SOPC Name" required ngModel
+                                        [(ngModel)]="SOPCName" #sopcName="ngModel" />
+                                    <div *ngIf="sopcName.invalid && sopcName.touched" class="themeClr">
+                                        SPOC Person Name is required.
+                                    </div>
+                                </div>
+
+                                <div class="col-3">
+                                    <label class="form-label">SPOC Person Phone Number <br />(MOU Partner
+                                        Organisation)</label>
+                                </div>
+                                <div class="col-3 ">
+                                    <input type="number" class="form-control" [style]="{ width: '89%' }"
+                                        name="SOPCNumber" autocomplete="off" placeholder="Provide SOPC Phone Number"
+                                        required ngModel [(ngModel)]="SOPCNumber" #sopcNumber="ngModel" />
+                                    <div *ngIf="sopcNumber.invalid && sopcNumber.touched" class="themeClr">
+                                        <div *ngIf="sopcNumber.errors?.required">SPOC Person Phone Number is required.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4 mt-4">
+                                <div class="col-3">
                                     <label class="form-label">SPOC Person Email Id <br />(MOU Partner
                                         Organisation)</label>
                                 </div>
                                 <div class="col-3 ">
-
                                     <input type="email" class="form-control" [style]="{ width: '89%' }" name="SOPCEmail"
                                         autocomplete="off" placeholder="Provide SOPC Email Id" required
                                         pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" ngModel
@@ -147,24 +166,7 @@
                                     <div *ngIf="sopcEmail.invalid && sopcEmail.touched" class="themeClr">
                                         <div *ngIf="sopcEmail.errors?.required">SOPC Email Id is required.</div>
                                         <div *ngIf="sopcEmail.errors?.pattern">Invalid Email Id must be properly
-                                            formatted
-                                            and end with .com or .org.</div>
-                                    </div>
-
-
-                                </div>
-                                <div class="col-3">
-                                    <label class="form-label">SPOC Person Phone Number <br />(MOU Partner
-                                        Organisation)</label>
-                                </div>
-                                <div class="col-3 ">
-
-                                    <input type="number" class="form-control" [style]="{ width: '89%' }"
-                                        name="SOPCNumber" autocomplete="off" placeholder="Provide SOPC Phone Number"
-                                        required ngModel [(ngModel)]="SOPCNumber" #sopcNumber="ngModel" />
-                                    <div *ngIf="sopcNumber.invalid && sopcNumber.touched" class="themeClr">
-                                        <div *ngIf="sopcNumber.errors?.required">SPOC Person Phone Number is required.
-                                        </div>
+                                            formatted and end with .com or .org.</div>
                                     </div>
                                 </div>
                             </div>
@@ -252,9 +254,6 @@
                                     </select>
                                 </div>
                             </div>
-
-                            
-
                             <div class="row mb-4 mt-5 ">
                                 <div class="col-12 text-center ">
                                     <button type="submit" [disabled]="!myForm.valid"
@@ -276,38 +275,48 @@
                         <div class="card">
                             <div class="card-body">
                                 <h6 class="card-title d-flex justify-content-center fs-4 "> MOU Uploads Details</h6>
-                                <div class="col-12 d-flex justify-content-center">
-                                    <div class="col-sm-3 ">
-                                        <div class="mb-3 ms-5">
-                                            <button (click)="exportToExcel()" class="btn btn-dark ">Export to
-                                                Excel</button>
-                                        </div>
+                                <div class="row g-2 align-items-center justify-content-center mb-3">
+                                    <div class="col-md-2">
+                                        <button (click)="exportToExcel()" class="btn btn-dark w-100">Export to Excel</button>
                                     </div>
-                                    <div class="col-sm-3 ">
-                                
-                                        <select class="form-select" [(ngModel)]="statusFilter" (change)="onStatusChange($event)">
+                                    <div class="col-md-2">
+                                        <select class="form-select w-100" [(ngModel)]="statusFilter"
+                                            (change)="onStatusChange($event)">
                                             <option value="all">All MOU</option>
                                             <option value="active">Active</option>
                                             <option value="expired">Expired</option>
                                             <option value="renewed">Renewed</option>
                                         </select>
                                     </div>
-                                    <div class="col-sm-3 ">
-                                        <!-- <ng-select [items]="AllMouCategories" bindLabel="items" [(ngModel)]="SelectedMouCategory" placeholder="Select"
-                                                                                                                                                                                                    [multiple]="false" (change)="applyFilters()">
-                                                                                                                                                                                                </ng-select> -->
-                                         <ng-select [(ngModel)]="SelectedMouCategory" [multiple]="false" placeholder="Select Category"  class="w-50"
-                                            (change)="applyFilters()">                                    
-                                            <ng-option [value]="'All'">All</ng-option>                                    
-                                            <ng-option *ngFor="let category of AllMouCategories" [value]="category">
-                                                {{ category.CategoryName }}
-                                            </ng-option>                                    
-                                        </ng-select>  
-                                    
+                                    <div class="col-md-2">
+                                        <select class="form-select w-100" [(ngModel)]="selectedMouCategory"
+                                            (change)="onCategoryChange($event)">
+                                            <option value="0">All Categories</option>
+                                            <option *ngFor="let category of mouCategories" [value]="category">
+                                               {{ category.items }}
+                                            </option>
+                                        </select>
+
+                                        <select class="form-select text-dark" name="MouCategoryX" required
+                                        [(ngModel)]="mouCategoryX" #mouCategoryCtrl="ngModel" [style]="{ width: '89%' }">
+                                        <option value="" disabled selected>Select MOU Category</option>
+                                        <option *ngFor="let category of mouCategories" [value]="category">
+                                               {{ category.items }}
+                                            </option>
+                                    </select>
                                     </div>
-                                    <div class="col-sm-3 ">
+                                    <div class="col-md-3">
+                                        <select class="form-select w-100" [(ngModel)]="selectedSchoolDivision"
+                                            (change)="onSchoolDivisionChange($event)">
+                                            <option value="0">All School / Division</option>
+                                            <option *ngFor="let division of allSchoolDivisions" [value]="division.id">
+                                                {{ division.schoolDivision }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
                                         <input type="text" [(ngModel)]="filterText" (ngModelChange)="filterData()"
-                                            placeholder="Search by any Field Text " class="form-control" />
+                                            placeholder="Search by any Field Text " class="form-control w-100" />
                                     </div>
                                 </div>
 
@@ -341,8 +350,8 @@
                                         <thead>
                                             <tr>
                                                 <th class="form-label fs-6 ">New MOU Id </th>
-                                                <th class="form-label fs-6 ">Mou Category </th>
                                                 <th class="form-label fs-6 ">Old MOU Id </th>
+                                                <th class="form-label fs-6 ">Mou Category </th>
                                                 <th class="form-label fs-6 ">Renewwal </th>
                                                 <th class="form-label fs-6  ">Partner Organisation </th>
                                                 <th class="form-label fs-6 ">MOU Start Date</th>
@@ -363,17 +372,16 @@
                                                         *ngIf="DocumentRow.newMouId?.length >0; else NotApplicable">
                                                         <label class="form-label "> {{DocumentRow.newMouId}} </label>
                                                     </td>
-                                                    <td class="fw-bold fs-6 "
-                                                        *ngIf="DocumentRow.mouCategory?.length >0; else NotApplicable">
-                                                        <label class="form-label "> {{DocumentRow.mouCategory}} </label>
-                                                    </td>
                                                     <ng-template #NotApplicable>
                                                         <td class="fw-bold fs-6 text-info">
-                                                            Not Found
+                                                            Not Applicable
                                                         </td>
                                                     </ng-template>
                                                     <td class="fw-bold fs-6 ">
                                                         <label class="form-label  "> MOU/{{DocumentRow.id}} </label>
+                                                    </td>
+                                                    <td class="fw-bold fs-6 ">
+                                                        <label class="form-label  "> {{DocumentRow.mouCategory}} </label>
                                                     </td>
                                                     <!-- Renewal action  -->
                                                     <td class="fw-bold fs-6 "
@@ -541,17 +549,31 @@
                         <div class="card">
                             <div class="card-body">
                                 <h6 class="card-title d-flex justify-content-center fs-4 "> MOU Uploads Details</h6>
-                                <div class="col-12 d-flex justify-content-center">
-                                    <div class="col-sm-3 ">
-                                        <div class="mb-3 ms-5">
-                                            <button (click)="exportToExcel()" class="btn btn-dark ">Export to
-                                                Excel</button>
-                                        </div>
+                                <div class="row g-2 align-items-center justify-content-center mb-3">
+                                    <div class="col-md-2">
+                                        <button (click)="exportToExcel()" class="btn btn-dark w-100">Export to Excel</button>
                                     </div>
-                                     
-                                    <div class="col-sm-3 ">
-                                        <input type="text" [(ngModel)]="filterText"  name="filterText" (ngModelChange)="filterData()"
-                                            placeholder="Search by any Field Text " class="form-control" />
+                                    <div class="col-md-3">
+                                        <select class="form-select w-100" [(ngModel)]="selectedMouCategory3"
+                                            (change)="onCategory3Change($event)">
+                                            <option value="0">All Categories</option>
+                                            <option *ngFor="let cat of mouCategories" [value]="cat">
+                                                {{ cat }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select class="form-select w-100" [(ngModel)]="selectedSchoolDivision3"
+                                            (change)="onSchoolDivision3Change($event)">
+                                            <option value="0">All School / Division</option>
+                                            <option *ngFor="let division of allSchoolDivisions" [value]="division.id">
+                                                {{ division.schoolDivision }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" [(ngModel)]="filterText" (ngModelChange)="filterData()"
+                                            placeholder="Search by any Field Text " class="form-control w-100" />
                                     </div>
                                 </div>
 
@@ -583,7 +605,6 @@
                                         <thead>
                                             <tr>
                                                 <th class="form-label fs-6 ">New MOU Id </th>
-                                                <th class="form-label fs-6 ">Mou Category </th>
                                                 <th class="form-label fs-6 ">Old MOU Id </th>
                                                 <th class="form-label fs-6 ">Renewwal </th>
                                                 <th class="form-label fs-6  ">Partner Organisation </th>
@@ -609,16 +630,9 @@
                                                             Not Applicable
                                                         </td>
                                                     </ng-template>
-
-                                                    <td class="fw-bold fs-6 ">
-                                                        <label class="form-label  "> {{DocumentRow.mouCategory}} </label>
-                                                    </td>
-
-
                                                     <td class="fw-bold fs-6 ">
                                                         <label class="form-label  "> MOU/{{DocumentRow.id}} </label>
                                                     </td>
-                                                    
 
                                                     <td class="fw-bold fs-6 "
                                                         *ngIf="DocumentRow.mouStatus == 'Expired'  && DocumentRow.renewalCount ==null ;else NotPossible">

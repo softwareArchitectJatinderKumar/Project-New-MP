@@ -45,6 +45,7 @@ export class Stage1DocumentComponent implements OnChanges {
 
   private pendingFiles = new Map<FileSelectedEvent['key'], FileSelectedEvent>();
   private uploadingKeys = new Set<FileSelectedEvent['key']>();
+  private fileInputs = new Map<FileSelectedEvent['key'], HTMLInputElement>();
   private wasParentLoading = false;
 
   constructor(private cdr: ChangeDetectorRef) {}
@@ -75,11 +76,25 @@ export class Stage1DocumentComponent implements OnChanges {
   ];
 
   getFileName(field: keyof StudentApplication): string {
-    return (this.stuApplication?.[field] as string) ?? '';
+    const app = this.stuApplication as unknown as Record<string, unknown>;
+    if (!app) return '';
+    const direct = app[field as string];
+    if (typeof direct === 'string' && direct.trim()) return direct.trim();
+    const pascal = `${String(field).charAt(0).toUpperCase()}${String(field).slice(1)}`;
+    const alt = app[pascal];
+    return typeof alt === 'string' ? alt.trim() : '';
   }
 
-  hasFile(field: keyof StudentApplication): boolean {
-    return !!this.getFileName(field);
+  getUploadedPath(doc: { appField: keyof StudentApplication; documentName: string }): string {
+    const fromApp = this.getFileName(doc.appField);
+    if (fromApp) return fromApp;
+    const row = this.getStageDocument(doc.documentName);
+    const fromStage = row?.document ?? row?.filePath;
+    return typeof fromStage === 'string' && fromStage.trim() ? fromStage.trim() : '';
+  }
+
+  hasUploadedFile(doc: { appField: keyof StudentApplication; documentName: string }): boolean {
+    return !!this.getUploadedPath(doc);
   }
 
   viewFile(fileName: string): void {
@@ -107,8 +122,7 @@ export class Stage1DocumentComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isParentLoading']) {
       if (this.wasParentLoading && !this.isParentLoading) {
-        this.uploadingKeys.clear();
-        this.cdr.markForCheck();
+        this.finishActiveUploads();
       }
       this.wasParentLoading = this.isParentLoading;
     }
@@ -144,13 +158,13 @@ export class Stage1DocumentComponent implements OnChanges {
     this.fileSelected.emit(pending);
   }
 
-  async onFilePicked(event: Event, key: FileSelectedEvent['key']): Promise<void> {
-    const target = event.target as HTMLInputElement;
-    const raw = target.files?.[0];
+  async onFilePicked(event: Event, key: FileSelectedEvent['key'], input: HTMLInputElement): Promise<void> {
+    this.fileInputs.set(key, input);
+    const raw = input.files?.[0];
     if (!raw) return;
     if (raw.size > MAX_FILE_SIZE_BYTES) {
       Swal.fire({ title: 'File size exceeds 3MB. Please upload a smaller file.', icon: 'warning' });
-      target.value = '';
+      input.value = '';
       return;
     }
     const safeName = raw.name.replace(/[^a-zA-Z0-9._-]/g, '_');
@@ -161,15 +175,35 @@ export class Stage1DocumentComponent implements OnChanges {
       this.cdr.markForCheck();
     } catch {
       Swal.fire({ title: 'Failed to read file', icon: 'error' });
+      input.value = '';
     }
+  }
+
+  private finishActiveUploads(): void {
+    for (const key of [...this.uploadingKeys]) {
+      this.resetRowState(key);
+    }
+  }
+
+  private resetRowState(key: FileSelectedEvent['key']): void {
+    this.pendingFiles.delete(key);
+    this.uploadingKeys.delete(key);
+    const input = this.fileInputs.get(key);
+    if (input) input.value = '';
+    this.cdr.markForCheck();
   }
 
   private clearResolvedPendingFiles(): void {
     let changed = false;
     for (const doc of this.docKeys) {
-      if (this.hasFile(doc.appField)) {
+      if (this.hasUploadedFile(doc)) {
         if (this.pendingFiles.delete(doc.key)) changed = true;
         if (this.uploadingKeys.delete(doc.key)) changed = true;
+        const input = this.fileInputs.get(doc.key);
+        if (input?.value) {
+          input.value = '';
+          changed = true;
+        }
       }
     }
     if (changed) this.cdr.markForCheck();

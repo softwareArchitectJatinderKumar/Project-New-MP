@@ -146,6 +146,29 @@ export interface FileSelectedEvent {
   fileName: string;
 }
 
+export const UPLOADED_FILE_FIELD_BY_KEY: Record<FileSelectedEvent['key'], keyof StudentApplication> = {
+  fees: 'feesProofFileName',
+  resume: 'resumeFileName',
+  consent: 'consentLetterFileName',
+  passport: 'passportFileName',
+  english: 'englishTestDocumentFile',
+  affidavitPath: 'affidavitPath',
+  indeminityBondPath: 'indeminityBondPath',
+  offerLetterPath: 'offerLetterPath',
+  outBoundTicket: 'outBoundTicket',
+  returnTicketPath: 'returnTicketPath',
+  visaDocumentPath: 'visaDocumentPath',
+};
+
+export function patchUploadedFileName(
+  app: StudentApplication,
+  key: FileSelectedEvent['key'],
+  fileName: string,
+): StudentApplication {
+  const field = UPLOADED_FILE_FIELD_BY_KEY[key];
+  return field ? { ...app, [field]: fileName } : app;
+}
+
 export const ENGLISH_OPTIONS: SelectOption[] = [
   { value: '', label: 'Select' },
   { value: 'Applied', label: 'Applied' },

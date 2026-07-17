@@ -111,7 +111,7 @@
     <!-- ── Status-driven view (see getStudentDetail() / getApplicationDetails()) ── -->
     <ng-container *ngIf="form">
 
-      <app-rejected-application *ngIf="LockedStatus === 'Rejected'"
+      <app-rejected-application-panel *ngIf="LockedStatus === 'Rejected'"
         [studentName]="studentName" [registrationNo]="RegistrationNo" [courseName]="courseName"
         [currentYear]="CurrentYear" [cgpa]="cgpa" [programCode]="ProgramCode" [sectionCode]="SectionCode"
         [currentTerm]="CurrentTerm" [approvalRemarks]="ApprovalRemarks"
@@ -122,16 +122,16 @@
         (goToStep)="goToStep($event)" (nextStep)="nextStep()" (prevStep)="prevStep()"
         (editClick)="startEdit($event)" (cancelClick)="cancelEdit($event)" (updateClick)="updateStep($event)"
         (fileSelected)="onFileSelected($event)" (submitClick)="submitDocuments()">
-      </app-rejected-application>
+      </app-rejected-application-panel>
 
-      <app-approved-application *ngIf="LockedStatus === 'Approved'"
+      <app-approved-application-panel *ngIf="LockedStatus === 'Approved'"
         [stagesDetail]="StagesDetail" [stageDocumentData]="StageDocumentData" [documentApprovals]="DocumentApprovals"
         [localServerUrl]="localServerUrl" [stuApplication]="stuApplication" [isParentLoading]="isLoading"
         (fileSelected)="onFileSelected($event)" (uploadStage)="uploadStageDocumentRow($event)"
         (stageFilePicked)="onStageFilePicked($event)" (viewDocument)="viewDocument($event)">
-      </app-approved-application>
+      </app-approved-application-panel>
 
-      <app-pending-application *ngIf="LockedStatus === 'Pending'"
+      <app-pending-application-panel *ngIf="LockedStatus === 'Pending'"
         [studentName]="studentName" [registrationNo]="RegistrationNo" [courseName]="courseName"
         [currentYear]="CurrentYear" [cgpa]="cgpa" [programCode]="ProgramCode" [sectionCode]="SectionCode"
         [currentTerm]="CurrentTerm" [stepLabels]="stepLabels"
@@ -142,7 +142,7 @@
         [stagesDetail]="StagesDetail" [documentApprovals]="DocumentApprovals" [isParentLoading]="isLoading"
         (editClick)="startEdit($event)" (cancelClick)="cancelEdit($event)" (updateClick)="updateStep($event)"
         (fileSelected)="onFileSelected($event)" (submitClick)="submitDocuments()">
-      </app-pending-application>
+      </app-pending-application-panel>
 
     </ng-container>
 

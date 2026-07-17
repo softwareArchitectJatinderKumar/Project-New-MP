@@ -11,13 +11,25 @@ import { StepUniversityComponent } from './components/step-university/step-unive
 import { StepDetailsComponent } from './components/step-details/step-details.component';
 import { StepDocumentsComponent } from './components/step-documents/step-documents.component';
 import { Stage1DocumentComponent } from './components/step-documents-Stage1/Stage1Document.component';
-
-import { RejectedApplicationComponent } from './components/rejected-application/rejected-application.component';
-import { ApprovedApplicationComponent } from './components/approved-application/approved-application.component';
-import { PendingApplicationComponent } from './components/pending-application/pending-application.component';
 import { StepStage2Component } from './components/step-stage2/step-stage2.component';
+import { ApplicationOverviewComponent } from './components/application-overview/application-overview.component';
+import { ApplicationSectionsComponent } from './components/application-sections/application-sections.component';
 
-const routes: Routes = [{ path: '', component: EditApplicationComponent }];
+import { RejectedApplicationComponent as RejectedApplicationPanelComponent } from './components/rejected-application/rejected-application.component';
+import { ApprovedApplicationComponent as ApprovedApplicationPanelComponent } from './components/approved-application/approved-application.component';
+import { PendingApplicationComponent as PendingApplicationPanelComponent } from './components/pending-application/pending-application.component';
+
+import { ApprovedApplicationComponent } from './ApprovedApplication.component';
+import { PendingApplicationComponent } from './PendingApplication.component';
+import { RejectedApplicationComponent } from './RejectedApplication.component';
+import { ApplicationStateService } from './application-state.service';
+
+const routes: Routes = [
+  { path: '', component: EditApplicationComponent },
+  { path: 'approved/:LoginName/:RegistrationNo', component: ApprovedApplicationComponent },
+  { path: 'pending/:LoginName/:RegistrationNo', component: PendingApplicationComponent },
+  { path: 'rejected/:LoginName/:RegistrationNo', component: RejectedApplicationComponent },
+];
 
 @NgModule({
   imports: [
@@ -36,10 +48,16 @@ const routes: Routes = [{ path: '', component: EditApplicationComponent }];
     StepDocumentsComponent,
     Stage1DocumentComponent,
     StepStage2Component,
-    RejectedApplicationComponent,
+    ApplicationOverviewComponent,
+    ApplicationSectionsComponent,
+    RejectedApplicationPanelComponent,
+    ApprovedApplicationPanelComponent,
+    PendingApplicationPanelComponent,
     ApprovedApplicationComponent,
     PendingApplicationComponent,
+    RejectedApplicationComponent,
   ],
+  providers: [ApplicationStateService],
   exports: [
     SectionCardComponent,
     StepContactComponent,

@@ -13,7 +13,7 @@ import { countries } from './countries-list';
 
 import {
   StudentApplication, StageDetailRow, FileSelectedEvent,
-  Country, University, STEP_LABELS, DocumentApproval,
+  Country, University, STEP_LABELS, DocumentApproval, patchUploadedFileName,
 } from './models/application.models';
 
 @Component({
@@ -69,7 +69,8 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
   ApprovalRemarks: any;
 
   get canEditApplication(): boolean {
-    return !this.isLocked && !this.isApprovedApplication;
+    return !this.isLocked ||this.DealingFacultyId.length == 0 && !this.isApprovedApplication ;
+    // return !this.isLocked && !this.isApprovedApplication ;
   }
 
   // ── Config ─────────────────────────────────────────────────────────────────
@@ -246,6 +247,9 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (resp: any) => {
           if (this.isMsgSuccess(resp)) {
+            if (this.stuApplication) {
+              this.stuApplication = patchUploadedFileName(this.stuApplication, event.key, event.fileName);
+            }
             Swal.fire('Uploaded', `${event.fileName} uploaded successfully`, 'success')
               .then(() => { if (this.RegistrationNo) this.getApplicationDetails(this.RegistrationNo); });
           } else {
@@ -332,6 +336,10 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
       fd.append('ReturnTicketPath', row.fileName);
       fd.append('ReturnTicketData', row.fileData);
     }
+    if(row.documentName === 'Visa Document') {
+      fd.append('VisaDocumentPath', row.fileName);
+      fd.append('VisaDocumentData', row.fileData);
+    }
   
  
 
@@ -391,9 +399,7 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     if (el) el.innerHTML = 'Semester <span class="text-info">Exchange Student</span> Dashboard';
     const logo = document.getElementById('imgLogo') as HTMLImageElement | null;
     if (logo) logo.style.width = '164px';
-
     
-           console.log('********* Stage DEtails data ***********'+JSON.stringify(this.StagesDetail));
   }
 
   /**
@@ -406,6 +412,7 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
    *   LockedStatus === 'Pending'  -> PendingApplicationComponent (Stage I
    *                                  Documents shown as a nav tab, application editable)
    */
+  DealingFacultyId: any;
   private getStudentDetail(): void {
     this.isLoading = true;
     this.studentService.getStudentById()
@@ -437,9 +444,10 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
           const app: StudentApplication = response?.item1?.[0];
           if (!app) { this.loginFailed('Not Valid Application'); return; }
 
+          this.DealingFacultyId= app.dealingFaculty;
           const lockState = this.resolveLockState(this.readAppFlag(app, 'isLocked', 'IsLocked'));
           // Stay on Student Dashboard — show locked tabs instead of redirecting to ApplicationDetails
-          this.isLocked = lockState === 'locked';
+          this.isLocked = lockState === 'locked';// || this.DealingFacultyId.length>0;
           this.isApprovedApplication = app.isLocked === 'True' && app.isApproved === 'True' ? true : false;
           this.stuApplication = app;
           // Resolve LockedStatus for the getStudentDetail() redirect: Rejected /

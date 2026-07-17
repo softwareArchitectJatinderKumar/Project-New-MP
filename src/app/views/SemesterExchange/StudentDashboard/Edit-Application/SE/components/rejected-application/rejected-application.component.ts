@@ -12,7 +12,7 @@ import { Country, University, StudentApplication, FileSelectedEvent } from '../.
  * webapi services (updateApplicationDetails / UpdateDocuments) unchanged.
  */
 @Component({
-  selector: 'app-rejected-application',
+  selector: 'app-rejected-application-panel',
   templateUrl: './rejected-application.component.html',
   styleUrls: ['./rejected-application.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

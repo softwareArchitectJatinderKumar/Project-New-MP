@@ -16,7 +16,7 @@ import Swal from 'sweetalert2';
  * EditApplicationComponent, which owns every webapi call unchanged.
  */
 @Component({
-  selector: 'app-pending-application',
+  selector: 'app-pending-application-panel',
   templateUrl: './pending-application.component.html',
   styleUrls: ['./pending-application.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

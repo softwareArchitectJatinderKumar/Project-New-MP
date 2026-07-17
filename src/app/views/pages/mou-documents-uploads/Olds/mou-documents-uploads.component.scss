@@ -1,0 +1,95 @@
+
+
+  #nav-tab .btn.active {
+    background-color: #FD6C04; 
+  }
+  #nav-tab .btn {
+    color: black;  
+    background-color: white;
+  }
+
+.disabled-input {
+  pointer-events: none;
+  background-color: #e9ecef;
+}
+
+.FormHeight{
+    height: 20rem;
+}
+
+.planner {
+    display: inline-flex;
+    padding: 10px;
+}
+
+select {
+    font-size: medium;
+    width: 180px;
+    height: 40px;
+}
+
+.description {
+    display: inline-flex;
+    padding: 10px;
+    margin-left: 50px;
+}
+
+.div2 {
+    display: inline-flex;
+    margin-top: 20px;
+    margin-left: 30px;
+    color: brown;
+}
+
+.priority {
+    display: inline-flex;
+
+}
+
+
+
+/* multiple-division-select.component.css */  
+  input[type="checkbox"] {
+    margin-right: 5px;
+  }
+ 
+  // .dropdown-menu {
+  // //  display: none;
+  // }
+  
+  .dropdown-menu.show {
+    display: block !important;
+  }
+  
+  .scrollable-dropdown-menu {
+    max-height: 200px; /* Adjust the height as needed */
+    overflow-y: auto;
+  }
+  
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+  }
+  
+  .dropdown-item input[type="checkbox"] {
+    margin-right: 5px;
+  }
+
+
+  /* Force the horizontal scroll container to fill the modal */
+.table-responsive {
+    width: 100% !important;
+    display: block;
+    overflow-x: auto;
+}
+
+/* Ensure the datatable takes up 100% of the modal body */
+ngx-datatable.bootstrap {
+    width: 100% !important;
+}
+
+/* Fix for the "Material" theme alignment */
+.ngx-datatable.material {
+    box-shadow: none;
+    border: 1px solid #dee2e6;
+}

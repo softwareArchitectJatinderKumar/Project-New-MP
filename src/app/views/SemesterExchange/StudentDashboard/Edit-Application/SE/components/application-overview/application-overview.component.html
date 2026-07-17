@@ -43,28 +43,28 @@
     <!-- Contact Information -->
     <app-step-contact [form]="form" [isEditing]="editable ? isEditingStep[1] : false" [isSubmitted]="isSubmitted"
       [countries]="countries" [isLocked]="!editable" [hideBackNext]="true" [isValid]="isStep1Valid"
-      [studentStatus]="studentStatus" (editClick)="editClick.emit(1)" (cancelClick)="cancelClick.emit(1)"
+      (editClick)="editClick.emit(1)" (cancelClick)="cancelClick.emit(1)"
       (updateClick)="updateClick.emit(1)">
     </app-step-contact>
 
     <!-- University Preferences / Passport -->
     <app-step-university [form]="form" [isEditing]="editable ? isEditingStep[2] : false" [isSubmitted]="isSubmitted"
       [uniData]="uniData" [isLocked]="!editable" [hideBackNext]="true" [isValid]="isStep2Valid"
-      [studentStatus]="studentStatus" (editClick)="editClick.emit(2)" (cancelClick)="cancelClick.emit(2)"
+      (editClick)="editClick.emit(2)" (cancelClick)="cancelClick.emit(2)"
       (updateClick)="updateClick.emit(2)">
     </app-step-university>
 
     <!-- Visa / English / Sponsor -->
     <app-step-details [form]="form" [isEditing]="editable ? isEditingStep[3] : false" [isSubmitted]="isSubmitted"
       [countries]="countries" [isLocked]="!editable" [hideBackNext]="true" [isValid]="isStep3Valid"
-      [studentStatus]="studentStatus" (editClick)="editClick.emit(3)" (cancelClick)="cancelClick.emit(3)"
+      (editClick)="editClick.emit(3)" (cancelClick)="cancelClick.emit(3)"
       (updateClick)="updateClick.emit(3)">
     </app-step-details>
 
     <!-- Documents -->
     <app-step-documents *ngIf="showDocuments && stuApplication" [stuApplication]="stuApplication"
       [isEditing]="editable ? isEditingStep[4] : false" [isLocked]="!editable" [hideBackNext]="true"
-      [localServerUrl]="localServerUrl" [studentStatus]="studentStatus" (editClick)="editClick.emit(4)"
+      [localServerUrl]="localServerUrl" (editClick)="editClick.emit(4)"
       (cancelClick)="cancelClick.emit(4)" (submitClick)="submitClick.emit()"
       (fileSelected)="fileSelected.emit($event)">
     </app-step-documents>

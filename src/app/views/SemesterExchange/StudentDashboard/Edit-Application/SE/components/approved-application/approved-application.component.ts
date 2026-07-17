@@ -17,7 +17,7 @@ import Swal from 'sweetalert2';
  * viewDocument keep working unmodified.
  */
 @Component({
-  selector: 'app-approved-application',
+  selector: 'app-approved-application-panel',
   templateUrl: './approved-application.component.html',
   styleUrls: ['./approved-application.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

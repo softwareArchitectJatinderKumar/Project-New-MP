@@ -9,6 +9,10 @@ interface SchoolDivision {
   id: number;
   schoolDivision: string;
 }
+interface MouCategory{
+  id: number;
+  CategoryName: string;
+}
 interface Employee {
   employeeName: string;
   employeeCode: string;
@@ -22,12 +26,59 @@ import swal from 'sweetalert2';
 import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
 import { LpuPlannerServiceService } from 'src/app/_services/lpu-planner-service.service';
 import { ColumnMode } from '@swimlane/ngx-datatable';
+import { json } from 'ngx-custom-validators/src/app/json/validator';
 @Component({
   selector: 'app-mou-documents-uploads',
   templateUrl: './mou-documents-uploads.component.html',
   styleUrls: ['./mou-documents-uploads.component.scss']
 })
 export class MouDocumentsUploadsComponent implements OnInit {
+
+
+   onCategoryChange(event: any): void {
+    this.applyFilters();
+  }
+
+  AllMouCategories: MouCategory[] = [];
+  SelectedMouCategory: any = null;
+  selectedCategory: number[] = [];
+  hasCategoryError: boolean = true;
+
+
+  GetAllCategories(): void {
+  this.mouDocumentsService.GetMouCategories().subscribe(response => {
+
+    this.AllMouCategories = response.item1.map((x: any, index: number) => ({
+      id: index + 1,
+      CategoryName: x.items
+    }));
+
+  });
+}
+  // GetAllCategories(): void {
+  //   this.mouDocumentsService.GetMouCategories().subscribe((response) => {
+  //     if (response.item1.length > 0) {
+  //       this.AllMouCategories = response.item1;
+  //     } else {
+  //       this.AllMouCategories = [];
+  //     }
+  //   });
+  // }
+
+changeCategory(event: any) {
+  this.SelectedMouCategory= event['CategoryName'];
+  // console.log(this.SelectedMouCategory+' ' + JSON.stringify(event))
+  this.hasCategoryError = !event;
+}
+
+
+  CategoryFilter: string = 'all';
+  
+
+
+
+
+// ended Logic 15-7-26
 
   newMouid: any;
 
@@ -38,12 +89,11 @@ export class MouDocumentsUploadsComponent implements OnInit {
     return this.AllRenewedMouDetails.slice(startIndex, endIndex);
   }
 
+  
   // Added on 14-May-25
 
   statusFilter: string = 'all';
   searchQuery: any = '';
-  selectedSchoolDivision: any = '0';
-  selectedSchoolDivision3: any = '0';
 
   @ViewChild('ViewRenewedMouDetailsModal') ViewRenewedMouDetailsModal: TemplateRef<any>;
   renewedMouDocumentDetails: any[] = [];
@@ -54,134 +104,119 @@ export class MouDocumentsUploadsComponent implements OnInit {
     this.applyFilters();
   }
 
-  onSchoolDivisionChange(event: any): void {
-    this.applyFilters();
-  }
+applyFilters(): void {
 
-  onSchoolDivision3Change(event: any): void {
-    this.applyFilters();
-  }
+  let filtered = [...this.MouDocumentsData];
 
-  onCategoryChange(event: any): void {
-    this.applyFilters();
-  }
+  // Status Filter
+  if (this.statusFilter !== 'all') {
 
+    filtered = filtered.filter(item => {
 
+      switch (this.statusFilter) {
 
-  onCategory3Change(event: any): void {
-    this.applyFilters();
-  }
-
-  applyFilters(): void {
-    const lowerCaseFilter = (this.filterText || '').toLowerCase().trim();
-
-    // 1. Filter Tab 2 (filteredMouDocumentsData)
-    let tempTab2 = [...this.MouDocumentsData];
-
-    // Filter by Status
-    if (this.statusFilter !== 'all') {
-      tempTab2 = tempTab2.filter(item => {
-        if (this.statusFilter === 'active') {
+        case 'active':
           return item.mouStatus === 'Active';
-        } else if (this.statusFilter === 'expired') {
-          return item.mouStatus === 'Expired' && item.renewalCount == null && item.renewalCount != 0;
-        } else if (this.statusFilter === 'renewed') {
-          return item.renewalCount > 0 || (item.renewalCount !== 'null' && item.renewalCount !== null && item.renewalCount !== undefined && item.renewalCount !== '0');
-        }
-        return true;
-      });
-    }
 
-    // Filter by School Division
-    if (this.selectedSchoolDivision && this.selectedSchoolDivision !== '0') {
-      tempTab2 = tempTab2.filter(item => {
-        if (!item.schoolDivisionInvolved) return false;
-        return item.schoolDivisionInvolved
-          .split(',')
-          .map((id: string) => id.trim())
-          .includes(this.selectedSchoolDivision.toString());
-      });
-    }
+        case 'expired':
+          return item.mouStatus === 'Expired'
+            && (item.renewalCount == null || Number(item.renewalCount) === 0);
 
-    // Filter by Category
+        case 'renewed':
+          return item.renewalCount != null
+            && Number(item.renewalCount) > 0;
 
-    // Category Filter
-    if (this.selectedMouCategory) {
-      tempTab2 = tempTab2.filter(item =>
-        item.mouCategory === this.selectedMouCategory.items
-      );
-    }
-    // if (this.selectedMouCategory && this.selectedMouCategory !== '0') {
-    //   tempTab2 = tempTab2.filter(item => {
-    //     return item.mouCategory === this.selectedMouCategory || item.category === this.selectedMouCategory;
-    //   });
-    // }
+        default:
+          return true;
+      }
 
-    // Filter by search text
-    if (lowerCaseFilter) {
-      tempTab2 = tempTab2.filter(item => {
-        return Object.entries(item).some(([key, val]) => {
-          if (val !== null && val !== undefined) {
-            let valueString = String(val).toLowerCase();
-            if (key === 'id') {
-              const numericId = Number(val);
-              if (!isNaN(numericId) && (numericId.toString().includes(lowerCaseFilter) || `mou/${numericId}`.includes(lowerCaseFilter))) {
-                return true;
-              }
-            }
-            return valueString.includes(lowerCaseFilter);
-          }
-          return false;
-        });
-      });
-    }
-
-    this.filteredMouDocumentsData = tempTab2;
-
-    // 2. Filter Tab 3 (AllRenewedMouDetails)
-    let tempTab3 = this.MouDocumentsData.filter(item => {
-      return item.renewalCount > 0 || (item.renewalCount !== 'null' && item.renewalCount !== null && item.renewalCount !== undefined && item.renewalCount !== '0');
     });
 
-    // Filter by School Division
-    if (this.selectedSchoolDivision3 && this.selectedSchoolDivision3 !== '0') {
-      tempTab3 = tempTab3.filter(item => {
-        if (!item.schoolDivisionInvolved) return false;
-        return item.schoolDivisionInvolved
-          .split(',')
-          .map((id: string) => id.trim())
-          .includes(this.selectedSchoolDivision3.toString());
-      });
-    }
-
-    // Filter by Category
-    if (this.selectedMouCategory3 && this.selectedMouCategory3 !== '0') {
-      tempTab3 = tempTab3.filter(item => {
-        return item.mouCategory === this.selectedMouCategory3 || item.category === this.selectedMouCategory3;
-      });
-    }
-
-    // Filter by search text
-    if (lowerCaseFilter) {
-      tempTab3 = tempTab3.filter(item => {
-        return Object.entries(item).some(([key, val]) => {
-          if (val !== null && val !== undefined) {
-            let valueString = String(val).toLowerCase();
-            if (key === 'id') {
-              const numericId = Number(val);
-              if (!isNaN(numericId) && (numericId.toString().includes(lowerCaseFilter) || `mou/${numericId}`.includes(lowerCaseFilter))) {
-                return true;
-              }
-            }
-            return valueString.includes(lowerCaseFilter);
-          }
-          return false;
-        });
-      });
-    }
-
-    this.AllRenewedMouDetails = tempTab3;
   }
+
+  // Category Filter
+  if (this.SelectedMouCategory != 'All') {
+
+    filtered = filtered.filter(item =>
+      String(item.mouCategory ?? '').toLowerCase() ===
+      this.SelectedMouCategory.CategoryName.toLowerCase()
+    );
+
+  }
+
+  // Search Filter
+  const query = this.searchQuery.trim().toLowerCase();
+
+  if (query) {
+
+    filtered = filtered.filter(item =>
+      Object.entries(item).some(([key, value]) => {
+
+        if (value == null) {
+          return false;
+        }
+
+        // Search by MOU Id
+        if (key === 'id') {
+          const id = Number(value);
+
+          return !isNaN(id) &&
+            (id.toString().includes(query) ||
+              `mou/${id}`.includes(query));
+        }
+
+        return String(value).toLowerCase().includes(query);
+
+      })
+    );
+
+  }
+
+  this.filteredMouDocumentsData = filtered;
+}
+  // applyFilters(): void {
+  //   // First filter by status
+  //   let filtered = this.MouDocumentsData.filter(item => {
+  //     if (this.statusFilter === 'all') {
+  //       return true;
+  //     }
+
+  //     if (this.statusFilter === 'active') {
+  //       return item.mouStatus === 'Active';
+  //     } else if (this.statusFilter === 'expired') {
+  //       return item.mouStatus === 'Expired' && item.renewalCount == null && item.renewalCount != 0  ;
+  //     } else if (this.statusFilter === 'renewed') {
+  //       return item.renewalCount > 0 || item.renewalCount !== 'null' && item.renewalCount !== null && item.renewalCount !== undefined && item.renewalCount !== '0';
+  //     } 
+  //     return true;
+  //   });
+
+  //   // Then apply search filter if exists
+  //   const query = this.searchQuery.trim().toLowerCase();
+  //   if (query) {
+  //     filtered = filtered.filter(item => {
+  //       return Object.entries(item).some(([key, val]) => {
+  //         if (val !== null && val !== undefined) {
+  //           let valueString = String(val).toLowerCase();
+
+  //           // Special handling for mouid (Numeric & "MOU/x" String Comparison)
+  //           if (key === 'id') {
+  //             const numericId = Number(val);
+  //             if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
+  //               return true;
+  //             }
+  //           }
+
+  //           // General search for all other fields
+  //           return valueString.includes(query);
+  //         }
+  //         return false;
+  //       });
+  //     });
+  //   }
+
+  //   this.filteredMouDocumentsData = filtered;
+  // }
 
   getActiveCount(): number {
     return this.MouDocumentsData.filter(item => {
@@ -194,60 +229,64 @@ export class MouDocumentsUploadsComponent implements OnInit {
       return item.mouStatus === 'Expired';
     }).length;
   }
-  AllRenewedMouDetails: any[] = [];
+  AllRenewedMouDetails :any[] = [];
   getRenewedCount(): number {
-    this.applyFilters();
-    return this.AllRenewedMouDetails.length;
-  }
-
-  onDownloadFile(remoteUrl: string): void {
-    swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
-
-    this.mouDocumentsService.downloadMOUFile(remoteUrl).subscribe({
-      next: (blob: Blob) => {
-        const downloadUrl = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = downloadUrl;
-
-        const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
-        link.download = fileName;
-
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(downloadUrl);
-
-        swal.close();
-      },
-      error: async (err) => {
-        swal.close();
-        if (err.error instanceof Blob) {
-          const errorMsg = JSON.parse(await err.error.text());
-          swal.fire('Error', errorMsg.message || 'Download failed', 'error');
-        } else {
-          swal.fire('Error', 'Could not connect to the server', 'error');
-        }
-      }
+    this.AllRenewedMouDetails = this.MouDocumentsData.filter(item => {
+      return item.renewalCount >0  || item.renewalCount != null && item.renewalCount !== undefined && item.renewalCount !== '0' && item.renewalCount !== 'null';
     });
+    return this.MouDocumentsData.filter(item => {
+      return item.renewalCount >0  || item.renewalCount != null && item.renewalCount !== undefined && item.renewalCount !== '0' && item.renewalCount !== 'null';
+    }).length;
   }
+
+   onDownloadFile(remoteUrl: string): void {
+      swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); }});
+  
+      this.mouDocumentsService.downloadMOUFile(remoteUrl).subscribe({
+        next: (blob: Blob) => {
+          const downloadUrl = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+  
+          const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+          link.download = fileName;
+  
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(downloadUrl);
+  
+          swal.close();
+        },
+        error: async (err) => {
+          swal.close();
+          if (err.error instanceof Blob) {
+            const errorMsg = JSON.parse(await err.error.text());
+            swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+          } else {
+            swal.fire('Error', 'Could not connect to the server', 'error');
+          }
+        }
+      });
+    }
 
   OpenAllMouRenewalHistory(row: any): void {
     this.mouId = row.id;
-    this.newMouid = row.newMouId;
+    this.newMouid= row.newMouId;
     this.getRenewedMouDetails(row.id);
-
-    this.modalService.open(this.ViewRenewedMouDetailsModal, { size: 'xl', windowClass: 'modal-xl', backdrop: 'static' }).result.then(() => {
+    
+     this.modalService.open(this.ViewRenewedMouDetailsModal,  { size: 'xl', windowClass: 'modal-xl' ,backdrop: 'static'} ).result.then(() => {
       setTimeout(() => {
-        window.dispatchEvent(new Event('resize'));
-      }, 200);
+    window.dispatchEvent(new Event('resize'));
+  }, 200);
       // Modal closed
-    }).catch(() => {
+    }).catch(() => { 
       window.location.reload()
 
     });
   }
 
-
+ 
 
   getRenewedMouDetails(mouId: any): void {
     this.mouDocumentsService.GetRenewedMouDetails(mouId).subscribe((response) => {
@@ -262,10 +301,10 @@ export class MouDocumentsUploadsComponent implements OnInit {
 
 
 
-  // added on 12-May-26 
-  @ViewChild('ChangeSchoolDivisionModal') ChangeSchoolDivisionModal: TemplateRef<any>;
-  CurrentSchool: any;
-  mouForm: FormGroup;
+// added on 12-May-26 
+@ViewChild('ChangeSchoolDivisionModal') ChangeSchoolDivisionModal: TemplateRef<any>;
+CurrentSchool: any;
+ mouForm: FormGroup;
   mouId: any;
   isRenewalMode: boolean = false;
   renewalFile: File | null = null;
@@ -274,7 +313,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
   renewalFileError: string = '';
   originalMouData: any = null;
 
-
+  
   onInput2() {
     const query = this.mouForm.get('lpuSpocName')?.value?.toLowerCase();
 
@@ -291,7 +330,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
   }
 
 
-  selectEmployee2(employee: Employee) {
+   selectEmployee2(employee: Employee) {
     // This updates the variables used in your console.log/HTML
     this.ResponsiblePerson = employee.employeeCode;
     this.AssignedToUid = employee.employeeCode;
@@ -312,13 +351,13 @@ export class MouDocumentsUploadsComponent implements OnInit {
   }
 
 
-
+  
   onRenewFileSelected(event: any): void {
     const file = event.target.files[0];
     if (!file) {
       return;
     }
-
+    
     // Validate file type (PDF and Word documents only)
     const allowedTypes = [
       'application/pdf',
@@ -329,11 +368,11 @@ export class MouDocumentsUploadsComponent implements OnInit {
       this.renewalFileError = 'Only PDF and Word documents are allowed.';
       return;
     }
-
+    
     this.renewalFile = file;
     this.renewalFileName = file.name;
     this.renewalFileError = '';
-
+    
     const reader = new FileReader();
     reader.onload = () => {
       const result = reader.result as string;
@@ -344,10 +383,10 @@ export class MouDocumentsUploadsComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
-  onSubmitModal(): void {
+    onSubmitModal(): void {
     if (this.isRenewalMode) {
       this.onSubmitRenew();
-    }
+    } 
   }
 
   onSubmitRenew(): void {
@@ -367,25 +406,25 @@ export class MouDocumentsUploadsComponent implements OnInit {
       });
       return;
     }
-
+    
     if (!this.renewalFile) {
       swal.fire('Error', 'Please upload a MOU document for renewal.', 'error');
       return;
     }
-
+    
     if (!this.renewalFileBase64) {
       swal.fire('Error', 'File is still being processed. Please try again.', 'error');
       return;
     }
-
+    
     const val = this.mouForm.getRawValue();
-
+    
     // Compute new MOU status based on dates
     let newMouStatus = 'Active';
     const today = new Date();
     const startDate = val.startDate ? new Date(val.startDate) : null;
     const endDate = val.isIndefinite ? null : (val.endDate ? new Date(val.endDate) : null);
-
+    
     if (val.isIndefinite) {
       newMouStatus = 'Active';
     } else if (startDate) {
@@ -397,7 +436,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
     } else {
       newMouStatus = 'Expired';
     }
-
+    
     // Prepare FormData for new MOU upload
     const formData = new FormData();
 
@@ -419,9 +458,9 @@ export class MouDocumentsUploadsComponent implements OnInit {
     formData.append('LPUSpocName', val.lpuSpocName);
     formData.append('LPUSpocUID', val.lpuSpocUid);
     formData.append('LPUSpocEmail', val.lpuSpocEmail);
-
+   
     formData.append('CreatedBy', this.EmployeeCode);
-
+     
     swal.fire({
       title: 'Renew MOU',
       text: 'Are you sure you want to renew this MOU? This will create a new MOU and mark the old one as Renewed.',
@@ -434,10 +473,10 @@ export class MouDocumentsUploadsComponent implements OnInit {
         this.mouDocumentsService.MouRenewalDetails(formData).subscribe({
           next: (data: any) => {
             const resultMsg = data.item1 && data.item1.length > 0 ? data.item1[0].msg : data.responseData;
-            if (resultMsg === 'success') {
-              swal.fire('Success', 'Renewed MOU.', 'success');
-              window.location.reload();
-            } else if (data.responseData == 'Failed') {
+            if (resultMsg === 'success' ) {
+             swal.fire('Success', 'Renewed MOU.', 'success');
+             window.location.reload();
+            } else if( data.responseData == 'Failed') {
               swal.fire('Error', 'Failed to create new MOU. Please try again.', 'error');
               window.location.reload();
             }
@@ -448,7 +487,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
         });
       }
     });
-
+    
   }
 
   // Helper for Template to check validation
@@ -476,7 +515,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
     return fieldNames[fieldName] || fieldName;
   }
 
-  initForm() {
+initForm() {
     this.mouForm = this.fb.group({
       mouId: [{ value: '', disabled: true }], // Locked field
       selectedDivisions: [[], [Validators.required]],
@@ -489,7 +528,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
       spocContact: [''],
       lpuSpocName: ['', [Validators.required]], // Internal SPOC Name
       lpuSpocUid: ['', [Validators.required]],  // Internal SPOC UID
-      lpuSpocEmail: ['', [Validators.required, Validators.email]],// Internal SPOC Email
+      lpuSpocEmail: ['', [Validators.required, Validators.email]] ,// Internal SPOC Email
       remarks: ['', [Validators.required]] // Internal SPOC Email
     });
   }
@@ -658,6 +697,8 @@ export class MouDocumentsUploadsComponent implements OnInit {
   selectedId: number;
   selectedSchoolDivisions: any[] = [];
   allSchoolDivisions: SchoolDivision[] = [];
+  
+
   selectedDivisions: number[] = [];
   isDropdownOpen: boolean = false;
   allDepartmentName: any;
@@ -673,10 +714,6 @@ export class MouDocumentsUploadsComponent implements OnInit {
   MouEndDate: string = ''; // Bound to End Date input
   isIndefiniteMou: boolean = false; // For Indefinite Mou checkbox
   moustatus: string = 'Expired';
-  mouCategory: string = '';
-  selectedMouCategory: any;
-  selectedMouCategory3: string = '0';
-  mouCategories: any;
   // Toggles the disabled state of the MouEndDate field and sets MOU status
   toggleEndDate(): void {
     if (this.isIndefiniteMou) {
@@ -716,6 +753,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
     private fb: FormBuilder) { }
 
   ngOnInit(): void {
+
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML = '<span class="themeClr" >MOU </span> Document<span class="themeClr" > Upload </span>';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
     // this.serverUrl = 'http://172.19.2.52/umsweb/webftp/MOUDocuments/';
@@ -735,33 +773,12 @@ export class MouDocumentsUploadsComponent implements OnInit {
     this.authService.loginTemp(id).subscribe({
       next: data => {
         this.initForm();
+        this.GetAllCategories();
         this.storageService.saveUser(data);
         this.GetEmployeeDetails();
         this.GetAllActivities();
         this.GetEmployeeData();
-        this.GetAllCategories();
-
-      },
-      error: err => {
-        this.LoginFailed(err);
-      }
-    });
-  }
-  GetAllCategories(): void {
-    this.mouDocumentsService.GetAllCategories().subscribe({
-      next: response => {
-        if (response.item1.length > 0) {
-
-          this.mouCategories = [
-            ...response.item1
-          ];
-
-
-        } else {
-          this.mouCategories = [];
-          this.showNoDataFoundMessage = true;
-          this.isLoginFailed = true;
-        }
+        
       },
       error: err => {
         this.LoginFailed(err);
@@ -994,11 +1011,11 @@ export class MouDocumentsUploadsComponent implements OnInit {
     this.SchoolInvolved = arrayUniqueByKey.join(',');
     const formData = new FormData();
     formData.append('UID', this.EmployeeCode);
+    formData.append('MouCategory', this.SelectedMouCategory);
     formData.append('MouTitle', this.MouPartner);
     formData.append('MouPartnerName', this.MouPartner);
     formData.append('FacultyName', this.EmployeeName);
     formData.append('MouStartDate', this.MouStartDate);
-    formData.append('MouCategory', this.mouCategory);
     formData.append('MouEndDate', this.MouEndDate.length > 0 ? this.MouEndDate : 'null');
     formData.append('MouStatus', this.moustatus);
     formData.append('FilePath', this.fileName);
@@ -1060,7 +1077,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
           this.filteredMouDocumentsData = this.MouDocumentsData;
           this.dataSource.data = this.filteredMouDocumentsData;
           this.showNoDataFoundMessage = this.filteredMouDocumentsData.length === 0;
-
+          
           this.isLoginFailed = false;
         } else {
           this.dataSource.data = this.MouDocumentsData = [];
@@ -1076,11 +1093,75 @@ export class MouDocumentsUploadsComponent implements OnInit {
   ngOnChanges() {
     this.filterData();
   }
+filterData(): void {
 
+  let filtered = [...this.AllRenewedMouDetails];
 
-  filterData() {
-    this.applyFilters();
+  // Category Filter
+  if (this.SelectedMouCategory && this.SelectedMouCategory !== 'All') {
+
+    filtered = filtered.filter(item =>
+      item.mouCategory === this.SelectedMouCategory.CategoryName
+    );
+
   }
+
+  // Search Filter
+  const search = this.filterText?.trim().toLowerCase();
+
+  if (search) {
+
+    filtered = filtered.filter(item =>
+      Object.entries(item).some(([key, val]) => {
+
+        if (val == null) {
+          return false;
+        }
+
+        if (key === 'id') {
+          const id = Number(val);
+
+          return !isNaN(id) &&
+            (
+              id.toString().includes(search) ||
+              `mou/${id}`.includes(search)
+            );
+        }
+
+        return String(val).toLowerCase().includes(search);
+
+      })
+    );
+
+  }
+
+  this.currentPage = 1;
+  this.filteredMouDocumentsData = filtered;
+}
+
+  // filterData() {    
+  //   const lowerCaseFilter = this.filterText.toLowerCase();
+  //   this.filteredMouDocumentsData = this.MouDocumentsData.filter(item => {
+  //     return Object.entries(item).some(([key, val]) => {
+  //       if (val !== null && val !== undefined) {
+  //         let valueString = String(val).toLowerCase();
+
+  //         if (key === 'id') {
+  //           const numericId = Number(val); // Convert mouid to a number
+
+  //           if (!isNaN(numericId) && (numericId.toString().includes(lowerCaseFilter) || `mou/${numericId}`.includes(lowerCaseFilter))) {
+  //             return true;
+  //           }
+  //         } 
+  //         // General search for all other fields
+  //         return valueString.includes(lowerCaseFilter);
+  //       }
+  //       return false;
+  //     });
+  //   });
+
+ 
+  // }
 
 
   recordsPerPage = 5;
@@ -1131,7 +1212,6 @@ export class MouDocumentsUploadsComponent implements OnInit {
       NewMouid: (item.newMouId ?? 'Disapproved'),//1
       OldMOUId: "MOU/" + (item.id ?? 'N/A'),//1
       'Mou Partner Name': item.mouPartnerName ?? 'N/A',//2
-      'Mou Category': item.mouCategory ?? item.category ?? 'N/A',
       'Mou Start Date': item.mouStartDate ?? 'N/A',//3
       'Mou End Date': item.mouEndDate ?? 'N/A',//4
       'Mou Status': item.mouStatus ?? 'N/A',//5
@@ -1173,7 +1253,7 @@ export class MouDocumentsUploadsComponent implements OnInit {
     link.click();
   }
 
-
+ 
   formatDate(date: Date): string {
     const DateX = new Date(date).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
     return DateX;

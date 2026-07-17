@@ -12,7 +12,7 @@ import { countries } from './countries-list';
 
 import {
   StudentApplication, StageDetailRow, FileSelectedEvent,
-  Country, University, STEP_LABELS,
+  Country, University, STEP_LABELS, patchUploadedFileName,
 } from './models/application.models';
 
 export type ApplicationStatus = 'Approved' | 'Rejected' | 'Pending';
@@ -59,7 +59,7 @@ export class ApplicationStateService implements OnDestroy {
   LockedStatus = false;
   isApprovedApplication = false;
   activeMainTab: 'application' | 'stage1' | 'stage2' = 'stage1';
-  ApprovedUniversity: string;
+  ApprovedUniversity = '';
 
   get canEditApplication(): boolean {
     return !this.LockedStatus && !this.isApprovedApplication;
@@ -267,6 +267,9 @@ export class ApplicationStateService implements OnDestroy {
       .subscribe({
         next: (resp: any) => {
           if (this.isMsgSuccess(resp)) {
+            if (this.stuApplication) {
+              this.stuApplication = patchUploadedFileName(this.stuApplication, event.key, event.fileName);
+            }
             Swal.fire('Uploaded', `${event.fileName} uploaded successfully`, 'success')
               .then(() => { if (this.RegistrationNo) this.getApplicationDetails(this.RegistrationNo, true); });
           } else {
@@ -372,8 +375,8 @@ export class ApplicationStateService implements OnDestroy {
           this.ApplicationId = app.applicationId;
           this.SectionCode = app.sectionCode;
           this.DealingFacultyName = app.dealingFacultyName;
-          this.CounsellingAuthorityName = app.counsellingAuthorityName;
-          this.ApprovedUniversity = app.approvedUniversity;
+          this.CounsellingAuthorityName = (app as any).counsellingAuthorityName ?? '';
+          this.ApprovedUniversity = app.approvedUniversity ?? '';
           this.isLoadingData = true;
           this.form.patchValue({
             EmailId: app.emailId ?? '',

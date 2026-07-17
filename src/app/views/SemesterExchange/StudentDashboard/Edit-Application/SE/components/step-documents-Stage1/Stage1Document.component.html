@@ -30,9 +30,9 @@
               </td>
               <td>
                 <div class="d-flex flex-column gap-1">
-                  <input type="file" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png"
+                  <input #fileInput type="file" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png"
                     [disabled]="isUploadDisabled(doc.documentName) || isUploading(doc.key)"
-                    (change)="onFilePicked($event, doc.key)" />
+                    (change)="onFilePicked($event, doc.key, fileInput)" />
                   <span *ngIf="getPendingFileName(doc.key)" class="text-muted small text-truncate"
                     style="max-width:220px">
                     Selected: {{ getPendingFileName(doc.key) }}
@@ -52,9 +52,9 @@
                   [disabled]="!canUpload(doc.key, doc.documentName)" (click)="uploadDoc(doc.key)">
                   Upload
                 </button>
-                <button *ngIf="hasFile(doc.appField)" type="button"
+                <button *ngIf="hasUploadedFile(doc)" type="button"
                   class="btn btn-info btn-sm w-100 d-flex align-items-center justify-content-center gap-1"
-                  (click)="viewFile(getFileName(doc.appField))">
+                  (click)="viewFile(getUploadedPath(doc))">
                   <span class="material-icons md-18">description</span> View
                 </button>
               </td>

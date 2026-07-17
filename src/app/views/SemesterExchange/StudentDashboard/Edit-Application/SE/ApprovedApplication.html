@@ -57,14 +57,14 @@
               </div>
             </div>
             <div class="col-auto">
-              <span [class]="s.ApprovedUniversity?.trim() ? 'status-pill approved' : 'status-pill pending'">
+              <span [class]="s.ApprovedUniversity.trim() ? 'status-pill approved' : 'status-pill pending'">
                 Approved University
               </span>
             </div>
             <div class="col">
               <div class="d-flex gap-2 flex-wrap">
-                <span [class]="s.ApprovedUniversity?.trim() ? 'status-pill approved' : 'status-pill pending'">
-                  {{ s.ApprovedUniversity?.trim() ? 'Approved' : 'Pending' }}
+                <span [class]="s.ApprovedUniversity.trim() ? 'status-pill approved' : 'status-pill pending'">
+                  {{ s.ApprovedUniversity.trim() ? 'Approved' : 'Pending' }}
                 </span>
               </div>
             </div>
