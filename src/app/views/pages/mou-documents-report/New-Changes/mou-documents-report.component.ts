@@ -40,37 +40,27 @@ export class MouDocumentsReportComponent implements OnInit {
   // Renewed MOU pagination (View Renewed MOU tab)
   // ---------------------------------------------------------------------
   AllRenewedMouDetails: any[] = [];
-  recordsPerPage = 5;
-  currentPage = 1;
-
-  getRecordsForRenewedPage(): any[] {
-    const startIndex = (this.currentPage - 1) * this.recordsPerPage;
-    const endIndex = startIndex + this.recordsPerPage;
-    return this.AllRenewedMouDetails.slice(startIndex, endIndex);
-  }
-
-  onPageChange(event: any): void {
-    this.currentPage = event.pageIndex + 1;
-    this.recordsPerPage = event.pageSize;
-  }
+  filteredRenewedMouDetails: any[] = [];
 
   onCategoryChange(event: any): void {
     this.applyFilters();
   }
 
   onCategory2Change(event: any): void {
-    this.filterData();
+    this.applyRenewedFilters();
   }
 
-  filterData() {
-    const lowerCaseFilter = (this.filterText || '').toLowerCase().trim();
-    
-    let baseRenewed = this.MouDocumentDetails.filter(item => {
+  searchRenewed(): void {
+    this.applyRenewedFilters();
+  }
+
+  applyRenewedFilters(): void {
+    let filtered = this.MouDocumentDetails.filter(item => {
       return item.hasRenewal === true || item.hasRenewal === 'true';
     });
 
     if (this.selectedSchoolDivision2 && this.selectedSchoolDivision2 !== '0') {
-      baseRenewed = baseRenewed.filter(item => {
+      filtered = filtered.filter(item => {
         if (!item.schoolDivisionInvolved) return false;
         return item.schoolDivisionInvolved
           .split(',')
@@ -80,30 +70,33 @@ export class MouDocumentsReportComponent implements OnInit {
     }
 
     if (this.selectedMouCategory2 && this.selectedMouCategory2 !== '0') {
-      baseRenewed = baseRenewed.filter(item => {
+      filtered = filtered.filter(item => {
         return item.mouCategory === this.selectedMouCategory2 || item.category === this.selectedMouCategory2;
       });
     }
 
-    if (lowerCaseFilter) {
-      baseRenewed = baseRenewed.filter(item => {
+    const query = (this.renewedSearchQuery || '').trim().toLowerCase();
+    if (query) {
+      filtered = filtered.filter(item => {
         return Object.entries(item).some(([key, val]) => {
           if (val !== null && val !== undefined) {
             const valueString = String(val).toLowerCase();
+
             if (key === 'id') {
               const numericId = Number(val);
-              if (!isNaN(numericId) && (numericId.toString().includes(lowerCaseFilter) || `mou/${numericId}`.includes(lowerCaseFilter))) {
+              if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
                 return true;
               }
             }
-            return valueString.includes(lowerCaseFilter);
+            return valueString.includes(query);
           }
           return false;
         });
       });
     }
 
-    this.AllRenewedMouDetails = baseRenewed;
+    this.AllRenewedMouDetails = filtered;
+    this.filteredRenewedMouDetails = filtered;
   }
 
   // ---------------------------------------------------------------------
@@ -266,12 +259,12 @@ export class MouDocumentsReportComponent implements OnInit {
   CurrentSchool: string;
   uploadEnabled: boolean = false;
 
-  filterText: string = '';
   filteredMouDocumentDetails: any[] = [];
   renewedMouDocumentDetails: any[] = [];
   Reason: any;
 
   searchQuery: any = '';
+  renewedSearchQuery: any = '';
   statusFilter: string = 'all';
   approvalFilter: string = 'all';
   selectedSchoolDivision: any = '0';
@@ -284,7 +277,7 @@ export class MouDocumentsReportComponent implements OnInit {
     this.mouDocumentsService.GetAllCategories().subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
-          this.mouCategories = [...response.item1];
+          this.mouCategories = response.item1.map((x: any) => x.items ?? x);
         } else {
           this.mouCategories = [];
           this.showNoDataFoundMessage = true;
@@ -437,6 +430,7 @@ export class MouDocumentsReportComponent implements OnInit {
           this.showNoDataFoundMessage = false;
 
           this.applyFilters();
+          this.applyRenewedFilters();
 
           this.columns = [];
           this.columns = Object.keys(this.MouDocumentDetails[0]);
@@ -487,7 +481,7 @@ export class MouDocumentsReportComponent implements OnInit {
   }
 
   onSchoolDivision2Change(event: any): void {
-    this.filterData();
+    this.applyRenewedFilters();
   }
 
   applyFilters(): void {
@@ -571,7 +565,7 @@ export class MouDocumentsReportComponent implements OnInit {
   }
 
   getRenewedCount(): number {
-    this.filterData();
+    this.applyRenewedFilters();
     return this.AllRenewedMouDetails.length;
   }
 
@@ -608,6 +602,7 @@ export class MouDocumentsReportComponent implements OnInit {
     const exportedData = this.filteredMouDocumentDetails.map(item => ({
       NewMOUId: (item.newMouId ?? 'N/A'),
       OldMOUId: 'MOU/' + (item.id ?? 'N/A'),
+      MouCategory: (item.mouCategory ?? 'Others'),
       'Mou Partner Organisation Name': item.mouTitle ?? 'N/A',
       'Mou Start Date': item.mouStartDate ?? 'N/A',
       'Mou End Date': item.mouEndDate ?? 'N/A',

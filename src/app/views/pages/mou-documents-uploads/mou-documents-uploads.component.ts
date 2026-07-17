@@ -94,6 +94,7 @@ changeCategory(event: any) {
 
   statusFilter: string = 'all';
   searchQuery: any = '';
+  selectedSchoolDivision: any = '0';
 
   @ViewChild('ViewRenewedMouDetailsModal') ViewRenewedMouDetailsModal: TemplateRef<any>;
   renewedMouDocumentDetails: any[] = [];
@@ -101,6 +102,10 @@ changeCategory(event: any) {
   columns: any;
 
   onStatusChange(event: any): void {
+    this.applyFilters();
+  }
+
+  onSchoolDivisionChange(event: any): void {
     this.applyFilters();
   }
 
@@ -142,6 +147,17 @@ applyFilters(): void {
       this.SelectedMouCategory.CategoryName.toLowerCase()
     );
 
+  }
+
+  // School Division Filter
+  if (this.selectedSchoolDivision && this.selectedSchoolDivision !== '0') {
+    filtered = filtered.filter(item => {
+      if (!item.schoolDivisionInvolved) return false;
+      return item.schoolDivisionInvolved
+        .split(',')
+        .map((id: string) => id.trim())
+        .includes(this.selectedSchoolDivision.toString());
+    });
   }
 
   // Search Filter

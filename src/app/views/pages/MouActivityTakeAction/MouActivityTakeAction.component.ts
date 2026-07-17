@@ -32,6 +32,10 @@ interface SchoolDivision {
   id: number;
   schoolDivision: string;
 }
+interface MouCategory {
+  id: number;
+  CategoryName: string;
+}
 
 @Component({
   selector: 'MouActivityTakeAction',
@@ -452,6 +456,8 @@ uploadRequiredDocument(documentName: string, index: number) {
       });
     }
 
+    filtered = filtered.filter(item => this.matchMouCategory(item, this.SelectedMouCategoryActionTaken));
+
     // Then apply search filter if exists
     const query = (this.searchQuery || '').toString().trim().toLowerCase();
     if (query) {
@@ -693,27 +699,41 @@ uploadRequiredDocument(documentName: string, index: number) {
   // master copy for Take Action tab
   MouActivityDocumentsMaster: any[] = [];
   Tab1StatusFilterTakeAction: string = 'all';
-  selectedMouCategory: string = '0';
-  mouCategories: string[] = [];
+  AllMouCategories: MouCategory[] = [];
+  SelectedMouCategoryTakeAction: any = 'All';
+  SelectedMouCategoryActionTaken: any = 'All';
 
   GetAllCategories(): void {
-    this.mouDocumentsService.GetAllCategories().subscribe({
+    this.mouDocumentsService.GetMouCategories().subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
-          this.mouCategories = [...response.item1];
+          this.AllMouCategories = response.item1.map((x: any, index: number) => ({
+            id: index + 1,
+            CategoryName: x.items
+          }));
         } else {
-          this.mouCategories = [];
-          this.showNoDataFoundMessage = true;
-          this.isLoginFailed = true;
+          this.AllMouCategories = [];
         }
       },
       error: err => { this.LoginFailed(err); }
     });
   }
 
+  private matchMouCategory(item: any, selected: any): boolean {
+    if (!selected || selected === 'All') {
+      return true;
+    }
+    const categoryName = selected.CategoryName;
+    return String(item.mouCategory ?? '').toLowerCase() === categoryName.toLowerCase();
+  }
 
-  onCategoryChange(event: any): void {
+
+  onCategoryChangeTakeAction(): void {
     this.applyFiltersTakeAction();
+  }
+
+  onCategoryChangeActionTaken(): void {
+    this.applyFiltersTab1();
   }
 
   onStatusChangeTakeAction(value: string): void {
@@ -735,11 +755,7 @@ uploadRequiredDocument(documentName: string, index: number) {
       });
     }
 
-    if (this.selectedMouCategory && this.selectedMouCategory !== '0') {
-      filtered = filtered.filter(item => {
-        return item.mouCategory === this.selectedMouCategory || item.category === this.selectedMouCategory;
-      });
-    }
+    filtered = filtered.filter(item => this.matchMouCategory(item, this.SelectedMouCategoryTakeAction));
 
     // If there's a searchQuery applied globally to this tab, keep parity with other filters
     const query = (this.searchQuery || '').toString().trim().toLowerCase();
@@ -782,8 +798,8 @@ uploadRequiredDocument(documentName: string, index: number) {
           this.loadingIndicator = false;
           this.columns = []; this.headHtmlData = [];
           this.headHtmlData = this.MouActivityDocuments[0];
-          this.columns = Object.keys(this.MouActivityDocuments[0]);
-          this.columns = this.columns.filter((item: any) => item !== 'newMouId' && item !== 'filePath' && item != 'mouPartnerName' && item != 'actionApprovalStatus' && item !== 'sessionAcademicYear' && item !== 'mouApprovedByFacultyName' && item !== 'assignedToFacultyName' && item !== 'schoolDivisionInvolved' && item !== 'sessionId' && item !== 'documentUploaded' && item !== 'activityTitle' && item !== 'participantsCount' && item !== 'activityCount' && item !== 'uploadActivityDate' && item !== 'activityStartDate' && item !== 'activityEndDate' && item !== 'authorityRemarks' && item !== 'activityAlloted' && item !== 'mouTitle' && item !== 'mouStartDate' && item !== 'mouStatus' && item !== 'mouEndDate' && item !== 'startDate' && item !== 'endDate' && item !== 'actionAssignedBy' && item !== 'activityDetails' && item !== 'approvalStatus' && item !== 'approvalDate' && item !== 'userRemarks' && item !== 'disapprovalReason' && item !== 'uploadedActionFile' && item !== 'uploadedProofTitle' && item !== 'uid' && item !== 'mouId' && item !== 'id');
+          // this.columns = Object.keys(this.MouActivityDocuments[0]);
+          // this.columns = this.columns.filter((item: any) => item !== 'mouPartnerName' &&  item !== 'uploadActivityDate' &&  item !== 'newMouId' &&  item !== 'newMouId' && item !== 'filePath' && item != 'mouPartnerName' && item != 'actionApprovalStatus' && item !== 'sessionAcademicYear' && item !== 'mouApprovedByFacultyName' && item !== 'assignedToFacultyName' && item !== 'schoolDivisionInvolved' && item !== 'sessionId' && item !== 'documentUploaded' && item !== 'activityTitle' && item !== 'participantsCount' && item !== 'activityCount' && item !== 'uploadActivityDate' && item !== 'activityStartDate' && item !== 'activityEndDate' && item !== 'authorityRemarks' && item !== 'activityAlloted' && item !== 'mouTitle' && item !== 'mouStartDate' && item !== 'mouStatus' && item !== 'mouEndDate' && item !== 'startDate' && item !== 'endDate' && item !== 'actionAssignedBy' && item !== 'activityDetails' && item !== 'approvalStatus' && item !== 'approvalDate' && item !== 'userRemarks' && item !== 'disapprovalReason' && item !== 'uploadedActionFile' && item !== 'uploadedProofTitle' && item !== 'uid' && item !== 'mouId' && item !== 'id');
           this.columns.push()
           this.loadingIndicator = false;
         } else {
@@ -985,26 +1001,7 @@ uploadRequiredDocument(documentName: string, index: number) {
   }
 
   search() {
-    const query = this.searchQuery.trim().toLowerCase();
-    this.filteredMouActivityDocuments = this.MouActivityDocuments.filter(item => {
-      return Object.entries(item).some(([key, val]) => {
-        if (val !== null && val !== undefined) {
-          let valueString = String(val).toLowerCase();
-
-          if (key === 'mouId') {
-            const numericId = Number(val); // Convert mouid to a number
-
-            if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
-              return true;
-            }
-          }
-
-          // General search for all other fields
-          return valueString.includes(query);
-        }
-        return false;
-      });
-    });
+    this.applyFiltersTakeAction();
   }
   searchData() {
     // search should update the filtered view respecting current status filter and session
@@ -1273,8 +1270,8 @@ uploadRequiredDocument(documentName: string, index: number) {
           this.dataSource.data = this.MouActionTakenDocuments;
           this.columns = []; this.headHtmlData = [];
           this.headHtmlData = this.MouActionTakenDocuments[0];
-          this.columns = Object.keys(this.MouActionTakenDocuments[0]);
-          this.columns = this.columns.filter((item: any) => item !== 'approvalStatus' && item !== 'newMouId' && item !== 'assignedToFacultyName' && item !== 'documentUploaded' && item !== 'mouPartner' && item !== 'completedDate' && item !== 'assignedToFacultyUID' && item !== 'startDate' && item !== 'endDate' && item !== 'documentUploadedFile' && item !== 'documentUploadedFile' && item !== 'mouStatus' && item !== 'id' && item !== 'sessionId' && item != 'mouApprovedByFacultyUID' && item != 'sessionAcademicYear' && item != 'activityDetails' && item != 'activityStartDate' && item != 'activityEndDate' && item !== 'assignedToFacultyUID' && item !== 'schoolDivisionInvolved' && item !== 'filePath' && item !== 'fileName' && item !== 'mouId' && item !== 'documentName' && item !== 'isApproved' && item !== 'approvedBy' && item !== 'approvalDate' && item !== 'disapprovalReason' && item !== 'uid' && item !== 'id' && item !== 'file' && item !== 'createdBy' && item !== 'updatedOn' && item !== 'updatedBy' && item !== 'ipAddress');
+          // this.columns = Object.keys(this.MouActionTakenDocuments[0]);
+          // this.columns = this.columns.filter((item: any) => item !== 'approvalStatus' && item !== 'newMouId' && item !== 'assignedToFacultyName' && item !== 'documentUploaded' && item !== 'mouPartner' && item !== 'completedDate' && item !== 'assignedToFacultyUID' && item !== 'startDate' && item !== 'endDate' && item !== 'documentUploadedFile' && item !== 'documentUploadedFile' && item !== 'mouStatus' && item !== 'id' && item !== 'sessionId' && item != 'mouApprovedByFacultyUID' && item != 'sessionAcademicYear' && item != 'activityDetails' && item != 'activityStartDate' && item != 'activityEndDate' && item !== 'assignedToFacultyUID' && item !== 'schoolDivisionInvolved' && item !== 'filePath' && item !== 'fileName' && item !== 'mouId' && item !== 'documentName' && item !== 'isApproved' && item !== 'approvedBy' && item !== 'approvalDate' && item !== 'disapprovalReason' && item !== 'uid' && item !== 'id' && item !== 'file' && item !== 'createdBy' && item !== 'updatedOn' && item !== 'updatedBy' && item !== 'ipAddress');
 
           this.columns.push()
 

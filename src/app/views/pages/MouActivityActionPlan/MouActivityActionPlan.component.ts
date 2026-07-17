@@ -26,6 +26,10 @@ interface SchoolDivision {
   id: number;
   schoolDivision: string;
 }
+interface MouCategory {
+  id: number;
+  CategoryName: string;
+}
 
 @Component({
   selector: 'MouActivityActionPlan',
@@ -335,6 +339,7 @@ calculateScrollWidth(): void {
     // Reset dropdowns
     this.selectedSchoolDivision = '0';
     this.Tab1statusFilter = 'all';
+    this.SelectedMouCategoryTab1 = 'All';
 
     // Reset search
     this.searchTextTab1 = '';
@@ -386,6 +391,11 @@ calculateScrollWidth(): void {
       }
       return true;
     });
+
+    // =========================
+    // Filter By MOU Category
+    // =========================
+    filtered = filtered.filter(item => this.matchMouCategory(item, this.SelectedMouCategoryTab1));
 
     // =========================
     // Search Filter
@@ -456,24 +466,33 @@ calculateScrollWidth(): void {
   selectedSchoolDivision: any = '0';
   selectedSchoolDivision2: any = '0';
   selectedSchoolDivision3: any = '0';
-  selectedMouCategory: string = '0';
-  selectedMouCategory2: string = '0';
-  selectedMouCategory3: string = '0';
-  mouCategories: string[] = [];
+  AllMouCategories: MouCategory[] = [];
+  SelectedMouCategoryTab1: any = 'All';
+  SelectedMouCategoryTab2: any = 'All';
+  SelectedMouCategoryTab3: any = 'All';
 
   GetAllCategories(): void {
-    this.mouDocumentsService.GetAllCategories().subscribe({
+    this.mouDocumentsService.GetMouCategories().subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
-          this.mouCategories = [...response.item1];
+          this.AllMouCategories = response.item1.map((x: any, index: number) => ({
+            id: index + 1,
+            CategoryName: x.items
+          }));
         } else {
-          this.mouCategories = [];
-          this.showNoDataFoundMessage = true;
-          this.isLoginFailed = true;
+          this.AllMouCategories = [];
         }
       },
       error: err => { this.LoginFailed(err); }
     });
+  }
+
+  private matchMouCategory(item: any, selected: any): boolean {
+    if (!selected || selected === 'All') {
+      return true;
+    }
+    const categoryName = selected.CategoryName;
+    return String(item.mouCategory ?? '').toLowerCase() === categoryName.toLowerCase();
   }
 
   setSchoolDivision(event: any) {
@@ -1025,6 +1044,8 @@ calculateScrollWidth(): void {
 
     filtered = filtered.filter(item => this.matchSchoolDivision(item));
 
+    filtered = filtered.filter(item => this.matchMouCategory(item, this.SelectedMouCategoryTab2));
+
     // -----------------------------
     // Status Filter
     // -----------------------------
@@ -1196,6 +1217,8 @@ calculateScrollWidth(): void {
 
     // Filter by School Division
     filtered = filtered.filter(item => this.matchSchoolDivision3(item));
+
+    filtered = filtered.filter(item => this.matchMouCategory(item, this.SelectedMouCategoryTab3));
 
     // Filter by Status
     if (this.Tab3statusFilter !== 'all') {

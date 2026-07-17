@@ -58,6 +58,16 @@
                 </div>
 
                 <div class="col-sm-3">
+                  <ng-select [(ngModel)]="SelectedMouCategoryTakeAction" [multiple]="false" placeholder="MOU Category"
+                    (change)="onCategoryChangeTakeAction()">
+                    <ng-option [value]="'All'">All Categories</ng-option>
+                    <ng-option *ngFor="let category of AllMouCategories" [value]="category">
+                      {{ category.CategoryName }}
+                    </ng-option>
+                  </ng-select>
+                </div>
+
+                <div class="col-sm-3">
                   <div class="mb-3">
                     <input [(ngModel)]="searchQuery" (keyup)="search()" id="search" type="text" class="form-control"
                       placeholder="Search" aria-label="Search" aria-describedby="basic-addon1" />
@@ -240,13 +250,13 @@
                 </div>
 
                 <div class="col-sm-3">
-                  <select class="form-select w-100" [(ngModel)]="selectedMouCategory"
-                    (change)="onCategoryChange($event)">
-                    <option value="0">All Categories</option>
-                    <option *ngFor="let cat of mouCategories" [value]="cat">
-                      {{ cat }}
-                    </option>
-                  </select>
+                  <ng-select [(ngModel)]="SelectedMouCategoryActionTaken" [multiple]="false" placeholder="MOU Category"
+                    (change)="onCategoryChangeActionTaken()">
+                    <ng-option [value]="'All'">All Categories</ng-option>
+                    <ng-option *ngFor="let category of AllMouCategories" [value]="category">
+                      {{ category.CategoryName }}
+                    </ng-option>
+                  </ng-select>
                 </div>
 
                 <div class="col-sm-3">
@@ -308,7 +318,7 @@
                 <ng-container *ngIf="filteredMouActionTakenDocuments.length > 0; else noDataBlock">
 
                   <div class="table-responsive" *ngIf="filteredMouActionTakenDocuments.length>0 ; else NoRecords">
-                    <ngx-datatable class="bootstrap table table-striped material"
+                    <ngx-datatable class="bootstrap table table-striped material custom-table"
                       [rows]="filteredMouActionTakenDocuments" [loadingIndicator]="loadingIndicator"
                       [columnMode]="ColumnMode.force" [footerHeight]="80" [headerHeight]="80" [rowHeight]="'auto'"
                       [scrollbarH]="true" [limit]="10" rowHeight="auto">
@@ -317,14 +327,14 @@
                       <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="Id" [flexGrow]="1">
                         <ng-template let-row="row" ngx-datatable-cell-template>
                           <ng-container *ngIf="row.newMouId != null">
-                            <span class="text-center d-block p-2">{{ row.newMouId }}</span>
+                            <span class="text-center d-block  ">{{ row.newMouId }}</span>
                           </ng-container>
                         </ng-template>
                       </ngx-datatable-column>
                       <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id" [flexGrow]="1">
                         <ng-template let-row="row" ngx-datatable-cell-template>
                           <ng-container *ngIf="row.mouId != null">
-                            <span class="text-center d-block p-2">MOU/{{ row.mouId }}</span>
+                            <span class="text-center d-block ">MOU/{{ row.mouId }}</span>
                           </ng-container>
                         </ng-template>
                       </ngx-datatable-column>
@@ -345,14 +355,7 @@
                         </ng-template>
                       </ngx-datatable-column>
 
-                      <ngx-datatable-column name="Mou Status *" [sortable]="false" prop="mouStatus" [flexGrow]="1">
-                        <ng-template let-row="row" ngx-datatable-cell-template>
-                          <ng-container *ngIf="row.mouStatus != null">
-                            <span class="text-center d-block p-2">{{ row.mouStatus }}</span>
-                          </ng-container>
-                        </ng-template>
-                      </ngx-datatable-column>
-
+           
 
                       <!-- Approval Status Column -->
                       <ngx-datatable-column name="Approval Status" [sortable]="false" prop="Id" [flexGrow]="1">

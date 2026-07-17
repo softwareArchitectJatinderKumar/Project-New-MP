@@ -277,169 +277,147 @@
 
         <div class="tab-pane fade" id="AllRenewedMou" role="tabpanel" aria-labelledby="AllRenewedMou-tab">
             <div class="row">
-                <ng-container *ngIf="AllRenewedMouDetails.length > 0; else noRecords">
-                    <div class="container-fluid stretch-card">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6 class="card-title d-flex justify-content-center fs-4"> MOU Uploads Details</h6>
-        
-                                <div class="filter-toolbar row g-3 align-items-end">
-                                    <div class="col-sm-2">
-                                        <label class="filter-label">Export</label>
-                                        <button (click)="exportToExcel()" class="btn btn-dark w-100">
-                                            <i class="bi bi-download me-1"></i> Export to Excel
-                                        </button>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <label class="filter-label">MOU Category</label>
-                                        <select class="form-select" [(ngModel)]="selectedMouCategory2"
-                                            (change)="onCategory2Change($event)">
-                                            <option value="0">All Categories</option>
-                                            <option *ngFor="let cat of mouCategories" [value]="cat">
-                                                {{ cat }}
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <label class="filter-label">School / Division</label>
-                                        <select class="form-select" [(ngModel)]="selectedSchoolDivision2"
-                                            (change)="onSchoolDivision2Change($event)">
-                                            <option value="0">All School / Division</option>
-                                            <option *ngFor="let division of allSchoolDivisions" [value]="division.id">
-                                                {{ division.schoolDivision }}
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <label class="filter-label">Search</label>
-                                        <input type="text" [(ngModel)]="filterText" (ngModelChange)="filterData()"
-                                            placeholder="Search by any Field Text" class="form-control" />
-                                    </div>
+                <div class="col-12 stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title d-flex justify-content-center fs-4">MOU Uploads Details</h6>
+
+                            <div class="filter-toolbar row g-3 align-items-end">
+                                <div class="col-md-2">
+                                    <label class="filter-label">Export</label>
+                                    <button (click)="exportToExcel()" class="btn btn-dark w-100"
+                                        [disabled]="filteredRenewedMouDetails.length == 0">
+                                        <i class="bi bi-download me-1"></i> Export to Excel
+                                    </button>
                                 </div>
-        
-                                <div class="grid-scroll-wrapper page-fixed-scroll-container table-responsive-sticky">
-                                    <table id="dataTableExample" class="table table-striped mb-0">
-                                        <thead>
-                                            <tr>
-                                                <th class="form-label fs-6">New MOU Id</th>
-                                                <th class="form-label fs-6">Old MOU Id</th>
-                                                <th class="form-label fs-6">MOU Renewals</th>
-                                                <th class="form-label fs-6">Partner Organisation</th>
-                                                <th class="form-label fs-6">MOU Start Date</th>
-                                                <th class="form-label fs-6">Mou End Date</th>
-                                                <th class="form-label fs-6">View Document</th>
-                                                <th class="form-label fs-6">School Involved</th>
-                                                <th class="form-label fs-6">SPOC Person Detail</th>
-                                                <th class="form-label fs-6">MOU Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <ng-container *ngFor="let DocumentRow of getRecordsForRenewedPage()">
-                                                <tr>
-                                                    <td class="fw-bold fs-6"
-                                                        *ngIf="DocumentRow.newMouId?.length > 0; else NotApplicable">
-                                                        {{DocumentRow.newMouId}}
-                                                    </td>
-                                                    <ng-template #NotApplicable>
-                                                        <td class="fw-bold fs-6 text-info">Not Applicable</td>
-                                                    </ng-template>
-        
-                                                    <td class="fw-bold fs-6">MOU/{{DocumentRow.id}}</td>
-        
-                                                    <td class="fw-bold fs-6"
-                                                        *ngIf="DocumentRow.hasRenewal == null; else NotPossible">
-                                                        <a class="btn btn-dark me-4" (click)="openRenewModal(DocumentRow)"
-                                                            *ngIf="DocumentRow.mouStatus == 'Expired'">
-                                                            <i class="bi bi-arrow-repeat"></i>
-                                                        </a>
-                                                    </td>
-                                                    <ng-template #NotPossible>
-                                                        <td class="fw-bold fs-6 text-info"
-                                                            *ngIf="DocumentRow.hasRenewal != null; else NotPossibles">
-                                                            <a class="btn btn-success me-4"
-                                                                (click)="OpenAllMouRenewalHistory(DocumentRow)">
-                                                                <i class="bi bi-eye"></i>
-                                                            </a>
-                                                        </td>
-                                                        <ng-template #NotPossibles>
-                                                            <td class="fw-bold fs-6 text-info">Not Applicable</td>
-                                                        </ng-template>
-                                                    </ng-template>
-        
-                                                    <td class="fw-bold fs-6">{{DocumentRow.mouPartnerName}}</td>
-                                                    <td class="fw-bold fs-6">{{DocumentRow.mouStartDate | date:'dd/MM/yyyy'}}
-                                                    </td>
-                                                    <td class="fw-bold fs-6">{{DocumentRow.mouEndDate | date:'dd/MM/yyyy'}}</td>
-        
-                                                    <ng-container *ngIf="DocumentRow.filePath; else NoFile">
-                                                        <td>
-                                                            <a class="btn btn-dark me-2" [href]="DocumentRow.filePath"
-                                                                target="_blank">
-                                                                <i class="bi bi-eye"></i>
-                                                            </a>
-                                                        </td>
-                                                    </ng-container>
-                                                    <ng-template #NoFile>
-                                                        <td>No Doc Uploaded</td>
-                                                    </ng-template>
-        
-                                                    <td class="fw-bold fs-6"
-                                                        *ngIf="DocumentRow.schoolDivisionInvolved?.length > 0; else NoSchool">
-                                                        <select class="p-2" id="SchoolInvolvedData" [style]="{ width: '89%' }">
-                                                            <option selected value="0">Check Involved Division</option>
-                                                            <option [value]="getDivisionNameById(schoolId)"
-                                                                *ngFor="let schoolId of DocumentRow.schoolDivisionInvolved.split(',')">
-                                                                {{getDivisionNameById(schoolId)}}
-                                                            </option>
-                                                        </select>
-                                                    </td>
-                                                    <ng-template #NoSchool>
-                                                        <td class="fw-bold fs-6 text-info">Not Applicable</td>
-                                                    </ng-template>
-        
-                                                    <td class="fw-bold fs-6">
-                                                        {{ DocumentRow.spocName != null && DocumentRow.spocEmailId != null &&
-                                                        DocumentRow.spocContactNo ?
-                                                        DocumentRow.spocName + DocumentRow.spocEmailId : 'N/A'}}
-                                                    </td>
-        
-                                                    <td class="fw-bold fs-6"
-                                                        *ngIf="DocumentRow.hasRenewal == null; else Statuss">
-                                                        {{ DocumentRow.mouStatus?.length > 0 ? DocumentRow.mouStatus : 'NA' }}
-                                                    </td>
-                                                    <ng-template #Statuss>
-                                                        <td class="fw-bold fs-6 text-info">Renewed</td>
-                                                    </ng-template>
-                                                </tr>
-                                            </ng-container>
-                                        </tbody>
-                                    </table>
+                                <div class="col-md-2">
+                                    <label class="filter-label">MOU Category</label>
+                                    <select class="form-select" [(ngModel)]="selectedMouCategory2"
+                                        (change)="onCategory2Change($event)">
+                                        <option value="0">All Categories</option>
+                                        <option *ngFor="let cat of mouCategories" [value]="cat">
+                                            {{ cat }}
+                                        </option>
+                                    </select>
                                 </div>
-        
-                                <div class="row d-flex justify-content-between mt-4 mb-2 align-items-center">
-                                    <div class="text-end">
-                                        <mat-paginator [length]="AllRenewedMouDetails.length" [pageSize]="recordsPerPage"
-                                            [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange($event)">
-                                        </mat-paginator>
-                                    </div>
-                                    <div class="text-end">
-                                        Total Records: {{ AllRenewedMouDetails.length }}
-                                    </div>
+                                <div class="col-md-2">
+                                    <label class="filter-label">School / Division</label>
+                                    <select class="form-select" [(ngModel)]="selectedSchoolDivision2"
+                                        (change)="onSchoolDivision2Change($event)">
+                                        <option value="0">All School / Division</option>
+                                        <option *ngFor="let division of allSchoolDivisions" [value]="division.id">
+                                            {{ division.schoolDivision }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="filter-label">Search</label>
+                                    <input [(ngModel)]="renewedSearchQuery" (keyup)="searchRenewed()" id="renewedSearch"
+                                        type="text" class="form-control" placeholder="Search Your Text Here"
+                                        aria-label="Search" />
+                                </div>
+                            </div>
+
+                            <div class="grid-scroll-wrapper">
+                                <div class="grid-scroll-content" appTopScrollSync=".datatable-body">
+                                    <ngx-datatable class="bootstrap material" [rows]="filteredRenewedMouDetails"
+                                        [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.standard"
+                                        [footerHeight]="50" [limit]="15" [headerHeight]="50" [rowHeight]="'auto'"
+                                        [scrollbarH]="true" [scrollbarV]="false"
+                                        [messages]="{ emptyMessage: '' }">
+
+                                        <ngx-datatable-column name="New MOU Id" [width]="140" [sortable]="false" prop="newMouId">
+                                            <ng-template let-row="row" ngx-datatable-cell-template>
+                                                <span class="cell-value" *ngIf="row.newMouId?.length > 0; else notApplicable">{{ row.newMouId }}</span>
+                                                <ng-template #notApplicable><span class="cell-muted">Not Applicable</span></ng-template>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+
+                                        <ngx-datatable-column name="Old MOU Id" [width]="130" [sortable]="false" prop="id">
+                                            <ng-template let-row="row" ngx-datatable-cell-template>
+                                                <span class="cell-value">MOU/{{ row.id }}</span>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+
+                                        <ngx-datatable-column name="MOU Renewals" [width]="130" [sortable]="false" prop="hasRenewal">
+                                            <ng-template let-row="row" ngx-datatable-cell-template>
+                                                <ng-container *ngIf="row.hasRenewal == null; else renewedAction">
+                                                    <a class="btn btn-dark me-4" (click)="openRenewModal(row)"
+                                                        *ngIf="row.mouStatus == 'Expired'">
+                                                        <i class="bi bi-arrow-repeat"></i>
+                                                    </a>
+                                                </ng-container>
+                                                <ng-template #renewedAction>
+                                                    <a class="btn btn-success me-4" (click)="OpenAllMouRenewalHistory(row)">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                </ng-template>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+
+                                        <ngx-datatable-column name="Partner Organisation" [width]="200" [sortable]="false" prop="mouPartnerName">
+                                            <ng-template let-row="row" ngx-datatable-cell-template>
+                                                <span class="cell-value">{{ row.mouPartnerName }}</span>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+
+                                        <ngx-datatable-column name="MOU Start Date" [width]="140" [sortable]="false" prop="mouStartDate">
+                                            <ng-template let-row="row" ngx-datatable-cell-template>
+                                                <span class="cell-value">{{ row.mouStartDate | date:'dd/MM/yyyy' }}</span>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+
+                                        <ngx-datatable-column name="MOU End Date" [width]="140" [sortable]="false" prop="mouEndDate">
+                                            <ng-template let-row="row" ngx-datatable-cell-template>
+                                                <span class="cell-value">{{ row.mouEndDate | date:'dd/MM/yyyy' }}</span>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+
+                                        <ngx-datatable-column name="View Document" [width]="130" [sortable]="false" prop="filePath">
+                                            <ng-template let-row="row" ngx-datatable-cell-template>
+                                                <ng-container *ngIf="row.filePath; else noFile">
+                                                    <a class="btn btn-dark me-2" [href]="row.filePath" target="_blank">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                </ng-container>
+                                                <ng-template #noFile><span class="cell-muted">No Doc Uploaded</span></ng-template>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+
+                                        <ngx-datatable-column name="School Involved" [width]="200" [sortable]="false" prop="schoolDivisionInvolved">
+                                            <ng-template let-row="row" ngx-datatable-cell-template>
+                                                <ng-container *ngIf="row.schoolDivisionInvolved?.length > 0; else noSchool">
+                                                    <ul class="division-list" *ngFor="let schoolId of row.schoolDivisionInvolved.split(',')">
+                                                        <li>{{ getDivisionNameById(schoolId) }}</li>
+                                                    </ul>
+                                                </ng-container>
+                                                <ng-template #noSchool><span class="cell-muted">Not Applicable</span></ng-template>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+
+                                        <ngx-datatable-column name="SPOC Person Detail" [width]="200" [sortable]="false">
+                                            <ng-template let-row="row" ngx-datatable-cell-template>
+                                                <span class="cell-value">
+                                                    {{ row.spocName != null && row.spocEmailId != null && row.spocContactNo
+                                                        ? row.spocName + row.spocEmailId : 'N/A' }}
+                                                </span>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+
+                                        <ngx-datatable-column name="MOU Status" [width]="120" [sortable]="false" prop="mouStatus">
+                                            <ng-template let-row="row" ngx-datatable-cell-template>
+                                                <span class="cell-value" *ngIf="row.hasRenewal == null; else renewedStatus">
+                                                    {{ row.mouStatus?.length > 0 ? row.mouStatus : 'NA' }}
+                                                </span>
+                                                <ng-template #renewedStatus><span class="cell-value text-info">Renewed</span></ng-template>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+                                    </ngx-datatable>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </ng-container>
-                <ng-template #noRecords>
-                    <div class="col-12 stretch-card">
-                        <div class="card">
-                            <div class="card-body">
-                                <label class="text-center fs-2 d-flex justify-content-center">No Record(s) are
-                                    Available.</label>
-                            </div>
-                        </div>
-                    </div>
-                </ng-template>
+                </div>
             </div>
         </div>
     </div>

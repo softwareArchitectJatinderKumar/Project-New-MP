@@ -277,13 +277,13 @@
                             <div class="card-body">
                                 <h6 class="card-title d-flex justify-content-center fs-4 "> MOU Uploads Details</h6>
                                 <div class="col-12 d-flex justify-content-center">
-                                    <div class="col-sm-3 ">
+                                    <div class="col-sm-2 ">
                                         <div class="mb-3 ms-5">
                                             <button (click)="exportToExcel()" class="btn btn-dark ">Export to
                                                 Excel</button>
                                         </div>
                                     </div>
-                                    <div class="col-sm-3 ">
+                                    <div class="col-sm-2 ">
                                 
                                         <select class="form-select" [(ngModel)]="statusFilter" (change)="onStatusChange($event)">
                                             <option value="all">All MOU</option>
@@ -292,7 +292,7 @@
                                             <option value="renewed">Renewed</option>
                                         </select>
                                     </div>
-                                    <div class="col-sm-3 ">
+                                    <div class="col-sm-2 ">
                                         <!-- <ng-select [items]="AllMouCategories" bindLabel="items" [(ngModel)]="SelectedMouCategory" placeholder="Select"
                                                                                                                                                                                                     [multiple]="false" (change)="applyFilters()">
                                                                                                                                                                                                 </ng-select> -->
@@ -305,9 +305,18 @@
                                         </ng-select>  
                                     
                                     </div>
-                                    <div class="col-sm-3 ">
-                                        <input type="text" [(ngModel)]="filterText" (ngModelChange)="filterData()"
-                                            placeholder="Search by any Field Text " class="form-control" />
+                                    <div class="col-sm-2 ">
+                                        <select class="form-select" [(ngModel)]="selectedSchoolDivision"
+                                            (change)="onSchoolDivisionChange($event)">
+                                            <option value="0">All School / Division</option>
+                                            <option *ngFor="let division of allSchoolDivisions" [value]="division.id">
+                                                {{ division.schoolDivision }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-2 ">
+                                        <input [(ngModel)]="searchQuery" (keyup)="applyFilters()" id="search" type="text"
+                                            class="form-control" placeholder="Search Your Text Here" aria-label="Search" />
                                     </div>
                                 </div>
 

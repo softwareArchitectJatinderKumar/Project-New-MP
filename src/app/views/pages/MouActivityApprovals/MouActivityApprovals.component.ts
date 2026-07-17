@@ -24,6 +24,10 @@ interface SchoolDivision {
   id: number;
   schoolDivision: string;
 }
+interface MouCategory {
+  id: number;
+  CategoryName: string;
+}
 
 @Component({
   selector: 'app-MoUActivityApprovals',
@@ -130,18 +134,19 @@ initializeTopScrollbar(): void {
   statusFilter: string = 'all';
   approvalFilter: string = 'all';
   selectedSchoolDivision: any = '0';
-  selectedMouCategory: string = '0';
-  mouCategories: string[] = [];
+  SelectedMouCategory: any = 'All';
+  AllMouCategories: MouCategory[] = [];
 
   GetAllCategories(): void {
-    this.mouDocumentsService.GetAllCategories().subscribe({
+    this.mouDocumentsService.GetMouCategories().subscribe({
       next: response => {
         if (response.item1 && response.item1.length > 0) {
-          this.mouCategories = [...response.item1];
+          this.AllMouCategories = response.item1.map((x: any, index: number) => ({
+            id: index + 1,
+            CategoryName: x.items
+          }));
         } else {
-          this.mouCategories = [];
-          this.showNoDataFoundMessage = true;
-          this.isLoginFailed = true;
+          this.AllMouCategories = [];
         }
       },
       error: err => { this.LoginFailed(err); }
@@ -205,10 +210,11 @@ initializeTopScrollbar(): void {
     }
 
     // Category Filter
-    if (this.selectedMouCategory && this.selectedMouCategory !== '0') {
-      filtered = filtered.filter(item => {
-        return item.mouCategory === this.selectedMouCategory || item.category === this.selectedMouCategory;
-      });
+    if (this.SelectedMouCategory && this.SelectedMouCategory !== 'All') {
+      filtered = filtered.filter(item =>
+        String(item.mouCategory ?? '').toLowerCase() ===
+        this.SelectedMouCategory.CategoryName.toLowerCase()
+      );
     }
 
     // Search

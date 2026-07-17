@@ -40,7 +40,7 @@
                     <div class="col-sm-2">
                         <select class="form-select w-100" [(ngModel)]="approvalFilter"
                             (change)="onApprovalFilterChange()">
-                            <option value="all">All Approvals</option>
+                            <option value="all">All </option>
                             <option value="approved">Approved</option>
                             <option value="pending">Pending</option>
                             <option value="disapproved">Disapproved</option>
@@ -48,13 +48,13 @@
                     </div>
 
                     <div class="col-sm-2">
-                        <select class="form-select w-100" [(ngModel)]="selectedMouCategory"
-                            (change)="onCategoryChange($event)">
-                            <option value="0">All Categories</option>
-                            <option *ngFor="let cat of mouCategories" [value]="cat">
-                                {{ cat }}
-                            </option>
-                        </select>
+                        <ng-select [(ngModel)]="SelectedMouCategory" [multiple]="false" placeholder="MOU Category"
+                            class="w-100" (change)="onCategoryChange($event)">
+                            <ng-option [value]="'All'">All Categories</ng-option>
+                            <ng-option *ngFor="let category of AllMouCategories" [value]="category">
+                                {{ category.CategoryName }}
+                            </ng-option>
+                        </ng-select>
                     </div>
 
                     <div class="col-sm-2">
@@ -151,11 +151,14 @@
                                                             </ng-container>
                                                         </ng-template>
                                                     </ngx-datatable-column>
-                                                    <ngx-datatable-column name="MOU Category" [sortable]="false" prop="mouCategory">
-                                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                                                             
-                                                            <span style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.mouCategory}}</span>
-                                                             
+                                                    <ngx-datatable-column name="MOU Category" [sortable]="false"
+                                                        prop="mouCategory">
+                                                        <ng-template let-row="row" let-value="value"
+                                                            let-rowIndex="rowIndex" ngx-datatable-cell-template>
+
+                                                            <span
+                                                                style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.mouCategory}}</span>
+
                                                         </ng-template>
                                                     </ngx-datatable-column>
 
