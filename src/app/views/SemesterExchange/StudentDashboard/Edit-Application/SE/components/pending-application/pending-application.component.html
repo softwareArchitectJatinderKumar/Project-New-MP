@@ -134,7 +134,7 @@
           (fileSelected)="fileSelected.emit($event)" (prevClick)="prevStep()">
         </app-step-documents> -->
         <stage-1-Documents [stuApplication]="stuApplication" [stagesDetail]="stagesDetail"
-        [documentApprovals]="documentApprovals" [localServerUrl]="localServerUrl"
+        [documentApprovals]="documentApprovals" [localServerUrl]="localServerUrl" [isParentLoading]="isParentLoading"
         (fileSelected)="fileSelected.emit($event)">
       </stage-1-Documents>
       </section>
@@ -144,7 +144,7 @@
     <!-- Stage I Documents -->
     <div *ngIf="activeTab === 'stage1'">
       <stage-1-Documents [stuApplication]="stuApplication" [stagesDetail]="stagesDetail"
-        [documentApprovals]="documentApprovals" [localServerUrl]="localServerUrl"
+        [documentApprovals]="documentApprovals" [localServerUrl]="localServerUrl" [isParentLoading]="isParentLoading"
         (fileSelected)="fileSelected.emit($event)">
       </stage-1-Documents>
     </div>

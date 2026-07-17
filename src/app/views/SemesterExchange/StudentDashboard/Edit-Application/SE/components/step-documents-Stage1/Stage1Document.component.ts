@@ -1,9 +1,12 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
-  Output
+  OnChanges,
+  Output,
+  SimpleChanges,
 }
   from '@angular/core';
 import {
@@ -31,13 +34,20 @@ import Swal from 'sweetalert2';
   styleUrls: ['./step-documents.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Stage1DocumentComponent {
+export class Stage1DocumentComponent implements OnChanges {
   @Input() stuApplication!: StudentApplication;
   @Input() stagesDetail: StageDetailRow[] = [];
   @Input() documentApprovals: DocumentApproval[] = [];
   @Input() localServerUrl = '';
+  @Input() isParentLoading = false;
 
   @Output() fileSelected = new EventEmitter<FileSelectedEvent>();
+
+  private pendingFiles = new Map<FileSelectedEvent['key'], FileSelectedEvent>();
+  private uploadingKeys = new Set<FileSelectedEvent['key']>();
+  private wasParentLoading = false;
+
+  constructor(private cdr: ChangeDetectorRef) {}
 
   /** Once a document has been Approved or Rejected, its upload/replace input is disabled. */
   isUploadDisabled(documentName: string): boolean {
@@ -94,6 +104,46 @@ export class Stage1DocumentComponent {
     window.open(this.localServerUrl + row.sampleFormat, '_blank');
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['isParentLoading']) {
+      if (this.wasParentLoading && !this.isParentLoading) {
+        this.uploadingKeys.clear();
+        this.cdr.markForCheck();
+      }
+      this.wasParentLoading = this.isParentLoading;
+    }
+    if (changes['stuApplication'] && this.stuApplication) {
+      this.clearResolvedPendingFiles();
+    }
+  }
+
+  hasPendingFile(key: FileSelectedEvent['key']): boolean {
+    return this.pendingFiles.has(key);
+  }
+
+  getPendingFileName(key: FileSelectedEvent['key']): string {
+    return this.pendingFiles.get(key)?.fileName ?? '';
+  }
+
+  isUploading(key: FileSelectedEvent['key']): boolean {
+    return this.uploadingKeys.has(key);
+  }
+
+  canUpload(key: FileSelectedEvent['key'], documentName: string): boolean {
+    return this.hasPendingFile(key) && !this.isUploading(key) && !this.isUploadDisabled(documentName);
+  }
+
+  uploadDoc(key: FileSelectedEvent['key']): void {
+    const pending = this.pendingFiles.get(key);
+    if (!pending) {
+      Swal.fire({ title: 'Please select a file first.', icon: 'warning' });
+      return;
+    }
+    this.uploadingKeys.add(key);
+    this.cdr.markForCheck();
+    this.fileSelected.emit(pending);
+  }
+
   async onFilePicked(event: Event, key: FileSelectedEvent['key']): Promise<void> {
     const target = event.target as HTMLInputElement;
     const raw = target.files?.[0];
@@ -107,10 +157,22 @@ export class Stage1DocumentComponent {
     const file = safeName !== raw.name ? new File([raw], safeName, { type: raw.type }) : raw;
     try {
       const base64 = await this.readAsBase64(file);
-      this.fileSelected.emit({ key, file, base64, fileName: file.name });
+      this.pendingFiles.set(key, { key, file, base64, fileName: file.name });
+      this.cdr.markForCheck();
     } catch {
       Swal.fire({ title: 'Failed to read file', icon: 'error' });
     }
+  }
+
+  private clearResolvedPendingFiles(): void {
+    let changed = false;
+    for (const doc of this.docKeys) {
+      if (this.hasFile(doc.appField)) {
+        if (this.pendingFiles.delete(doc.key)) changed = true;
+        if (this.uploadingKeys.delete(doc.key)) changed = true;
+      }
+    }
+    if (changed) this.cdr.markForCheck();
   }
 
   private readAsBase64(file: File): Promise<string> {

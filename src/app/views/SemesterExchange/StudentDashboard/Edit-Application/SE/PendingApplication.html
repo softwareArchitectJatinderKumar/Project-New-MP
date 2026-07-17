@@ -92,7 +92,8 @@
 
     <section *ngIf="activeTab === 'stage1'">
       <stage-1-Documents [stuApplication]="s.stuApplication" [stagesDetail]="s.StagesDetail"
-        [localServerUrl]="s.localServerUrl" (fileSelected)="s.onFileSelected($event)">
+        [localServerUrl]="s.localServerUrl" [isParentLoading]="s.isLoading"
+        (fileSelected)="s.onFileSelected($event)">
       </stage-1-Documents>
     </section>
 

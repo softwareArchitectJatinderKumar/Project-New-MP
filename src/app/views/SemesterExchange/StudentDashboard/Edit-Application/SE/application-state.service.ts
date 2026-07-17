@@ -240,15 +240,17 @@ export class ApplicationStateService implements OnDestroy {
   // ── Documents ──────────────────────────────────────────────────────────────
   onFileSelected(event: FileSelectedEvent): void {
     const map: Record<string, { fileField: string; nameField: string }> = {
-      consent: { fileField: 'ConsentLetterData', nameField: 'ConsentLetterFileName' },
-      resume: { fileField: 'ResumeFileData', nameField: 'ResumeFileName' },
-      passport: { fileField: 'PassportFileData', nameField: 'PassportFileName' },
-      english: { fileField: 'EnglishProofData', nameField: 'EnglishProofFileName' },
-      fees: { fileField: 'FeesProofData', nameField: 'FeesProofFileName' },
-      affidavitPath: { fileField: 'AffidavitData', nameField: 'AffidavitPath' },
-      offerLetter: { fileField: 'OfferLetterPath', nameField: 'OfferLetterPath' },
-      outBoundTicket: { fileField: 'OutBoundTicket', nameField: 'OutBoundTicket' },
-      returnTicket: { fileField: 'ReturnTicketPath', nameField: 'ReturnTicketPath' },
+      consent:            { fileField: 'ConsentLetterData',    nameField: 'ConsentLetterFileName' },
+      resume:             { fileField: 'ResumeFileData',        nameField: 'ResumeFileName' },
+      passport:           { fileField: 'PassportFileData',      nameField: 'PassportFileName' },
+      english:            { fileField: 'EnglishProofData',      nameField: 'EnglishProofFileName' },
+      fees:               { fileField: 'FeesProofData',         nameField: 'FeesProofFileName' },
+      affidavitPath:      { fileField: 'AffidavitData',         nameField: 'AffidavitPath' },
+      indeminityBondPath: { fileField: 'IndeminityBondData',    nameField: 'IndeminityBondPath' },
+      offerLetterPath:    { fileField: 'OfferLetterData',       nameField: 'OfferLetterPath' },
+      outBoundTicket:     { fileField: 'OutBoundTicketData',    nameField: 'OutBoundTicket' },
+      returnTicketPath:   { fileField: 'ReturnTicketData',      nameField: 'ReturnTicketPath' },
+      visaDocumentPath:   { fileField: 'VisaDocumentData',      nameField: 'VisaDocumentPath' },
     };
     const d = map[event.key];
     if (!d) return;

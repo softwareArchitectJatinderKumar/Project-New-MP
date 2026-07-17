@@ -1,4 +1,6 @@
 <div>
+
+  <!-- Stage I Documents -->
   <div class="col-md-12 col-lg-10 mx-auto mb-3">
     <div class="card section">
       <div class="card-header">Stage II Document(s)</div>
@@ -7,10 +9,10 @@
           <thead>
             <tr>
               <th style="width:5%">S.No</th>
-              <th style="width:30%">Document</th>
-              <th style="width:20%">Format Template</th>
-              <th style="width:30%">Update / Replace File</th>
-              <th style="width:15%">View Uploaded</th>
+              <th style="width:28%">Document</th>
+              <th style="width:18%">Sample Template</th>
+              <th style="width:32%">Upload / Replace File</th>
+              <th style="width:17%">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -27,16 +29,34 @@
                 <span *ngIf="!hasSampleFormat(doc.documentName)" class="text-muted small">Not Available</span>
               </td>
               <td>
-                <input type="file" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png"
-                  (change)="onFilePicked($event, doc.key)" />
+                <div class="d-flex flex-column gap-1">
+                  <input type="file" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png"
+                    [disabled]="isUploadDisabled(doc.documentName) || isUploading(doc.key)"
+                    (change)="onFilePicked($event, doc.key)" />
+                  <span *ngIf="getPendingFileName(doc.key)" class="text-muted small text-truncate"
+                    style="max-width:220px">
+                    Selected: {{ getPendingFileName(doc.key) }}
+                  </span>
+                  <span *ngIf="isUploading(doc.key)" class="d-flex align-items-center gap-1 text-primary small">
+                    <span class="spinner-border spinner-border-sm"></span>
+                    Uploading...
+                  </span>
+                  <span *ngIf="approvalLabel(doc.documentName) as label" class="badge"
+                    [ngClass]="label === 'Approved' ? 'bg-success' : 'bg-danger'">
+                    {{ label }}
+                  </span>
+                </div>
               </td>
               <td>
-                <button *ngIf="hasFile(doc.appField)" type="button"
-                  class="btn btn-info btn-sm d-flex align-items-center gap-1"
-                  (click)="viewFile(getFileName(doc.appField))">
-                  <span class="material-icons md-18">description</span>
+                <button type="button" class="btn btn-primary btn-sm w-100 mb-1"
+                  [disabled]="!canUpload(doc.key, doc.documentName)" (click)="uploadDoc(doc.key)">
+                  Upload
                 </button>
-                <span *ngIf="!hasFile(doc.appField)" class="text-muted small">—</span>
+                <button *ngIf="hasFile(doc.appField)" type="button"
+                  class="btn btn-info btn-sm w-100 d-flex align-items-center justify-content-center gap-1"
+                  (click)="viewFile(getFileName(doc.appField))">
+                  <span class="material-icons md-18">description</span> View
+                </button>
               </td>
             </tr>
           </tbody>
@@ -44,4 +64,5 @@
       </div>
     </div>
   </div>
+
 </div>

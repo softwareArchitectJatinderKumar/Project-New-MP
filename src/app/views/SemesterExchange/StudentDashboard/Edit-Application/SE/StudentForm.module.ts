@@ -11,9 +11,11 @@ import { StepUniversityComponent } from './components/step-university/step-unive
 import { StepDetailsComponent } from './components/step-details/step-details.component';
 import { StepDocumentsComponent } from './components/step-documents/step-documents.component';
 import { Stage1DocumentComponent } from './components/step-documents-Stage1/Stage1Document.component';
+
 import { RejectedApplicationComponent } from './components/rejected-application/rejected-application.component';
 import { ApprovedApplicationComponent } from './components/approved-application/approved-application.component';
 import { PendingApplicationComponent } from './components/pending-application/pending-application.component';
+import { StepStage2Component } from './components/step-stage2/step-stage2.component';
 
 const routes: Routes = [{ path: '', component: EditApplicationComponent }];
 
@@ -33,6 +35,7 @@ const routes: Routes = [{ path: '', component: EditApplicationComponent }];
     StepDetailsComponent,
     StepDocumentsComponent,
     Stage1DocumentComponent,
+    StepStage2Component,
     RejectedApplicationComponent,
     ApprovedApplicationComponent,
     PendingApplicationComponent,

@@ -45,6 +45,7 @@ export class PendingApplicationComponent {
   @Input() isValid3 = true;
   @Input() stagesDetail: StageDetailRow[] = [];
   @Input() documentApprovals: DocumentApproval[] = [];
+  @Input() isParentLoading = false;
 
   @Output() editClick = new EventEmitter<number>();
   @Output() cancelClick = new EventEmitter<number>();

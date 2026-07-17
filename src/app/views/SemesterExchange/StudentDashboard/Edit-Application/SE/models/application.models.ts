@@ -59,7 +59,7 @@ export interface StudentApplication {
   offerLetterPath :string;
   outBoundTicket :string ; 
   returnTicketPath:string
-  
+  visaDocumentPath:string;
 }
 
 export interface StageDetailRow {
@@ -140,7 +140,7 @@ export interface SelectOption {
 }
 
 export interface FileSelectedEvent {
-  key: 'fees' | 'resume' | 'consent' | 'passport' | 'english' | 'affidavitPath' | 'indeminityBondPath' | 'offerLetterPath'|'outBoundTicket'|'returnTicketPath';
+  key: 'fees' | 'resume' | 'consent' | 'passport' | 'english' | 'affidavitPath' | 'indeminityBondPath' | 'offerLetterPath'|'outBoundTicket'|'returnTicketPath'|'visaDocumentPath';
   file: File;
   base64: string;
   fileName: string;

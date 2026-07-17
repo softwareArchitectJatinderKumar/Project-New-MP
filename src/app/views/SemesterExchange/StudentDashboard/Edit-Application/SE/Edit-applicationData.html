@@ -126,9 +126,9 @@
 
       <app-approved-application *ngIf="LockedStatus === 'Approved'"
         [stagesDetail]="StagesDetail" [stageDocumentData]="StageDocumentData" [documentApprovals]="DocumentApprovals"
-        [localServerUrl]="localServerUrl"  [stuApplication]="stuApplication"
-        (uploadStage)="uploadStageDocumentRow($event)" (stageFilePicked)="onStageFilePicked($event)"
-        (viewDocument)="viewDocument($event)">
+        [localServerUrl]="localServerUrl" [stuApplication]="stuApplication" [isParentLoading]="isLoading"
+        (fileSelected)="onFileSelected($event)" (uploadStage)="uploadStageDocumentRow($event)"
+        (stageFilePicked)="onStageFilePicked($event)" (viewDocument)="viewDocument($event)">
       </app-approved-application>
 
       <app-pending-application *ngIf="LockedStatus === 'Pending'"
@@ -139,7 +139,7 @@
         [countries]="countries" [uniData]="uniData" [stuApplication]="stuApplication"
         [localServerUrl]="localServerUrl"
         [isValid1]="isCurrentStepValid(1)" [isValid2]="isCurrentStepValid(2)" [isValid3]="isCurrentStepValid(3)"
-        [stagesDetail]="StagesDetail" [documentApprovals]="DocumentApprovals"
+        [stagesDetail]="StagesDetail" [documentApprovals]="DocumentApprovals" [isParentLoading]="isLoading"
         (editClick)="startEdit($event)" (cancelClick)="cancelEdit($event)" (updateClick)="updateStep($event)"
         (fileSelected)="onFileSelected($event)" (submitClick)="submitDocuments()">
       </app-pending-application>

@@ -219,13 +219,17 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
   // ── Documents ──────────────────────────────────────────────────────────────
   onFileSelected(event: FileSelectedEvent): void {
     const map: Record<string, { fileField: string; nameField: string }> = {
-      consent:           { fileField: 'ConsentLetterData',    nameField: 'ConsentLetterFileName' },
-      resume:            { fileField: 'ResumeFileData',        nameField: 'ResumeFileName' },
-      passport:          { fileField: 'PassportFileData',      nameField: 'PassportFileName' },
-      english:           { fileField: 'EnglishProofData',      nameField: 'EnglishProofFileName' },
-      fees:              { fileField: 'FeesProofData',         nameField: 'FeesProofFileName' },
-      affidavitPath:     { fileField: 'AffidavitData',         nameField: 'AffidavitPath' },
-      indeminityBondPath:{ fileField: 'IndeminityBondData',    nameField: 'IndeminityBondPath' },
+      consent:            { fileField: 'ConsentLetterData',    nameField: 'ConsentLetterFileName' },
+      resume:             { fileField: 'ResumeFileData',        nameField: 'ResumeFileName' },
+      passport:           { fileField: 'PassportFileData',      nameField: 'PassportFileName' },
+      english:            { fileField: 'EnglishProofData',      nameField: 'EnglishProofFileName' },
+      fees:               { fileField: 'FeesProofData',         nameField: 'FeesProofFileName' },
+      affidavitPath:      { fileField: 'AffidavitData',         nameField: 'AffidavitPath' },
+      indeminityBondPath: { fileField: 'IndeminityBondData',    nameField: 'IndeminityBondPath' },
+      offerLetterPath:    { fileField: 'OfferLetterData',       nameField: 'OfferLetterPath' },
+      outBoundTicket:     { fileField: 'OutBoundTicketData',    nameField: 'OutBoundTicket' },
+      returnTicketPath:   { fileField: 'ReturnTicketData',      nameField: 'ReturnTicketPath' },
+      visaDocumentPath:   { fileField: 'VisaDocumentData',      nameField: 'VisaDocumentPath' },
     };
     const d = map[event.key];
     if (!d) return;
@@ -376,6 +380,7 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
           this.getStudentDetail();
           this.getStagesDetails();
           this.updateBranding();
+
         },
         error: err => this.loginFailed(err),
       });
@@ -386,6 +391,9 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     if (el) el.innerHTML = 'Semester <span class="text-info">Exchange Student</span> Dashboard';
     const logo = document.getElementById('imgLogo') as HTMLImageElement | null;
     if (logo) logo.style.width = '164px';
+
+    
+           console.log('********* Stage DEtails data ***********'+JSON.stringify(this.StagesDetail));
   }
 
   /**
@@ -516,6 +524,9 @@ export class EditApplicationComponent implements OnInit, OnDestroy {
     this.studentService.GetAllCheckListDocs()
       .pipe(takeUntil(this.destroy$))
       .subscribe({ next: (r: any) => this.StagesDetail = r?.item1 ?? [] });
+
+
+     
   }
 
   private getStageDocumentDetails(): void {
