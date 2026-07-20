@@ -215,7 +215,7 @@
                             <i class="bi bi-eye me-1"></i>View Application
                         </button>
                         <!-- a) Forward to Faculty -->
-                        <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToFaculty(row)"
+                        <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToFaculty(row,'Faculty')"
                             [disabled]="row.dealingFaculty?.length > '0'">
                             <i class="bi bi-send me-1"></i>Forward to Faculty
                         </button>
@@ -622,10 +622,14 @@
                         <ng-container *ngIf="row.dealingAuthority; else noCounsellors">
                             <span class="badge bg-success">{{ row.dealingAuthority }}</span>
                             <br />
-                            <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToCounsellor(row)"> Change</button>
+                            <!-- <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToCounsellor(row)"> Change</button> -->
+                            <button class="btn btn-warning btn-sm me-1 mb-1"
+                                (click)="ForwardToFaculty(row, 'Counsellor')">
+                                Change</button>
                         </ng-container>
                         <ng-template #noCounsellors>
-                            <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToCounsellor(row)" [disabled]="row.dealingAuthority?.length > 0">
+                            <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToCounsellor(row)"
+                                [disabled]="row.dealingAuthority?.length > 0">
                                 <i class="bi bi-send me-1"></i>Assign Faculty </button>
                         </ng-template>
                     </ng-template>
@@ -636,11 +640,11 @@
                         <ng-container *ngIf="row.dealingFaculty; else noCounsellor">
                             <span class="badge bg-success">{{ row.dealingFaculty }}</span>
                             <br />
-                            <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToFaculty(row)">
+                            <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToFaculty(row,'Faculty')">
                                 Change</button>
                         </ng-container>
                         <ng-template #noCounsellor>
-                            <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToFaculty(row)"
+                            <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToFaculty(row, 'Faculty')"
                                 [disabled]="row.dealingFaculty?.length > 0">
                                 <i class="bi bi-send me-1"></i>Assign Faculty
                             </button>
@@ -855,7 +859,7 @@
                         </button>
                         <!-- d) Accept -->
                         <!-- [disabled]="approvalLabel(row.isApproved) === 'Rejected' || row.isLocked=='True' || row.isLocked=='1' || row.isLocked=='0' || row.isLocked=='false'"> -->
-                         <button type="button" class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)"
+                        <button type="button" class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)"
                             [disabled]="
                                                   (
                                                     ['notrequired', 'applied', 'notgiven'].includes((row.englishTestType || '').toLowerCase()) &&
@@ -868,15 +872,14 @@
                                                  
                                                 ">
                             <i class="bi bi-check-circle me-1"></i>
-                              <!-- ||
+                            <!-- ||
                                                   (
                                                     approvalLabel(row.isApproved) === 'Rejected' || row.isLocked=='True' || row.isLocked=='1' || row.isLocked=='0' || row.isLocked=='false'
                                                   ) -->
                             Accept
                         </button>
                         <!-- d) Reject -->
-                        <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)"
-                        >
+                        <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)">
                             <!-- [disabled]="approvalLabel(row.isApproved) === 'Rejected' || row.isLocked=='True' || row.isLocked=='1' || row.isLocked=='0' || row.isLocked=='false'"> -->
                             <i class="bi bi-x-circle me-1"></i>Reject
                         </button>
@@ -1481,8 +1484,8 @@
                 <select class="form-select" formControlName="UniversitySelected">
 
                     <option [ngValue]="null" disabled selected>
-        Select University
-    </option>
+                        Select University
+                    </option>
 
                     <option *ngIf="UniversityOption1" [value]="UniversityOption1">
                         {{ UniversityOption1 }}
@@ -1655,7 +1658,7 @@
     <div class="modal-header">
         <h5 class="modal-title">
             <i class="bi bi-pencil-square me-2"></i>
-           Forward Application To User
+            Forward Application To User {{this.Roles}}
         </h5>
 
         <button type="button" class="btn-close" (click)="modal.dismiss()">
@@ -1674,48 +1677,48 @@
                     <input type="text" class="form-control" [value]="this.SelectedRegNo" disabled />
                 </div>
             </div>
-        
+
             <div class="mb-3">
                 <label class="form-label"> Select Employee <span class="text-danger">*</span>
                 </label>
-        
+
                 <input type="text" class="form-control" [formControl]="employeeControl3" (input)="onInput3()"
                     (keydown)="onKeydown3($event)" (focus)="showSuggestions3=true" (blur)="hideSuggestions3()"
                     autocomplete="off" placeholder="Search Faculty">
-        
+
                 <div *ngIf="showSuggestions3 && filteredEmployeesData3?.length"
                     class="position-absolute bg-white border rounded shadow-sm w-100" style="
                         max-height:250px;
                         overflow-y:auto;
                         z-index:9999;
                       ">
-        
+
                     <div *ngFor="
                           let emp of filteredEmployeesData3;
                           let i=index
                         " class="p-2 border-bottom cursor-pointer" [class.bg-light]="
                           i===activeSuggestionIndex3
                         " (mousedown)="selectEmployee3(emp)">
-        
+
                         {{ emp.employeeName }}
                         ({{ emp.employeeCode }})
-        
+
                     </div>
-        
+
                 </div>
-        
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
                         Cancel
                     </button>
-        
+
                     <button type="submit" class="btn btn-success" [disabled]="!isForwardToUIDFormSubmitted">
                         <i class="bi bi-check-circle me-1"></i>
                         Accept Application
                     </button>
                 </div>
             </div>
-        
+
         </form>
     </div>
 </ng-template>

@@ -296,8 +296,9 @@ onInput3() {
 
   ForwardToUIDForm!: FormGroup;
 
-CdealingFaculty:any;
-  ForwardToFaculty(application: Application): void {
+CdealingFaculty:any; Roles:any;
+  ForwardToFaculty(application: Application, Role:string): void {
+    this.Roles = Role;
     this.CdealingFaculty= application.dealingFaculty;
     this.SelectedRegNo = application.registrationNo;
     this.SelectedAID = application.applicationId;    
@@ -342,7 +343,7 @@ CdealingFaculty:any;
     const fd = new FormData();
     fd.append('RegistrationNo', this.SelectedRegNo);
     fd.append('HODUID', this.newId);
-    fd.append('UserAction', 'Faculty');
+    fd.append('UserAction', this.Roles);
     this.sendForwardRequest(fd);
   }
 
@@ -357,7 +358,8 @@ CdealingFaculty:any;
     // { label: 'Indemnity Bond',  fileKey: 'indeminityBondPath',        approvalKey: 'indemnityApproval',  docTypeParam: 'Indemnity Bond' },
     { label: 'Offer Letter', fileKey: 'offerLetterPath', approvalKey: 'offerLetterApproval', docTypeParam: 'Offer Letter' },
     { label: 'Outbound Ticket', fileKey: 'outBoundTicket', approvalKey: 'outboundApproval', docTypeParam: 'Outbound Ticket' },
-    { label: 'Return Ticket', fileKey: 'returnTicketPath', approvalKey: 'outboundApproval', docTypeParam: 'Return Ticket' },
+    { label: 'Return Ticket', fileKey: 'returnTicketPath', approvalKey: 'returnTicketApproval', docTypeParam: 'Return Ticket' },
+    { label: 'Visa Document', fileKey: 'visaDocumentPath', approvalKey: 'visaDocumentApproval', docTypeParam: 'Visa Document' },          
   ];
 
   getFileValue(doc: DocumentRowConfig): string {
