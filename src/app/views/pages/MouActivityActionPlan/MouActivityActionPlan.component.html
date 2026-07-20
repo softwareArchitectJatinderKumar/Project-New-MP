@@ -370,13 +370,13 @@
                       [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50"
                       [limit]="10" [headerHeight]="80" rowHeight="auto">
 
-                      <!-- <ngx-datatable-column name="New ReminderEmailSentOn" [sortable]="true" prop="reminderEmailSentOn">
+                      <ngx-datatable-column name="Record Id" [sortable]="true" prop="id">
                         <ng-template let-row="row" ngx-datatable-cell-template>
-                          <ng-container *ngIf="row.reminderEmailSentOn != null">
-                            <span class="fw-bold ps-2">{{ row.reminderEmailSentOn }}</span>
+                          <ng-container *ngIf="row.id != null">
+                            <span class="fw-bold ps-2">{{ row.id }}</span>
                           </ng-container>
                         </ng-template>
-                      </ngx-datatable-column> -->
+                      </ngx-datatable-column>
 
                       <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="Id">
                         <ng-template let-row="row" ngx-datatable-cell-template>
@@ -490,6 +490,10 @@
                           <button class="btn btn-dark" (click)="ModifyFaculty(row)">
                             <!-- Modify Faculty  -->
                             <i class="bi bi-people"></i>
+                          </button>
+                          <button class="btn btn-danger ms-2 me-2 " (click)="DeleteACtion(row)">
+                            <!-- Modify Faculty  -->
+                          <i class="bi bi-trash "></i>
                           </button>
                         </ng-template>
                       </ngx-datatable-column>

@@ -34,6 +34,63 @@ import { json } from 'ngx-custom-validators/src/app/json/validator';
 })
 export class MouDocumentsUploadsComponent implements OnInit {
 
+recordId  :any;
+ExistingUID: any;
+
+  
+    DeleteACtion(row:any): void{
+  
+       this.newMouid = row.newMouId;
+      this.recordId = row.id;
+      this.ExistingUID = row.createdBy;
+          // this.currentModalRef.result.then(() => this.getSEAllApplications()).catch(() => { });
+      // this.cd.detectChanges();
+      swal.fire({
+        title: 'Delete Reason Remarks',
+        input: 'text',
+        inputPlaceholder: 'Remarks to delete ...',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        showLoaderOnConfirm: true,
+        preConfirm: uid => {
+          if (!uid) swal.showValidationMessage('Delete Remarks Are required!');
+          return uid;
+        },
+        allowOutsideClick: () => !swal.isLoading(),
+      }).then(result => {
+        if (result.isConfirmed && result.value) {
+          const fd = new FormData();
+          fd.append('RecordId', this.recordId);
+          fd.append('Remarks', result.value);
+          fd.append('Uid', this.ExistingUID );
+          fd.append('Mouid', this.newMouid );
+          this.DeleteActionRequest(fd);
+        }
+      });
+    }
+  
+  
+      private DeleteActionRequest(formData: FormData): void {
+        this.loadingIndicator = true;
+        this.mouDocumentsService.DeleteMainMouAction(formData).pipe(
+           
+        ).subscribe({
+          next: (data: any) => {
+            if (data?.item1?.[0]?.msg === 'success') {
+              swal.fire('Success!', 'Action Applied!', 'success').then(() =>  setTimeout(() => {
+              window.location.reload();
+            }, 1500));
+            } else {
+              swal.fire('Failed!', 'Action Failed!', 'error').then(() =>  setTimeout(() => {
+              window.location.reload();
+            }, 1500));
+            }
+          },
+          error: () => swal.fire('Error!', 'An error occurred while forwarding the application.', 'error'),
+        });
+        this.modalService.dismissAll();
+      }
+
 
    onCategoryChange(event: any): void {
     this.applyFilters();
@@ -1089,7 +1146,7 @@ initForm() {
       next: response => {
         if (response.item1.length > 0) {
           this.MouDocumentsData = response.item1;
-          //  console.log(JSON.stringify(this.MouDocumentsData))
+           console.log(JSON.stringify(this.MouDocumentsData))
           this.filteredMouDocumentsData = this.MouDocumentsData;
           this.dataSource.data = this.filteredMouDocumentsData;
           this.showNoDataFoundMessage = this.filteredMouDocumentsData.length === 0;

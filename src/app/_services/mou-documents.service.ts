@@ -505,8 +505,7 @@ downloadMOUFile(fileUrl: string): Observable<Blob> {
       AUTH_API+ 'api/Mou/GetUploadedDocumentDetails',
       dataSoft,
       { headers }
-    );
-    
+    );   
     
   }
     GetAllCategories(): Observable<any> {
@@ -517,8 +516,31 @@ downloadMOUFile(fileUrl: string): Observable<Blob> {
       //  'https://localhost:7135/api/Mou/MouActionTakenDocumentsOperations',
       AUTH_API+ 'api/Mou/GetMouCategoriesProperties',
       { headers }
-    );
-    
-    
+    );    
+  }
+
+
+    MOUDeleteAction(dataSoft:FormData): Observable<any> {
+    let authToken = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + authToken)
+    return this.http.post(
+      //  'https://localhost:7135/api/Mou/MouActivityDeleteAction',
+      AUTH_API+ 'api/Mou/MouActivityDeleteAction',
+      dataSoft,
+      { headers }
+    );    
+  }
+
+    DeleteMainMouAction(dataSoft:FormData): Observable<any> {
+    let authToken = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + authToken)
+    return this.http.post(
+      //  'https://localhost:7135/api/Mou/MouActivityDeleteAction',
+      AUTH_API+ 'api/Mou/MouDocumentDeleteAction',
+      dataSoft,
+      { headers }
+    );    
   }
 }
