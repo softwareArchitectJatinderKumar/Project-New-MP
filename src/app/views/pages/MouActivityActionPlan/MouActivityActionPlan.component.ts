@@ -73,26 +73,27 @@ export class MouActivityActionPlanComponent implements OnInit {
   }
 
 
-    private DeleteActionRequest(formData: FormData): void {
-      this.loadingIndicator = true;
-      this.mouDocumentsService.MOUDeleteAction(formData).pipe(
-         
-      ).subscribe({
-        next: (data: any) => {
-          if (data?.item1?.[0]?.msg === 'success') {
-            swal.fire('Success!', 'Action Applied!', 'success').then(() =>  setTimeout(() => {
+  private DeleteActionRequest(formData: FormData): void {
+    this.loadingIndicator = true;
+    this.mouDocumentsService.MOUDeleteAction(formData).pipe(
+
+    ).subscribe({
+      next: (data: any) => {
+        if (data?.item1?.[0]?.msg === 'success') {
+          swal.fire('Success!', 'Action Applied!', 'success').then(() => setTimeout(() => {
             window.location.reload();
           }, 1500));
-          } else {
-            swal.fire('Failed!', 'Action Failed!', 'error').then(() =>  setTimeout(() => {
+        } else {
+          swal.fire('Failed!', 'Action Failed!', 'error').then(() => setTimeout(() => {
             window.location.reload();
           }, 1500));
-          }
-        },
-        error: () => swal.fire('Error!', 'An error occurred while forwarding the application.', 'error'),
-      });
-      this.modalService.dismissAll();
-    }
+        }
+      },
+      error: () => swal.fire('Error!', 'An error occurred.', 'error'),
+    });
+    this.modalService.dismissAll();
+    this.loadingIndicator = false;
+  }
 
 
   @ViewChild('topScroll')
