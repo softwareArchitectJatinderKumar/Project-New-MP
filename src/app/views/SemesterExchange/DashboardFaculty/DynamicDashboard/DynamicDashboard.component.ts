@@ -819,7 +819,7 @@ CdealingFaculty:any; Roles:any;
         this.AllFacultyApplications = this.FilterAllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | '', isForwardtoHOD: string | ''; }) => app.dealingFaculty == this.EmployeeCode);
         this.AllAuthorityApplications = this.FilterAllAuthorityApplications = response.item1.filter((app: { dealingAuthority: string | '', dealingFaculty: string | ''; approvedUniversity: string | ''; }) => app.dealingAuthority == this.EmployeeCode && app.approvedUniversity == null);
 
-        this.AllHODApplications = this.FilterAllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | ''; isLocked: string | ''; isApproved: string | ''; }) => app.dealingHODId == this.EmployeeCode && app.isForwardtoHOD == '1' && app.isLocked != 'True' && app.isLocked != 'False');
+        this.AllHODApplications = this.FilterAllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | ''; isLocked: string | ''; isApproved: string | ''; }) => app.dealingHODId == this.EmployeeCode && app.isForwardtoHOD == '1');
 
         this.AllHOWApplications = response.item1.filter((app: { dealingHow: string | ''; isForwardedtoHOW: string | ''; isLocked: string | ''; }) => app.dealingHow == this.EmployeeCode && app.isForwardedtoHOW == '1');
         this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0);
@@ -1076,10 +1076,10 @@ CdealingFaculty:any; Roles:any;
       next: (data: any) => {
         const msg = data?.item1?.[0]?.msg;
         if (msg === 'Approved') {
-          Swal.fire('Success!', `Application ${action}ed successfully!`, 'success')
+          Swal.fire('Action was successfully Processed', 'success')
             .then(() => this.getSEAllApplications());
         } else if (msg === 'Disapproved') {
-          Swal.fire('No Change!', 'The application status was not changed.', 'info');
+          Swal.fire('Action was successfully Processed', 'info');
         } else {
           Swal.fire('Error!', `Failed to ${action} application.`, 'error');
         }

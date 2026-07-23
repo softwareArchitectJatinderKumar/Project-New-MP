@@ -32,10 +32,32 @@
             </div>
             <div class="col d-flex flex-column">
               <p class="info-label">Status</p>
+          <span [class]="
+              ((ApprovedUniversity || '').trim().length > 0)
+                ? 'status-pill approved'
+                : (
+                    (stuApplication.isLocked === 'False' || stuApplication.isLocked === '0') &&
+                    ((stuApplication.approvalRemarks || '').trim().length > 0)
+                  )
+                ? 'status-pill rejected'
+                : 'status-pill pending'
+            ">
+          
+            {{
+            ((ApprovedUniversity || '').trim().length > 0)
+            ? 'Approved'
+            : (
+            (stuApplication.isLocked === 'False' || stuApplication.isLocked === '0') &&
+            ((stuApplication.approvalRemarks || '').trim().length > 0)
+            )
+            ? ('Rejected - ' + stuApplication.approvalRemarks)
+            : 'Under Process'
+            }}
+          </span>
               <!-- <span [class]="stuApplication.isLocked==='True' ? 'status-pill approved' : 'status-pill pending'">
                                           {{stuApplication.isLocked==='True' ? 'Approved' : 'Pending'}}
                                         </span> -->
-              <span [class]="
+              <!-- <span [class]="
                   stuApplication.isLocked === 'True' || stuApplication.isLocked === '1'
                     ? 'status-pill approved'
                     : stuApplication.isLocked === 'False' || stuApplication.isLocked === '0'
@@ -54,7 +76,7 @@
                 )
                 : 'Pending'
                 }}
-              </span>
+              </span> -->
             </div>
             <div class="col d-flex flex-column">
               <p class="info-label">Student</p>
@@ -131,6 +153,7 @@
         (stageFilePicked)="onStageFilePicked($event)" (viewDocument)="viewDocument($event)">
       </app-approved-application-panel>
 
+ 
       <app-pending-application-panel *ngIf="LockedStatus === 'Pending'"
         [studentName]="studentName" [registrationNo]="RegistrationNo" [courseName]="courseName"
         [currentYear]="CurrentYear" [cgpa]="cgpa" [programCode]="ProgramCode" [sectionCode]="SectionCode"
@@ -142,7 +165,7 @@
         [stagesDetail]="StagesDetail" [documentApprovals]="DocumentApprovals" [isParentLoading]="isLoading"
         (editClick)="startEdit($event)" (cancelClick)="cancelEdit($event)" (updateClick)="updateStep($event)"
         (fileSelected)="onFileSelected($event)" (submitClick)="submitDocuments()">
-      </app-pending-application-panel>
+      </app-pending-application-panel> 
 
     </ng-container>
 

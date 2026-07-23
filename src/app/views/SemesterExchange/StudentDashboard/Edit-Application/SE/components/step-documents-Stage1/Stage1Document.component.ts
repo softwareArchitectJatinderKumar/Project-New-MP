@@ -112,12 +112,36 @@ export class Stage1DocumentComponent implements OnChanges {
     const row = this.getStageDocument(documentName);
     return !!(row && row.sampleFormat);
   }
+downloadTemplate(documentName: string): void {
+  const row = this.getStageDocument(documentName);
 
-  downloadTemplate(documentName: string): void {
-    const row = this.getStageDocument(documentName);
-    if (!row || !row.sampleFormat) return;
-    window.open(this.localServerUrl + row.sampleFormat, '_blank');
+  // Keep the existing StageDetails check
+  if (!row || !row.sampleFormat) {
+    return;
   }
+
+  let assetFile = '';
+
+  if (documentName === 'Consent Letter') {
+    assetFile = 'SE-Consent-Letter.pdf';
+  } else if (documentName === 'Affidavit') {
+    assetFile = 'Affidavit-Format.pdf';
+  } else if (documentName === 'Indeminity Bond') {
+    assetFile = 'Indeminity-Bond.pdf';
+  } else {
+    window.open(this.localServerUrl + row.sampleFormat, '_blank')
+  }
+
+  const link = document.createElement('a');
+  link.href = `assets/SemesterExchange/${assetFile}`;
+  link.download = assetFile;
+  link.click();
+}
+  // downloadTemplate(documentName: string): void {
+  //   const row = this.getStageDocument(documentName);
+  //   if (!row || !row.sampleFormat) return;
+  //   window.open(this.localServerUrl + row.sampleFormat, '_blank');
+  // }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isParentLoading']) {
