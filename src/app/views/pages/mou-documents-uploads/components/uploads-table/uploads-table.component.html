@@ -1,0 +1,203 @@
+<ng-container *ngIf="statusFilter !== 'renewed'">
+  <div *ngIf="rows.length > 0; else noRecords">
+    <app-mou-data-grid [loading]="loading">
+      <table id="dataTableExample" class="table table-responsive">
+        <thead>
+          <tr>
+            <th class="form-label fs-6">New MOU Id</th>
+            <th class="form-label fs-6">Mou Category</th>
+            <th class="form-label fs-6">Old MOU Id</th>
+            <th class="form-label fs-6">Renewal</th>
+            <th class="form-label fs-6">Partner Organisation</th>
+            <th class="form-label fs-6">MOU Start Date</th>
+            <th class="form-label fs-6">Mou End Date</th>
+            <th class="form-label fs-6">View Document</th>
+            <th class="form-label fs-6">School Involved</th>
+            <th class="form-label fs-6">SPOC Person Detail</th>
+            <th class="form-label fs-6">MOU Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let DocumentRow of getRecordsForCurrentPage()">
+            <td class="fw-bold fs-6" *ngIf="DocumentRow.newMouId?.length > 0; else NotApplicable">
+              <label class="form-label">{{ DocumentRow.newMouId }}</label>
+            </td>
+            <td class="fw-bold fs-6" *ngIf="DocumentRow.mouCategory?.length > 0; else NotApplicable">
+              <label class="form-label">{{ DocumentRow.mouCategory }}</label>
+            </td>
+            <ng-template #NotApplicable>
+              <td class="fw-bold fs-6 text-info">Not Found</td>
+            </ng-template>
+            <td class="fw-bold fs-6">
+              <label class="form-label">MOU/{{ DocumentRow.id }}</label>
+            </td>
+            <td class="fw-bold fs-6" *ngIf="DocumentRow.mouStatus == 'Expired' && DocumentRow.renewalCount == null; else NotPossible">
+              <a class="btn btn-dark me-4" (click)="renew.emit(DocumentRow)">
+                <i class="bi bi-arrow-repeat"></i>
+              </a>
+            </td>
+            <ng-template #NotPossible>
+              <td class="fw-bold fs-6 text-info" *ngIf="DocumentRow.renewalCount != null; else NotPossibles">
+                <a class="btn btn-dark me-4" (click)="viewHistory.emit(DocumentRow)">
+                  <i class="bi bi-eye"></i>
+                </a>
+              </td>
+              <ng-template #NotPossibles>
+                <td class="fw-bold fs-6 text-info">Not Applicable</td>
+              </ng-template>
+            </ng-template>
+            <td class="fw-bold fs-6">{{ DocumentRow.mouPartnerName }}</td>
+            <td class="fw-bold fs-6">{{ DocumentRow.mouStartDate | date:'dd/MM/yyyy' }}</td>
+            <td class="fw-bold fs-6">{{ DocumentRow.mouEndDate | date:'dd/MM/yyyy' }}</td>
+            <td *ngIf="DocumentRow.filePath; else NoFile">
+              <a class="btn btn-dark me-2" [href]="DocumentRow.filePath" target="_blank">
+                <i class="bi bi-eye"></i>
+              </a>
+            </td>
+            <ng-template #NoFile>
+              <td>No Doc Uploaded</td>
+            </ng-template>
+            <td class="fw-bold fs-6" *ngIf="DocumentRow.schoolDivisionInvolved?.length > 0; else NoSchool">
+              <select class="p-2" id="SchoolInvolvedData" [style]="{ width: '89%' }">
+                <option selected value="0">Check Involved Division</option>
+                <option [value]="getDivisionNameById(schoolId)" *ngFor="let schoolId of DocumentRow.schoolDivisionInvolved.split(',')">
+                  {{ getDivisionNameById(schoolId) }}
+                </option>
+              </select>
+            </td>
+            <ng-template #NoSchool>
+              <td class="fw-bold fs-6 text-info">Not Applicable</td>
+            </ng-template>
+            <td class="fw-bold fs-6">
+              {{ DocumentRow.spocName != null && DocumentRow.spocEmailId != null && DocumentRow.spocContactNo ? DocumentRow.spocName + ' ' + DocumentRow.spocEmailId : 'N/A' }}
+            </td>
+            <td class="fw-bold fs-6" *ngIf="DocumentRow.renewalCount == null; else Statuss">
+              {{ DocumentRow.mouStatus?.length > 0 ? DocumentRow.mouStatus : 'NA' }}
+            </td>
+            <ng-template #Statuss>
+              <td class="fw-bold fs-6 text-info">Renewed</td>
+            </ng-template>
+          </tr>
+        </tbody>
+      </table>
+      <div class="row d-flex justify-content-between mt-5 mb-3 align-items-center">
+        <div class="text-end">
+          <mat-paginator
+            [length]="rows.length"
+            [pageSize]="recordsPerPage"
+            [pageSizeOptions]="[5, 10, 25, 50]"
+            (page)="onPageChange($event)"
+          ></mat-paginator>
+        </div>
+        <div class="text-end">Total Records: {{ rows.length }}</div>
+      </div>
+    </app-mou-data-grid>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="statusFilter === 'renewed'">
+  <div *ngIf="renewedRows.length > 0; else noRecords">
+    <app-mou-data-grid [loading]="loading">
+      <table id="dataTableExampleRenewed" class="table table-responsive">
+        <thead>
+          <tr>
+            <th class="form-label fs-6">New MOU Id</th>
+            <th class="form-label fs-6">Mou Category</th>
+            <th class="form-label fs-6">Old MOU Id</th>
+            <th class="form-label fs-6">Renewal</th>
+            <th class="form-label fs-6">Partner Organisation</th>
+            <th class="form-label fs-6">MOU Start Date</th>
+            <th class="form-label fs-6">Mou End Date</th>
+            <th class="form-label fs-6">View Document</th>
+            <th class="form-label fs-6">School Involved</th>
+            <th class="form-label fs-6">SPOC Person Detail</th>
+            <th class="form-label fs-6">MOU Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let DocumentRow of getRecordsForRenewedPage()">
+            <td class="fw-bold fs-6" *ngIf="DocumentRow.newMouId?.length > 0; else NotApplicableRenewed">
+              <label class="form-label">{{ DocumentRow.newMouId }}</label>
+            </td>
+            <ng-template #NotApplicableRenewed>
+              <td class="fw-bold fs-6 text-info">Not Applicable</td>
+            </ng-template>
+            <td class="fw-bold fs-6">
+              <label class="form-label">{{ DocumentRow.mouCategory }}</label>
+            </td>
+            <td class="fw-bold fs-6">
+              <label class="form-label">MOU/{{ DocumentRow.id }}</label>
+            </td>
+            <td class="fw-bold fs-6" *ngIf="DocumentRow.mouStatus == 'Expired' && DocumentRow.renewalCount == null; else NotPossibleRenewed">
+              <a class="btn btn-dark me-4" (click)="renew.emit(DocumentRow)">
+                <i class="bi bi-arrow-repeat"></i>
+              </a>
+            </td>
+            <ng-template #NotPossibleRenewed>
+              <td class="fw-bold fs-6 text-info" *ngIf="DocumentRow.renewalCount != null; else NotPossiblesRenewed">
+                <a class="btn btn-dark me-4" (click)="viewHistory.emit(DocumentRow)">
+                  <i class="bi bi-eye"></i>
+                </a>
+              </td>
+              <ng-template #NotPossiblesRenewed>
+                <td class="fw-bold fs-6 text-info">Not Applicable</td>
+              </ng-template>
+            </ng-template>
+            <td class="fw-bold fs-6">{{ DocumentRow.mouPartnerName }}</td>
+            <td class="fw-bold fs-6">{{ DocumentRow.mouStartDate | date:'dd/MM/yyyy' }}</td>
+            <td class="fw-bold fs-6">{{ DocumentRow.mouEndDate | date:'dd/MM/yyyy' }}</td>
+            <td *ngIf="DocumentRow.filePath; else NoFileRenewed">
+              <a class="btn btn-dark me-2" [href]="DocumentRow.filePath" target="_blank">
+                <i class="bi bi-eye"></i>
+              </a>
+            </td>
+            <ng-template #NoFileRenewed>
+              <td>No Doc Uploaded</td>
+            </ng-template>
+            <td class="fw-bold fs-6" *ngIf="DocumentRow.schoolDivisionInvolved?.length > 0; else NoSchoolRenewed">
+              <select class="p-2" id="SchoolInvolvedDataRenewed" [style]="{ width: '89%' }">
+                <option selected value="0">Check Involved Division</option>
+                <option [value]="getDivisionNameById(schoolId)" *ngFor="let schoolId of DocumentRow.schoolDivisionInvolved.split(',')">
+                  {{ getDivisionNameById(schoolId) }}
+                </option>
+              </select>
+            </td>
+            <ng-template #NoSchoolRenewed>
+              <td class="fw-bold fs-6 text-info">Not Applicable</td>
+            </ng-template>
+            <td class="fw-bold fs-6">
+              {{ DocumentRow.spocName != null && DocumentRow.spocEmailId != null && DocumentRow.spocContactNo ? DocumentRow.spocName + ' ' + DocumentRow.spocEmailId : 'N/A' }}
+            </td>
+            <td class="fw-bold fs-6" *ngIf="DocumentRow.renewalCount == null; else StatussRenewed">
+              {{ DocumentRow.mouStatus?.length > 0 ? DocumentRow.mouStatus : 'NA' }}
+            </td>
+            <ng-template #StatussRenewed>
+              <td class="fw-bold fs-6 text-info">Renewed</td>
+            </ng-template>
+          </tr>
+        </tbody>
+      </table>
+      <div class="row d-flex justify-content-between mt-5 mb-3 align-items-center">
+        <div class="text-end">
+          <mat-paginator
+            [length]="renewedRows.length"
+            [pageSize]="recordsRenewedPerPage"
+            [pageSizeOptions]="[5, 10, 25, 50]"
+            (page)="onPageChange($event)"
+          ></mat-paginator>
+        </div>
+        <div class="text-end">Total Records: {{ renewedRows.length }}</div>
+      </div>
+    </app-mou-data-grid>
+  </div>
+</ng-container>
+
+<ng-template #noRecords>
+  <div class="col-12 stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <label class="text-center fs-2 d-flex justify-content-center">No Record(s) are Available.</label>
+      </div>
+    </div>
+  </div>
+</ng-template>

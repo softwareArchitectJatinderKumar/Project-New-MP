@@ -1,0 +1,13 @@
+<div class="mou-search-wrapper">
+  <i class="feather icon-search search-icon"></i>
+  <input
+    type="text"
+    [placeholder]="placeholder"
+    [ngModel]="value"
+    (ngModelChange)="onInput($event)"
+    class="form-control mou-search-input"
+  />
+  <button *ngIf="value" (click)="clear()" class="clear-btn" type="button">
+    <i class="feather icon-x-circle"></i>
+  </button>
+</div>

@@ -140,11 +140,7 @@ changeCategory(event: any) {
   newMouid: any;
 
 
-  getRecordsForRenewedPage(): any[] {
-    const startIndex = (this.currentPage - 1) * this.recordsPerPage;
-    const endIndex = startIndex + this.recordsPerPage;
-    return this.AllRenewedMouDetails.slice(startIndex, endIndex);
-  }
+
 
   
   // Added on 14-May-25
@@ -152,6 +148,29 @@ changeCategory(event: any) {
   statusFilter: string = 'all';
   searchQuery: any = '';
   selectedSchoolDivision: any = '0';
+
+  statusFilterOptions = [
+    { value: 'all', label: 'All MOU' },
+    { value: 'active', label: 'Active' },
+    { value: 'expired', label: 'Expired' },
+    { value: 'renewed', label: 'Renewed' }
+  ];
+
+  get categoryFilterOptions() {
+    const options = [{ value: 'All', label: 'All Categories' }];
+    this.AllMouCategories.forEach(cat => {
+      options.push({ value: cat.CategoryName, label: cat.CategoryName });
+    });
+    return options;
+  }
+
+  get schoolDivisionOptions() {
+    const options = [{ value: '0', label: 'All School / Division' }];
+    this.allSchoolDivisions.forEach(div => {
+      options.push({ value: div.id.toString(), label: div.schoolDivision });
+    });
+    return options;
+  }
 
   @ViewChild('ViewRenewedMouDetailsModal') ViewRenewedMouDetailsModal: TemplateRef<any>;
   renewedMouDocumentDetails: any[] = [];
@@ -197,11 +216,10 @@ applyFilters(): void {
   }
 
   // Category Filter
-  if (this.SelectedMouCategory != 'All') {
-
+  if (this.SelectedMouCategory && this.SelectedMouCategory !== 'All' && this.SelectedMouCategory !== '0') {
+    const categoryName = typeof this.SelectedMouCategory === 'object' ? this.SelectedMouCategory.CategoryName : this.SelectedMouCategory;
     filtered = filtered.filter(item =>
-      String(item.mouCategory ?? '').toLowerCase() ===
-      this.SelectedMouCategory.CategoryName.toLowerCase()
+      String(item.mouCategory ?? '').toLowerCase() === categoryName.toLowerCase()
     );
 
   }
@@ -1172,11 +1190,10 @@ filterData(): void {
 
   // Category Filter
   if (this.SelectedMouCategory && this.SelectedMouCategory !== 'All') {
-
+    const categoryName = typeof this.SelectedMouCategory === 'object' ? this.SelectedMouCategory.CategoryName : this.SelectedMouCategory;
     filtered = filtered.filter(item =>
-      item.mouCategory === this.SelectedMouCategory.CategoryName
+      String(item.mouCategory ?? '').toLowerCase() === categoryName.toLowerCase()
     );
-
   }
 
   // Search Filter
@@ -1208,7 +1225,6 @@ filterData(): void {
 
   }
 
-  this.currentPage = 1;
   this.filteredMouDocumentsData = filtered;
 }
 
@@ -1237,30 +1253,7 @@ filterData(): void {
   // }
 
 
-  recordsPerPage = 5;
-  currentPage = 1;
 
-  get totalPages(): number {
-    return Math.ceil(this.filteredMouDocumentsData.length / this.recordsPerPage);
-  }
-
-  get pagesArray(): number[] {
-    return Array.from({ length: this.totalPages }, (_, index) => index + 1);
-  }
-
-  changePage(page: number): void {
-    this.currentPage = page;
-  }
-  getRecordsForCurrentPage(): any[] {
-    const startIndex = (this.currentPage - 1) * this.recordsPerPage;
-    const endIndex = startIndex + this.recordsPerPage;
-    return this.filteredMouDocumentsData.slice(startIndex, endIndex);
-  }
-
-  onPageChange(event: any): void {
-    this.currentPage = event.pageIndex + 1;
-    this.recordsPerPage = event.pageSize;
-  }
   getSchoolDivisionNames(ids: number[]): string {
     if (!Array.isArray(ids)) { // Ensure ids is an array
       return '';

@@ -1,0 +1,18 @@
+<div class="mou-data-grid-wrapper">
+  <!-- Top mirrored scrollbar -->
+  <div class="mou-top-scrollbar" #topScrollbar [style.display]="scrollWidth > gridContainer.clientWidth ? 'block' : 'none'">
+    <div [style.width.px]="scrollWidth" class="mou-top-scrollbar-spacer"></div>
+  </div>
+
+  <!-- Table/Grid content wrapper -->
+  <div class="mou-grid-container" #gridContainer [style.max-height]="maxHeight">
+    <ng-content></ng-content>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="mou-grid-loading-overlay" *ngIf="loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+</div>

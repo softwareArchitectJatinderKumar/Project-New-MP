@@ -1,0 +1,281 @@
+<ng-container *ngIf="activeTab === 'tab1'">
+  <app-mou-data-grid [loading]="loading" scrollTargetSelector=".datatable-body">
+    <ngx-datatable class="bootstrap table table-striped material" [rows]="rows"
+      [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
+      [headerHeight]="80" rowHeight="auto">
+
+      <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span *ngIf="row.newMouId != null" style="font-weight: bold; padding: 10px;">{{row.newMouId}}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span *ngIf="row.mouId != null" style="font-weight: bold; padding: 10px;">MOU/{{row.mouId}}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Mou Category" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span class="fw-bold ps-2" *ngIf="row.mouCategory != null">{{ row.mouCategory }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="School Division" prop="schoolDivisionInvolved">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <ng-container *ngIf="row.mouStartDate != null">
+            <ul class="p-2" id="SchoolInvolvedData">
+              <li *ngFor="let schoolId of row.schoolDivisionInvolved.split(',')">
+                {{getDivisionNameById(schoolId)}} - {{schoolId}}
+              </li>
+            </ul>
+          </ng-container>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Mou Title" prop="mouTitle" [width]="200"></ngx-datatable-column>
+
+      <ngx-datatable-column name="MOU Status" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <ng-container *ngIf="row.mouStatus != null; else NoFound">
+            <span style="font-weight: bold; padding: 10px;" *ngIf="row.renewalCount == 0; else Statuss">
+              {{ row.mouStatus?.length>0 ? row.mouStatus: 'NA' }}
+            </span>
+            <ng-template #Statuss>
+              <span class="fw-bold fs-6 text-info">Renewed</span>
+            </ng-template>
+          </ng-container>
+          <ng-template #NoFound>
+            <span style="font-weight: bold; padding: 10px; color: red;">NA</span>
+          </ng-template>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="MOU Start Date" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span *ngIf="row.mouStartDate != null; else NoStartDateFound" style="font-weight: bold; padding: 10px;">{{row.mouStartDate}}</span>
+          <ng-template #NoStartDateFound>
+            <span style="font-weight: bold; padding: 10px; color: red;">NA</span>
+          </ng-template>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="MOU End Date" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span *ngIf="row.mouEndDate != null; else NoEndDateFound" style="font-weight: bold; padding: 10px;">{{row.mouEndDate}}</span>
+          <ng-template #NoEndDateFound>
+            <span *ngIf="row.mouEndDate == null && row.mouStartDate != null" style="font-weight: bold; padding: 10px; color: red;">Indefinite</span>
+            <span *ngIf="row.mouEndDate == null && row.mouStartDate == null" style="padding: 10px; font-weight: bold;">NA</span>
+          </ng-template>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Activities" [sortable]="false">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <button class="btn btn-sm btn-dark" (click)="viewActivities.emit(row)">
+            <i class="bi bi-eye fs-5"></i>
+          </button>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Action Details" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <button class="btn btn-dark" (click)="viewActionDetails.emit(row)">
+            <i class="bi bi-search"></i>
+          </button>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="MOU Docuement Link" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <button class="btn btn-dark" *ngIf="row.filePath != null" (click)="download.emit(row.filePath)">
+            <i class="bi bi-file-earmark-text"></i>
+          </button>
+          <span *ngIf="row.filePath == null" style="font-weight: bold; padding: 10px;">No File</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Actions" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <button class="btn btn-warning" (click)="assignPlan.emit(row)">
+            <i class="bi bi-person-plus fs-5"></i>
+          </button>
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
+  </app-mou-data-grid>
+</ng-container>
+
+<ng-container *ngIf="activeTab === 'tab2'">
+  <app-mou-data-grid [loading]="loading" scrollTargetSelector=".datatable-body">
+    <ngx-datatable class="bootstrap table table-striped material" [rows]="assignedMeRows"
+      [columnMode]="ColumnMode.force" [footerHeight]="50"
+      [limit]="10" [headerHeight]="80" rowHeight="auto">
+
+      <ngx-datatable-column name="Record Id" [sortable]="true" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span class="fw-bold ps-2" *ngIf="row.id != null">{{ row.id }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span class="fw-bold ps-2" *ngIf="row.mouId != null">{{ row.newMouId }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Mou Category" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span class="fw-bold ps-2" *ngIf="row.mouCategory != null">{{ row.mouCategory }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span class="fw-bold ps-2" *ngIf="row.mouId != null">MOU/{{ row.mouId }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="School Division" prop="schoolDivisionId">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <ng-container *ngIf="row.schoolDivisionId != null">
+            <ul class="p-2" id="SchoolDivisionIds">
+              <li *ngFor="let schoolId of row.schoolDivisionId.split(',')">
+                {{getDivisionNameById(schoolId)}} - {{schoolId}}
+              </li>
+            </ul>
+          </ng-container>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Mou Title" prop="mouTitle" [width]="200"></ngx-datatable-column>
+
+      <ngx-datatable-column name="Mou Status" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <ng-container *ngIf="row.mouStatus != null">
+            <span style="font-weight: bold; padding: 10px;" *ngIf="row.renewalVersionCount == 0 || row.renewalVersionCount == null; else StatussTab2">
+              {{ row.mouStatus }}
+            </span>
+            <ng-template #StatussTab2>
+              <span class="fw-bold fs-6 text-info">Renewed</span>
+            </ng-template>
+          </ng-container>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Assigned To" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <ng-container *ngIf="row.uid != null && row.uid !== 'undefined'; else noFaculty">
+            <span class="fw-bold ps-2">{{ row.uid }}</span> <br />
+            <div class="col-3">
+              <ng-container *ngIf="selectedRow?.activityPerformed?.length > 0; else ReminderEmails">
+                <p><strong>Activity Performed:</strong></p>
+                <p class="text-danger fw-bold">{{ selectedRow?.activityPerformed }}</p>
+              </ng-container>
+              <ng-template #ReminderEmails>
+                <button type="button" [disabled]="row.reminderEmailSentOn != null" class="btn btn-danger" (click)="sendReminder.emit(row)">
+                  <i class="bi bi-file-earmark-text"></i>
+                </button>
+              </ng-template>
+            </div>
+          </ng-container>
+          <ng-template #noFaculty>
+            <span class="text-danger fw-bold ps-2">No Faculty Assigned</span> <br />
+            <button class="btn btn-danger" (click)="assignUid.emit(row)">Assign UID</button>
+          </ng-template>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Assigned By" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span class="fw-bold ps-2" *ngIf="row.actionAssignedBy != null">{{ row.actionAssignedBy }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Assigned Date" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span class="fw-bold ps-2" *ngIf="row.createdOn != null">{{ row.createdOn }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Modify Faculty" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <button class="btn btn-dark" (click)="modifyFaculty.emit(row)">
+            <i class="bi bi-people"></i>
+          </button>
+          <button class="btn btn-danger ms-2" (click)="deleteAction.emit(row)">
+            <i class="bi bi-trash"></i>
+          </button>
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
+  </app-mou-data-grid>
+</ng-container>
+
+<ng-container *ngIf="activeTab === 'tab3'">
+  <app-mou-data-grid [loading]="loading" scrollTargetSelector=".datatable-body">
+    <ngx-datatable class="bootstrap table table-striped material" [rows]="assignedOthersRows"
+      [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10" [headerHeight]="80"
+      rowHeight="auto">
+
+      <ngx-datatable-column name="New MOU Id" prop="newMouId" [width]="130">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span class="fw-bold">{{row.newMouId}}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span class="fw-bold ps-2" *ngIf="row.mouId != null">MOU/{{ row.mouId }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Mou Category" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span class="fw-bold ps-2" *ngIf="row.mouCategory != null">{{ row.mouCategory }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Mou Title" prop="mouTitle" [width]="200"></ngx-datatable-column>
+
+      <ngx-datatable-column name="Assigned To" prop="uid" [width]="120">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span *ngIf="row.uid && row.uid !== 'undefined'" class="fw-bold">{{ row.uid }}</span>
+          <ng-container *ngIf="!row.uid || row.uid === 'undefined'">
+            <span class="text-danger fw-bold">No Faculty</span> <br />
+            <button class="btn btn-danger btn-sm" (click)="assignUid.emit(row)">Assign</button>
+          </ng-container>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Assigned By" prop="actionAssignedBy" [width]="120">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span class="fw-bold text-muted">{{ row.actionAssignedBy }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Assigned Date" [sortable]="false" prop="id">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span class="fw-bold ps-2" *ngIf="row.createdOn != null">{{ row.createdOn }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Activity Details" prop="activityDetails" [width]="200">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <span>{{ removeNumberPrefix(row.activityDetails) || 'NA' }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Remarks" prop="remarks" [width]="200"></ngx-datatable-column>
+
+      <ngx-datatable-column name="Activity Dates" [width]="180">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <small class="text-muted">
+            Start: {{row.startDate}} <br> End: {{row.endDate}}
+          </small>
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
+  </app-mou-data-grid>
+</ng-container>

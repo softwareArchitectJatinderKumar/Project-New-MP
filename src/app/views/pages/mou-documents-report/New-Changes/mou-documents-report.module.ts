@@ -19,6 +19,12 @@ import { ArchwizardModule } from 'angular-archwizard';
 import { MouDocumentsReportComponent } from './mou-documents-report.component';
 import { TopScrollSyncDirective } from './top-scroll-sync.directive';
 
+import { MouSearchBoxComponent } from '../../mou-documents-uploads/components/search-box/search-box.component';
+import { MouExportExcelComponent } from '../../mou-documents-uploads/components/export-excel/export-excel.component';
+import { MouFilterSelectComponent } from '../../mou-documents-uploads/components/filter-select/filter-select.component';
+import { MouDataGridComponent } from '../../mou-documents-uploads/components/data-grid/data-grid.component';
+import { MouReportTableComponent } from './components/report-table/report-table.component';
+
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
 };
@@ -52,7 +58,11 @@ const routes: Routes = [
     ArchwizardModule,ReactiveFormsModule,
     MaterialModule,
 
-
+    MouSearchBoxComponent,
+    MouExportExcelComponent,
+    MouFilterSelectComponent,
+    MouDataGridComponent,
+    MouReportTableComponent
   ],
   providers: [
     NgbRatingConfig,

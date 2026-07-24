@@ -1,0 +1,14 @@
+<div class="mou-filter-select-wrapper">
+  <label *ngIf="label" class="mou-filter-label">{{ label }}</label>
+  <div class="select-container">
+    <select
+      [(ngModel)]="selectedValue"
+      (ngModelChange)="onSelectChange($event)"
+      class="form-select mou-filter-select"
+    >
+      <option *ngFor="let option of options" [ngValue]="option.value">
+        {{ option.label }}
+      </option>
+    </select>
+  </div>
+</div>

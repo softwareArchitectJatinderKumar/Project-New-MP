@@ -273,6 +273,35 @@ export class MouDocumentsReportComponent implements OnInit {
   selectedMouCategory2: string = '0';
   mouCategories: string[] = [];
 
+  statusFilterOptions = [
+    { value: 'all', label: 'All MOU' },
+    { value: 'active', label: 'Active' },
+    { value: 'expired', label: 'Expired' },
+    { value: 'renewed', label: 'Renewed' }
+  ];
+
+  approvalFilterOptions = [
+    { value: 'all', label: 'All Status' },
+    { value: 'approved', label: 'Approved' },
+    { value: 'disapproved', label: 'Disapproved' }
+  ];
+
+  get categoryFilterOptions() {
+    const options = [{ value: '0', label: 'All Categories' }];
+    this.mouCategories.forEach(cat => {
+      options.push({ value: cat, label: cat });
+    });
+    return options;
+  }
+
+  get schoolDivisionOptions() {
+    const options = [{ value: '0', label: 'All School / Division' }];
+    this.allSchoolDivisions.forEach(div => {
+      options.push({ value: div.id.toString(), label: div.schoolDivision });
+    });
+    return options;
+  }
+
   GetAllCategories(): void {
     this.mouDocumentsService.GetAllCategories().subscribe({
       next: response => {

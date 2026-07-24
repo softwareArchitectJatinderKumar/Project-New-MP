@@ -854,6 +854,37 @@ uploadRequiredDocument(documentName: string, index: number) {
   SelectedMouCategoryTakeAction: any = 'All';
   SelectedMouCategoryActionTaken: any = 'All';
 
+  statusFilterOptions = [
+    { value: 'all', label: 'All MOU' },
+    { value: 'active', label: 'Active' },
+    { value: 'expired', label: 'Expired' },
+    { value: 'renewed', label: 'Renewed' }
+  ];
+
+  get categoryFilterOptions() {
+    const options = [{ value: 'All', label: 'All Categories' }];
+    this.AllMouCategories.forEach(cat => {
+      options.push({ value: cat.CategoryName, label: cat.CategoryName });
+    });
+    return options;
+  }
+
+  get schoolDivisionOptions() {
+    const options = [{ value: '0', label: 'All School / Division' }];
+    this.allSchoolDivisions?.forEach(div => {
+      options.push({ value: div.id.toString(), label: div.schoolDivision });
+    });
+    return options;
+  }
+
+  get plannerSessionOptions() {
+    const options = [{ value: '0', label: 'All Sessions' }];
+    this.allPlannerSessions?.forEach(s => {
+      options.push({ value: s.id.toString(), label: s.session });
+    });
+    return options;
+  }
+
   GetAllCategories(): void {
     this.mouDocumentsService.GetMouCategories().subscribe({
       next: response => {
@@ -874,7 +905,7 @@ uploadRequiredDocument(documentName: string, index: number) {
     if (!selected || selected === 'All') {
       return true;
     }
-    const categoryName = selected.CategoryName;
+    const categoryName = typeof selected === 'object' ? selected.CategoryName : selected;
     return String(item.mouCategory ?? '').toLowerCase() === categoryName.toLowerCase();
   }
 
@@ -1539,7 +1570,7 @@ uploadRequiredDocument(documentName: string, index: number) {
     });
   }
   setSessionId(event: any) {
-    const selectedId = event.target.value;
+    const selectedId = (event && event.target) ? event.target.value : event;
     this.selectedPlannerSession = selectedId;
 
     this.GetAllMouActionsTaken();

@@ -20,6 +20,13 @@ import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { MaterialModule } from 'src/material.module';
 import { MouMenuModule } from '../Mou-Menu-Bar/mou-menu.module';
+
+import { MouSearchBoxComponent } from '../mou-documents-uploads/components/search-box/search-box.component';
+import { MouExportExcelComponent } from '../mou-documents-uploads/components/export-excel/export-excel.component';
+import { MouFilterSelectComponent } from '../mou-documents-uploads/components/filter-select/filter-select.component';
+import { MouDataGridComponent } from '../mou-documents-uploads/components/data-grid/data-grid.component';
+import { MouTakeActionTableComponent } from './components/take-action-table/take-action-table.component';
+
 const routes: Routes = [
   {
     path: '',
@@ -52,8 +59,13 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     RouterModule.forChild(routes),
     ArchwizardModule,ReactiveFormsModule,
     MaterialModule,
-    MouMenuModule
+    MouMenuModule,
 
+    MouSearchBoxComponent,
+    MouExportExcelComponent,
+    MouFilterSelectComponent,
+    MouDataGridComponent,
+    MouTakeActionTableComponent
   ],
   providers: [
     DatePipe,

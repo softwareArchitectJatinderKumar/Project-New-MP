@@ -32,101 +32,104 @@
 // NobleUI styles For RTL
 // @import "./assets/scss/style.rtl.css";
 
-@media (min-width: 1025px) and (max-width: 1280px){
-  .custom-window-class > .modal-dialog > .modal-content {
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .custom-window-class>.modal-dialog>.modal-content {
 
     width: 60%;
     max-width: 60%;
     margin-left: 19.75rem !important;
-   
- }
+
+  }
 }
 
 /* Media Query for Large screens */
 @media (min-width: 1281px) {
-  .custom-window-class > .modal-dialog > .modal-content {
+  .custom-window-class>.modal-dialog>.modal-content {
 
     width: 60%;
     max-width: 60%;
     margin-left: 19.75rem !important;
-   
- }
+
+  }
 }
 
 
-.swal2-confirm{
-    color:white !important;
-  }
-.sidebar{
-       display: none !important;
+.swal2-confirm {
+  color: white !important;
 }
-.datatable-header-cell-label{
-    font-size: 14px !important;
-      font-weight: bold !important;
-  }
-  
-  .custom-datatable ngx-datatable.material .datatable-header .datatable-header-cell {
-    font-size: 15px !important;
-  }
-.themeClr{
-    color: #FD6C04 !important;
+
+.sidebar {
+  display: none !important;
 }
+
+.datatable-header-cell-label {
+  font-size: 14px !important;
+  font-weight: bold !important;
+}
+
+.custom-datatable ngx-datatable.material .datatable-header .datatable-header-cell {
+  font-size: 15px !important;
+}
+
+.themeClr {
+  color: #FD6C04 !important;
+}
+
 .modal-dialog {
-    max-width: 90% !important;
-  }
+  max-width: 90% !important;
+}
 
 
-  // added on 13-10-25
-  .fullscreen-loader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.85);
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .loader-spinner {
-    width: 60px;
-    height: 60px;
-    border: 8px solid #ccc;
-    border-top: 8px solid #ff8800;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-  
-  .loader-text {
-    margin-top: 20px;
-    font-size: 20px;
-    color: #333;
-    font-weight: bold;
-  }
-  
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
+// added on 13-10-25
+.fullscreen-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.85);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 
-  /* Data Grid Font Size Fix */
-  .mat-elevation-z8 .mat-mdc-cell,
-  .mat-elevation-z8 .mat-mdc-header-cell {
-    font-size: 14px !important;
-    font-weight: 500;
-  }
+.loader-spinner {
+  width: 60px;
+  height: 60px;
+  border: 8px solid #ccc;
+  border-top: 8px solid #ff8800;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
 
-  /* Material Table font size fix */
-  .mat-mdc-table .mat-mdc-cell {
-    font-size: 14px !important;
-  }
+.loader-text {
+  margin-top: 20px;
+  font-size: 20px;
+  color: #333;
+  font-weight: bold;
+}
 
-  .mat-mdc-table .mat-mdc-header-cell {
-    font-size: 14px !important;
-    font-weight: 600;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
-  
+}
+
+/* Data Grid Font Size Fix */
+.mat-elevation-z8 .mat-mdc-cell,
+.mat-elevation-z8 .mat-mdc-header-cell {
+  font-size: 14px !important;
+  font-weight: 500;
+}
+
+/* Material Table font size fix */
+.mat-mdc-table .mat-mdc-cell {
+  font-size: 14px !important;
+}
+
+.mat-mdc-table .mat-mdc-header-cell {
+  font-size: 14px !important;
+  font-weight: 600;
+}

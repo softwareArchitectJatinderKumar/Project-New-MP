@@ -1,0 +1,9 @@
+/* Take Action Table Styles */
+::ng-deep .division-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+::ng-deep .division-list li {
+  font-size: 0.85rem;
+}

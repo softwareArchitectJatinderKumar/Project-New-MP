@@ -528,6 +528,29 @@ calculateScrollWidth(): void {
   SelectedMouCategoryTab2: any = 'All';
   SelectedMouCategoryTab3: any = 'All';
 
+  statusFilterOptions = [
+    { value: 'all', label: 'All MOU' },
+    { value: 'active', label: 'Active' },
+    { value: 'expired', label: 'Expired' },
+    { value: 'renewed', label: 'Renewed' }
+  ];
+
+  get categoryFilterOptions() {
+    const options = [{ value: 'All', label: 'All Categories' }];
+    this.AllMouCategories.forEach(cat => {
+      options.push({ value: cat.CategoryName, label: cat.CategoryName });
+    });
+    return options;
+  }
+
+  get schoolDivisionOptions() {
+    const options = [{ value: '0', label: 'All School / Division' }];
+    this.allSchoolDivisions.forEach(div => {
+      options.push({ value: div.id.toString(), label: div.schoolDivision });
+    });
+    return options;
+  }
+
   GetAllCategories(): void {
     this.mouDocumentsService.GetMouCategories().subscribe({
       next: response => {
@@ -548,7 +571,7 @@ calculateScrollWidth(): void {
     if (!selected || selected === 'All') {
       return true;
     }
-    const categoryName = selected.CategoryName;
+    const categoryName = typeof selected === 'object' ? selected.CategoryName : selected;
     return String(item.mouCategory ?? '').toLowerCase() === categoryName.toLowerCase();
   }
 
@@ -1385,6 +1408,13 @@ calculateScrollWidth(): void {
   endDate: any;
   allSchoolDivisions: SchoolDivision[] = [];
   allPlannerSessions: any[] = [];
+  get plannerSessionOptions() {
+    const options = [{ value: '1', label: 'Select Session' }, { value: '0', label: 'All' }];
+    this.allPlannerSessions?.forEach(s => {
+      options.push({ value: s.id.toString(), label: s.session });
+    });
+    return options;
+  }
   selectedPlannerSession: any = '11';
 
   EmployeeDetails: any;
@@ -1712,7 +1742,7 @@ calculateScrollWidth(): void {
   }
 
   setSessionId(event: any) {
-    const selectedId = event.target.value;
+    const selectedId = (event && event.target) ? event.target.value : event;
     this.selectedPlannerSession = selectedId;
     this.GetAllActivtiesAssigned(this.EmployeeCode, this.selectedPlannerSession);
     this.GetOthersActivtiesAssigned('0', this.selectedPlannerSession);

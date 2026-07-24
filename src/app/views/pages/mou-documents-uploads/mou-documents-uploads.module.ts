@@ -24,6 +24,12 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
 import { MouDocumentsUploadsComponent } from './mou-documents-uploads.component';
 import { MouMenuModule } from '../Mou-Menu-Bar/mou-menu.module';
 
+import { MouSearchBoxComponent } from './components/search-box/search-box.component';
+import { MouExportExcelComponent } from './components/export-excel/export-excel.component';
+import { MouFilterSelectComponent } from './components/filter-select/filter-select.component';
+import { MouDataGridComponent } from './components/data-grid/data-grid.component';
+import { MouUploadsTableComponent } from './components/uploads-table/uploads-table.component';
+
 const routes: Routes = [
   {
     path: '',
@@ -49,9 +55,13 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     ArchwizardModule,ReactiveFormsModule,
     MaterialModule,
-    MouMenuModule
+    MouMenuModule,
 
-
+    MouSearchBoxComponent,
+    MouExportExcelComponent,
+    MouFilterSelectComponent,
+    MouDataGridComponent,
+    MouUploadsTableComponent
   ],
   providers: [
     NgbRatingConfig,
