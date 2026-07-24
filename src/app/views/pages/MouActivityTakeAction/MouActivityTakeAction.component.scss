@@ -1,3 +1,136 @@
+// ---------------------------------------------------------------------
+// Theme tokens
+// ---------------------------------------------------------------------
+$brand: #FD6C04;
+$brand-dark: #d95a00;
+$ink: #1f2430;
+$muted: #6b7280;
+$border: #e5e7eb;
+$surface: #ffffff;
+$surface-soft: #f8f9fb;
+
+
+
+
+// ---------------------------------------------------------------------
+// Grid + top-mirrored scrollbar (shared by both Tab 1 and Tab 2 grids)
+// ---------------------------------------------------------------------
+.grid-scroll-wrapper {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid $border;
+  border-radius: 10px;
+  background: $surface;
+  box-shadow: 0 1px 4px rgba(0,0,0,.04);
+}
+
+.grid-scroll-content{
+  display:flex;
+  flex-direction:column;
+}
+
+::ng-deep .ngx-datatable{
+  width:100%;
+  box-shadow:none;
+
+  .datatable-header{
+    background:$surface-soft;
+    overflow:hidden;
+
+    .datatable-header-cell{
+      font-weight:700;
+      font-size:.78rem;
+      text-transform:uppercase;
+      letter-spacing:.3px;
+      color:$ink;
+
+      // Allow header text to wrap into multiple lines
+      white-space: normal !important;
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+      text-overflow: inherit !important;
+      overflow: visible !important;
+
+      .datatable-header-cell-template-wrap,
+      .datatable-header-cell-label {
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        text-overflow: inherit !important;
+        overflow: visible !important;
+      }
+    }
+  }
+
+  .datatable-body{
+    overflow-x:scroll !important;
+    overflow-y:auto !important;
+    max-height:60vh;
+
+    scrollbar-width:thin;
+    scrollbar-color:$brand $surface-soft;
+
+    &::-webkit-scrollbar{
+      width:12px;
+      height:14px;
+    }
+
+    &::-webkit-scrollbar-track{
+      background:$surface-soft;
+    }
+
+    &::-webkit-scrollbar-thumb{
+      background:$brand;
+      border-radius:8px;
+      border:3px solid $surface-soft;
+    }
+  }
+
+  .datatable-body-row{
+    border-bottom:1px solid $border;
+
+    &:hover{
+      background:rgba(253,108,4,.05);
+    }
+  }
+
+  .datatable-footer{
+    border-top:1px solid $border;
+    background:$surface;
+  }
+}
+
+.top-scrollbar{
+  width:100%;
+  overflow-x:scroll;
+  overflow-y:hidden;
+  height:16px;
+  margin-bottom:4px;
+
+  scrollbar-width:thin;
+  scrollbar-color:$brand $surface-soft;
+
+  &::-webkit-scrollbar{
+    height:14px;
+  }
+
+  &::-webkit-scrollbar-track{
+    background:$surface-soft;
+  }
+
+  &::-webkit-scrollbar-thumb{
+    background:$brand;
+    border-radius:8px;
+    border:3px solid $surface-soft;
+  }
+}
+
+.top-scrollbar div{
+  height:1px;
+  min-width:100%;
+}
+
+
 .autocomplete-container {
     position: relative;
     display: inline-block;
@@ -43,3 +176,79 @@
   color: black;  
   background-color: white;
 }
+
+
+
+// ---------------------------------------------------------------------
+// Top page header bar (kept, employee/department details removed)
+// ---------------------------------------------------------------------
+.page-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, $ink 0%, #333c4d 100%);
+  color: #fff;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+
+  .page-header-title {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+
+    i {
+      font-size: 1.35rem;
+      color: $brand;
+    }
+  }
+
+  .page-header-subtitle {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 400;
+    margin-top: 2px;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Filter toolbar
+// ---------------------------------------------------------------------
+.filter-toolbar {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+
+  label.filter-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: $muted;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+
+  .form-select,
+  .form-control {
+    border-radius: 8px;
+    border-color: $border;
+
+    &:focus {
+      border-color: $brand;
+      box-shadow: 0 0 0 0.2rem rgba(253, 108, 4, 0.15);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// Top-mirrored scrollbar (see .top-scrollbar / .grid-scroll-wrapper near
+// the top of this file - kept generic, no grid-specific selectors, so it
+// is reusable for any wide, horizontally-scrollable grid on this page).
+// ---------------------------------------------------------------------

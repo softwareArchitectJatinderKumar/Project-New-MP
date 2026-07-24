@@ -33,12 +33,11 @@
     <div class="nav nav-tabs nav nav-tabs d-flex justify-content-center active" id="nav-tab" role="tablist">
       <button class="btn me-5 active" id="AssignActivities-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
         data-bs-target="#AssignActivities" type="button" role="tab" aria-controls="AssignActivities"
-        (shown.bs.tab)="onAssignActivitiesTabShown()" aria-selected="true">Take Action </button>
+        aria-selected="true">Take Action </button>
 
       <button class=" btn btn-lg ms-5" id="MyAllAssignActivities-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
         data-bs-target="#MyAllAssignActivities" type="button" role="tab" aria-controls="MyAllAssignActivities"
-        (click)="MyActionTkenData()" (shown.bs.tab)="onMyAllAssignActivitiesTabShown()" aria-selected="false">My Action
-        Taken </button>
+        (click)="MyActionTkenData()" aria-selected="false">My Action Taken </button>
     </div>
   </nav>
   <div class="tab-content" id="nav-tabContent">
@@ -93,7 +92,7 @@
                 <div class="grid-scroll-wrapper">
                   <ngx-datatable class="bootstrap material" [rows]="filteredMouActivityDocuments"
                     [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.standard" [footerHeight]="50"
-                    [limit]="25" [headerHeight]="100" [rowHeight]="'auto'" [scrollbarH]="true" [scrollbarV]="false">
+                    [limit]="25" [headerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [scrollbarV]="false">
                     <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="Id">
                       <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                         <ng-container *ngIf="row.newMouId != null">
@@ -338,9 +337,24 @@
                 </div>
               </div>
 
+              <!-- Conditional Section -->
+              <ng-container *ngIf="loadingIndicator; else dataLoadedBlock">
+                <!-- Loader Template -->
+                <div class="text-center">
+                  <div class="text-center">
+                    <span class="text-danger fs-3">Loading </span><br />
+                    <div class="spinner-grow text-danger text-center" style="width: 14rem; height: 14rem;"
+                      role="status">
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
 
 
-              <!-- <div class="row p-3 mx-5">
+              <!-- Data Loaded Block -->
+              <ng-template #dataLoadedBlock>
+
+                <div class="row p-3 mx-5">
                   <div class="col-12">
                     <div class="d-flex gap-3 align-items-center">
                       <span class="fw-bold me-2">Summary:</span>
@@ -358,180 +372,180 @@
                       </span>
                     </div>
                   </div>
-                </div> -->
-              <ng-container *ngIf="filteredMouActionTakenDocuments.length > 0; else noDataBlock">
-                <div class="row" *ngIf="filteredMouActionTakenDocuments.length>0 ; else NoRecords">
-
-                  <div #topScrollbar2 class="top-scrollbar">
-                    <div #topScrollbarContent2></div>
-                  </div>
-                  <div class="grid-scroll-wrapper">
-                    <ngx-datatable class="bootstrap material tab2-grid" [rows]="filteredMouActionTakenDocuments"
-                      [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.standard" [footerHeight]="50"
-                      [limit]="25" [headerHeight]="100" [rowHeight]="'auto'" [scrollbarH]="true" [scrollbarV]="false">
-                      <!-- <ngx-datatable class="bootstrap table table-striped material custom-table"
+                </div>
+                <ng-container *ngIf="filteredMouActionTakenDocuments.length > 0; else noDataBlock">
+                  <div class="row" *ngIf="filteredMouActionTakenDocuments.length>0 ; else NoRecords">
+                
+                    <div #topScrollbar2 class="top-scrollbar">
+                      <div #topScrollbarContent2></div>
+                    </div>
+                    <div class="grid-scroll-wrapper">
+                      <ngx-datatable class="bootstrap material tab2-grid" [rows]="filteredMouActionTakenDocuments"
+                        [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.standard" [footerHeight]="50" [limit]="25"
+                        [headerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [scrollbarV]="false">
+                        <!-- <ngx-datatable class="bootstrap table table-striped material custom-table"
                       [rows]="filteredMouActionTakenDocuments" [loadingIndicator]="loadingIndicator"
                       [columnMode]="ColumnMode.force" [footerHeight]="80" [headerHeight]="80" [rowHeight]="'auto'"
                       [scrollbarH]="true" [limit]="10" rowHeight="auto"> -->
 
-                      <!-- MOU ID Column -->
-                      <ngx-datatable-column name="Record Id" [sortable]="false" prop="Id" [width]="90">
-                        <ng-template let-row="row" ngx-datatable-cell-template>
-                          <ng-container *ngIf="row.recordId != null">
-                            <span class="text-center ">{{ row.recordId }}</span>
-                          </ng-container>
-                        </ng-template>
-                      </ngx-datatable-column>
+                        <!-- MOU ID Column -->
+                        <ngx-datatable-column name="Record Id" [sortable]="false" prop="Id" [flexGrow]="1">
+                          <ng-template let-row="row" ngx-datatable-cell-template>
+                            <ng-container *ngIf="row.recordId != null">
+                              <span class="text-center ">{{ row.recordId }}</span>
+                            </ng-container>
+                          </ng-template>
+                        </ngx-datatable-column>
 
-                      <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="Id" [width]="150">
-                        <ng-template let-row="row" ngx-datatable-cell-template>
-                          <ng-container *ngIf="row.newMouId != null">
-                            <span class="text-center ">{{ row.newMouId }}</span>
-                          </ng-container>
-                        </ng-template>
-                      </ngx-datatable-column>
+                        <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="Id" [flexGrow]="1">
+                          <ng-template let-row="row" ngx-datatable-cell-template>
+                            <ng-container *ngIf="row.newMouId != null">
+                              <span class="text-center ">{{ row.newMouId }}</span>
+                            </ng-container>
+                          </ng-template>
+                        </ngx-datatable-column>
 
-                      <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id" [width]="120">
-                        <ng-template let-row="row" ngx-datatable-cell-template>
-                          <ng-container *ngIf="row.mouId != null">
-                            <span class="text-center ">MOU/{{ row.mouId }}</span>
-                          </ng-container>
-                        </ng-template>
-                      </ngx-datatable-column>
+                        <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id" [flexGrow]="1">
+                          <ng-template let-row="row" ngx-datatable-cell-template>
+                            <ng-container *ngIf="row.mouId != null">
+                              <span class="text-center ">MOU/{{ row.mouId }}</span>
+                            </ng-container>
+                          </ng-template>
+                        </ngx-datatable-column>
 
-                      <ngx-datatable-column name="assignedToFacultyUID" [sortable]="false" prop="assignedToFacultyUID"
-                        [width]="250">
-                        <ng-template let-row="row" ngx-datatable-cell-template>
-                          <ng-container *ngIf="row.assignedToFacultyUID != null">
-                            <span class="text-center ">{{ row.assignedToFacultyUID }} - {{ row.assignedToFacultyName
-                              }}</span>
-                          </ng-container>
-                        </ng-template>
-                      </ngx-datatable-column>
+                        <ngx-datatable-column name="assignedToFacultyUID" [sortable]="false" prop="assignedToFacultyUID"
+                          [flexGrow]="1">
+                          <ng-template let-row="row" ngx-datatable-cell-template>
+                            <ng-container *ngIf="row.assignedToFacultyUID != null">
+                              <span class="text-center ">{{ row.assignedToFacultyUID }} - {{ row.assignedToFacultyName
+                                }}</span>
+                            </ng-container>
+                          </ng-template>
+                        </ngx-datatable-column>
 
-                      <ngx-datatable-column name="MOU Category" [sortable]="false" prop="Id" [width]="150">
-                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
-                          ngx-datatable-cell-template>
-                          <ng-container *ngIf="row.mouCategory?.length>0; else NA1">
-                            <span
-                              style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouCategory}}</span>
-                          </ng-container>
-                        </ng-template>
-                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template
-                          #NA1>
-                          <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">NA</span>
-                        </ng-template>
-                      </ngx-datatable-column>
+                        <ngx-datatable-column name="MOU Category" [sortable]="false" prop="Id">
+                          <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                            ngx-datatable-cell-template>
+                            <ng-container *ngIf="row.mouCategory?.length>0; else NA1">
+                              <span
+                                style="margin: auto;float: left; padding: 10px 10px 10px 10px;">{{row.mouCategory}}</span>
+                            </ng-container>
+                          </ng-template>
+                          <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                            ngx-datatable-cell-template #NA1>
+                            <span style="margin: auto;float: left; padding: 10px 10px 10px 10px;">NA</span>
+                          </ng-template>
+                        </ngx-datatable-column>
 
 
-                      <ngx-datatable-column name="Session Year" [sortable]="false" prop="Id" [width]="180">
-                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
-                          ngx-datatable-cell-template>
-                          <ng-container *ngIf="row.sessionAcademicYear != null; else NotFilled">
-                            <span
-                              style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.sessionAcademicYear}}</span>
-                          </ng-container>
-                          <ng-template #NotFilled>
-                            <!-- <button class="btn btn-danger me-2"
+                        <ngx-datatable-column name="Session Year" [sortable]="false" prop="Id">
+                          <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                            ngx-datatable-cell-template>
+                            <ng-container *ngIf="row.sessionAcademicYear != null; else NotFilled">
+                              <span
+                                style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.sessionAcademicYear}}</span>
+                            </ng-container>
+                            <ng-template #NotFilled>
+                              <!-- <button class="btn btn-danger me-2"
                                                             (click)="ApproveAction(row)"> -->
-                            <span
-                              style="margin: auto;float: left; padding: 10px 10px 10px 10px; font-weight: bold; color: red">NA</span>
-                            <!-- </button> -->
+                              <span
+                                style="margin: auto;float: left; padding: 10px 10px 10px 10px; font-weight: bold; color: red">NA</span>
+                              <!-- </button> -->
+                            </ng-template>
                           </ng-template>
-                        </ng-template>
-                      </ngx-datatable-column>
+                        </ngx-datatable-column>
 
-                      <ngx-datatable-column name="School Division " prop="schoolDivisionInvolved" [width]="250">
-                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
-                          ngx-datatable-cell-template>
-                          <ng-container *ngIf="row.schoolDivisionInvolved != null; else NAA">
-                            <ul class=" p-2 " id="SchoolInvolvedData" [style]="{ width: '89%' }">
-                              <li [value]="getDivisionNameById(schoolId)"
-                                *ngFor="let schoolId of row.schoolDivisionInvolved.split(',')">
-                                {{getDivisionNameById(schoolId)}} -{{schoolId}}
-                              </li>
-                            </ul>
-                          </ng-container>
-                          <ng-template #NAA>
-                            <span> NA </span>
+                        <ngx-datatable-column name="School Division " prop="schoolDivisionInvolved">
+                          <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex"
+                            ngx-datatable-cell-template>
+                            <ng-container *ngIf="row.schoolDivisionInvolved != null; else NAA">
+                              <ul class=" p-2 " id="SchoolInvolvedData" [style]="{ width: '89%' }">
+                                <li [value]="getDivisionNameById(schoolId)"
+                                  *ngFor="let schoolId of row.schoolDivisionInvolved.split(',')">
+                                  {{getDivisionNameById(schoolId)}} -{{schoolId}}
+                                </li>
+                              </ul>
+                            </ng-container>
+                            <ng-template #NAA>
+                              <span> NA </span>
+                            </ng-template>
                           </ng-template>
-                        </ng-template>
-                      </ngx-datatable-column>
+                        </ngx-datatable-column>
 
-                      <!-- Approval Status Column -->
-                      <ngx-datatable-column name="Approval Status" [sortable]="false" prop="Id" [width]="220">
-                        <ng-template let-row="row" ngx-datatable-cell-template>
-                          <ng-container [ngSwitch]="row.isApproved">
-                            <ng-container *ngSwitchCase="'True'">
-                              <div class="p-2 fw-bold text-dark">Approved By<br />
-                                {{row.approvedBy != 'null' ? row.approvedBy :'NA'}} - {{row.approvalDate}}
-                              </div>
+                        <!-- Approval Status Column -->
+                        <ngx-datatable-column name="Approval Status" [sortable]="false" prop="Id" [flexGrow]="1">
+                          <ng-template let-row="row" ngx-datatable-cell-template>
+                            <ng-container [ngSwitch]="row.isApproved">
+                              <ng-container *ngSwitchCase="'True'">
+                                <div class="p-2 fw-bold text-dark">Approved By<br />
+                                  {{row.approvedBy != 'null' ? row.approvedBy :'NA'}} - {{row.approvalDate}}
+                                </div>
+                              </ng-container>
+                              <ng-container *ngSwitchCase="'False'">
+                                <div class="p-2 fw-bold text-dark">Reason <br />
+                                  <span>{{row.disapprovalReason}} {{row.approvedBy}}</span>
+                                </div>
+                              </ng-container>
+                              <ng-container *ngSwitchDefault>
+                                <div class="fw-bold text-dark p-3">Pending</div>
+                              </ng-container>
                             </ng-container>
-                            <ng-container *ngSwitchCase="'False'">
-                              <div class="p-2 fw-bold text-dark">Reason <br />
-                                <span>{{row.disapprovalReason}} {{row.approvedBy}}</span>
-                              </div>
-                            </ng-container>
-                            <ng-container *ngSwitchDefault>
-                              <div class="fw-bold text-dark p-3">Pending</div>
-                            </ng-container>
-                          </ng-container>
-                        </ng-template>
-                      </ngx-datatable-column>
+                          </ng-template>
+                        </ngx-datatable-column>
 
-                      <!-- Download MOU Column -->
-                      <ngx-datatable-column name="Download MOU" [sortable]="false" prop="Id" [width]="120">
-                        <ng-template let-row="row" ngx-datatable-cell-template>
-                          <ng-container *ngIf="row.filePath != null">
-                            <button class="btn btn-dark" (click)="onDownloadFile(row.filePath)">
-                              <i class="bi bi-file-earmark-text"></i>
-                              <!-- <i class="bi bi-eye fs-5"></i> -->
-                            </button>
-                          </ng-container>
-                          <ng-container *ngIf="row.filePath == null">
-                            <button class="btn btn-dark" (click)="viewAllUploadedDocs(row)">
-                              <i class="bi bi-file-earmark-text"></i>
-                              <!-- <i class="bi bi-eye fs-5"></i> -->
-                            </button>
-                          </ng-container>
-                        </ng-template>
-                      </ngx-datatable-column>
-
-
-                      <ngx-datatable-column name="Download Uploaded Document" [sortable]="false" prop="Id"
-                        [width]="220">
-                        <ng-template let-row="row" ngx-datatable-cell-template>
-                          <ng-container *ngIf="row.documentUploadedFile">
-
-                            <ng-container
-                              *ngFor="let file of getDocumentFiles(row.documentUploadedFile); let i = index">
-                              <button class="btn btn-dark me-1 mb-1" (click)="onDownloadFile(file)"
-                                [title]="getFileName(file)">
+                        <!-- Download MOU Column -->
+                        <ngx-datatable-column name="Download MOU" [sortable]="false" prop="Id" [flexGrow]="1">
+                          <ng-template let-row="row" ngx-datatable-cell-template>
+                            <ng-container *ngIf="row.filePath != null">
+                              <button class="btn btn-dark" (click)="onDownloadFile(row.filePath)">
                                 <i class="bi bi-file-earmark-text"></i>
-                                {{ i + 1 }}
+                                <!-- <i class="bi bi-eye fs-5"></i> -->
                               </button>
                             </ng-container>
+                            <ng-container *ngIf="row.filePath == null">
+                              <button class="btn btn-dark" (click)="viewAllUploadedDocs(row)">
+                                <i class="bi bi-file-earmark-text"></i>
+                                <!-- <i class="bi bi-eye fs-5"></i> -->
+                              </button>
+                            </ng-container>
+                          </ng-template>
+                        </ngx-datatable-column>
 
-                          </ng-container>
-                        </ng-template>
-                        <!-- <ng-template let-row="row" ngx-datatable-cell-template>
+
+                        <ngx-datatable-column name="Download Uploaded Document" [sortable]="false" prop="Id"
+                          [flexGrow]="1">
+                          <ng-template let-row="row" ngx-datatable-cell-template>
+                            <ng-container *ngIf="row.documentUploadedFile">
+
+                              <ng-container
+                                *ngFor="let file of getDocumentFiles(row.documentUploadedFile); let i = index">
+                                <button class="btn btn-dark me-1 mb-1" (click)="onDownloadFile(file)"
+                                  [title]="getFileName(file)">
+                                  <i class="bi bi-file-earmark-text"></i>
+                                  {{ i + 1 }}
+                                </button>
+                              </ng-container>
+
+                            </ng-container>
+                          </ng-template>
+                          <!-- <ng-template let-row="row" ngx-datatable-cell-template>
                          
                             <button class="btn btn-dark" (click)="viewAllUploadedDocs(row)">
                               <i class="bi bi-file-earmark-text"></i>
                             </button>
                            
                         </ng-template> -->
-                      </ngx-datatable-column>
+                        </ngx-datatable-column>
 
-                      <!-- Dynamic Columns -->
-                      <ngx-datatable-column *ngFor="let col of columns" [prop]="col"
-                        [flexGrow]="1"></ngx-datatable-column>
+                        <!-- Dynamic Columns -->
+                        <ngx-datatable-column *ngFor="let col of columns" [prop]="col"
+                          [flexGrow]="1"></ngx-datatable-column>
 
-                    </ngx-datatable>
+                      </ngx-datatable>
+                    </div>
                   </div>
-                </div>
-              </ng-container>
-
+                </ng-container>
+              </ng-template>
               <!-- No Data Template -->
               <ng-template #noDataBlock>
                 <div class="text-center vh-100">
