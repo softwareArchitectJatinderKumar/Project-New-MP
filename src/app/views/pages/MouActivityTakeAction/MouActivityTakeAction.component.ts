@@ -59,24 +59,11 @@ topScrollbar2!: ElementRef<HTMLDivElement>;
 @ViewChild('topScrollbarContent2')
 topScrollbarContent2!: ElementRef<HTMLDivElement>;
 
-// One ResizeObserver per grid, so the top-scrollbar spacer width always
-// tracks the grid's real content width - whenever it changes, for any
-// reason (tab becoming visible, rows arriving after the async API call,
-// a filter narrowing/widening columns, a window resize, etc). This
-// replaces the old approach of re-measuring once via setTimeout, which
-// was fragile: Tab 2's rows load asynchronously *after* its tab is
-// clicked, so a single timed re-measure could easily fire before the
-// grid had actually rendered its final width.
+ 
 private tab1WidthObserver?: ResizeObserver;
 private tab2WidthObserver?: ResizeObserver;
 
-/**
- * Mirrors a grid's native horizontal scrollbar with a top-mounted scrollbar
- * so users don't have to scroll to the bottom of a long list to pan the grid.
- * Shared by both tabs - safe to call repeatedly (e.g. on tab switch, after
- * data loads, or on filter change) since it just re-measures, re-binds the
- * scroll listeners, and re-attaches the width observer each time.
- */
+ 
 private initializeTopScrollbar(
   topBar: HTMLElement,
   spacer: HTMLElement,
@@ -146,21 +133,13 @@ onAssignActivitiesTabShown(): void {
   setTimeout(() => this.syncTab1Scrollbar(), 150);
 }
 
-/**
- * Bootstrap fires this once Tab 2's pane is actually visible in the DOM.
- * This attaches the ResizeObserver as early as possible; the observer
- * itself then keeps the spacer width correct once the tab's data finishes
- * loading, so it's fine if the grid is still empty/loading right now.
- */
+
 onMyAllAssignActivitiesTabShown(): void {
   setTimeout(() => this.syncTab2Scrollbar(), 150);
 }
 
   ngAfterViewInit() {
-    // Tab 1 is active by default on load, so it's the only grid guaranteed
-    // to be visible/measurable at this point. Tab 2 is synced lazily via
-    // onMyAllAssignActivitiesTabShown() the first time its tab is opened,
-    // and again once its data finishes loading (see applyFiltersTab1()).
+
     setTimeout(() => this.syncTab1Scrollbar(), 300);
   }
 
@@ -822,7 +801,7 @@ uploadRequiredDocument(documentName: string, index: number) {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
-          this.EmployeeCode = '11840';// response.item1[0].employeeCode; //11840
+          this.EmployeeCode = response.item1[0].employeeCode; //11840
           this.Department = response.item1[0].department;
           this.DepartmentName = response.item1[0].departmentName;
           this.loadingIndicator = false;
@@ -954,10 +933,11 @@ uploadRequiredDocument(documentName: string, index: number) {
   GetAllMouDocumentsForActions(): void {
     this.mouDocumentsService.MouDocumentstoTakeAction(this.EmployeeCode).subscribe({
       next: response => {
-        if (response.item1.length > 0) {
+        const data = response && response.item1 ? response.item1 : response;
+        if (data && data.length > 0) {
           // keep master copy and apply filters
-          this.MouActivityDocumentsMaster = response.item1;
-          this.MouActivityDocuments = response.item1;
+          this.MouActivityDocumentsMaster = data;
+          this.MouActivityDocuments = data;
           this.applyFiltersTakeAction();
 
           this.dataSource.data = this.MouActivityDocuments;
