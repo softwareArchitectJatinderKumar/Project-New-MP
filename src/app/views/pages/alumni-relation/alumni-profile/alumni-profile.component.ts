@@ -116,7 +116,7 @@ export class AlumniProfileComponent implements OnInit {
     }).subscribe((data: any) => {
       this.alumniProfile = data;
       this.CohortcommonService.successPopup(data.message);
-      console.log("alumni", this.alumniProfile);
+      // console.log("alumni", this.alumniProfile);
       // Hide the form after successful submission
       this.showForm = false;
       this.getAlumniProfile();

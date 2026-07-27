@@ -36,7 +36,7 @@ export class DutyLeaveComponent implements OnInit {
   getRegisterationNo(): void {
     this.route.params.subscribe(params => {
       this.registrationNumber = +params['RegistrationId'];
-      console.log("registrationNumber  Duty Leave page= " + this.registrationNumber)
+      // console.log("registrationNumber  Duty Leave page= " + this.registrationNumber)
     });
   }
 

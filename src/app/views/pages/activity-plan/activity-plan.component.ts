@@ -370,7 +370,7 @@ export class AgreementActivityPlanComponent implements OnInit {
     this.viewdescription = val;
     this.modalService.open(this.viewDescModal, { size: 'sm' }).result.then((result) => {
 
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => { });
 
   }
@@ -761,7 +761,7 @@ export class AgreementActivityPlanComponent implements OnInit {
 
   onFileSelected(e: any) {
 
-    console.log(e);
+    // console.log(e);
     const target = e.target as HTMLInputElement;
     const file: File = (target.files as FileList)[0];
     this.FileData = file;

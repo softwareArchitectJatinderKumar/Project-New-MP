@@ -220,7 +220,7 @@ debugger;
     this.viewdescription=data[0]['forwardUserRemarks'];
     this.modalService.open(this.viewDescModal, {size: 'sm'}).result.then((result) => {
 
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => {});
 
   }
@@ -424,7 +424,7 @@ debugger;
     this.selectedRowId = val;
     this.modalService.open(this.chatModal, {size: 'sm'}).result.then((result) => {
 
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => {});
   }
 
@@ -543,7 +543,7 @@ debugger;
   }
 
   onSessionChange($event:any){
-    console.log($event.sessionId);
+    // console.log($event.sessionId);
     let sessionid = $event.sessionId
     this.getMetricBySessionID(sessionid);
 
@@ -1115,7 +1115,7 @@ const arrayUniqueByKey = [...new Map(this.myArray.map(item =>
     }
     
     let a = this.responses;
-    console.log(this.responses);
+    // console.log(this.responses);
     
     this.placementService.addSoftSkillData(this.responses).subscribe({
       next: data => {

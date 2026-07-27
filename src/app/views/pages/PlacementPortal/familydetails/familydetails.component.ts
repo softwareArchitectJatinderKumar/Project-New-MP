@@ -48,7 +48,7 @@ export class FamilydetailsComponent implements OnInit {
     this.route.params.subscribe(params => {
       const encryptedStageId = params['PlacementId'];
       this.placementId = Number(encryptedStageId);
-      console.log("PlacementID  Update Contact page= " + this.placementId)
+      // console.log("PlacementID  Update Contact page= " + this.placementId)
       this.GetCandidateFamilyData(this.placementId);
     });
   }
@@ -99,9 +99,9 @@ export class FamilydetailsComponent implements OnInit {
           // this.MotherOccupation= this.Mother.designation; this.MotherEmployerAddress= this.Mother.employerAddress; this.MotherEmaiId=this.Mother.emailId;
 
           this.showNoDataFoundMessage = false;
-          console.log("Candidate FamilyData  " + JSON.stringify(this.FamilyData))
-          console.log("Candidate Father  " + JSON.stringify(this.Father) + " Name " + this.FatherName)
-          console.log("Candidate Mother  " + JSON.stringify(this.Mother))
+          // console.log("Candidate FamilyData  " + JSON.stringify(this.FamilyData))
+          // console.log("Candidate Father  " + JSON.stringify(this.Father) + " Name " + this.FatherName)
+          // console.log("Candidate Mother  " + JSON.stringify(this.Mother))
         }
         else {
           this.showNoDataFoundMessage = true;
@@ -114,12 +114,12 @@ export class FamilydetailsComponent implements OnInit {
   }
 
   LoginFailed(err: any) {
-    console.log('Error.' + err);
+    // console.log('Error.' + err);
   }
 
   UpdateFamilyDetails(StudentFamilyDetails: any){
     // debugger;
-    console.log(" DATA to Update = "+ JSON.stringify(StudentFamilyDetails));
+    // console.log(" DATA to Update = "+ JSON.stringify(StudentFamilyDetails));
     // this.placementPortalService.UpdateCandidateFamilyFriendsDetails(StudentFamilyDetails).subscribe({
     //   next: data => {
     //     debugger;

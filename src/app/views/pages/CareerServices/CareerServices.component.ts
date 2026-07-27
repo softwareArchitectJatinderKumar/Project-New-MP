@@ -65,7 +65,7 @@ export class CareerServicesComponent implements OnInit {
 
   getdata() {
     this.service.GetStudentRecord(this.StudentVerification).subscribe((data: any) => {
-      console.log(data)
+      // console.log(data)
 
       this.datagrid = data.item1;
       debugger;
@@ -79,7 +79,7 @@ export class CareerServicesComponent implements OnInit {
 
   Category() {
     this.service.FillProgram("2025").subscribe((data: any) => {
-      console.log(data.item1);
+      // console.log(data.item1);
       this.ProgCategory = data.item1;
     });
   }
@@ -88,7 +88,7 @@ export class CareerServicesComponent implements OnInit {
 
 getCategory() {
   this.service.GetCourse(this.ProgramName,this.BatchYear,this.StudentVerification).subscribe((data: any) => {
-    console.log(data)
+    // console.log(data)
 
     this.datagrid = data.item1;
       this.ProgramList=data.item1;
@@ -98,7 +98,7 @@ getCategory() {
 
 getYear() {
   this.service.GetYear(this.StudentVerification).subscribe((data: any) => {
-    console.log(data)
+    // console.log(data)
 
     this.datagrid = data.item1;
       debugger;
@@ -109,7 +109,7 @@ getYear() {
 
 StudyType() {
   this.service.GetHigherStudy().subscribe((data: any) => {
-    console.log(data)
+    // console.log(data)
 
     this.datagrid = data.item1;
       debugger;

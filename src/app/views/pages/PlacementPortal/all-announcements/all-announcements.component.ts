@@ -40,7 +40,7 @@ export class AllAnnouncementsComponent implements OnInit {
         if (response.item1 && response.item1.length > 0) {
           this.records = response.item1;
           this.showNoDataFoundMessage = false;
-          console.log(" Data " + JSON.stringify(this.records))
+          // console.log(" Data " + JSON.stringify(this.records))
         }
         else {
           this.showNoDataFoundMessage = true;

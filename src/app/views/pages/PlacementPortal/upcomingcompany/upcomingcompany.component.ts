@@ -28,7 +28,7 @@ export class UpcomingcompanyComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log("Registeration no in child component is given as "+this.Item)
+    // console.log("Registeration no in child component is given as "+this.Item)
     this.GetUpcomingDriveDetails(this.Item);
   }
 
@@ -44,7 +44,7 @@ export class UpcomingcompanyComponent implements OnInit {
           this.showNoDataFoundMessage = true;
           this.UpcomingDriveDetails =[];
         }
-        console.log("Upcomming Placement Drives details " + JSON.stringify(this.UpcomingDriveDetails));
+        // console.log("Upcomming Placement Drives details " + JSON.stringify(this.UpcomingDriveDetails));
       },
       error: err => {
         console.log(err);

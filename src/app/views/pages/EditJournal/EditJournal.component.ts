@@ -282,10 +282,10 @@ export class EditJournalComponent implements OnInit {
   }
 
   onFocus = () => {
-    console.log("On Focus");
+    // console.log("On Focus");
   }
   onBlur = () => {
-    console.log("Blurred");
+    // console.log("Blurred");
   }
   onFileSelected(e: any): void {
     const target = e.target as HTMLInputElement;

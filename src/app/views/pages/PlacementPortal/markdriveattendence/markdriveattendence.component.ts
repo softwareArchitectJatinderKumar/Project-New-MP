@@ -68,7 +68,7 @@ export class MarkdriveattendenceComponent implements OnInit {
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.RoundDetails = response.item1;
-          console.log("RoundDetails Drive Data  " + JSON.stringify(this.RoundDetails))
+          // console.log("RoundDetails Drive Data  " + JSON.stringify(this.RoundDetails))
         }
         else {
           this.RoundDetails=null;
@@ -87,7 +87,7 @@ export class MarkdriveattendenceComponent implements OnInit {
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.DriveDropDown = response.item1;
-          console.log("DropDown Drive Data  " + JSON.stringify(this.DriveDropDown))
+          // console.log("DropDown Drive Data  " + JSON.stringify(this.DriveDropDown))
         }
         else {
           this.DriveDropDown=null;

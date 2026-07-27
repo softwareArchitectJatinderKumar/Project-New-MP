@@ -114,7 +114,7 @@ export class HomeComponent implements OnInit {
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.DriveMessageData = response.item1;          
-          console.log("Candidate Drive messages " + JSON.stringify(this.DriveMessageData))
+          // console.log("Candidate Drive messages " + JSON.stringify(this.DriveMessageData))
         }
         else {
           this.showNoDataFoundMessage = true;
@@ -133,7 +133,7 @@ export class HomeComponent implements OnInit {
         if (response.item1 && response.item1.length > 0) {
           this.Announcements = response.item1;
           this.showNoDataFoundMessage = false;
-          console.log(" Data " + JSON.stringify(this.Announcements))
+          // console.log(" Data " + JSON.stringify(this.Announcements))
           
         }
         else {
@@ -171,7 +171,7 @@ export class HomeComponent implements OnInit {
         if (response.item1 && response.item1.length > 0) {
           this.TpcDetails = response.item1;
           this.showNoDataFoundMessage = false;
-          console.log(" TPC Details " + JSON.stringify(this.TpcDetails))
+          // console.log(" TPC Details " + JSON.stringify(this.TpcDetails))
         }
         else {
           this.showNoDataFoundMessage = true;
@@ -190,7 +190,7 @@ export class HomeComponent implements OnInit {
         if (response.item1 && response.item1.length > 0) {
           this.MyPlacementRecords = response.item1;
           this.showNoDataFoundMessage = false;
-          console.log(" My Placement  Details " + JSON.stringify(this.MyPlacementRecords))
+          // console.log(" My Placement  Details " + JSON.stringify(this.MyPlacementRecords))
         }
         else {
           this.showNoDataFoundMessage = true;
@@ -214,7 +214,7 @@ export class HomeComponent implements OnInit {
       else {
         this.showNoDataFoundMessage = true;
       }
-      console.log(" Conduct details " + JSON.stringify(this.UpcomingDriveConductDetails))
+      // console.log(" Conduct details " + JSON.stringify(this.UpcomingDriveConductDetails))
     },
     error: err => {
       this.LoginFailed(err);

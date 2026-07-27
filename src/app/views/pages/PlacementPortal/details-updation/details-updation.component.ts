@@ -44,7 +44,7 @@ export class DetailsUpdationComponent implements OnInit {
       // this.GetUploadedCheckListDocuments(stageIdFromRoute);
       const encryptedStageId = params['PlacementId'];
       this.placementId = Number(encryptedStageId);
-      console.log("PlacementID  Update Contact page= " + this.placementId)
+      // console.log("PlacementID  Update Contact page= " + this.placementId)
       this.GetCandidateContactData(this.placementId);
     });
   }
@@ -57,7 +57,7 @@ export class DetailsUpdationComponent implements OnInit {
         if (response.item1 && response.item1.length > 0) {
           this.CandidateContactData = response.item1;
           this.showNoDataFoundMessage = false;
-          console.log("Candidate ContactData Data " + JSON.stringify(this.CandidateContactData))
+          // console.log("Candidate ContactData Data " + JSON.stringify(this.CandidateContactData))
           this.EmailId = this.CandidateContactData[0].emailId; 
           this.Mobile = this.CandidateContactData[0].mobile; 
           this.LinkedInUrl = this.CandidateContactData[0].linkedInUrl; 

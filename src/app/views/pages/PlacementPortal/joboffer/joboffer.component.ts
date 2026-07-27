@@ -51,7 +51,7 @@ export class JobofferComponent implements OnInit {
   getRegistrationId(): void {
     this.route.params.subscribe(params => {
       this.registrationNumber = params['RegistrationId'];
-      console.log("registrationNumber  Job Offer page= " + this.registrationNumber)
+      // console.log("registrationNumber  Job Offer page= " + this.registrationNumber)
       this.regdId = this.registrationNumber;
     });
   }
@@ -65,7 +65,7 @@ export class JobofferComponent implements OnInit {
     debugger
     var XY = Number(this.formchecked.value.selectedDrive);
     this.DriveId = XY;
-    console.log("Form Data to be sent " + this.DriveId)
+    // console.log("Form Data to be sent " + this.DriveId)
     if (this.DriveId > 0) {
       this.sendRequest(this.regdId,XY);
     //   this.placementPortalService.UpdatePlacementJobOffer(this.regdId, XY).subscribe((data: any) => {
@@ -106,9 +106,9 @@ export class JobofferComponent implements OnInit {
       formData.append('regId', Id);
       formData.append('DriveId', DriveId);
 
-      formData.forEach((value, key) => {
-        console.log(key, value);
-      });
+      // formData.forEach((value, key) => {
+      //   console.log(key, value);
+      // });
 
       // console.log("Data got from UI" + JSON.stringify(formData));
       swal.fire({
@@ -121,7 +121,7 @@ export class JobofferComponent implements OnInit {
       }).then((result: any) => {
         if (result.value) {
           this.placementPortalService.UpdatePlacementJobOffer(formData).subscribe((data: any) => {
-            console.log(data[0]);
+            // console.log(data[0]);
             if (data[0].returnData == 'success') {
               swal.fire(
                 'Accepted the Job Offer Changed!',
@@ -164,14 +164,14 @@ export class JobofferComponent implements OnInit {
           this.PlacementId = this.CandidateData[0].uniquePlacementId;
           this.selectedCompany = this.CandidateData[0].companyName;
           this.showNoDataFoundMessage = false;
-          console.log("Candidate Data selected in  " + JSON.stringify(this.CandidateDataSelectedIn))
+          // console.log("Candidate Data selected in  " + JSON.stringify(this.CandidateDataSelectedIn))
         }
         else {
           this.showNoDataFoundMessage = true;
         }
       },
       error: err => {
-        console.log(err)
+        // console.log(err)
       }
     });
   }

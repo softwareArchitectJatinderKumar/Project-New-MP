@@ -152,7 +152,7 @@ Allemployee: any=[];
   SubmitForm(item:any){
 
     
-    console.log(item)
+    // console.log(item)
 
   }
 
@@ -163,7 +163,7 @@ Allemployee: any=[];
   changeCollab(event:any){
   debugger;
   let aa = event;
-  console.log(JSON.stringify(aa));
+  // console.log(JSON.stringify(aa));
   this.getActivityByAoC(aa);
 
 
@@ -194,7 +194,7 @@ Allemployee: any=[];
   }
 
   onSessionChange($event:any){
-    console.log($event.sessionId);
+    // console.log($event.sessionId);
     let sessionid = $event.sessionId
     this.getMetricBySessionID(sessionid);
 

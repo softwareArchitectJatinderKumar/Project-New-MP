@@ -54,7 +54,7 @@ export class NewJournalComponent implements OnInit {
     this.Title = aa['journalTitle'];
     this.modalService.open(this.viewDescModal, {size: 'sm'}).result.then((result) => {
 
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => {});
   }
   onEditClick(a: any)

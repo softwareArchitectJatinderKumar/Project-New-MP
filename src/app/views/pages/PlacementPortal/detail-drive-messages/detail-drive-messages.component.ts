@@ -44,7 +44,7 @@ export class DetailDriveMessagesComponent implements OnInit {
       next: response => {
         if (response.item1 && response.item1.length > 0) {
           this.DriveMessageData = response.item1;          
-          console.log("Candidate Drive messages " + JSON.stringify(this.DriveMessageData))
+          // console.log("Candidate Drive messages " + JSON.stringify(this.DriveMessageData))
         }
         else {
           this.showNoDataFoundMessage = true;

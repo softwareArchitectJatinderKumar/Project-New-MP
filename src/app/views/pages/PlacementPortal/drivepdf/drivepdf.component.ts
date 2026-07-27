@@ -63,7 +63,7 @@ export class DrivepdfComponent implements  OnInit {
       else {
         this.showNoDataFoundMessage = true;
       }
-      console.log(" Conduct details " + JSON.stringify(this.CompanyDriveDetails))
+      // console.log(" Conduct details " + JSON.stringify(this.CompanyDriveDetails))
     },
     error: err => {
       this.LoginFailed(err);

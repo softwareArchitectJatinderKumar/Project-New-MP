@@ -569,7 +569,7 @@ const arrayUniqueByKey = [...new Map(this.myArray.map(item =>
     }
     
     let a = this.responses;
-    console.log(this.responses);
+    // console.log(this.responses);
     
     this.placementService.addSoftSkillData(this.responses).subscribe({
       next: data => {

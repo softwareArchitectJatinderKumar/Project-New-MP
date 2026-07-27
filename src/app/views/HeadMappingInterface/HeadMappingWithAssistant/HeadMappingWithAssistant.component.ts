@@ -201,7 +201,7 @@ export class OBPMetricBinding implements OnInit {
         this.lpuPlannerServiceService.GetAllPlannerSessionWithType('P').subscribe((response) => {
             if (response.item1.length > 0) {
                 this.allPlannerSessions = response.item1;
-                console.log(JSON.stringify(this.allPlannerSessions))
+                // console.log(JSON.stringify(this.allPlannerSessions))
             } else {
                 this.allPlannerSessions = [];
             }

@@ -44,7 +44,7 @@ export class CrouselComponent implements OnInit {
           next: response => {
             if (response.item1 && response.item1.length > 0) {
               this.slides = response.item1;
-              console.log(" Selected Students Details " + JSON.stringify(this.slides))
+              // console.log(" Selected Students Details " + JSON.stringify(this.slides))
             }
             else {
             }

@@ -228,7 +228,7 @@ export class SGRCComponenent implements OnInit {
 
 
   SubmitForm(item: any) {
-    console.log(item)
+    // console.log(item)
 
   }
 

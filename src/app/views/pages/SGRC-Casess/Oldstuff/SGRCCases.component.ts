@@ -213,7 +213,7 @@ export class SGRCCasesComponenent implements OnInit, AfterViewInit, OnDestroy {
               this.applyPaginatorAndSort(); 
 
           } else {
-            console.log("No student cases returned by API.");
+            // console.log("No student cases returned by API.");
             this.studentLists = [];
             this.dataSourceAll.data = [];
             this.dataSourceOpen.data = [];

@@ -100,7 +100,7 @@ export class ParentUpdateListComponent implements OnInit {
   }
   
    performAction(contact: any) {
-    console.log('Action performed for:', contact);
+    // console.log('Action performed for:', contact);
     this.showLoader = true;
     const requestBody = { id: contact.id }; // Create the request body
     this.CohortnetworkService.postWithAuth(AppApiUrls.API_PARENT_UPDATECONTACT , requestBody).subscribe((data: any) => {

@@ -144,16 +144,16 @@ export class DynamicDashboardComponentoldCode implements OnInit {
     this.studentService.getAllApplications().subscribe({
       next: response => {
         this.AllApplications = Array.isArray(response?.item1) ? response.item1 : [];
-       console.log('AllApplications loaded: ', JSON.stringify(this.AllApplications));
+      //  console.log('AllApplications loaded: ', JSON.stringify(this.AllApplications));
         this.loadingIndicator = false;
 
         // enrich rows with per-row flags and compute visibleApplications
         this.enrichAndFilterApplications();
-        console.log("EMP"+this.EmployeeCode)
-        console.log("DEALING UID" + this.isdealingFaculty)
-        console.log("DEALING Authority" + this.isDealingAuthority)
-        console.log("DEALING HOD" + this.isHOD)
-        console.log("DEALING HOW" + this.isHoW)
+        // console.log("EMP"+this.EmployeeCode)
+        // console.log("DEALING UID" + this.isdealingFaculty)
+        // console.log("DEALING Authority" + this.isDealingAuthority)
+        // console.log("DEALING HOD" + this.isHOD)
+        // console.log("DEALING HOW" + this.isHoW)
       },
       error: err => {
         this.isLoginFailed = true;
@@ -571,7 +571,7 @@ export class DynamicDashboardComponentoldCode implements OnInit {
 
   
   viewCounsellingRemarks(row: any): void {
-    console.log('View Counselling Remarks', JSON.stringify(row['counsellingRemarks']));
+    // console.log('View Counselling Remarks', JSON.stringify(row['counsellingRemarks']));
     Swal.fire({
       title: 'CounsellingRemarks ',
       text: "" + row['counsellingRemarks'],
