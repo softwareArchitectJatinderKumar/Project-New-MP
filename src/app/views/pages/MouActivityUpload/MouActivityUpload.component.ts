@@ -100,7 +100,7 @@ export class MouActivityUploadComponent implements OnInit {
 
     const currentDate = new Date();
     this.startDate = this.endDate = this.startDate = this.endDate = this.formatDate(currentDate);
-    this.ServerUrl = 'http://172.19.2.52/umsweb/webftp/MOUDocuments/';
+    this.ServerUrl = 'https://files.lpu.in/umsweb/webftp/MOUDocuments/';
     let loginName = this.route.snapshot.params['loginName'];
 
     if (loginName != '' && loginName != undefined) {

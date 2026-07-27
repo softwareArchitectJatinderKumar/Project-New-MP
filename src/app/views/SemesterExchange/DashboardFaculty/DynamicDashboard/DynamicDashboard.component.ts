@@ -1588,7 +1588,7 @@ CdealingFaculty:any; Roles:any;
     if (el) el.hidden = true;
     this.cd.detectChanges();
   }
-  SERVER_URL = 'http://172.19.2.52/umsweb/DIA/SemesterExchangedocuments/';
+  SERVER_URL = 'https://files.lpu.in/umsweb/DIA/SemesterExchangedocuments/';
 
   documents: any[] = [];
 
