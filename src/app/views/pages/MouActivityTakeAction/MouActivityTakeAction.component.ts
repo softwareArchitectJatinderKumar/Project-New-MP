@@ -888,7 +888,7 @@ uploadRequiredDocument(documentName: string, index: number) {
       });
     }
 
-   
+
     if (this.selectedSchoolDivision && this.selectedSchoolDivision !== '0') {
       filtered = filtered.filter(item => {
         if (!item.schoolDivisionInvolved) return false;
@@ -898,7 +898,7 @@ uploadRequiredDocument(documentName: string, index: number) {
           .includes(this.selectedSchoolDivision.toString());
       });
     }
- filtered = filtered.filter(item => this.matchMouCategory(item, this.SelectedMouCategoryTakeAction));
+    filtered = filtered.filter(item => this.matchMouCategory(item, this.SelectedMouCategoryTakeAction));
     // If there's a searchQuery applied globally to this tab, keep parity with other filters
     const query = (this.searchQuery || '').toString().trim().toLowerCase();
     if (query) {
@@ -936,6 +936,7 @@ uploadRequiredDocument(documentName: string, index: number) {
         const data = response && response.item1 ? response.item1 : response;
         if (data && data.length > 0) {
           // keep master copy and apply filters
+          // console.log(JSON.stringify(this.MouActivityDocumentsMaster) + ' MouActivityDocumentsMaster data ' )
           this.MouActivityDocumentsMaster = data;
           this.MouActivityDocuments = data;
           this.applyFiltersTakeAction();

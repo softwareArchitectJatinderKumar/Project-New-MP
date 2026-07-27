@@ -1,3 +1,19 @@
+::ng-deep .ngx-datatable .datatable-header-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+}
+
+::ng-deep .ngx-datatable .datatable-header-cell-label {
+  white-space: normal !important;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 18px;
+  text-align: center;
+  width: 100%;
+}
+
 /* Target the new grid helper class */
 /* Wraps the entire grid container */
 .page-fixed-scroll-container {
