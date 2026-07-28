@@ -19,9 +19,7 @@ const AUTH_API_LOCAs = 'https://projectsapi.lpu.in/'; //'https://localhost:7125/
 @Injectable({
   providedIn: 'root'
 })
-@Injectable({
-  providedIn: 'root'
-})
+ 
 export class MouDocumentsService {
   FileData: string;
   fileName: string;

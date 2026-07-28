@@ -60,6 +60,7 @@ export interface StudentApplication {
   outBoundTicket :string ; 
   returnTicketPath:string
   visaDocumentPath:string;
+  englishTestDocumentPath:string;
 }
 
 export interface StageDetailRow {
@@ -112,8 +113,8 @@ export function isDocumentDecided(list: DocumentApproval[] | null | undefined, d
 /** 'Approved' | 'Rejected' | '' (no decision yet) — for an optional status badge next to the upload control. */
 export function documentApprovalLabel(list: DocumentApproval[] | null | undefined, documentName: string): 'Approved' | 'Rejected' | '' {
   const status = String(findDocumentApproval(list, documentName)?.approvalStatus ?? '').trim().toLowerCase();
-  if (status === '1' || status === 'true') return 'Approved';
-  if (status === '0' || status === 'false') return 'Rejected';
+  if (status === '1' || status === 'true' || status === 'True') return 'Approved';
+  if (status === '0' || status === 'false' || status === 'False') return 'Rejected';
   return '';
 }
 
@@ -140,7 +141,7 @@ export interface SelectOption {
 }
 
 export interface FileSelectedEvent {
-  key: 'fees' | 'resume' | 'consent' | 'passport' | 'english' | 'affidavitPath' | 'indeminityBondPath' | 'offerLetterPath'|'outBoundTicket'|'returnTicketPath'|'visaDocumentPath';
+  key: 'fees' | 'resume' | 'consent' | 'passport' | 'english' | 'affidavitPath' | 'indeminityBondPath' | 'offerLetterPath'|'outBoundTicket'|'returnTicketPath'|'visaDocumentPath' |'englishTestDocumentPath';
   file: File;
   base64: string;
   fileName: string;
@@ -158,6 +159,7 @@ export const UPLOADED_FILE_FIELD_BY_KEY: Record<FileSelectedEvent['key'], keyof 
   outBoundTicket: 'outBoundTicket',
   returnTicketPath: 'returnTicketPath',
   visaDocumentPath: 'visaDocumentPath',
+  englishTestDocumentPath: 'englishTestDocumentPath',
 };
 
 export function patchUploadedFileName(

@@ -76,6 +76,7 @@ interface Application {
   offerLetterPath: any;
   outBoundTicket: any;
   returnTicketPath: any;
+  visaDocumentPath:any;
   // ── Runtime flags set by enrichAndFilterApplications() ──────────────────
   _isCounsellor: boolean;
   _isFaculty: boolean;
@@ -349,13 +350,14 @@ CdealingFaculty:any; Roles:any;
 
 
   documentRows: DocumentRowConfig[] = [
-    // { label: 'Resume',          fileKey: 'resumeFileName',            approvalKey: 'resumeApproval',     docTypeParam: 'Resume' },
-    // { label: 'Consent Letter',  fileKey: 'consentLetterDocumentPath', approvalKey: 'consentApproval',    docTypeParam: 'Consent Letter' },
-    // { label: 'Fees Proof',      fileKey: 'feesProofDocumentPath',     approvalKey: 'feesApproval',       docTypeParam: 'Fees Proof' },
-    // { label: 'Passport',        fileKey: 'passportDocumentPath',      approvalKey: 'passportApproval',   docTypeParam: 'Passport' },
-    // { label: 'English Proof',   fileKey: 'englishProofDocumentPath',  approvalKey: 'englishApproval',    docTypeParam: 'English Proof' },
-    // { label: 'Affidavit',       fileKey: 'affidavitPath',             approvalKey: 'affidavitApproval',  docTypeParam: 'Affidavit' },
-    // { label: 'Indemnity Bond',  fileKey: 'indeminityBondPath',        approvalKey: 'indemnityApproval',  docTypeParam: 'Indemnity Bond' },
+   // { label: 'Resume',          fileKey: 'resumeFileName',            approvalKey: 'resumeApproval',     docTypeParam: 'Resume' },
+   // { label: 'Consent Letter',  fileKey: 'consentLetterDocumentPath', approvalKey: 'consentApproval',    docTypeParam: 'Consent Letter' },
+  //  { label: 'Fees Proof',      fileKey: 'feesProofDocumentPath',     approvalKey: 'feesApproval',       docTypeParam: 'Fees Proof' },
+    //{ label: 'Passport',        fileKey: 'passportDocumentPath',      approvalKey: 'passportApproval',   docTypeParam: 'Passport' },
+    // { label: 'English Proof',   fileKey: 'englishTestDocumentFile',  approvalKey: 'englishApproval',    docTypeParam: 'English Proof' },
+    // { label: 'English Test Proof',   fileKey: 'englishProofDocumentPath',  approvalKey: 'englishApproval',    docTypeParam: 'English Test Proof' },
+    //{ label: 'Affidavit',       fileKey: 'affidavitPath',             approvalKey: 'affidavitApproval',  docTypeParam: 'Affidavit' },
+    //{ label: 'Indemnity Bond',  fileKey: 'indeminityBondPath',        approvalKey: 'indemnityApproval',  docTypeParam: 'Indemnity Bond' },
     { label: 'Offer Letter', fileKey: 'offerLetterPath', approvalKey: 'offerLetterApproval', docTypeParam: 'Offer Letter' },
     { label: 'Outbound Ticket', fileKey: 'outBoundTicket', approvalKey: 'outboundApproval', docTypeParam: 'Outbound Ticket' },
     { label: 'Return Ticket', fileKey: 'returnTicketPath', approvalKey: 'returnTicketApproval', docTypeParam: 'Return Ticket' },
@@ -786,7 +788,7 @@ CdealingFaculty:any; Roles:any;
           const emp = response.item1[0];
           this.EmployeeDetails = emp;
           this.EmployeeName = emp.employeeName;
-          this.EmployeeCode = String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859
+          this.EmployeeCode = String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859 // 22413
           this.ContactNoX = emp.contactNo;
           this.Department = emp.department;
           this.DepartmentName = emp.departmentName;
@@ -819,7 +821,7 @@ CdealingFaculty:any; Roles:any;
         this.AllFacultyApplications = this.FilterAllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | '', isForwardtoHOD: string | ''; }) => app.dealingFaculty == this.EmployeeCode);
         this.AllAuthorityApplications = this.FilterAllAuthorityApplications = response.item1.filter((app: { dealingAuthority: string | '', dealingFaculty: string | ''; approvedUniversity: string | ''; }) => app.dealingAuthority == this.EmployeeCode && app.approvedUniversity == null);
 
-        this.AllHODApplications = this.FilterAllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | ''; isLocked: string | ''; isApproved: string | ''; }) => app.dealingHODId == this.EmployeeCode && app.isForwardtoHOD == '1');
+        this.AllHODApplications = this.FilterAllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | ''; isLocked: string | ''; isApproved: string | ''; }) => app.dealingHODId == this.EmployeeCode && app.isForwardtoHOD == '1' );
 
         this.AllHOWApplications = response.item1.filter((app: { dealingHow: string | ''; isForwardedtoHOW: string | ''; isLocked: string | ''; }) => app.dealingHow == this.EmployeeCode && app.isForwardedtoHOW == '1');
         this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0);
@@ -1663,6 +1665,7 @@ CdealingFaculty:any; Roles:any;
         offerLetterPath: first.offerLetterPath || row.offerLetterPath || '',
         outBoundTicket: first.outBoundTicket || row.outBoundTicket || '',
         returnTicketPath: first.returnTicketPath || row.returnTicketPath || '',
+        visaDocumentPath: first.visaDocumentPath || row.visaDocumentPath || '',
 
         // Per-document approval info, keyed by DocumentRowConfig.approvalKey
         ...approvalByKey,
@@ -1686,7 +1689,7 @@ CdealingFaculty:any; Roles:any;
         offerLetterPath: row.offerLetterPath || '',
         outBoundTicket: row.outBoundTicket || '',
         returnTicketPath: row.returnTicketPath || '',
-
+        visaDocumentPath: row.visaDocumentPath ||  '',
         // Per-document approval info, keyed by DocumentRowConfig.approvalKey
         ...approvalByKey
       };

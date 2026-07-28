@@ -238,7 +238,7 @@
 
 
                         <button class="btn btn-danger btn-sm me-1 mb-1" (click)="viewAllDocuments(row)">
-                            <i class="bi bi-x-circle me-1"></i>View All Documents
+                            <i class="bi bi-x-circle me-1"></i>Document Approvals 
                         </button>
                     </ng-template>
                 </ngx-datatable-column>
@@ -287,7 +287,7 @@
 
 
                         <button class="btn btn-danger btn-sm me-1 mb-1" (click)="viewAllDocuments(row)">
-                            <i class="bi bi-x-circle me-1"></i>View All Documents
+                            <i class="bi bi-x-circle me-1"></i>Document Approvals 
                         </button>
                     </ng-template>
                 </ngx-datatable-column>
@@ -536,7 +536,7 @@
                         </button>
                         <!-- c) Accept -->
                         <button type="button" class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)"
-                            [disabled]="
+                            [disabled]="    row.isForwardedtoHOW =='1' || row.isForwardedtoHOW =='True' ||
                                                   (
                                                     ['notrequired', 'applied', 'notgiven'].includes((row.englishTestType || '').toLowerCase()) &&
                                                     row.uploadedStageIDocumentCount < 6
@@ -554,7 +554,7 @@
                         </button>
 
                         <!-- d) Reject -->
-                        <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)">
+                        <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)"   [disabled]="    row.isForwardedtoHOW =='1' || row.isForwardedtoHOW =='True'">
                             <i class="bi bi-x-circle me-1"></i>Reject
                         </button>
                         <!-- /* [disabled]="row.approvalRemarks?.length>0 || row.approvalRemarks!='null'" */ -->
@@ -568,7 +568,7 @@
 
 
                         <!-- <button class="btn btn-danger btn-sm me-1 mb-1" (click)="viewAllDocuments(row)">
-                            <i class="bi bi-x-circle me-1"></i>View All Documents
+                            <i class="bi bi-x-circle me-1"></i>Document Approvals 
                         </button> -->
                     </ng-template>
                 </ngx-datatable-column>
@@ -743,7 +743,7 @@
 
 
                         <!-- <button class="btn btn-danger btn-sm me-1 mb-1" (click)="viewAllDocuments(row)">
-                            <i class="bi bi-x-circle me-1"></i>View All Documents
+                            <i class="bi bi-x-circle me-1"></i>Document Approvals 
                         </button> -->
                     </ng-template>
                 </ngx-datatable-column>

@@ -57,6 +57,7 @@ export class Stage1DocumentComponent implements OnChanges {
 
   /** 'Approved' | 'Rejected' | '' — shown next to the upload input once a decision exists. */
   approvalLabel(documentName: string): string {
+    console.log(this.documentApprovals)
     return documentApprovalLabel(this.documentApprovals, documentName);
   }
 
@@ -66,13 +67,14 @@ export class Stage1DocumentComponent implements OnChanges {
     appField: keyof StudentApplication;
     documentName: string;
   }> = [
-    { key: 'fees', label: 'Fees Proof Document', appField: 'feesProofFileName', documentName: 'Fees Paid' },
+    { key: 'fees', label: 'Fees Proof', appField: 'feesProofFileName', documentName: 'Fees Proof' },
     { key: 'resume', label: 'Resume Document', appField: 'resumeFileName', documentName: 'Resume' },
     { key: 'consent', label: 'Consent Letter', appField: 'consentLetterFileName', documentName: 'Consent Letter' },
     { key: 'passport', label: 'Passport File', appField: 'passportFileName', documentName: 'Passport' },
-    { key: 'english', label: 'English Test Proof', appField: 'englishTestDocumentFile', documentName: 'English Test Proof' },
+    // { key: 'english', label: 'English Test Proof', appField: 'englishTestDocumentFile', documentName: 'English Proof' },
     { key: 'affidavitPath', label: 'Affidavit', appField: 'affidavitPath', documentName: 'Affidavit' },
-    { key: 'indeminityBondPath', label: 'Indeminity Bond', appField: 'indeminityBondPath', documentName: 'Indeminity Bond' },
+    { key: 'indeminityBondPath', label: 'Indeminity Bond', appField: 'indeminityBondPath', documentName: 'Indemnity Bond' },
+    // { key: 'englishTestDocumentPath', label: 'English Proof', appField: 'englishTestDocumentPath', documentName: 'English Proof' },
   ];
 
   getFileName(field: keyof StudentApplication): string {

@@ -34,6 +34,7 @@ export const DOCUMENT_UPLOADS: ReadonlyArray<DocumentUpload> = [
   { key: 'offerLetterPath', label: 'Offer Letter',  icon: 'bi-file-earmark-check' },
   { key: 'outBoundTicket', label: 'OutBound Ticket',  icon: 'bi-translate'          },
   { key: 'returnTicketPath', label: 'Return Ticket',  icon: 'bi-translate'          },
+  { key: 'visaDocumentPath', label: 'Visa Document',  icon: 'bi-translate'          },
 ];
 
 // ── Section → Bootstrap Icon mapping ─────────────────────────
