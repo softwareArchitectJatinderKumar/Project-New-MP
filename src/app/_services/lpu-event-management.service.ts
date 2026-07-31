@@ -121,4 +121,27 @@ export class LpuEventManagementService {
       { headers }
     );
   }
+
+  // added on 31-July-26
+
+    EventCategoryProperties(): Observable<any> {
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+    .set('Authorization', 'Bearer ' + token)
+    .set('Content-Type', 'application/json'); 
+    return this.http.get(
+      AUTH_API_LOCAL+ 'api/EventManagement/GetEventCategoryProperties', 
+     {headers}
+    );
+  }
+    EventModeProperties(): Observable<any> {
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+    .set('Authorization', 'Bearer ' + token)
+    .set('Content-Type', 'application/json'); 
+    return this.http.get(
+      AUTH_API_LOCAL+ 'api/EventManagement/GetEventModeProperties', 
+     {headers}
+    );
+  }
 }

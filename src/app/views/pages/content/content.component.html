@@ -104,11 +104,12 @@
                       <select class="form-select" formControlName="mode" [(ngModel)]="mode"
                         [ngClass]="{'is-invalid': isTouchedInvalid('mode')}">
                         <option value="">Select</option>
-                        <option value="OFFCampus">OFFCampus</option>
+                         <option *ngFor="let option of modeProperties" [value]="option">{{ option }}</option>
+                        <!-- <option value="OFFCampus">OFFCampus</option>  
                         <option value="OnCampus">OnCampus</option>
                         <option value="Hybrid">Hybrid</option>
                         <option value="Online">Online</option>
-                        <option value="Offline">Offline</option>
+                        <option value="Offline">Offline</option>-->
                       </select>
                       <div class="text-danger" *ngIf="isTouchedInvalid('mode')">Mode is required.</div>
                     </div>
@@ -145,15 +146,16 @@
                       <select class="form-select" formControlName="category" [(ngModel)]="CategoryId"
                         [ngClass]="{'is-invalid': isTouchedInvalid('category')}">
                         <option value="">Select</option>
-                        <option value="Conference">Conference</option>
+                         <option *ngFor="let option of eventCategoryProperties" [value]="option">{{ option }}</option>
+                        <!-- <option value="Conference">Conference</option>
                         <option value="Symposium">Symposium</option>
                         <option value="Seminar">Seminar</option>
                         <option value="Competition">Competition</option>
                         <option value="Day Celebration">Day Celebration</option>
                         <option value="Workshop">Workshop</option>
                         <option value="Guest Lecture">Guest Lecture</option>
-                        <option value="Guest Lecture Other than DAA">Guest Lecture Other than DAA</option>
-                        <option value="Offcampus Participation">Offcampus Participation</option>
+                        <option value="Guest Lecture Other than DAA">Guest Lecture Other than DAA</option> -->
+                        <!-- <option value="Offcampus Participation">Offcampus Participation</option> -->
                       </select>
                       <div class="text-danger" *ngIf="isTouchedInvalid('category')">Category is required.</div>
                     </div>
@@ -215,7 +217,6 @@
                         [(ngModel)]="remarks" [ngClass]="{'is-invalid': isTouchedInvalid('remarks')}"></textarea>
                       <div class="text-danger" *ngIf="isTouchedInvalid('remarks')">Remarks are required.</div>
                     </div>
-
                     <div class="col-md-4">
                       <label class="form-label">Session :</label>
                       <input type="text" class="form-control" [value]="allPlannerSessions[0]?.session"

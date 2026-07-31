@@ -34,6 +34,42 @@ interface SessionName {
   styleUrls: ['./content.component.scss']
 })
 export class ContentComponent implements OnInit {
+//GetEventCategoryProperties
+  eventCategoryPropertiesitems: any;
+  eventCategoryPropertiesData: any[] = [];   
+  eventCategoryProperties: any[] = []; 
+
+  getAllEventCategoryProperties(): void {
+    this.LpuEventManagementService.EventCategoryProperties().subscribe({
+      next: response => {
+        if (response.item1) {
+          this.eventCategoryPropertiesitems =  response.item1;
+          this.eventCategoryPropertiesitems.forEach((eventCategoryPropertiesData: { items: string; }) => {
+            this.eventCategoryProperties.push(eventCategoryPropertiesData.items);
+          });
+        }
+      }
+    });
+  }
+  modePropertiesitems: any;
+  modePropertiesData: any[] = [];   
+    modeProperties: any[] = []; 
+    
+  getAllmodeProperties(): void {
+    this.LpuEventManagementService.EventModeProperties().subscribe({
+      next: response => {
+        if (response.item1) {
+          this.modePropertiesitems =  response.item1;
+          this.modePropertiesitems.forEach((modePropertiesData: { items: string; }) => {
+            this.modeProperties.push(modePropertiesData.items);
+          });
+        }
+      }
+    });
+  }
+
+
+
   companyOptions = [
     "Option 1", "Option 2"
   ];
@@ -92,6 +128,8 @@ export class ContentComponent implements OnInit {
         this.getSchoolData();
         this.GetAllEventsData();
         this.getAllProperties();
+        this.getAllmodeProperties();
+        this.getAllEventCategoryProperties();
         // this.getAllPlannerSessionforReport();
       },
       error: _err => {
