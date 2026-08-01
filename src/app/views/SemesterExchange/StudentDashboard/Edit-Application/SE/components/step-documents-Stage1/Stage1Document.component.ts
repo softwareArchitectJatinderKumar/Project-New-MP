@@ -73,7 +73,7 @@ export class Stage1DocumentComponent implements OnChanges {
     { key: 'passport', label: 'Passport File', appField: 'passportFileName', documentName: 'Passport' },
     // { key: 'english', label: 'English Test Proof', appField: 'englishTestDocumentFile', documentName: 'English Proof' },
     { key: 'affidavitPath', label: 'Affidavit', appField: 'affidavitPath', documentName: 'Affidavit' },
-    { key: 'indeminityBondPath', label: 'Indeminity Bond', appField: 'indeminityBondPath', documentName: 'Indemnity Bond' },
+    { key: 'indeminityBondPath', label: 'Indeminity Bond', appField: 'indeminityBondPath', documentName: 'Indeminity Bond' },
     // { key: 'englishTestDocumentPath', label: 'English Proof', appField: 'englishTestDocumentPath', documentName: 'English Proof' },
   ];
 

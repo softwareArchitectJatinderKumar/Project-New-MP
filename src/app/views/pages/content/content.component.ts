@@ -109,7 +109,7 @@ export class ContentComponent implements OnInit {
     public formBuilder: UntypedFormBuilder, private route: ActivatedRoute,
     private fb: FormBuilder) { }
   ngOnInit(): void {
-    (<HTMLInputElement>document.getElementById('stMain')).innerHTML = 'Event <span class="themeClr" >Registeration</span> Form';
+    (<HTMLInputElement>document.getElementById('stMain')).innerHTML = 'Event <span class="themeClr" >Registration</span> Form';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
     let loginName = this.route.snapshot.params['loginName'];
     const now = new Date();
@@ -1213,8 +1213,5 @@ UploadExcelData(){
       return obj[index];
     }
     return '';
-  }
-  
-
-  
+  } 
 }
