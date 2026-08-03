@@ -5,8 +5,11 @@ import { environment } from 'src/environments/environment';
 
 import { StorageService } from './storage.service';
 import { xmlEvents } from '../views/pages/content/xmlEvents.model';
-const AUTH_API = 'https://projectsapi.lpu.in/';//'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
-const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';//'https://localhost:7125/';
+const AUTH_API = 'https://projectsapi.lpu.in/';
+const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
+
+// const AUTH_API = 'https://localhost:7135/';
+// const AUTH_API_LOCAL = 'https://localhost:7135/';
 
 @Injectable({
   providedIn: 'root'
