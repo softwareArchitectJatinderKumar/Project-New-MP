@@ -1146,7 +1146,6 @@ initForm() {
       next: response => {
         if (response.item1.length > 0) {
           this.MouDocumentsData = response.item1;
-           console.log(JSON.stringify(this.MouDocumentsData))
           this.filteredMouDocumentsData = this.MouDocumentsData;
           this.dataSource.data = this.filteredMouDocumentsData;
           this.showNoDataFoundMessage = this.filteredMouDocumentsData.length === 0;

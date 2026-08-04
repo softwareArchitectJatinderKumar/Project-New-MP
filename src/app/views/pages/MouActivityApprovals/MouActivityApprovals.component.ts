@@ -389,7 +389,7 @@ setTimeout(() => {
     const minLoadingTime = 2500; // 12.5 seconds
     const startTime = Date.now();
 
-    this.mouDocumentsService.MouActionsTakenData(this.EmployeeCode, SessionId)
+    this.mouDocumentsService.MouActionsTakenData('0', SessionId)
       .pipe(
         finalize(() => {
           const elapsed = Date.now() - startTime;

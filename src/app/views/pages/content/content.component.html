@@ -1018,9 +1018,81 @@
         </div>
       </div>
     </div>
-
-
     <div class="row" *ngIf="uploadedDataForDisplay && uploadedDataForDisplay.length > 0">
+      <div class="col-md-12 stretch-card">
+        <div class="card">
+          <div class="card-body">
+            
+            <!-- Items Per Page Selector -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <label class="me-2 fw-bold">Show</label>
+                <select class="form-select form-select-sm d-inline-block w-auto" (change)="onItemsPerPageChange($event)">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+                <label class="ms-2 fw-bold">entries</label>
+              </div>
+            </div>
+            <!-- Data Table -->
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th *ngFor="let header of uploadedDataForDisplay[0]">{{ header }}</th>
+                    <th>Error</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Use paginatedData and getAbsoluteIndex for correct error mapping -->
+                  <tr *ngFor="let row of paginatedData; let rowIndex = index">
+                    <td *ngFor="let cell of row; let cellIndex = index"
+                      [ngClass]="{'text-danger': isError(getAbsoluteIndex(rowIndex), cellIndex)}">{{ cell }}</td>
+                    <td>
+                      <span *ngIf="validationErrors[getAbsoluteIndex(rowIndex)]" class="text-danger">
+                        {{ validationErrors[getAbsoluteIndex(rowIndex)] }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Pagination Controls -->
+            <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap">
+              <div class="mb-2">
+                Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ uploadedDataForDisplay.length - 1 }} entries
+              </div>
+              
+              <ul class="pagination mb-2">
+                <li class="page-item" [class.disabled]="XcurrentPage === 1">
+                  <a class="page-link" href="javascript:void(0)" (click)="XchangePage(1)">First</a>
+                </li>
+                <li class="page-item" [class.disabled]="XcurrentPage === 1">
+                  <a class="page-link" href="javascript:void(0)" (click)="XchangePage(XcurrentPage - 1)">Previous</a>
+                </li>
+                
+                <li class="page-item disabled">
+                  <a class="page-link" href="javascript:void(0)">Page {{ XcurrentPage }} of {{ XtotalPages }}</a>
+                </li>
+                
+                <li class="page-item" [class.disabled]="XcurrentPage === XtotalPages">
+                  <a class="page-link" href="javascript:void(0)" (click)="XchangePage(XcurrentPage + 1)">Next</a>
+                </li>
+                <li class="page-item" [class.disabled]="XcurrentPage === XtotalPages">
+                  <a class="page-link" href="javascript:void(0)" (click)="XchangePage(XtotalPages)">Last</a>
+                </li>
+              </ul>
+            </div>
+            <button class="btn btn-primary mt-3" (click)="confirmUpload()" [disabled]="hasErrors()">Confirm and Upload</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div class="row" *ngIf="uploadedDataForDisplay && uploadedDataForDisplay.length > 0">
       <div class="col-md-12 stretch-card">
         <div class="card">
           <div class="card-body">
@@ -1050,6 +1122,6 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </ng-template>

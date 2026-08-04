@@ -34,16 +34,80 @@ interface SessionName {
   styleUrls: ['./content.component.scss']
 })
 export class ContentComponent implements OnInit {
-//GetEventCategoryProperties
+
+
+
+  // ================= Pagination Properties =================
+  XcurrentPage: number = 1;
+  XitemsPerPage: number = 10;
+
+  get paginatedData() {
+    // If no data or only header exists
+    if (!this.uploadedDataForDisplay || this.uploadedDataForDisplay.length <= 1) return [];
+    
+    // Slice off the header (index 0) to only paginate actual rows
+    const dataRows = this.uploadedDataForDisplay.slice(1); 
+    const startIndex = (this.XcurrentPage - 1) * this.XitemsPerPage;
+    const endIndex = startIndex + this.XitemsPerPage;
+    
+    return dataRows.slice(startIndex, endIndex);
+  }
+
+  get XtotalPages(): number {
+    if (!this.uploadedDataForDisplay || this.uploadedDataForDisplay.length <= 1) return 1;
+    // Length minus 1 because index 0 is the header
+    return Math.ceil((this.uploadedDataForDisplay.length - 1) / this.XitemsPerPage);
+  }
+
+  // ================= Pagination Methods =================
+  XchangePage(page: number) {
+    if (page >= 1 && page <= this.XtotalPages) {
+      this.XcurrentPage = page;
+    }
+  }
+
+  onItemsPerPageChange(event: any) {
+    this.XitemsPerPage = Number(event.target.value);
+    this.XcurrentPage = 1; // Reset to first page
+  }
+
+  // We need to map the current page row index back to the absolute index 
+  // in the original uploadedDataForDisplay array to display validation errors correctly
+  getAbsoluteIndex(pageRowIndex: number): number {
+    // +1 accounts for the header row in uploadedDataForDisplay
+    return (this.XcurrentPage - 1) * this.XitemsPerPage + pageRowIndex + 1;
+  }
+
+  getStartIndex(): number {
+    if (this.uploadedDataForDisplay.length <= 1) return 0;
+    return (this.XcurrentPage - 1) * this.XitemsPerPage + 1;
+  }
+
+  getEndIndex(): number {
+    const end = this.XcurrentPage * this.XitemsPerPage;
+    const totalRecords = this.uploadedDataForDisplay.length - 1;
+    return end > totalRecords ? totalRecords : end;
+  }
+
+
+
+
+
+
+
+
+
+
+  //GetEventCategoryProperties
   eventCategoryPropertiesitems: any;
-  eventCategoryPropertiesData: any[] = [];   
-  eventCategoryProperties: any[] = []; 
+  eventCategoryPropertiesData: any[] = [];
+  eventCategoryProperties: any[] = [];
 
   getAllEventCategoryProperties(): void {
     this.LpuEventManagementService.EventCategoryProperties().subscribe({
       next: response => {
         if (response.item1) {
-          this.eventCategoryPropertiesitems =  response.item1;
+          this.eventCategoryPropertiesitems = response.item1;
           this.eventCategoryPropertiesitems.forEach((eventCategoryPropertiesData: { items: string; }) => {
             this.eventCategoryProperties.push(eventCategoryPropertiesData.items);
           });
@@ -52,14 +116,14 @@ export class ContentComponent implements OnInit {
     });
   }
   modePropertiesitems: any;
-  modePropertiesData: any[] = [];   
-    modeProperties: any[] = []; 
-    
+  modePropertiesData: any[] = [];
+  modeProperties: any[] = [];
+
   getAllmodeProperties(): void {
     this.LpuEventManagementService.EventModeProperties().subscribe({
       next: response => {
         if (response.item1) {
-          this.modePropertiesitems =  response.item1;
+          this.modePropertiesitems = response.item1;
           this.modePropertiesitems.forEach((modePropertiesData: { items: string; }) => {
             this.modeProperties.push(modePropertiesData.items);
           });
@@ -98,7 +162,7 @@ export class ContentComponent implements OnInit {
   responses: any; budgettype: string = 'Select'; budgetType: string = 'Select'; EventObjective: any; EventRegisterationData: any[] = []; DeveloperText: any = "Jatinder Kumar 31309";
   filteredEventRegisterationData: any[] = []; dataSource: any; showNoDataFoundMessage: boolean; filterText: any;
   InternalLevels: string = ''; ExternalLevel: string = '';
-  today :any;
+  today: any;
   constructor(
     private LpuEventManagementService: LpuEventManagementService,
     private eventService: LpuEventManagementService,
@@ -158,7 +222,7 @@ export class ContentComponent implements OnInit {
       }
     });
   }
-  
+
   GetAllEventsData(): void {
     this.loadingIndicator = true;
     this.LpuEventManagementService.GetAllEventsDetails().subscribe({
@@ -202,13 +266,13 @@ export class ContentComponent implements OnInit {
   });
 
   OBPOptionsitems: any;
-  PropertiesData: any[] = [];   chunkedProperties: any[][] = [];
-  properties: any[] = []; 
+  PropertiesData: any[] = []; chunkedProperties: any[][] = [];
+  properties: any[] = [];
   getAllProperties(): void {
     this.LpuEventManagementService.GetOBPProperties().subscribe({
       next: response => {
         if (response.item1) {
-          this.OBPOptionsitems =  response.item1;
+          this.OBPOptionsitems = response.item1;
           this.OBPOptionsitems.forEach((PropertiesData: { items: string; }) => {
             this.properties.push(PropertiesData.items);
           });
@@ -269,11 +333,11 @@ export class ContentComponent implements OnInit {
   filterData() {
     const lowerCaseFilter = this.filterText ? this.filterText.toLowerCase() : '';
     const selectedSessionId = Number(this.selectedPlannerSession); // ensure numeric comparison
-  
+
     this.filteredEventRegisterationData = this.EventRegisterationData.filter(event => {
       // Check if session ID matches (0 means all)
       const sessionMatch = selectedSessionId === 0 || event.sessionId === selectedSessionId;
-  
+
       // Flatten object values to string and check if any matches filter text
       const textMatch = lowerCaseFilter === '' || Object.values(event).some(value => {
         if (value != null) {
@@ -281,12 +345,12 @@ export class ContentComponent implements OnInit {
         }
         return false;
       });
-  
+
       // Both conditions must be true
       return sessionMatch && textMatch;
     });
   }
-  
+
 
   recordsPerPage = 10; currentPage = 1;
   get totalPages(): number {
@@ -345,7 +409,7 @@ export class ContentComponent implements OnInit {
         modeOfConduct: item.modeOfConduct,
         semester: item.semester,
         InternalLevel: item.internalLevel,
-        ExternalLevel: item.externalLevel, 
+        ExternalLevel: item.externalLevel,
         startDate: this.formatDate(item.startDate),
         endDate: this.formatDate(item.endDate),
         BudgetAmount: item.budgetAmount,
@@ -414,7 +478,7 @@ export class ContentComponent implements OnInit {
   }
   setSessionId(event: any): void {
     this.loadingIndicator = true;
-    this.filterText="";
+    this.filterText = "";
     const selectedId = parseInt(event.target.value, 10); // Convert to number
     this.selectedPlannerSession = selectedId;
 
@@ -448,11 +512,11 @@ export class ContentComponent implements OnInit {
     return !!control && control.touched && control.invalid;
   }
 
- // added on 19-July-25
+  // added on 19-July-25
   // Paginator reference
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-   // Properties for advanced search
-   advancedSearch = {
+  // Properties for advanced search
+  advancedSearch = {
     sessionId: '',
     schoolName: '',
     semester: '',
@@ -460,102 +524,102 @@ export class ContentComponent implements OnInit {
     objective: '',
     eventCategory: '',
     obpCriteria: '',
-    internal:'',
+    internal: '',
     startDate: null as Date | null,
     endDate: null as Date | null,
-    eventType:'',
-    categoryId:''
+    eventType: '',
+    categoryId: ''
 
   };
- 
+
   applyAdvancedSearch(): void {
-  this.filteredEventRegisterationData = this.EventRegisterationData.filter(item => {
-    if (this.advancedSearch.categoryId && item.categoryId !== this.advancedSearch.categoryId) {
-      return false;
-    }
-    if (
-      this.advancedSearch.sessionId &&
-      this.advancedSearch.sessionId !== '' &&
-      this.advancedSearch.sessionId !== '0' &&
-      item.sessionId.toString() !== this.advancedSearch.sessionId &&
-      item.eventType !== ''
-    ) {
-      return false;
-    }
+    this.filteredEventRegisterationData = this.EventRegisterationData.filter(item => {
+      if (this.advancedSearch.categoryId && item.categoryId !== this.advancedSearch.categoryId) {
+        return false;
+      }
+      if (
+        this.advancedSearch.sessionId &&
+        this.advancedSearch.sessionId !== '' &&
+        this.advancedSearch.sessionId !== '0' &&
+        item.sessionId.toString() !== this.advancedSearch.sessionId &&
+        item.eventType !== ''
+      ) {
+        return false;
+      }
 
-    if (this.advancedSearch.eventType && item.eventType !== this.advancedSearch.eventType) {
-      return false;
-    }
-    if (
-      this.advancedSearch.schoolName &&
-      !this.getDivisionNameById(item.schoolId).toLowerCase().includes(this.advancedSearch.schoolName.toLowerCase())
-    ) {
-      return false;
-    }
+      if (this.advancedSearch.eventType && item.eventType !== this.advancedSearch.eventType) {
+        return false;
+      }
+      if (
+        this.advancedSearch.schoolName &&
+        !this.getDivisionNameById(item.schoolId).toLowerCase().includes(this.advancedSearch.schoolName.toLowerCase())
+      ) {
+        return false;
+      }
 
-    if (this.advancedSearch.semester && item.semester !== this.advancedSearch.semester) {
-      return false;
-    }
-    if (
-      this.advancedSearch.eventName &&
-      !item.eventName.toLowerCase().includes(this.advancedSearch.eventName.toLowerCase())
-    ) {
-      return false;
-    }
+      if (this.advancedSearch.semester && item.semester !== this.advancedSearch.semester) {
+        return false;
+      }
+      if (
+        this.advancedSearch.eventName &&
+        !item.eventName.toLowerCase().includes(this.advancedSearch.eventName.toLowerCase())
+      ) {
+        return false;
+      }
 
-    if (this.advancedSearch.eventCategory && item.eventType != this.advancedSearch.eventCategory) {
-      return false;
-    }
+      if (this.advancedSearch.eventCategory && item.eventType != this.advancedSearch.eventCategory) {
+        return false;
+      }
 
-    // Updated obpCriteria matching logic
-    if (this.advancedSearch.obpCriteria) {
-      const searchWords = this.advancedSearch.obpCriteria.trim().toLowerCase().split(/\s+/).slice(0, 2);
-      const itemWords = item.obpCriteria ? item.obpCriteria.trim().toLowerCase().split(/\s+/).slice(0, 2) : [];
+      // Updated obpCriteria matching logic
+      if (this.advancedSearch.obpCriteria) {
+        const searchWords = this.advancedSearch.obpCriteria.trim().toLowerCase().split(/\s+/).slice(0, 2);
+        const itemWords = item.obpCriteria ? item.obpCriteria.trim().toLowerCase().split(/\s+/).slice(0, 2) : [];
 
-      // Check if first two words match exactly
-      if (searchWords.length < 2 || itemWords.length < 2) {
-        // If either has less than 2 words, require exact match of what is available
-        if (searchWords.join(' ') !== itemWords.join(' ')) {
-          return false;
-        }
-      } else {
-        // Both have at least 2 words, compare first two words
-        if (searchWords[0] !== itemWords[0] || searchWords[1] !== itemWords[1]) {
-          return false;
+        // Check if first two words match exactly
+        if (searchWords.length < 2 || itemWords.length < 2) {
+          // If either has less than 2 words, require exact match of what is available
+          if (searchWords.join(' ') !== itemWords.join(' ')) {
+            return false;
+          }
+        } else {
+          // Both have at least 2 words, compare first two words
+          if (searchWords[0] !== itemWords[0] || searchWords[1] !== itemWords[1]) {
+            return false;
+          }
         }
       }
+
+      const itemStartDate = item.startDate ? new Date(item.startDate) : null;
+      const searchStart = this.advancedSearch.startDate ? new Date(this.advancedSearch.startDate) : null;
+      const searchEnd = this.advancedSearch.endDate ? new Date(this.advancedSearch.endDate) : null;
+
+      if (searchStart && itemStartDate && itemStartDate < searchStart) {
+        return false;
+      }
+      if (searchEnd && itemStartDate && itemStartDate > searchEnd) {
+        return false;
+      }
+
+      return true;
+    });
+
+    this.filteredEventRegisterationData.sort((a, b) => {
+      const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
+      const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
+      return dateA - dateB;
+    });
+
+    // Reset paginator to first page
+    if (this.paginator) {
+      this.paginator.firstPage();
     }
-
-    const itemStartDate = item.startDate ? new Date(item.startDate) : null;
-    const searchStart = this.advancedSearch.startDate ? new Date(this.advancedSearch.startDate) : null;
-    const searchEnd = this.advancedSearch.endDate ? new Date(this.advancedSearch.endDate) : null;
-
-    if (searchStart && itemStartDate && itemStartDate < searchStart) {
-      return false;
-    }
-    if (searchEnd && itemStartDate && itemStartDate > searchEnd) {
-      return false;
-    }
-
-    return true;
-  });
-
-  this.filteredEventRegisterationData.sort((a, b) => {
-    const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
-    const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
-    return dateA - dateB;
-  });
-
-  // Reset paginator to first page
-  if (this.paginator) {
-    this.paginator.firstPage();
   }
-}
 
 
 
   // Pagination logic
- 
+
   // Pagination logic
   AtotalPages(): number {
     return Math.ceil(this.filteredEventRegisterationData.length / this.recordsPerPage);
@@ -579,15 +643,15 @@ export class ContentComponent implements OnInit {
   }
 
 
-  
-recordsPerPageOptions = [5, 10, 25, 50];
-// Current page number (1-based)
- 
-onRecordsPerPageChange(): void {
-  this.currentPage = 1; // Reset to first page
-}
- 
- 
+
+  recordsPerPageOptions = [5, 10, 25, 50];
+  // Current page number (1-based)
+
+  onRecordsPerPageChange(): void {
+    this.currentPage = 1; // Reset to first page
+  }
+
+
   // applyAdvancedSearch(): void {
   //   this.filteredEventRegisterationData = this.EventRegisterationData.filter(item => {
   //     if (this.advancedSearch.categoryId && item.categoryId !== this.advancedSearch.categoryId) {
@@ -602,7 +666,7 @@ onRecordsPerPageChange(): void {
   //     ) {
   //       return false;
   //     }
-  
+
   //     if (this.advancedSearch.eventType && item.eventType !== this.advancedSearch.eventType) {
   //       return false;
   //     }
@@ -612,7 +676,7 @@ onRecordsPerPageChange(): void {
   //     ) {
   //       return false;
   //     }
-  
+
   //     if (this.advancedSearch.semester && item.semester !== this.advancedSearch.semester) {
   //       return false;
   //     }
@@ -622,50 +686,50 @@ onRecordsPerPageChange(): void {
   //     ) {
   //       return false;
   //     }
-     
-  
+
+
   //     if (this.advancedSearch.eventCategory && item.eventType != this.advancedSearch.eventCategory) {
   //       return false;
   //     }
-  
+
   //     if (this.advancedSearch.obpCriteria && item.obpCriteria != this.advancedSearch.obpCriteria) {
   //       return false;
   //     }
-  
+
   //     const itemStartDate = item.startDate ? new Date(item.startDate) : null;
   //     const searchStart = this.advancedSearch.startDate ? new Date(this.advancedSearch.startDate) : null;
   //     const searchEnd = this.advancedSearch.endDate ? new Date(this.advancedSearch.endDate) : null;
-  
+
   //     if (searchStart && itemStartDate && itemStartDate < searchStart) {
   //       return false;
   //     }
   //     if (searchEnd && itemStartDate && itemStartDate > searchEnd) {
   //       return false;
   //     }
-  
+
   //     return true;
   //   });
-  
+
   //   this.filteredEventRegisterationData.sort((a, b) => {
   //     const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
   //     const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
   //     return dateA - dateB;
   //   });
-  
+
   //   // Reset paginator to first page
   //   if (this.paginator) {
   //     this.paginator.firstPage();
   //   }
   // }
-  
-  
+
+
   // applyAdvancedSearch(): void {
   //   this.filteredEventRegisterationData = this.EventRegisterationData.filter(item => {
   //     // Category filter
   //     if (this.advancedSearch.categoryId && item.categoryId !== this.advancedSearch.categoryId) {
   //       return false;
   //     }
-  
+
   //     // Session filter
   //     if (
   //       this.advancedSearch.sessionId &&
@@ -676,12 +740,12 @@ onRecordsPerPageChange(): void {
   //     ) {
   //       return false;
   //     }
-  
+
   //     // Event Type filter
   //     if (this.advancedSearch.eventType && item.eventType !== this.advancedSearch.eventType) {
   //       return false;
   //     }
-  
+
   //     // School Name filter
   //     if (
   //       this.advancedSearch.schoolName &&
@@ -689,12 +753,12 @@ onRecordsPerPageChange(): void {
   //     ) {
   //       return false;
   //     }
-  
+
   //     // Semester filter
   //     if (this.advancedSearch.semester && item.semester !== this.advancedSearch.semester) {
   //       return false;
   //     }
-  
+
   //     // Event Name filter
   //     if (
   //       this.advancedSearch.eventName &&
@@ -702,7 +766,7 @@ onRecordsPerPageChange(): void {
   //     ) {
   //       return false;
   //     }
-  
+
   //     // Objective filter
   //     if (
   //       this.advancedSearch.objective &&
@@ -710,43 +774,43 @@ onRecordsPerPageChange(): void {
   //     ) {
   //       return false;
   //     }
-  
+
   //     // Event Category filter
   //     if (this.advancedSearch.eventCategory && item.eventType !== this.advancedSearch.eventCategory) {
   //       return false;
   //     }
-  
+
   //     // OBP Criteria filter
   //     if (this.advancedSearch.obpCriteria && item.obpCriteria !== this.advancedSearch.obpCriteria) {
   //       return false;
   //     }
-  
+
   //     // ✅ Fixed Start/End Date filter
   //     const itemStartDate = item.startDate ? new Date(item.startDate) : null;
   //     const itemEndDate = item.endDate ? new Date(item.endDate) : null;
-  
+
   //     const searchStart = this.advancedSearch.startDate ? new Date(this.advancedSearch.startDate) : null;
   //     const searchEnd = this.advancedSearch.endDate ? new Date(this.advancedSearch.endDate) : null;
-  
+
   //     if (searchStart && itemStartDate && itemStartDate < searchStart) {
   //       return false;
   //     }
   //     if (searchEnd && itemEndDate && itemEndDate > searchEnd) {
   //       return false;
   //     }
-  
+
   //     return true;
   //   });
-  
+
   //   // Reset paginator to first page
   //   if (this.paginator) {
   //     this.paginator.firstPage();
   //   }
   // }
-  
+
   // applyAdvancedSearch(): void {
   //   this.filteredEventRegisterationData = this.EventRegisterationData.filter(item => {
-      
+
   //     // added on 9-9-25
   //     if(this.advancedSearch.categoryId && item.categoryId!==this.advancedSearch.categoryId) {
   //       return false;
@@ -770,34 +834,34 @@ onRecordsPerPageChange(): void {
   //         !this.getDivisionNameById(item.schoolId).toLowerCase().includes(this.advancedSearch.schoolName.toLowerCase())) {
   //       return false;
   //     }
-  
+
   //     // Semester filter
   //     if (this.advancedSearch.semester && item.semester !== this.advancedSearch.semester) {
   //       return false;
   //     }
-  
+
   //     // Event Name filter
   //     if (this.advancedSearch.eventName && 
   //         !item.eventName.toLowerCase().includes(this.advancedSearch.eventName.toLowerCase())) {
   //       return false;
   //     }
-  
+
   //     // Objective filter
   //     if (this.advancedSearch.objective && 
   //         !(item.eventObjective || '').toLowerCase().includes(this.advancedSearch.objective.toLowerCase())) {
   //       return false;
   //     }
-  
+
   //     // Event Category filter eventType added on 4-sep-25
   //     if (this.advancedSearch.eventCategory && item.eventType !== this.advancedSearch.eventCategory) {
   //       return false;
   //     }
-  
+
   //     // OBP Criteria filter
   //     if (this.advancedSearch.obpCriteria && item.obpCriteria !== this.advancedSearch.obpCriteria) {
   //       return false;
   //     }
-  
+
   //     // Start Date filter
   //     const itemStartDate = item.startDate ? new Date(item.startDate) : null;
   //     if (this.advancedSearch.startDate && itemStartDate) {
@@ -805,7 +869,7 @@ onRecordsPerPageChange(): void {
   //         return false;
   //       }
   //     }
-  
+
   //     // End Date filter
   //     const itemEndDate = item.endDate ? new Date(item.endDate) : null;
   //     if (this.advancedSearch.endDate && itemEndDate) {
@@ -813,29 +877,29 @@ onRecordsPerPageChange(): void {
   //         return false;
   //       }
   //     }
-  
+
   //     // Ensure the event is included if it falls within the date range
   //     if (this.advancedSearch.startDate || this.advancedSearch.endDate) {
   //       const startDateCondition = this.advancedSearch.startDate ? 
   //         (itemStartDate ? itemStartDate >= new Date(this.advancedSearch.startDate) : false) : true;
   //       const endDateCondition = this.advancedSearch.endDate ? 
   //         (itemEndDate ? itemEndDate <= new Date(this.advancedSearch.endDate) : false) : true;
-  
+
   //       if (!startDateCondition || !endDateCondition) {
   //         return false;
   //       }
   //     }
-  
+
   //     return true;
   //   });
-  
+
   //   // Reset paginator to first page
   //   if (this.paginator) {
   //     this.paginator.firstPage();
   //   }
   // }
-  
-  
+
+
   // applyAdvancedSearch(): void {
   //   this.filteredEventRegisterationData = this.EventRegisterationData.filter(item => {
   //     if (this.advancedSearch.sessionId && 
@@ -912,11 +976,11 @@ onRecordsPerPageChange(): void {
       objective: '',
       eventCategory: '',
       obpCriteria: '',
-      internal:'',
+      internal: '',
       startDate: null,
       endDate: null,
-      eventType:'',
-      categoryId:''
+      eventType: '',
+      categoryId: ''
     };
     this.hasAnySearchCriteria = false;
     this.filteredEventRegisterationData = [...this.EventRegisterationData];
@@ -925,56 +989,56 @@ onRecordsPerPageChange(): void {
 
 
   // Add these properties to your component class
-showAdvancedSearch = false;
- 
-// Add this method to toggle advanced search
-toggleAdvancedSearch(): void {
-  this.showAdvancedSearch = !this.showAdvancedSearch;
-  if (!this.showAdvancedSearch) {
-    this.resetAdvancedSearch();
+  showAdvancedSearch = false;
+
+  // Add this method to toggle advanced search
+  toggleAdvancedSearch(): void {
+    this.showAdvancedSearch = !this.showAdvancedSearch;
+    if (!this.showAdvancedSearch) {
+      this.resetAdvancedSearch();
+    }
   }
-}
 
-// Add this property to track if any field has value
-hasAnySearchCriteria = false;
+  // Add this property to track if any field has value
+  hasAnySearchCriteria = false;
 
-// Add this method to check if any field has value
-checkSearchCriteria(): void {
-  this.hasAnySearchCriteria = Object.values(this.advancedSearch).some(value => {
-    if (value === null || value === undefined) return false;
-    if (typeof value === 'string') return value.trim() !== '';
-    return true; // For dates and other types
-  });
-}
- 
-@ViewChild('BulkEventModal') BulkEventModal: TemplateRef<any>; 
+  // Add this method to check if any field has value
+  checkSearchCriteria(): void {
+    this.hasAnySearchCriteria = Object.values(this.advancedSearch).some(value => {
+      if (value === null || value === undefined) return false;
+      if (typeof value === 'string') return value.trim() !== '';
+      return true; // For dates and other types
+    });
+  }
 
- // Excel Upload related properties
- fileName: string = 'Events_Upload_ExcelData.xlsx'; 
- filePath: string = `assets/Uploads/${this.fileName}`;
+  @ViewChild('BulkEventModal') BulkEventModal: TemplateRef<any>;
+
+  // Excel Upload related properties
+  fileName: string = 'Events_Upload_ExcelData.xlsx';
+  filePath: string = `assets/Uploads/${this.fileName}`;
 
 
- // In your component class
+  // In your component class
 
-downloadSampleDocument() {
-  window.open(this.filePath, '_blank');
-}
+  downloadSampleDocument() {
+    window.open(this.filePath, '_blank');
+  }
 
- file: any; // The actual file object
- uploadedDataRaw: any[] = []; // Raw data from Excel, used for sending to backend
- uploadedDataForDisplay: any[] = []; // Formatted data for UI display
- validationErrors: string[] = [];
- errorCells: { rowIndex: number, cellIndex: number }[] = [];
- createdBy: any; // Assuming this is set elsewhere, e.g., from user session
-UploadExcelData(){
-  // Clear previous data and errors when opening the modal
-  this.file = null;
-  this.uploadedDataRaw = [];
-  this.uploadedDataForDisplay = [];
-  this.validationErrors = [];
-  this.errorCells = [];
-  this.modalService.open(this.BulkEventModal, { size: 'lg', backdrop: 'static' });
-}
+  file: any; // The actual file object
+  uploadedDataRaw: any[] = []; // Raw data from Excel, used for sending to backend
+  uploadedDataForDisplay: any[] = []; // Formatted data for UI display
+  validationErrors: string[] = [];
+  errorCells: { rowIndex: number, cellIndex: number }[] = [];
+  createdBy: any; // Assuming this is set elsewhere, e.g., from user session
+  UploadExcelData() {
+    // Clear previous data and errors when opening the modal
+    this.file = null;
+    this.uploadedDataRaw = [];
+    this.uploadedDataForDisplay = [];
+    this.validationErrors = [];
+    this.errorCells = [];
+    this.modalService.open(this.BulkEventModal, { size: 'lg', backdrop: 'static' });
+  }
 
   // Excel Upload Logic
   onFileChange(event: any): void {
@@ -993,10 +1057,10 @@ UploadExcelData(){
       const workbook = XLSX.read(data, { type: 'binary' });
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
-      
+
       // Raw data for backend (dates as they are in Excel, will be formatted before sending)
       this.uploadedDataRaw = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-      
+
       // Process data for display (format dates for UI)
       this.processUploadedDataForDisplay(this.uploadedDataRaw);
       this.validateData();
@@ -1016,7 +1080,7 @@ UploadExcelData(){
     // Process rows, starting from the second row (index 1)
     for (let i = 1; i < rawData.length; i++) {
       const row = [...rawData[i]]; // Create a copy of the row to avoid modifying rawData
-      
+
       // Assuming StartDate is at index 11 and EndDate is at index 12
       // Format for display (e.g., 'MM-DD-YYYY')
       if (row[11] !== undefined && row[11] !== null) {
@@ -1116,74 +1180,170 @@ UploadExcelData(){
     }
     this.Upload();
   }
- 
+
+
   Upload() {
     var xmlString = '<dataset><data>';
-    // Iterate over uploadedDataRaw to get original values for backend
-    for (var i = 1; i < this.uploadedDataRaw.length; i++) {
-        var element = this.uploadedDataRaw[i];
-        var row = "<row>";
-        row += "<SchoolId>" + this.getPropertyByIndex(element, 0) + "</SchoolId>";
-        row += "<EventObjective>" + this.getPropertyByIndex(element, 1) + "</EventObjective>";
-        row += "<EventName>" + this.getPropertyByIndex(element, 2) + "</EventName>";
-        row += "<EventType>" + this.getPropertyByIndex(element, 3) + "</EventType>";
-        row += "<AlternativelyStudentCounts>" + this.getPropertyByIndex(element, 4) + "</AlternativelyStudentCounts>";
-        row += "<OBPCriteria>" + this.getPropertyByIndex(element, 5) + "</OBPCriteria>";
-        row += "<ModeOfConduct>" + this.getPropertyByIndex(element, 6) + "</ModeOfConduct>";
-        row += "<ExternalLevel>" + this.getPropertyByIndex(element, 7) + "</ExternalLevel>";
-        row += "<InternalLevel>" + this.getPropertyByIndex(element, 8) + "</InternalLevel>";
-        row += "<CategoryId>" + this.getPropertyByIndex(element, 9) + "</CategoryId>";
-        row += "<Semester>" + this.getPropertyByIndex(element, 10) + "</Semester>";
 
-        // Format StartDate and EndDate to YYYY-MM-DD for backend
-        const startDateRaw = this.getPropertyByIndex(element, 11);
-        const endDateRaw = this.getPropertyByIndex(element, 12);
-        
-        const startDateFormatted = this.formatDateForBackend(startDateRaw);
-        const endDateFormatted = this.formatDateForBackend(endDateRaw);
-        
-        row += "<StartDate>" + startDateFormatted + "</StartDate>";
-        row += "<EndDate>" + endDateFormatted + "</EndDate>";
-        
-        row += "<BudgetType>" + this.getPropertyByIndex(element, 13) + "</BudgetType>";
-        row += "<BudgetAmount>" + this.getPropertyByIndex(element, 14) + "</BudgetAmount>";
-        row += "<Remarks>" + this.getPropertyByIndex(element, 15) + "</Remarks>";
-        row += "<SessionId>" + this.getPropertyByIndex(element, 16) + "</SessionId>";      
-        row += "</row>";
-        xmlString += row;
+    for (var i = 1; i < this.uploadedDataRaw.length; i++) {
+      var element = this.uploadedDataRaw[i];
+      var row = "<row>";
+
+      // Escape the data to prevent XML parsing errors in SQL Server
+      row += "<SchoolId>" + this.escapeXml(this.getPropertyByIndex(element, 0)) + "</SchoolId>";
+      row += "<EventObjective>" + this.escapeXml(this.getPropertyByIndex(element, 1)) + "</EventObjective>";
+      row += "<EventName>" + this.escapeXml(this.getPropertyByIndex(element, 2)) + "</EventName>";
+      row += "<EventType>" + this.escapeXml(this.getPropertyByIndex(element, 3)) + "</EventType>";
+      row += "<AlternativelyStudentCounts>" + this.escapeXml(this.getPropertyByIndex(element, 4)) + "</AlternativelyStudentCounts>";
+      row += "<OBPCriteria>" + this.escapeXml(this.getPropertyByIndex(element, 5)) + "</OBPCriteria>";
+      row += "<ModeOfConduct>" + this.escapeXml(this.getPropertyByIndex(element, 6)) + "</ModeOfConduct>";
+      row += "<ExternalLevel>" + this.escapeXml(this.getPropertyByIndex(element, 7)) + "</ExternalLevel>";
+      row += "<InternalLevel>" + this.escapeXml(this.getPropertyByIndex(element, 8)) + "</InternalLevel>";
+      row += "<CategoryId>" + this.escapeXml(this.getPropertyByIndex(element, 9)) + "</CategoryId>";
+      row += "<Semester>" + this.escapeXml(this.getPropertyByIndex(element, 10)) + "</Semester>";
+      // Format StartDate and EndDate
+      const startDateRaw = this.getPropertyByIndex(element, 11);
+      const endDateRaw = this.getPropertyByIndex(element, 12);
+      const startDateFormatted = this.formatDateForBackend(startDateRaw);
+      const endDateFormatted = this.formatDateForBackend(endDateRaw);
+
+      row += "<StartDate>" + startDateFormatted + "</StartDate>";
+      row += "<EndDate>" + endDateFormatted + "</EndDate>";
+
+      row += "<BudgetType>" + this.escapeXml(this.getPropertyByIndex(element, 13)) + "</BudgetType>";
+      row += "<BudgetAmount>" + this.escapeXml(this.getPropertyByIndex(element, 14)) + "</BudgetAmount>";
+      row += "<Remarks>" + this.escapeXml(this.getPropertyByIndex(element, 15)) + "</Remarks>";
+      row += "<SessionId>" + this.escapeXml(this.getPropertyByIndex(element, 16)) + "</SessionId>";
+
+      row += "</row>";
+      xmlString += row;
     }
     xmlString += '</data></dataset>';
-    
-    var obj = {
-        EventsDataXml: xmlString,
-        CreatedBy: this.createdBy
-    };
 
+    var obj = {
+      EventsDataXml: xmlString,
+      CreatedBy: this.createdBy
+    };
     this.eventService.CreateEventsUsingExcelSheet(obj).subscribe((response) => {
-        if (response.item1.length > 0) {
-            this.responses = response.item1[0];
-            if (this.responses.returnData === '-1') {
-                Swal.fire(
-                    { title: 'Something went Wrong ', icon: 'error' }
-                ), setTimeout(() => {
-                    window.location.reload();
-                }, 2200);
-            } else if (this.responses.returnData === 'success') {
-                Swal.fire(
-                    { title: 'All Events Details are added: ', text: this.responses.returnData, icon: 'success' }
-                ), setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
-            } else if (this.responses.returnData === 'Failed') {
-                Swal.fire(
-                    { title: 'All entries are Duplicate, Not Inserted ', text: this.responses.returnData, icon: 'error' }
-                ), setTimeout(() => {
-                    window.location.reload();
-                }, 2200);
-            }
+      if (response && response.item1 && response.item1.length > 0) {
+        this.responses = response.item1[0];
+
+        if (this.responses.returnData === '-1') {
+          Swal.fire({
+            title: 'Database Error',
+            text: this.responses.msg || 'An unknown error occurred while saving to database.',
+            icon: 'error'
+          });
         }
+        else if (this.responses.returnData === 'success') {
+          Swal.fire({
+            title: 'Upload Successful',
+            text: this.responses.msg || 'All Events Details are added successfully.',
+            icon: 'success'
+          });
+          setTimeout(() => { window.location.reload(); }, 2000);
+        }
+        else if (this.responses.returnData === 'Failed') {
+          Swal.fire({
+            title: 'Duplicate Entries',
+            text: this.responses.msg || 'All entries are duplicate. No data was inserted.',
+            icon: 'warning'
+          });
+          setTimeout(() => { window.location.reload(); }, 2200);
+        }
+      }
+    }, (error) => {
+      Swal.fire({
+        title: 'Network Error',
+        text: 'Failed to connect to the server.',
+        icon: 'error'
+      });
     });
   }
+
+
+  // Helper function to escape special XML characters
+  escapeXml(unsafeStr: any): string {
+    if (unsafeStr === null || unsafeStr === undefined) {
+      return '';
+    }
+
+    return unsafeStr.toString()
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+  }
+
+
+  // Upload() {
+  //   var xmlString = '<dataset><data>';
+  //   // Iterate over uploadedDataRaw to get original values for backend
+  //   for (var i = 1; i < this.uploadedDataRaw.length; i++) {
+  //       var element = this.uploadedDataRaw[i];
+  //       var row = "<row>";
+  //       row += "<SchoolId>" + this.getPropertyByIndex(element, 0) + "</SchoolId>";
+  //       row += "<EventObjective>" + this.getPropertyByIndex(element, 1) + "</EventObjective>";
+  //       row += "<EventName>" + this.getPropertyByIndex(element, 2) + "</EventName>";
+  //       row += "<EventType>" + this.getPropertyByIndex(element, 3) + "</EventType>";
+  //       row += "<AlternativelyStudentCounts>" + this.getPropertyByIndex(element, 4) + "</AlternativelyStudentCounts>";
+  //       row += "<OBPCriteria>" + this.getPropertyByIndex(element, 5) + "</OBPCriteria>";
+  //       row += "<ModeOfConduct>" + this.getPropertyByIndex(element, 6) + "</ModeOfConduct>";
+  //       row += "<ExternalLevel>" + this.getPropertyByIndex(element, 7) + "</ExternalLevel>";
+  //       row += "<InternalLevel>" + this.getPropertyByIndex(element, 8) + "</InternalLevel>";
+  //       row += "<CategoryId>" + this.getPropertyByIndex(element, 9) + "</CategoryId>";
+  //       row += "<Semester>" + this.getPropertyByIndex(element, 10) + "</Semester>";
+
+  //       // Format StartDate and EndDate to YYYY-MM-DD for backend
+  //       const startDateRaw = this.getPropertyByIndex(element, 11);
+  //       const endDateRaw = this.getPropertyByIndex(element, 12);
+
+  //       const startDateFormatted = this.formatDateForBackend(startDateRaw);
+  //       const endDateFormatted = this.formatDateForBackend(endDateRaw);
+
+  //       row += "<StartDate>" + startDateFormatted + "</StartDate>";
+  //       row += "<EndDate>" + endDateFormatted + "</EndDate>";
+
+  //       row += "<BudgetType>" + this.getPropertyByIndex(element, 13) + "</BudgetType>";
+  //       row += "<BudgetAmount>" + this.getPropertyByIndex(element, 14) + "</BudgetAmount>";
+  //       row += "<Remarks>" + this.getPropertyByIndex(element, 15) + "</Remarks>";
+  //       row += "<SessionId>" + this.getPropertyByIndex(element, 16) + "</SessionId>";      
+  //       row += "</row>";
+  //       xmlString += row;
+  //   }
+  //   xmlString += '</data></dataset>';
+
+  //   var obj = {
+  //       EventsDataXml: xmlString,
+  //       CreatedBy: this.createdBy
+  //   };
+
+  //   this.eventService.CreateEventsUsingExcelSheet(obj).subscribe((response) => {
+  //       if (response.item1.length > 0) {
+  //           this.responses = response.item1[0];
+  //           if (this.responses.returnData === '-1') {
+  //               Swal.fire(
+  //                   { title: 'Something went Wrong ', icon: 'error' }
+  //               ), setTimeout(() => {
+  //                   window.location.reload();
+  //               }, 2200);
+  //           } else if (this.responses.returnData === 'success') {
+  //               Swal.fire(
+  //                   { title: 'All Events Details are added: ', text: this.responses.returnData, icon: 'success' }
+  //               ), setTimeout(() => {
+  //                   window.location.reload();
+  //               }, 2000);
+  //           } else if (this.responses.returnData === 'Failed') {
+  //               Swal.fire(
+  //                   { title: 'All entries are Duplicate, Not Inserted ', text: this.responses.returnData, icon: 'error' }
+  //               ), setTimeout(() => {
+  //                   window.location.reload();
+  //               }, 2200);
+  //           }
+  //       }
+  //   });
+  // }
 
   // Helper function to format date to YYYY-MM-DD for backend
   formatDateForBackend(dateValue: any): string {
@@ -1213,5 +1373,5 @@ UploadExcelData(){
       return obj[index];
     }
     return '';
-  } 
+  }
 }
