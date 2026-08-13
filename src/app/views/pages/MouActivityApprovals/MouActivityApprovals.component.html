@@ -201,9 +201,18 @@
                                                             </ng-container>
                                                         </ng-template>
                                                     </ngx-datatable-column>
+                                                    <ngx-datatable-column name="Mou Organisation Name" [sortable]="false"
+                                                        prop="Id">
+                                                        <ng-template let-row="row" let-value="value"
+                                                            let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                                                            <ng-container *ngIf="row.mouPartnerName != null">
+                                                                <span
+                                                                    style="margin: auto;float: left; font-weight: bold;padding: 10px 10px 10px 10px;">{{row.mouPartnerName}}</span>
+                                                            </ng-container>
+                                                        </ng-template>
+                                                    </ngx-datatable-column>
 
-                                                    <ngx-datatable-column *ngFor="let col of columns"
-                                                        [prop]="col"></ngx-datatable-column>
+                                                    <ngx-datatable-column *ngFor="let col of columns" [prop]="col"></ngx-datatable-column>
 
                                                     <ngx-datatable-column name="Approval Status" [sortable]="false"
                                                         prop="Id">
@@ -233,16 +242,14 @@
 
                                                     <ngx-datatable-column name="Activity Document" [sortable]="false"
                                                         prop="Id">
-                                                        <ng-template let-row="row" let-value="value"
-                                                            let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                                                            <ng-container
-                                                                *ngIf="row.isApproved==='False' || row.isApproved==='True' ; else AllowsFile">
+                                                        <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                                                            <!-- <ng-container *ngIf="row.isApproved==='False' || row.isApproved==='True' ; else AllowsFile"> -->
                                                                 <!-- <button class="btn btn-dark" (click)="onSelectFileY(row)"> Download </button> -->
-                                                                <button class="btn btn-dark"
+                                                                <!-- <button class="btn btn-dark"
                                                                     (click)="onDownloadFile(row.documentUploadedFile)">
                                                                     <i class="bi bi-file-earmark-text"></i> </button>
                                                             </ng-container>
-                                                            <ng-template #AllowsFile>
+                                                            <ng-template #AllowsFile> -->
                                                                 <ng-container *ngIf="row.documentUploadedFile">
 
                                                                     <ng-container
@@ -265,7 +272,7 @@
                                                                                                                 <i class="bi bi-file-earmark-text"></i> *</button>
                                                                                                         </ng-container>
                                                                                                     </ng-template> -->
-                                                        </ng-template>
+                                                        <!-- </ng-template> -->
                                                     </ngx-datatable-column>
 
                                                     <ngx-datatable-column name="AssignedTo Faculty UID"

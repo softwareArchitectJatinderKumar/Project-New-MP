@@ -380,7 +380,6 @@ export class MouDocumentsReportComponent implements OnInit {
       next: response => {
         if (response.item1.length > 0) {
           this.MouDocumentDetails = this.filteredMouDocumentDetails = response.item1;
-          console.log('All MOU Document Details:', this.MouDocumentDetails);
           this.showNoDataFoundMessage = false;
 
           this.applyFilters();

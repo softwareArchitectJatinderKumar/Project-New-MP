@@ -16,17 +16,16 @@
     </div>
     <div class="card-body">
       <form [formGroup]="mappingForm" (ngSubmit)="onSubmit()">
-        <div class="row g-3">
+        <div class="row g-2 ">
 
           <!-- Planner Session Selection (New) -->
-          <div class="col-md-6">
+          <div class="col-md-3">
             <label for="plannerSession" class="form-label">Planner Session <span class="text-danger">*</span></label>
-            <select id="plannerSession" class="form-select" 
-              (change)="onPlannerSessionChange($event)" formControlName="SessionId">
+            <select id="plannerSession" class="form-select" (change)="onPlannerSessionChange($event)"
+              formControlName="SessionId">
               <option value="">-- Select a Planner Session --</option>
               <option *ngFor="let session of allPlannerSessions" [value]="session.id">
-                {{ session.sessionName }} ({{ session.sessionType }}) - 
-                {{ getDateDisplay(session.startDate) }} to {{ getDateDisplay(session.endDate) }}
+                {{ session.session }}
               </option>
             </select>
             <div class="text-danger mt-1 small"
@@ -34,15 +33,12 @@
               Planner Session is required.
             </div>
             <div *ngIf="selectedPlannerSession" class="text-info mt-2 small">
-              Session Period: {{ getDateDisplay(selectedPlannerSession.startDate) }} to {{ getDateDisplay(selectedPlannerSession.endDate) }}
+              Session Period: {{ getDateDisplay(selectedPlannerSession.startDate) }} to {{
+              getDateDisplay(selectedPlannerSession.endDate) }}
             </div>
           </div>
-
-          <!-- Empty column for spacing -->
-          <div class="col-md-6"></div>
-
           <!-- Head UID -->
-          <div class="col-md-6">
+          <div class="col-md-3">
             <label for="headUid" class="form-label">Head UID <span class="text-danger">*</span></label>
             <div class="position-relative">
               <input type="text" id="HeadUID" name="HeadUID" required class="form-control" [formControl]="headControl"
@@ -68,7 +64,7 @@
           </div>
 
           <!-- Assistant UID -->
-          <div class="col-md-6">
+          <div class="col-md-3">
             <label for="assistantUid" class="form-label">Assistant UID <span class="text-danger">*</span></label>
             <div class="position-relative">
               <input type="text" id="AssistantUID" name="AssistantUID" required class="form-control"
@@ -92,9 +88,7 @@
               Selected Assistant UID: <strong>{{ AssistantUid }}</strong>
             </div>
           </div>
-
-          <!-- Metric ID -->
-          <div class="col-md-4">
+          <div class="col-md-3">
             <label for="metricId" class="form-label">Metric ID <span class="text-danger">*</span></label>
             <div class="position-relative">
               <input type="text" id="AssignToMetricId" name="AssignToMetricId" required class="form-control"
@@ -120,9 +114,12 @@
                 AssignToMetricId }}</strong>
             </div>
           </div>
+        </div>
+        <div class="row g-2 mt-2">
+
 
           <!-- Start Date (New) -->
-          <div class="col-md-4">
+          <div class="col-md-3">
             <label for="startDate" class="form-label">Start Date <span class="text-danger">*</span></label>
             <input type="date" id="startDate" class="form-control" formControlName="StartDate"
               [class.is-invalid]="mappingForm.get('StartDate')?.invalid && mappingForm.get('StartDate')?.touched" />
@@ -136,7 +133,7 @@
           </div>
 
           <!-- End Date (New) -->
-          <div class="col-md-4">
+          <div class="col-md-3">
             <label for="endDate" class="form-label">End Date <span class="text-danger">*</span></label>
             <input type="date" id="endDate" class="form-control" formControlName="EndDate"
               [class.is-invalid]="mappingForm.get('EndDate')?.invalid && mappingForm.get('EndDate')?.touched" />
@@ -148,9 +145,8 @@
               </span>
             </div>
           </div>
-
-          <!-- School Division -->
-          <div class="col-md-6">
+            <!-- School Division -->
+          <div class="col-md-3">
             <label for="schoolDivisionNgSelect" class="form-label">School Division (Optional)</label>
 
             <ng-select id="schoolDivisionNgSelect" [items]="allSchoolDivisions" bindLabel="schoolDivision"
@@ -167,6 +163,10 @@
 
             <input type="hidden" formControlName="SchoolId" />
           </div>
+        </div>
+        <div class="row g-3">
+  
+
 
           <!-- Is Active (Update Mode Only) -->
           <div class="col-md-2" *ngIf="isUpdateMode">
@@ -189,7 +189,8 @@
             <textarea id="remarks" formControlName="Remarks" class="form-control" rows="3"
               [class.is-invalid]="mappingForm.get('Remarks')?.invalid && mappingForm.get('Remarks')?.touched"></textarea>
             <div class="invalid-feedback"
-              *ngIf="mappingForm.get('Remarks')?.invalid && mappingForm.get('Remarks')?.touched">Remarks are required
+              *ngIf="mappingForm.get('Remarks')?.invalid && mappingForm.get('Remarks')?.touched">
+              Remarks are required
               for updates.</div>
           </div>
 
@@ -253,7 +254,7 @@
       <!-- Table -->
       <div class="table-responsive">
         <table class="table table-striped table-hover mb-0">
-          <thead class="table-danger bg-dark">
+          <thead class="bg-secondary text-white">
             <tr>
               <th *ngFor="let col of tableColumns"><span class="text-dark">{{ col }}</span></th>
             </tr>
@@ -327,11 +328,11 @@
 
                   <!-- Actions -->
                   <ng-container *ngSwitchCase="'Actions'">
-                    <button type="button" class="btn btn-sm btn-info me-2" (click)="onEdit(record)">
-                      <i class="mdi mdi-pencil"></i> Edit
+                    <button type="button" class="btn  btn-info me-1 p-2" (click)="onEdit(record)">
+                      <i class="mdi mdi-pencil"></i>
                     </button>
-                    <button type="button" class="btn btn-sm btn-danger" (click)="onDelete(record)">
-                      <i class="mdi mdi-trash-can"></i> Delete
+                    <button type="button" class="btn btn-danger p-2" (click)="onDelete(record)">
+                      <i class="mdi mdi-trash-can"></i>
                     </button>
                   </ng-container>
 
@@ -354,9 +355,9 @@
       <!-- Pagination -->
       <div class="d-flex justify-content-between align-items-center p-3">
         <div>
-          <button class="btn btn-info me-2" [disabled]="currentPage <= 1"
+          <button class="btn btn-dark me-2" [disabled]="currentPage <= 1"
             (click)="goToPage(currentPage - 1)">Prev</button>
-          <button class="btn btn-primary" [disabled]="currentPage >= totalPages"
+          <button class="btn btn-dark bg-primary" [disabled]="currentPage >= totalPages"
             (click)="goToPage(currentPage + 1)">Next</button>
         </div>
         <div>Page {{ currentPage }} / {{ totalPages }}</div>

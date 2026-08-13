@@ -72,58 +72,58 @@ export class MouActivityApprovalsComponent implements OnInit {
 
 
   @ViewChild('topScrollbar')
-topScrollbar!: ElementRef;
+  topScrollbar!: ElementRef;
 
-@ViewChild('topScrollbarContent')
-topScrollbarContent!: ElementRef;
+  @ViewChild('topScrollbarContent')
+  topScrollbarContent!: ElementRef;
 
-@ViewChild('gridContainer')
-gridContainer!: ElementRef;
+  @ViewChild('gridContainer')
+  gridContainer!: ElementRef;
 
-private scrollInitialized = false;
+  private scrollInitialized = false;
 
-ngAfterViewInit(): void {
+  ngAfterViewInit(): void {
 
     setTimeout(() => {
-        this.initializeTopScrollbar();
+      this.initializeTopScrollbar();
     });
 
-}
+  }
 
-ngAfterViewChecked(): void {
+  ngAfterViewChecked(): void {
 
     if (!this.scrollInitialized && this.filteredMouActivityData.length) {
 
-        this.initializeTopScrollbar();
+      this.initializeTopScrollbar();
 
     }
 
-}
+  }
 
-initializeTopScrollbar(): void {
+  initializeTopScrollbar(): void {
 
     const body = this.gridContainer.nativeElement.querySelector('.datatable-body');
 
     if (!body) {
-        return;
+      return;
     }
 
     this.scrollInitialized = true;
 
     this.topScrollbarContent.nativeElement.style.width =
-        body.scrollWidth + 'px';
+      body.scrollWidth + 'px';
 
     // Top → Grid
     this.topScrollbar.nativeElement.onscroll = () => {
-        body.scrollLeft = this.topScrollbar.nativeElement.scrollLeft;
+      body.scrollLeft = this.topScrollbar.nativeElement.scrollLeft;
     };
 
     // Grid → Top
     body.onscroll = () => {
-        this.topScrollbar.nativeElement.scrollLeft = body.scrollLeft;
+      this.topScrollbar.nativeElement.scrollLeft = body.scrollLeft;
     };
 
-}
+  }
   allMouActivityData: any[] = [];
 
   approvedCount = 0;
@@ -183,7 +183,7 @@ initializeTopScrollbar(): void {
       case 'pending':
         filtered = filtered.filter(x =>
           x.isApproved === null ||
-          x.isApproved === 'null'           
+          x.isApproved === 'null'
         );
         break;
       case 'disapproved':
@@ -237,9 +237,9 @@ initializeTopScrollbar(): void {
 
     this.scrollInitialized = false;
 
-setTimeout(() => {
-    this.initializeTopScrollbar();
-},100);
+    setTimeout(() => {
+      this.initializeTopScrollbar();
+    }, 100);
   }
 
   updateCounts(): void {
@@ -407,18 +407,19 @@ setTimeout(() => {
             this.allMouActivityData = [...response.item1];
             this.MouActivityData = [...response.item1];
             this.filteredMouActivityData = [...response.item1];
-
             this.updateCounts();
             this.showNoDataFoundMessage = false;
             this.dataSource.data = this.MouActivityData;
             this.filteredMouActivityData = this.MouActivityData;
             // this.columns = Object.keys(this.MouActivityData[0]);
+            this.columns = this.columns.filter((item: any) => item !== 'filePath' && item !== 'assignedToFacultyUID' && item !== 'uploadActivityDate' && item !== 'mouApprovedByFacultyName' && item !== 'schoolDivisionInvolved' && item !== 'approvalStatus' && item !== 'participantsCount' && item !== 'activityCount' && item !== 'approvalStatus' && item !== 'mouStatus' && item !== 'documentUploadedFile' && item !== 'approvalStatus' && item !== 'activityTitle' && item !== 'mouApprovedByFacultyUID' && item !== 'assignedToFacultyName' && item !== 'startDate' && item !== 'completedDate' && item !== 'sessionId' && item !== 'sessionAcademicYear' && item !== 'documentUploaded' && item !== 'fileName' && item !== 'ipAddress' && item !== 'mouId' && item !== 'approvedBy' && item !== 'approvalDate' && item !== 'disapprovalReason' && item !== 'isApproved' && item !== 'documentName' && item !== 'file' && item !== 'uid' && item !== 'id' && item !== 'createdBy' && item !== 'updatedOn' && item !== 'updatedBy');
+            // MouPartnerName,SchoolDivisionInvolved, MouCategory, RecordId, NewMouID, AssignedToFacultyName, MouId, Uid,Remarks, DisapprovalReason, isApproved, ApprovedBy, DocumentUploadedFile, FacultyActivityEndDate, SessionAcademicYear,AssignedToFacultyUID,SessionId
 
             this.scrollInitialized = false;
 
-setTimeout(() => {
-    this.initializeTopScrollbar();
-},100);
+            setTimeout(() => {
+              this.initializeTopScrollbar();
+            }, 100);
           } else {
             this.MouActivityData = [];
             this.filteredMouActivityData = [];
@@ -660,11 +661,11 @@ setTimeout(() => {
   }
 
   DisapproveStatus(RowData: any) {
-   let aa = RowData;
-    let IDX = aa['recordId'];    
-    let UId = aa['assignedToFacultyUID'];    
- 
- 
+    let aa = RowData;
+    let IDX = aa['recordId'];
+    let UId = aa['assignedToFacultyUID'];
+
+
     swal.fire({
       title: "Reason for Disapproval",
       input: 'text',
@@ -687,13 +688,13 @@ setTimeout(() => {
 
   ApproveAction(RowData: any) {
     let aa = RowData;
-    let ymouId = aa['recordId'];    
-    let UId = aa['assignedToFacultyUID'];    
+    let ymouId = aa['recordId'];
+    let UId = aa['assignedToFacultyUID'];
     const formData = new FormData();
-    formData.append('Id', ymouId);    
+    formData.append('Id', ymouId);
     formData.append('UId', UId);
     formData.append('Action', 'Approve');
-    
+
     swal.fire({
       title: 'Are you sure you want to Approve this?',
       text: 'Kindly confirm if the document is valid!',

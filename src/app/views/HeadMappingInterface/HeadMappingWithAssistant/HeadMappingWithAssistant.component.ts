@@ -36,6 +36,7 @@ interface SchoolDivision {
 
 interface PlannerSession {
     id: number;
+    session: string;
     sessionName: string;
     sessionType: string;
     startDate: Date;

@@ -224,7 +224,7 @@ UpdateOBPConstructionMetricFinalRemarks(DataValues: FormData): Observable<any> {
       .set('Content-Type', 'application/json');
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
     return this.http.post(
-      'https://localhost:7125/' +   'api/LpuObpAutomation/AddLeftTransferDataUsingExcelSheet', LeftTransferDataXml,
+      AUTH_API_LOCAL +   'api/LpuObpAutomation/AddLeftTransferDataUsingExcelSheet', LeftTransferDataXml,
       { headers }
     );
   }
@@ -234,7 +234,7 @@ UpdateOBPConstructionMetricFinalRemarks(DataValues: FormData): Observable<any> {
     let headers = new HttpHeaders()
       .set('Authorization', 'Bearer ' + authToken)
     return this.http.post(
-      'https://localhost:7125/' +   'api/LpuObpAutomation/AddLeftTransferData', data,
+      AUTH_API_LOCAL +   'api/LpuObpAutomation/AddLeftTransferData', data,
       { headers }
     );
   }
@@ -245,7 +245,7 @@ UpdateOBPConstructionMetricFinalRemarks(DataValues: FormData): Observable<any> {
       .set('Authorization', 'Bearer ' + token)
       .set('Content-Type', 'application/json');
       return this.http.get(
-     'https://localhost:7125/' + 'api/LpuObpAutomation/GetMetricAllocationData', { headers }
+     AUTH_API_LOCAL + 'api/LpuObpAutomation/GetMetricAllocationData', { headers }
     );
 
   }
@@ -258,7 +258,7 @@ UpdateOBPConstructionMetricFinalRemarks(DataValues: FormData): Observable<any> {
       .set('Authorization', 'Bearer ' + token)
       .set('Content-Type', 'application/json');
       return this.http.get(
-     'https://localhost:7125/' + 'api/LpuObpAutomation/GetMetricPendecyData', { headers }
+     AUTH_API_LOCAL + 'api/LpuObpAutomation/GetMetricPendecyData', { headers }
     );
 
   }
