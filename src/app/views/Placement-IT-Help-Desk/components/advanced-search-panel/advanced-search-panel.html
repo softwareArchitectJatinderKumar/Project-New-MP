@@ -1,0 +1,58 @@
+<!-- eslint-disable @angular-eslint/template/label-has-associated-control -->
+<div class="row g-3 p-3 bg-light rounded border">
+  <div class="col-12 col-md-3">
+    <label class="form-label small text-muted mb-1">Request Type</label>
+    <select class="form-select" [ngModel]="criteria.requestFor" (ngModelChange)="updateField('requestFor', $event)">
+      <option value="">Select Request Type</option>
+      <option *ngFor="let option of requestForOptions" [value]="option">{{ option }}</option>
+    </select>
+  </div>
+
+  <div class="col-12 col-md-3">
+    <label class="form-label small text-muted mb-1">Sub Request</label>
+    <select class="form-select" [ngModel]="criteria.subject" (ngModelChange)="updateField('subject', $event)"
+      [disabled]="!criteria.requestFor">
+      <option value="">Select Sub Request</option>
+      <option *ngFor="let option of subjectOptions" [value]="option">{{ option }}</option>
+    </select>
+  </div>
+
+  <div class="col-12 col-md-3">
+    <label class="form-label small text-muted mb-1">Submenu</label>
+    <select class="form-select" [ngModel]="criteria.submenu" (ngModelChange)="updateField('submenu', $event)"
+      [disabled]="!criteria.requestFor">
+      <option value="">Select Submenu</option>
+      <option *ngFor="let option of submenuOptions" [value]="option">{{ option }}</option>
+    </select>
+  </div>
+
+  <div class="col-12 col-md-3">
+    <label class="form-label small text-muted mb-1">Created By</label>
+    <input type="text" class="form-control" [ngModel]="criteria.createdBy"
+      (ngModelChange)="updateField('createdBy', $event)" placeholder="Search by creator" />
+  </div>
+
+  <div class="col-12 col-md-3">
+    <label class="form-label small text-muted mb-1">From Date</label>
+    <input type="date" class="form-control" [ngModel]="criteria.startDate"
+      (ngModelChange)="updateField('startDate', $event)" />
+  </div>
+
+  <div class="col-12 col-md-3">
+    <label class="form-label small text-muted mb-1">To Date</label>
+    <input type="date" class="form-control" [ngModel]="criteria.endDate"
+      (ngModelChange)="updateField('endDate', $event)" />
+  </div>
+
+  <div class="col-12 col-md-3 d-flex align-items-end">
+    <button type="button" class="btn btn-dark w-100" [disabled]="!hasCriteria" (click)="onApply()">
+      Apply Filters
+    </button>
+  </div>
+
+  <div class="col-12 col-md-3 d-flex align-items-end">
+    <button type="button" class="btn btn-outline-dark w-100" (click)="onReset()">
+      Reset Filters
+    </button>
+  </div>
+</div>

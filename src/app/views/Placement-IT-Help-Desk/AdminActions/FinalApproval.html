@@ -1,0 +1,271 @@
+<!-- eslint-disable @angular-eslint/template/eqeqeq -->
+<!-- eslint-disable @angular-eslint/template/label-has-associated-control -->
+<!-- eslint-disable @angular-eslint/template/click-events-have-key-events -->
+<!-- eslint-disable @angular-eslint/template/interactive-supports-focus -->
+<!-- eslint-disable @angular-eslint/template/prefer-control-flow -->
+<app-login-failed *ngIf="isAccessDenied; else mainContent"></app-login-failed>
+<ng-template #mainContent>
+<div class="container-fluid p-3">
+  <div class="row">
+    <div class="col-md-6 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <div class="row d-flex justify-content-around">
+            <label class="col-md-6 form-label text-danger" style="font-weight: 700;">Employee Name / UID
+            </label>
+            <label class="col-md-6 form-label text-dark  " style="text-align: right; font-weight: 700;">{{EmployeeName}}
+              /
+              {{this.EmployeeCode}}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <div class="row d-flex justify-content-around">
+            <label class="col-md-5 form-label text-danger " style="font-weight: 700;">Department
+              Name</label>
+            <label class="col-md-7 form-label text-dark " style="text-align: right;font-weight: 700;">
+              {{this.DepartmentName}}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Main Card -->
+  <div class="card shadow-sm border-0 rounded-4 mt-3">
+    <div class="card-body p-0">
+
+      <!-- Header -->
+      <div class="d-flex border-bottom px-4 py-3 justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-list-check text-primary fs-5"></i>
+          <span class="fw-semibold text-dark fs-5">All Tickets for Approval</span>
+          <span class="badge bg-primary bg-opacity-25 text-primary rounded-pill">{{ tickets.length }}</span>
+        </div>
+
+        <div class="d-flex gap-2" *ngIf="selectedTicketIds.length > 0">
+          <button class="btn btn-danger d-flex align-items-center gap-2" (click)="submitBulkAction('REJECT')">
+            <i class="bi bi-x-circle"></i> Reject Selected ({{ selectedTicketIds.length }})
+          </button>
+          <button class="btn btn-success d-flex align-items-center gap-2" (click)="submitBulkAction('APPROVE')">
+            <i class="bi bi-check-circle"></i> Approve Selected ({{ selectedTicketIds.length }})
+          </button>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-responsive p-4 pb-0">
+        <table class="table table-hover align-middle custom-table mb-0">
+          <thead>
+            <tr class="text-muted small fw-bold">
+              <th class="border-0">
+                <input type="checkbox" class="form-check-input" (change)="toggleAll($event)"
+                  [checked]="isAllSelected()">
+              </th>
+              <th class="border-0">TICKET ID</th>
+              <th class="border-0">REQUEST FOR</th>
+              <th class="border-0">MAIN MENU</th>
+              <th class="border-0">SUBMENU</th>
+              <th class="border-0">PRIORITY</th>
+              <th class="border-0">SUBJECT</th>
+              <th class="border-0">DESCRIPTION</th>
+              <th class="border-0">FILE</th>
+              <th class="border-0">STATUS</th>
+              <th class="border-0">FINAL APPROVALS</th>
+              <th class="border-0">DELETE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngIf="displayTickets.length; else noTickets">
+              <tr *ngFor="let ticket of displayTickets; trackBy: trackByTicketId">
+                <td>
+                  <input type="checkbox" class="form-check-input" (change)="toggleSelection(ticket.id, $event)"
+                    [checked]="selectedTicketIds.includes(ticket.id.toString())"
+                    [disabled]="ticket.approvalRemarks != null && ticket.approvalRemarks != ''">
+                </td>
+                <td>
+                  <span class="text-primary fw-bold">TKT-{{ ticket.id | number:'3.0' }}</span>
+                </td>
+                <td class="text-secondary">{{ ticket.requestFor }}</td>
+                <td class="text-secondary">{{ ticket.mainMenu }}</td>
+                <td class="text-secondary">{{ ticket.submenu }}</td>
+                <td>
+                  <span class="priority-pill"
+                    [class.critical]="ticket.priority === 'High' || ticket.priority === 'CRITICAL'"
+                    [class.high]="ticket.priority === 'Medium'" [class.low]="ticket.priority === 'Low'">
+                    {{ ticket.priority || 'NORMAL' | uppercase }}
+                  </span>
+                </td>
+                <td class="fw-semibold text-dark">{{ ticket.subject || ticket.submenu }}</td>
+                <td class="text-muted " style="max-width: 200px;">
+                  {{ ticket.description }}
+                </td>
+                <td class="text-muted">
+                  <a [href]="ticket.filePath" target="_blank" class="text-decoration-none"
+                    *ngIf="ticket.filePath; else noFile">View</a>
+                  <ng-template #noFile>&mdash;</ng-template>
+                </td>
+                <td>
+                  <span class="badge" [class.bg-success]="ticket.status === 'Closed'"
+                    [class.bg-warning]="ticket.status === 'Open'">
+                    {{ ticket.status }}
+                  </span>
+                </td>
+                <td>
+                  <div class="d-flex flex-column small" *ngIf="ticket.approvalRemarks; else noApproval">
+                    <span class="fw-bold text-dark">Approved by: {{ ticket.approvedBy || ticket.updatedBy }}</span>
+                    <span class="text-muted">Date: {{ ticket.approvedOn | date:'short' }}</span>
+                    <span class="text-muted">Remarks: {{ ticket.approvalRemarks }}</span>
+                  </div>
+                  <ng-template #noApproval>
+                    <div class="d-flex flex-column gap-2">
+                      <input type="text" class="form-control form-control-sm" placeholder="Enter remarks..."
+                        [value]="rowRemarks[ticket.id] || ''" (input)="onRowRemarkChange(ticket.id.toString(), $event)">
+                      <div class="form-check form-switch small mb-0">
+                        <input class="form-check-input" type="checkbox" role="switch" [id]="'srsRequired_' + ticket.id"
+                          [checked]="rowSrsRequired[ticket.id] || false"
+                          (change)="onRowSrsRequiredChange(ticket.id.toString(), $event)">
+                        <label class="form-check-label text-muted" [for]="'srsRequired_' + ticket.id">SRS Required</label>
+                      </div>
+                    </div>
+                  </ng-template>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline-danger" (click)="openDeleteModal(deleteModal, ticket)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </ng-container>
+            <ng-template #noTickets>
+              <tr>
+                <td colspan="12" class="text-center py-5 text-muted">
+                  No tickets found.
+                </td>
+              </tr>
+            </ng-template>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination / Footer Controls -->
+      <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top bg-light bg-opacity-50 flex-wrap gap-2" *ngIf="tickets.length > 0">
+        <div class="text-muted small">
+          Showing <span class="fw-semibold text-dark">{{ startRecord }}</span> to <span class="fw-semibold text-dark">{{ endRecord }}</span> of <span class="fw-semibold text-dark">{{ tickets.length }}</span> entries
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-flex align-items-center gap-2">
+            <label for="recordsPerPageSelect" class="form-label small mb-0 text-muted text-nowrap">Items per page:</label>
+            <select id="recordsPerPageSelect" class="form-select form-select-sm w-auto"
+              [(ngModel)]="recordsPerPage" (change)="onRecordsPerPageChange()">
+              <option *ngFor="let option of recordsPerPageOptions" [value]="option">{{ option }}</option>
+            </select>
+          </div>
+
+          <div class="d-flex align-items-center gap-1">
+            <button class="btn btn-outline-secondary btn-sm px-3 d-flex align-items-center gap-1" (click)="prevPage()" [disabled]="currentPage === 1">
+              <i class="bi bi-chevron-left"></i> Previous
+            </button>
+            <span class="small px-2 text-muted">
+              {{ currentPage }} / {{ totalPages }}
+            </span>
+            <button class="btn btn-outline-secondary btn-sm px-3 d-flex align-items-center gap-1" (click)="nextPage()" [disabled]="currentPage >= totalPages">
+              Next <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reject Ticket Modal -->
+<ng-template #RejectModal let-modal>
+  <div class="modal-header border-0 pb-0">
+    <h5 class="modal-title fw-bold text-dark">Close Ticket</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body pt-3">
+    <p class="text-muted mb-4">Please provide remarks/description to close this ticket.</p>
+
+    <form [formGroup]="closeTicketForm">
+      <div class="mb-3">
+        <label class="form-label fw-semibold text-secondary small">REMARKS <span class="text-danger">*</span></label>
+        <textarea class="form-control bg-light border-0 p-3" formControlName="remarks" rows="4"
+          placeholder="Enter closing remarks..."
+          [class.is-invalid]="closeTicketForm.get('remarks')?.invalid && closeTicketForm.get('remarks')?.touched">
+          </textarea>
+        <div class="invalid-feedback"
+          *ngIf="closeTicketForm.get('remarks')?.invalid && closeTicketForm.get('remarks')?.touched">Remarks are required to close the ticket.</div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer border-0 pt-0">
+    <button type="button" class="btn btn-light" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-primary px-4" (click)="submitRejectTicket(modal)">Submit</button>
+  </div>
+</ng-template>
+<!-- Accept Ticket Modal -->
+<ng-template #AcceptModal let-modal>
+  <div class="modal-header border-0 pb-0">
+    <h5 class="modal-title fw-bold text-dark">Approve Ticket</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body pt-3">
+    <p class="text-muted mb-4">Please provide remarks/description to approve this ticket.</p>
+
+    <form [formGroup]="acceptTicketForm">
+      <div class="mb-3">
+        <label class="form-label fw-semibold text-secondary small">REMARKS <span class="text-danger">*</span></label>
+        <textarea class="form-control bg-light border-0 p-3" formControlName="remarks" rows="4"
+          placeholder="Enter closing remarks..."
+          [class.is-invalid]="acceptTicketForm.get('remarks')?.invalid && acceptTicketForm.get('remarks')?.touched">
+          </textarea>
+        <div class="invalid-feedback"
+          *ngIf="acceptTicketForm.get('remarks')?.invalid && acceptTicketForm.get('remarks')?.touched">Remarks are required to approve the ticket.</div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer border-0 pt-0">
+    <button type="button" class="btn btn-light" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-primary px-4" (click)="submitAcceptTicket(modal)">Submit</button>
+  </div>
+</ng-template>
+
+<!-- Delete Ticket Modal -->
+<ng-template #deleteModal let-modal>
+  <div class="modal-header border-0 pb-0">
+    <h5 class="modal-title fw-bold text-dark">Delete Ticket</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body pt-3">
+    <p class="text-muted mb-4">Are you sure you want to delete this ticket? Please provide a reason.</p>
+
+    <form [formGroup]="deleteTicketForm">
+      <div class="mb-3">
+        <label class="form-label fw-semibold text-secondary small">REMARKS <span class="text-danger">*</span></label>
+        <textarea class="form-control bg-light border-0 p-3" formControlName="remarks" rows="3"
+          placeholder="Enter delete remarks..."
+          [class.is-invalid]="deleteTicketForm.get('remarks')?.invalid && deleteTicketForm.get('remarks')?.touched">
+        </textarea>
+        <div class="invalid-feedback"
+          *ngIf="deleteTicketForm.get('remarks')?.invalid && deleteTicketForm.get('remarks')?.touched">Remarks are required to delete the ticket.</div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer border-0 pt-0">
+    <button type="button" class="btn btn-light" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-danger px-4" (click)="submitDeleteTicket(modal)">Delete</button>
+  </div>
+  </ng-template>
+
+
+  <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" [fullScreen]="true" size="default" type="ball-spin-clockwise">
+    <img src="assets/images/spinner.gif" alt="Loading..." />
+      <p>Loading...</p>
+  </ngx-spinner>
+</ng-template>

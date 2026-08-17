@@ -8,150 +8,217 @@ import { SemesterMigrationAdminComponent } from './views/SemesterExchange/HODDas
 import { CriteriaMasterComponent } from './components/criteria-master/criteria-master.component';
 // import { CriteriaMasterComponent } from './views/Criteria-Master/criteria-master.component';
 
-
 const routes: Routes = [
-
-  { path: 'auth', loadChildren: () => import('./views/pages/auth/auth.module').then(m => m.AuthModule) },
+  {
+    path: 'auth',
+    loadChildren: () =>
+      import('./views/pages/auth/auth.module').then((m) => m.AuthModule),
+  },
   {
     path: '',
     component: BaseComponent,
     canActivate: [AuthGuard],
     children: [
-
+      {
+        path: 'FinalAction/:loginName',
+        loadChildren: () =>
+          import('./views/Placement-IT-Help-Desk/AdminActions/FinalApproval.module').then(
+            (m) => m.FinalApprovalModule,
+          ),
+      },
+      {
+        path: 'NewTicket/:loginName',
+        loadChildren: () =>
+          import('./views/Placement-IT-Help-Desk/RegisterTicket/HelpDesk-RegisterTicket.module').then(
+            (m) => m.HelpDeskRegisterTicketModule,
+          ),
+      },
+      {
+        path: 'StaffAction/:loginName',
+        loadChildren: () =>
+          import('./views/Placement-IT-Help-Desk/StaffActions/placement-staff-ticket-action.module').then(
+            (m) => m.PlacementStaffTicketActionModule,
+          ),
+      },
       {
         path: 'MetricTargets/:loginName',
-        loadChildren: () => import('./views/Multiple-Metric-Dashboard/metric-targets.module').then(m => m.MetricTargetsModule),
+        loadChildren: () =>
+          import('./views/Multiple-Metric-Dashboard/metric-targets.module').then(
+            (m) => m.MetricTargetsModule,
+          ),
       },
       {
         path: 'OBPAdminDashboard/:loginName',
-        loadChildren: () => import('./views/OBPAdminDashboard/MasterDetailsPage.module').then(m => m.MasterDetailsPageModule),
+        loadChildren: () =>
+          import('./views/OBPAdminDashboard/MasterDetailsPage.module').then(
+            (m) => m.MasterDetailsPageModule,
+          ),
       },
       {
         path: 'OBPMetricPABindings/:loginName',
-        loadChildren: () => import('./views/HeadMappingInterface/HeadMappingWithAssistant/HeadMappingWithAssistant.module').then(m => m.OBPMetricBindingModule),
+        loadChildren: () =>
+          import('./views/HeadMappingInterface/HeadMappingWithAssistant/HeadMappingWithAssistant.module').then(
+            (m) => m.OBPMetricBindingModule,
+          ),
       },
       {
         path: 'OBPHeadMapping/:loginName',
-        loadChildren: () => import('./views/HeadMappingInterface/HeadMappingWithAssistant/HeadMappingWithAssistant.module').then(m => m.OBPMetricBindingModule),
+        loadChildren: () =>
+          import('./views/HeadMappingInterface/HeadMappingWithAssistant/HeadMappingWithAssistant.module').then(
+            (m) => m.OBPMetricBindingModule,
+          ),
       },
-      // Semester Exchange 
+      // Semester Exchange
       {
         path: 'StaffLogin',
-        loadChildren: () => import('./views/SemesterExchange/LoginPage/LoginPage.module').then(m => m.LoginPageNComponentModule),
+        loadChildren: () =>
+          import('./views/SemesterExchange/LoginPage/LoginPage.module').then(
+            (m) => m.LoginPageNComponentModule,
+          ),
       },
-      { path: 'stuPotal/:LoginName', redirectTo: 'NewWay-Register/:LoginName', pathMatch: 'full' },
+      {
+        path: 'stuPotal/:LoginName',
+        redirectTo: 'NewWay-Register/:LoginName',
+        pathMatch: 'full',
+      },
 
-     
-    
       {
         path: 'NewWay-Register/:LoginName', // Registeration-Form/c085f2e914a7b87faaf04df70801c7de74cc7fa78fa89978e4c5279c35331d13f781301cbdd1b14bf6c9fbd5e0582291
-        loadChildren: () => import('./views/SemesterExchange/StudentForm/20-6-26/RegisterForm.module').then(m => m.RegisterFormModule),
+        loadChildren: () =>
+          import('./views/SemesterExchange/StudentForm/20-6-26/RegisterForm.module').then(
+            (m) => m.RegisterFormModule,
+          ),
         // loadChildren: () => import('./views/SemesterExchange/StudentForm/Register-Form/RegisterForm.module').then(m => m.RegisterFormModule),
       },
-     
+
       {
         path: 'newSemesterExchangeRegistration/:LoginName',
         // loadChildren: () => import('./views/SemesterExchange/StudentForm/StudentForm.module').then(m => m.StudentFormModule),
-        loadChildren: () => import('./views/SemesterExchange/StudentForm/NewLogic/NewLogicForm.module').then(m => m.NewLogicFormModule),
+        loadChildren: () =>
+          import('./views/SemesterExchange/StudentForm/NewLogic/NewLogicForm.module').then(
+            (m) => m.NewLogicFormModule,
+          ),
       },
       {
         path: 'StudentDashboard/:LoginName/:RegistrationNo',
         // loadChildren: () => import('./views/SemesterExchange/StudentDashboard/StudentDashboard.module').then(m => m.StudentDashboardModule),
         // loadChildren: () => import('./views/SemesterExchange/StudentDashboard/StudentDashboardwithTabs.module').then(m => m.StudentDashboardwithTabsModule),
         // loadChildren: () => import('./views/SemesterExchange/StudentDashboard/Edit-Application/StudentForm.module').then(m => m.EditApplicationModule),
-        loadChildren: () => import('./views/SemesterExchange/StudentDashboard/Edit-Application/SE/StudentForm.module').then(m => m.EditApplicationModule),
+        loadChildren: () =>
+          import('./views/SemesterExchange/StudentDashboard/Edit-Application/SE/StudentForm.module').then(
+            (m) => m.EditApplicationModule,
+          ),
       },
       {
         path: 'SENextStep/:LoginName/:RegistrationNo',
-        loadChildren: () => import('./views/SemesterExchange/StudentDashboard/StudentDashboardwithTabs.module').then(m => m.StudentDashboardwithTabsModule),
+        loadChildren: () =>
+          import('./views/SemesterExchange/StudentDashboard/StudentDashboardwithTabs.module').then(
+            (m) => m.StudentDashboardwithTabsModule,
+          ),
       },
 
-
-
-
-      { path: 'DashboardHOD/:LoginName',         
-        loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule)  
-        // redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' 
+      {
+        path: 'DashboardHOD/:LoginName',
+        loadChildren: () =>
+          import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(
+            (m) => m.DynamicDashboardModule,
+          ),
+        // redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full'
       },
 
-
-      { path: 'DashboardHOW/:LoginName', 
-          loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule)  
-        // loadChildren: () => import('./views/SemesterExchange/HowDashboardNew/HowDashboards.module').then(m => m.HowDashboardsModule)  
+      {
+        path: 'DashboardHOW/:LoginName',
+        loadChildren: () =>
+          import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(
+            (m) => m.DynamicDashboardModule,
+          ),
+        // loadChildren: () => import('./views/SemesterExchange/HowDashboardNew/HowDashboards.module').then(m => m.HowDashboardsModule)
       },
 
-
-      { path: 'DashboardDIAHOD/:LoginName', 
-          loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule)    
-        // redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full' 
-      
+      {
+        path: 'DashboardDIAHOD/:LoginName',
+        loadChildren: () =>
+          import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(
+            (m) => m.DynamicDashboardModule,
+          ),
+        // redirectTo: 'FacultyDashboard/:LoginName', pathMatch: 'full'
       },
 
       {
         path: 'CounsellorDashboard/:LoginName',
-         loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule)  
+        loadChildren: () =>
+          import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(
+            (m) => m.DynamicDashboardModule,
+          ),
       },
-    
-     
 
       {
         path: 'ApplicationDetails/:LoginName/:RegistrationNo/:Role',
-        loadChildren: () => import('./views/SemesterExchange/StudentApplicationDetails/NewUI/StudentApplicationDetails.module').then(m => m.StudentApplicationDetailsModule),
+        loadChildren: () =>
+          import('./views/SemesterExchange/StudentApplicationDetails/NewUI/StudentApplicationDetails.module').then(
+            (m) => m.StudentApplicationDetailsModule,
+          ),
         // loadChildren: () => import('./views/SemesterExchange/StudentApplicationDetails/StudentApplicationDetails.module').then(m => m.StudentApplicationDetailsModule),
       },
 
-
       {
         path: 'CounsellorDashboards/:LoginName',
-        loadChildren: () => import('./views/SemesterExchange/CounsellorDashboardNew/CounsellorDashboard.module').then(m => m.CounsellorDashboardModule),
+        loadChildren: () =>
+          import('./views/SemesterExchange/CounsellorDashboardNew/CounsellorDashboard.module').then(
+            (m) => m.CounsellorDashboardModule,
+          ),
       },
-      
+
       {
         path: 'FacultyDashboard/:LoginName',
-        loadChildren: () => import('./views/SemesterExchange/FacultyDashboardNew/DealingDashboard.module').then(m => m.FacultyDashboardNewModule),
+        loadChildren: () =>
+          import('./views/SemesterExchange/FacultyDashboardNew/DealingDashboard.module').then(
+            (m) => m.FacultyDashboardNewModule,
+          ),
         // loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule),
       },
       {
         path: 'HODDashboards/:LoginName',
-        loadChildren: () => import('./views/SemesterExchange/HODDashboardNew/HODDashboardNew.module').then(m => m.HODDashboardNewModule),
+        loadChildren: () =>
+          import('./views/SemesterExchange/HODDashboardNew/HODDashboardNew.module').then(
+            (m) => m.HODDashboardNewModule,
+          ),
         // loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule),
       },
       {
         path: 'HOWDashboards/:LoginName',
-        loadChildren: () => import('./views/SemesterExchange/HowDashboardNew/HowDashboards.module').then(m => m.HowDashboardsModule),
+        loadChildren: () =>
+          import('./views/SemesterExchange/HowDashboardNew/HowDashboards.module').then(
+            (m) => m.HowDashboardsModule,
+          ),
         // loadChildren: () => import('./views/SemesterExchange/DashboardFaculty/DealingDashboard.module').then(m => m.DynamicDashboardModule),
       },
 
-
-
-
-
-
-
-
-
-
-
-
       // 6-Sep-25 Starts
 
-       // {
+      // {
       //   path: 'stuPotal/:LoginName',
       //   loadChildren: () => import('./views/SemesterExchange/StudentForm/StudentForm.module').then(m => m.StudentFormModule),
       //   // loadChildren: () => import('./views/SemesterExchange/StudentForm/NewLogic/NewLogicForm.module').then(m => m.NewLogicFormModule),
       // },
       {
         path: 'HODAdminPanel/:loginName',
-        component: SemesterMigrationAdminComponent
+        component: SemesterMigrationAdminComponent,
         // loadChildren: () => import('./views/SemesterExchange/HODDashboard/TopMenuBar/sm-admin-bar.module').then(m => m.SemesterMigrationAdminModule),
       },
       {
         path: 'ViewAllApplications/:LoginName',
-        loadChildren: () => import('./views/SemesterExchange/HODDashboard/StudentApplications/sm-all-applications.module').then(m => m.SMAllApplicationsModule),
+        loadChildren: () =>
+          import('./views/SemesterExchange/HODDashboard/StudentApplications/sm-all-applications.module').then(
+            (m) => m.SMAllApplicationsModule,
+          ),
       },
       {
         path: 'AllUniversities',
-        loadChildren: () => import('./views/SemesterExchange/HODDashboard/AllUniveristyDetails/sm-list-all-university.module').then(m => m.SmListAllUniversityComponentModule),
+        loadChildren: () =>
+          import('./views/SemesterExchange/HODDashboard/AllUniveristyDetails/sm-list-all-university.module').then(
+            (m) => m.SmListAllUniversityComponentModule,
+          ),
       },
       //6-sep-ends
       // {
@@ -163,81 +230,125 @@ const routes: Routes = [
       //   path: 'DashboardDIAHOD/:LoginName',
       //   loadChildren: () => import('./views/SemesterExchange/DealingUserDashboard/DealingUserDashboard.module').then(m => m.DealingUserDashboardModule),
       // },
-     
+
       // Added on 27-Feb-25
       {
         path: 'JournalAdmin/:loginName',
-        loadChildren: () => import('./views/pages/NewJournal/NewJournal.module').then(m => m.NewJournalComponentModule)
+        loadChildren: () =>
+          import('./views/pages/NewJournal/NewJournal.module').then(
+            (m) => m.NewJournalComponentModule,
+          ),
       },
       {
         path: ':Id/:name/EditorialBoard',
-        loadChildren: () => import('./views/pages/journal-editor-board/journal-editor-board.component.module').then(m => m.JournalEditorBoardComponentModule)
+        loadChildren: () =>
+          import('./views/pages/journal-editor-board/journal-editor-board.component.module').then(
+            (m) => m.JournalEditorBoardComponentModule,
+          ),
       },
       {
         path: ':Id/:name/About',
-        loadChildren: () => import('./views/pages/journal-about/journal-about.component.mdoule').then(m => m.JournalAboutComponentModule)
+        loadChildren: () =>
+          import('./views/pages/journal-about/journal-about.component.mdoule').then(
+            (m) => m.JournalAboutComponentModule,
+          ),
       },
       {
         path: 'EventCalender/:loginName',
-        loadChildren: () => import('./views/pages/content/content.module').then(m => m.ContentComponentModule)
+        loadChildren: () =>
+          import('./views/pages/content/content.module').then(
+            (m) => m.ContentComponentModule,
+          ),
       },
       {
         path: 'EventCalenderAdmin/:loginName',
-        loadChildren: () => import('./views/pages/calenderAdmin/contentAdmin.module').then(m => m.ContentAdminComponentModule)
+        loadChildren: () =>
+          import('./views/pages/calenderAdmin/contentAdmin.module').then(
+            (m) => m.ContentAdminComponentModule,
+          ),
       },
       {
         path: 'summerSchool/:loginName',
-        loadChildren: () => import('./views/pages/summer-school-web/summer-school-web.module').then(m => m.SummerSchoolModule)
+        loadChildren: () =>
+          import('./views/pages/summer-school-web/summer-school-web.module').then(
+            (m) => m.SummerSchoolModule,
+          ),
       },
       {
         path: 'summerSchoolmaster/:loginName',
-        loadChildren: () => import('./views/pages/summer-school-admin/summer-school-admin.module').then(m => m.SummerSchoolAdminModule)
+        loadChildren: () =>
+          import('./views/pages/summer-school-admin/summer-school-admin.module').then(
+            (m) => m.SummerSchoolAdminModule,
+          ),
       },
-      // 
+      //
       {
         path: 'sgrc/:loginName',
-        loadChildren: () => import('./views/pages/SGRC-Casess/SGRC-Casess.module').then(m => m.SGRCModule)
+        loadChildren: () =>
+          import('./views/pages/SGRC-Casess/SGRC-Casess.module').then(
+            (m) => m.SGRCModule,
+          ),
         // loadChildren:() => import('./views/pages/SGRC-Casess/NewWaySGRC/SGRC/SGRC-Cases.module').then(m=>m.SGRCModule)
       },
       {
         path: 'MoUApproval/:loginName',
-        loadChildren: () => import('./views/pages/MoUApproval/MoUApproval.module').then(m => m.MoUApprovalModule)
+        loadChildren: () =>
+          import('./views/pages/MoUApproval/MoUApproval.module').then(
+            (m) => m.MoUApprovalModule,
+          ),
       },
       {
         path: 'MouNewRequest/:loginName', // 23-sep-25 added newmouid , ExportExcel fixed on 12-May-26 added Mou Renewal Page
-        loadChildren: () => import('./views/pages/mou-documents-uploads/mou-documents-uploads.module').then(m => m.MouDocumentsUploadsModule)
+        loadChildren: () =>
+          import('./views/pages/mou-documents-uploads/mou-documents-uploads.module').then(
+            (m) => m.MouDocumentsUploadsModule,
+          ),
       }, //Bug sheet Point 2 Export to Excel is Working  18-March-25  SP pGetMouDocumentsUidWise
 
       // MOU APPROVALS From HOS OR HEAD
       {
         path: 'MouApprovals/:loginName', ////22-sep-25 added new mouid 1 // 23-sep-25 added newmouid , ExportExcel fixed on 12-May-26 added Mou Renewal Page
-        loadChildren: () => import('./views/pages/mou-documents-report/New-Changes/mou-documents-report.module').then(m => m.MouDocumentsReportModule)
+        loadChildren: () =>
+          import('./views/pages/mou-documents-report/New-Changes/mou-documents-report.module').then(
+            (m) => m.MouDocumentsReportModule,
+          ),
       }, // ok  sp pGetAllUploadedMOUDocuments  //Bug sheet Point 1 Export to Excel is Working   18-March-25
 
       // MOU ACtivity Action From HOS OR HEAD
       {
         path: 'MouActivityPlan/:loginName', // 7-march-25 //22-sep-25 added new mouid 2 // 23-sep-25 added newmouid , ExportExcel fixed
-        loadChildren: () => import('./views/pages/MouActivityActionPlan/MouActivityActionPlan.module').then(m => m.MouActivityActionPlanModule)
+        loadChildren: () =>
+          import('./views/pages/MouActivityActionPlan/MouActivityActionPlan.module').then(
+            (m) => m.MouActivityActionPlanModule,
+          ),
       }, // ok  pGetMouDocumentsforApprovals (2) pGetAllActivitiesAssigned
       {
         path: 'MouActivityTakeAction/:loginName', // 7-march-25 //22-sep-25 added new mouid 3 // 23-sep-25 added newmouid , ExportExcel fixed
-        loadChildren: () => import('./views/pages/MouActivityTakeAction/MouActivityTakeAction.module').then(m => m.MouActivityTakeActionModule)
+        loadChildren: () =>
+          import('./views/pages/MouActivityTakeAction/MouActivityTakeAction.module').then(
+            (m) => m.MouActivityTakeActionModule,
+          ),
       }, // ok SP pGetAllMouActivityPlanRequest  (2) pGetAllMouActivityActionTakenMaster
       {
         path: 'MouActivityApprovals/:loginName', //7-march-25 //22-sep-25 added new mouid  4 // 23-sep-25 added newmouid , ExportExcel fixed
-        loadChildren: () => import('./views/pages/MouActivityApprovals/MouActivityApprovals.module').then(m => m.MouActivityApprovalsModule)
+        loadChildren: () =>
+          import('./views/pages/MouActivityApprovals/MouActivityApprovals.module').then(
+            (m) => m.MouActivityApprovalsModule,
+          ),
       }, // ok  SP pGetMouActivityActionTakenDetails
       {
         path: 'MouAdminAction/:loginName', // added newMouId on 22-sep-25 5 // 23-sep-25 added newmouid , ExportExcel fixed
-        loadChildren: () => import('./views/pages/MouReportDateWise/MouReportDateWise.module').then(m => m.MouReportDateWiseComponentModule)
-      },// new interface
-
+        loadChildren: () =>
+          import('./views/pages/MouReportDateWise/MouReportDateWise.module').then(
+            (m) => m.MouReportDateWiseComponentModule,
+          ),
+      }, // new interface
 
       // {
       //   path: 'obpallocation-transfer-tool/:loginName',
       //  loadChildren: () =>import('./views/pages/obpallocation-transfer-tool/obpallocation-transfer-tool.module').then(m => m.ObpallocationTransferToolModule)
       // },
-      // { path: 'MyOBPAutoPlanners/:loginName', 
+      // { path: 'MyOBPAutoPlanners/:loginName',
       //   loadChildren:() => import('./views/pages/auto-assign-metric/auto-assign-metric.module').then(m=>m.AutoAssignMetricModule),
       // },
       // {
@@ -252,17 +363,23 @@ const routes: Routes = [
       //   path: 'completetask/:loginName',
       //   component: EstateActionablePointCompleteTaskComponent
       //   // loadChildren: ()=> import('./views/pages/estate-actionable-point-completetask/estate-actionable-point-completetask.module').then(m =>m.EstateActionablePointPointCompleteModule)
-      // }, 
+      // },
       // {
       //   path: 'estate-actionable-point/:loginName',
       //   loadChildren: () => import('./views/pages/estate-actionable-point/estate-actionable-point.module').then(m => m.EstateActionablePointModule),
       // },
       {
-        path: "OBPProgress/:loginName",
-        loadChildren: () => import('./views/pages/SchoolDivisions/metricand-planner-data/metricand-palnner-data.module').then(m => m.MetricandPlannerDataModule)
+        path: 'OBPProgress/:loginName',
+        loadChildren: () =>
+          import('./views/pages/SchoolDivisions/metricand-planner-data/metricand-palnner-data.module').then(
+            (m) => m.MetricandPlannerDataModule,
+          ),
         //  component:MetricandPlannerDataComponent
       },
-       { path: 'criteria-master/:loginName', component: CriteriaMasterComponent },
+      {
+        path: 'criteria-master/:loginName',
+        component: CriteriaMasterComponent,
+      },
       // {
       //   path: "UserOBPProgress/:loginName/:uid/:date",
       //   loadChildren: () => import('./views/pages/SchoolDivisions/metricand-planner-data/metricand-palnner-data.module').then(m => m.MetricandPlannerDataModule)
@@ -405,7 +522,6 @@ const routes: Routes = [
       //   loadChildren: () => import('./views/pages/mou-documents-uploads/mou-documents-uploads.module').then(m => m.MouDocumentsUploadsModule)
       // },
 
-
       // {
       //   path: 'RMSDSRRatingReport/:loginName',
       //   loadChildren: () => import('./views/pages/RMSDSRRatingReport/RMSDSRRatingReport.module').then(m => m.RMSDSRRatingReportComponentModule)
@@ -419,7 +535,6 @@ const routes: Routes = [
       //   loadChildren: () => import('./views/pages/rmstelephonic-dsr/rmstelephonic-dsr.module').then(m => m.RMSTelephonicDSRModule)
       // },
 
-
       // {
       //   path: 'OBPStageWiseAdmin/:loginName',
       //   loadChildren: () => import('./views/pages/StageWiseConsrtuctionDashboard/StageWiseConsrtuctionDashboard.module').then(m => m.StageWiseConsrtuctionDashboardModule)
@@ -429,7 +544,6 @@ const routes: Routes = [
       //   path:'OBPEstatefinalVerfciation/:loginName',
       //   loadChildren:()=> import('./views/pages/obpestatefinal-verfication/obpestatefinal-verfication.module').then(m=> m.OBPEstatefinalVerficationModule)
       // } ,
-
 
       // {
       //   path:'AllAppointments/:loginName',
@@ -444,26 +558,26 @@ const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       // { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       // { path: '**', redirectTo: 'dashboard', pathMatch: 'full' }
-    ]
+    ],
   },
   {
     path: 'error',
     component: ErrorPageComponent,
     data: {
-      'type': 404,
-      'title': 'Page Not Found',
-      'desc': 'Oopps!! The page you were looking for doesn\'t exist.'
-    }
+      type: 404,
+      title: 'Page Not Found',
+      desc: "Oopps!! The page you were looking for doesn't exist.",
+    },
   },
   {
     path: 'error/:type',
-    component: ErrorPageComponent
+    component: ErrorPageComponent,
   },
-  { path: '**', redirectTo: 'error', pathMatch: 'full' }
+  { path: '**', redirectTo: 'error', pathMatch: 'full' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, { scrollPositionRestoration: 'top' })],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

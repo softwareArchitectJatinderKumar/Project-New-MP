@@ -1,0 +1,115 @@
+.staff-container {
+  background-color: #f8f9fc;
+  min-height: 100vh;
+}
+
+h2 {
+  font-family: 'Times New Roman', serif;
+  letter-spacing: 0.5px;
+}
+
+.tab-item {
+  position: relative;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.tab-item .active-indicator {
+  height: 3px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.tab-item:not(.active) span,
+.tab-item:not(.active) i {
+  opacity: 0.7;
+}
+
+.tab-item.active span.text-primary,
+.tab-item.active i.text-warning {
+  opacity: 1;
+}
+
+.custom-table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.custom-table thead tr th {
+  background-color: #f8f9fc;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 1rem;
+}
+
+.custom-table tbody tr td {
+  padding: 1rem;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.priority-pill {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.priority-pill.critical {
+  background-color: #ffeef0;
+  color: #dc3545;
+  border-color: #f5c2c7;
+}
+
+.priority-pill.high {
+  background-color: #fff3cd;
+  color: #fd7e14;
+  border-color: #ffe69c;
+}
+
+.priority-pill.low {
+  background-color: #d1e7dd;
+  color: #198754;
+  border-color: #a3cfbb;
+}
+
+.btn-action {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  border: none;
+}
+
+.btn-cancel {
+  background-color: #ffeef0;
+  color: #dc3545;
+}
+
+.btn-cancel:hover {
+  background-color: #f8d7da;
+  color: #dc3545;
+}
+
+.btn-close-ticket {
+  background-color: #1eaf36;
+  color: #ffffff;
+}
+
+.btn-close-ticket:hover {
+  background-color: #1eaf36;
+  color: #ffffff;
+}
+
+.btn-accept {
+  background-color: #1eaf36;
+  color: #ffffff;
+}
+
+.btn-accept:hover {
+  background-color: #1eaf36;
+  color: #ffffff;
+}

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { StorageService } from './storage.service';
 
 const AUTH_API = 'https://projectsapi.lpu.in/';
+const AUTH_API_LOCAL = 'https://localhost:44362/';
 
 // const httpOptions = {
 //   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -342,6 +343,24 @@ getTransferAllocationService(PlannerSessionId:any,LoginName:any): Observable<any
   }
 
 
+  
+  getPlacementMenuDetails(dataSoft: FormData): Observable<any> {
+    let authToken = this.storageService.getUser();
+    let headers = new HttpHeaders().set('Authorization', 'Bearer ' + authToken);
+    return this.http.post(AUTH_API_LOCAL + 'api/Placement/PlacementGetUserMenus', dataSoft, {
+      headers,
+    });
+  }
+
+  PlacementHelpDeskTicketsCrudOperations(dataSoft: FormData): Observable<any> {
+    let authToken = this.storageService.getUser();
+    let headers = new HttpHeaders().set('Authorization', 'Bearer ' + authToken);
+    return this.http.post(
+      AUTH_API_LOCAL + 'api/Placement/PlacementHelpDeskTicketsCrudOperation',
+      dataSoft,
+      { headers },
+    );
+  }
  
 }
 

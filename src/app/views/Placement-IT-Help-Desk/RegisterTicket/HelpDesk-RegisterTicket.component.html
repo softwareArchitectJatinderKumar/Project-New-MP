@@ -1,0 +1,345 @@
+<app-login-failed *ngIf="isLoginFailed; else mainContentX"></app-login-failed>
+<ng-template #mainContentX>
+  <div class="container-fluid p-4">
+    <nav>
+      <div class="nav nav-tabs nav nav-tabs d-flex justify-content-center active" id="nav-tab" role="tablist">
+        <button class="btn me-5 active" id="NewTicketsForm-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
+          data-bs-target="#NewTicketsForm" type="button" role="tab" aria-controls="NewTicketsForm" (click)="loadAllData()"
+          aria-selected="true"><label style="font-size:1.2rem;">New Ticket </label></button>
+
+        <button class=" btn btn-lg ms-5" id="MyAllNewTicketsForm-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
+          data-bs-target="#MyAllNewTicketsForm" type="button" role="tab" aria-controls="MyAllNewTicketsForm"
+          (click)="loadAllData()" aria-selected="false"><label style="font-size:1.2rem;">Show My Uploaded Tickets
+          </label></button>
+      </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+      <!-- Tab one contents -->
+      <div class="tab-pane fade active show" id="NewTicketsForm" role="tabpanel" aria-labelledby="NewTicketsForm-tab">
+        <ng-container *ngIf="loadingIndicator; else dataLoadedBlock">
+          <!-- Loader Template -->
+          <div class="text-center">
+            <div class="text-center">
+              <span class="text-danger fs-3">Loading </span><br />
+              <div class="spinner-grow text-danger text-center" style="width: 14rem; height: 14rem;" role="status">
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #dataLoadedBlock>
+
+          <div class="row vh-100 mb-2">
+            <div class="card">
+              <div class="card-body">
+                <h2 class=" text-center m-3 text-success">Ticket Registration Form</h2>
+                <div class="container-fluid ">
+                  <div class="card mb-4">
+                    <div class="card-body">
+                      <h4 class="text-start mb-1 fw-bold"><i class="bi bi-ticket-detailed me-2 text-warning"></i>Create
+                        New Ticket
+                      </h4>
+                      <p class="text-muted mb-4 text-start small">Fill in the details below to submit a support ticket
+                      </p>
+
+                      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                        <div class="row g-4">
+                          <!-- Row 1 -->
+                          <div class="col-md-4">
+                            <label class="form-label fw-bold text-uppercase"
+                              style="font-size: 0.75rem; letter-spacing: 0.5px;">Request Category <span
+                                class="text-danger">*</span></label>
+                            <select class="form-select bg-light" formControlName="requestCategory"
+                              [class.is-invalid]="isInvalid('requestCategory')">
+                              <option value="">Select category</option>
+                              <option *ngFor="let option of requestCategoryOptions" [value]="option">{{ option }}
+                              </option>
+                            </select>
+                          </div>
+
+                          <div class="col-md-4">
+                            <label class="form-label fw-bold text-uppercase"
+                              style="font-size: 0.75rem; letter-spacing: 0.5px;">Sub
+                              Category <span class="text-danger">*</span></label>
+                            <select class="form-select bg-light" formControlName="subCategory"
+                              [class.is-invalid]="isInvalid('subCategory')">
+                              <option value="">Select sub-category</option>
+                              <option *ngFor="let option of subCategoryOptions" [value]="option.id">{{ option.name }}
+                              </option>
+                            </select>
+                          </div>
+
+                          <div class="col-md-4">
+                            <label class="form-label fw-bold text-uppercase"
+                              style="font-size: 0.75rem; letter-spacing: 0.5px;">Sub
+                              Menu <span class="text-danger">*</span></label>
+                            <select class="form-select bg-light" formControlName="subMenu"
+                              [class.is-invalid]="isInvalid('subMenu')">
+                              <option value="">Select sub-menu</option>
+                              <option *ngFor="let option of subMenuOptions" [value]="option.id">{{ option.name }}
+                              </option>
+                            </select>
+                          </div>
+
+                          <!-- Row 2 -->
+                          <div class="col-md-4">
+                            <label class="form-label fw-bold text-uppercase"
+                              style="font-size: 0.75rem; letter-spacing: 0.5px;">Priority Level <span
+                                class="text-danger">*</span></label>
+                            <select class="form-select bg-light" formControlName="priority"
+                              [class.is-invalid]="isInvalid('priority')">
+                              <option value="">Select priority</option>
+                              <option *ngFor="let option of priorityOptions" [value]="option">{{ option }}</option>
+                            </select>
+                          </div>
+
+
+                          <div class="col-md-4">
+                            <label class="form-label fw-bold text-uppercase"
+                              style="font-size: 0.75rem; letter-spacing: 0.5px;">Subject <span
+                                class="text-danger">*</span></label>
+                            <input class="form-control bg-light" placeholder="Enter subject..." formControlName="subject"
+                              [class.is-invalid]="isInvalid('subject')" />
+                          </div>
+
+
+                          <div class="col-md-4">
+                            <label class="form-label fw-bold text-uppercase"
+                              style="font-size: 0.75rem; letter-spacing: 0.5px;">Description <span
+                                class="text-danger">*</span></label>
+                            <textarea class="form-control bg-light" rows="4" placeholder="Describe the issue in detail..."
+                              formControlName="description" [class.is-invalid]="isInvalid('description')"></textarea>
+                          </div>
+
+                          <!-- Row 3-->
+                          <div class="col-md-4">
+                            <label class="form-label fw-bold text-uppercase"
+                              style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                              SRS Required
+                              <span class="text-muted fw-normal text-capitalize">
+                                (Optional)
+                              </span>
+                            </label>
+
+                            <div class="form-check d-flex align-items-center p-3 rounded bg-light"
+                              style="border: 2px dashed #dee2e6; min-height: 75px;">
+                              <input type="checkbox" class="form-check-input me-2" id="srsRequired"
+                                formControlName="srsRequired" />
+
+                              <label class="form-check-label" for="srsRequired" style="cursor: pointer; color: red;">
+                                Check this if SRS Required
+                              </label>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <label class="form-label fw-bold text-uppercase"
+                              style="font-size: 0.75rem; letter-spacing: 0.5px;">Attach File <span
+                                class="text-muted fw-normal text-capitalize">(Optional)</span></label>
+                            <div class="file-upload-zone p-4 text-center rounded bg-light" (click)="fileInput.click()"
+                              style="border: 2px dashed #dee2e6; cursor: pointer;">
+                              <input type="file" #fileInput class="d-none" (change)="onFileSelected($event)">
+                              <i class="bi bi-paperclip fs-3 text-secondary"></i>
+                              <div class="mt-2 text-secondary" style="font-size: 0.85rem;">Click to upload a file</div>
+                              <small class="text-black-50" style="font-size: 0.75rem;">PDF, DOC, PNG, JPG up to
+                                10MB</small>
+                              <div class="mt-2 text-success fw-medium" *ngIf="fileName">{{ fileName }}</div>
+                            </div>
+                          </div>
+
+                          <div class="col-md-4">
+                            <label class="form-label fw-bold text-uppercase"
+                              style="font-size: 0.75rem; letter-spacing: 0.5px;">Responsible User(s) <span
+                                class="text-danger">*</span></label>
+                            <div class="border rounded p-3 bg-light" style="max-height: 150px; overflow-y: auto;"
+                              [class.border-danger]="isInvalid('responsibleUsers')">
+                              <div class="form-check mb-2" *ngFor="let user of mockResponsibleUsers">
+                                <input class="form-check-input" type="checkbox" [value]="user.id" [id]="'user-' + user.id"
+                                  [checked]="isResponsibleUserSelected(user.id)"
+                                  (change)="onResponsibleUserChange($event, user.id)">
+                                <label class="form-check-label text-secondary" style="font-size: 0.9rem;"
+                                  [for]="'user-' + user.id">
+                                  {{ user.name }}
+                                </label>
+                              </div>
+                            </div>
+                            <div class="text-danger small mt-1" *ngIf="isInvalid('responsibleUsers')">Please select at
+                              least one responsible user</div>
+                          </div>
+
+                          <!-- Actions -->
+                          <div class="col-12 mt-4 d-flex">
+                            <button type="button" class="btn btn-light bg-light border me-3 px-4 fw-medium"
+                              (click)="form.reset()">Reset</button>
+                            <button type="submit" class="btn btn-primary px-4 fw-medium" [disabled]="form.invalid"
+                              style="background-color: #4f46e5; border-color: #4f46e5;">
+                              Submit Ticket &rarr;
+                            </button>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="MyAllNewTicketsForm" role="tabpanel" aria-labelledby="MyAllNewTicketsForm-tab">
+      <div class="row vh-100 ">
+
+        <div class="col-12 stretch-card">
+          <ng-container *ngIf="this.tickets.length > 0; else noRecords">
+            <div class="card shadow-sm mb-4 " *ngIf="tickets.length > 0; else noRecords">
+              <h2 class=" text-center m-3 text-success">Placement Ticket Registration Details</h2>
+              <div class="card-body">
+                <div class="row mb-3 g-3">
+                  <div class="col-md-3">
+                    <button class="btn btn-dark" (click)="exportToExcel()">
+                      <i class="fas fa-file-excel me-2"></i>Export to Excel
+                    </button>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="input-group">
+                      <input type="text" class="form-control" [(ngModel)]="filterText" (ngModelChange)="filterData()"
+                        placeholder="Search Ticketss...">
+                    </div>
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Id</th>
+                        <th>Request For</th>
+                        <th>Menu </th>
+                        <th> SubMenu</th>
+                        <th>Subject</th>
+                        <th>Priority</th>
+                        <th>Description</th>
+                        <th>File /Document</th>
+                        <th>Status</th>
+                        <th>Responsible User</th>
+                        <th>Action </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let ticket of getRecordsForCurrentPage()">
+                        <td>{{ ticket.id }}</td>
+                        <td>{{ ticket.requestFor }}</td>
+                        <td>{{ ticket.mainMenu }}</td>
+                        <td>{{ ticket.submenu }}</td>
+                        <td>{{ ticket.subject }}</td>
+                        <td>{{ ticket.priority }}</td>
+                        <td>{{ ticket.description }}</td>
+                        <td>
+                          <a *ngIf="ticket.filePath; else noFile" [href]="ticket.filePath" target="_blank">View File</a>
+                          <ng-template #noFile><span class="text-muted">No File</span></ng-template>
+                        </td>
+                        <td>
+                          <span class="badge" [class.bg-success]="ticket.status === 'Closed'"
+                            [class.bg-warning]="ticket.status === 'Open'">
+                            {{ ticket.status }}
+                          </span>
+                        </td>
+                        <!-- <td>{{ ticket.createdBy }}</td> -->
+                        <td>{{ ticket.responsibleUserIds }}</td>
+                        <td>
+                          <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
+                            (click)="openDeleteModal(ticket)">
+                            <i class="bi bi-trash"></i> Delete
+                          </button>
+                        </td>
+
+                      </tr>
+                      <tr *ngIf="tickets.length === 0">
+                        <td colspan="10" class="text-center py-4 text-muted">
+                          <i class="fas fa-info-circle fa-2x mb-2"></i>
+                          <p>No matching records found</p>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                  <div class="col-3">
+                    <span class="text-muted">
+                      Showing {{ (currentPage - 1) * recordsPerPage + 1 }} to
+                      {{ (currentPage * recordsPerPage > tickets.length) ?
+                      tickets.length : currentPage * recordsPerPage }}
+                      of {{ tickets.length }} entries
+                    </span>
+                  </div>
+
+
+                  <div class="col-3 me-2 text-end"> <label for="recordsPerPageSelect" class="me-2 mb-0">Records per
+                      page:</label></div>
+                  <div class="col-3">
+                    <select id="recordsPerPageSelect" class="form-select form-select-sm w-auto"
+                      [(ngModel)]="recordsPerPage" (change)="onRecordsPerPageChange()">
+                      <option *ngFor="let option of recordsPerPageOptions" [value]="option">{{ option }}</option>
+                    </select>
+                  </div>
+                  <div class="col-3">
+                    <button class="btn btn-dark me-2" (click)="prevPage()" [disabled]="currentPage === 1">
+                      <i class="mdi-arrow-left-bold mdi"></i>
+                    </button>
+                    <button class="btn btn-dark ms-2" (click)="nextPage()" [disabled]="currentPage === AtotalPages()">
+                      <i class="mdi-arrow-right-bold mdi"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #noRecords>
+            <div class="container-fluid">
+              <div class="card">
+                <div class="card-body">
+                  <label class="text-center fs-2 text-danger d-flex justify-content-center"> No Record(s) are
+                    Available .</label>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Delete Ticket Modal -->
+  <ng-template #deleteTicketModal let-modal>
+    <div class="modal-header border-0 pb-0">
+      <h5 class="modal-title fw-bold text-dark">Delete Ticket</h5>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body pt-3">
+      <p class="text-muted mb-4">Please provide remarks/reason to delete this ticket.</p>
+
+      <form [formGroup]="deleteTicketForm">
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-secondary small">REMARKS <span class="text-danger">*</span></label>
+          <textarea class="form-control bg-light border-0 p-3" formControlName="remarks" rows="4"
+            placeholder="Enter delete remarks..."
+            [class.is-invalid]="deleteTicketForm.get('remarks')?.invalid && deleteTicketForm.get('remarks')?.touched">
+        </textarea>
+          <div *ngIf="deleteTicketForm.get('remarks')?.invalid && deleteTicketForm.get('remarks')?.touched"
+            class="invalid-feedback">Remarks are required to delete the ticket.</div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer border-0 pt-0">
+      <button type="button" class="btn btn-light" (click)="modal.dismiss()">Cancel</button>
+      <button type="button" class="btn btn-danger px-4" (click)="submitDeleteTicket(modal)">Delete</button>
+    </div>
+  </ng-template>
+
+  <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" [fullScreen]="true" size="default" type="ball-spin-clockwise">
+     <img src="assets/images/spinner.gif" alt="Loading..." />
+      <p>Loading...</p>
+  </ngx-spinner>
+</ng-template>

@@ -1,0 +1,87 @@
+<!-- eslint-disable @angular-eslint/template/label-has-associated-control -->
+<div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Ticket ID</th>
+        <th>Request For</th>
+        <th>Main Menu</th>
+        <th>Submenu</th>
+        <th>Subject</th>
+        <th>Priority</th>
+        <th>Description</th>
+        <th>File </th>
+        <th>Status</th>
+        <!-- <th>Created By</th> -->
+        <th>Responsible User Ids</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngIf="rows.length; else noRows">
+        <tr *ngFor="let ticket of rows; trackBy: trackByTicketId">
+          <td>{{ ticket.id }}</td>
+          <td>{{ ticket.requestFor }}</td>
+          <td>{{ ticket.mainMenu }}</td>
+          <td>{{ ticket.submenu }}</td>
+          <td>{{ ticket.subject }}</td>
+          <td>{{ ticket.priority }}</td>
+          <td>{{ ticket.description }}</td>
+          <td>
+            <a *ngIf="ticket.filePath; else noFile" [href]="ticket.filePath" target="_blank">View File</a>
+            <ng-template #noFile><span class="text-muted">No File</span></ng-template>
+          </td>
+          <td>
+            <span class="badge" [class.bg-success]="ticket.status === 'Closed'"
+              [class.bg-warning]="ticket.status === 'Open'">
+              {{ ticket.status }}
+            </span>
+          </td>
+          <!-- <td>{{ ticket.createdBy }}</td> -->
+          <td>{{ ticket.responsibleUserIds }}</td>
+          <td>
+            <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
+              (click)="openDeleteModal(deleteTicketModal, ticket)">
+              <i class="bi bi-trash"></i> Delete
+            </button>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-template #noRows>
+        <tr>
+          <td colspan="12" class="text-center py-4 text-muted">
+            <i class="bi bi-info-circle fs-3 d-block mb-2"></i>
+            No matching records found
+          </td>
+        </tr>
+      </ng-template>
+    </tbody>
+  </table>
+</div>
+
+<!-- Delete Ticket Modal -->
+<ng-template #deleteTicketModal let-modal>
+  <div class="modal-header border-0 pb-0">
+    <h5 class="modal-title fw-bold text-dark">Delete Ticket</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body pt-3">
+    <p class="text-muted mb-4">Please provide remarks/reason to delete this ticket.</p>
+
+    <form [formGroup]="deleteTicketForm">
+      <div class="mb-3">
+        <label class="form-label fw-semibold text-secondary small">REMARKS <span class="text-danger">*</span></label>
+        <textarea class="form-control bg-light border-0 p-3" formControlName="remarks" rows="4"
+          placeholder="Enter delete remarks..."
+          [class.is-invalid]="deleteTicketForm.get('remarks')?.invalid && deleteTicketForm.get('remarks')?.touched">
+        </textarea>
+        <div *ngIf="deleteTicketForm.get('remarks')?.invalid && deleteTicketForm.get('remarks')?.touched"
+          class="invalid-feedback">Remarks are required to delete the ticket.</div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer border-0 pt-0">
+    <button type="button" class="btn btn-light" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-danger px-4" (click)="submitDeleteTicket(modal)">Delete</button>
+  </div>
+</ng-template>

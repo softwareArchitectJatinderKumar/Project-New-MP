@@ -1,0 +1,222 @@
+<!-- eslint-disable @angular-eslint/template/click-events-have-key-events -->
+<!-- eslint-disable @angular-eslint/template/prefer-control-flow -->
+<!-- eslint-disable @angular-eslint/template/interactive-supports-focus -->
+<!-- eslint-disable @angular-eslint/template/label-has-associated-control -->
+<app-login-failed *ngIf="isAccessDenied; else mainContent"></app-login-failed>
+<ng-template #mainContent>
+  <div class="container-fluid p-4">
+    <div class="row">
+      <div class="col-md-6 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <div class="row d-flex justify-content-around">
+              <label class="col-md-6 form-label text-danger" style="font-weight: 700;">Employee Name / UID
+              </label>
+              <label class="col-md-6 form-label text-dark  "
+                style="text-align: right; font-weight: 700;">{{EmployeeName}}
+                /
+                {{this.EmployeeCode}}</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <div class="row d-flex justify-content-around">
+              <label class="col-md-5 form-label text-danger " style="font-weight: 700;">Department
+                Name</label>
+              <label class="col-md-7 form-label text-dark " style="text-align: right;font-weight: 700;">
+                {{this.DepartmentName}}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Main Card -->
+    <div class="card shadow-sm border-0 rounded-4 mt-3">
+      <div class="card-body p-0">
+
+        <!-- Tabs -->
+        <div class="d-flex border-bottom px-4 pt-3 gap-4">
+
+          <div class="tab-item pb-3 position-relative" [class.active]="activeTab === 'In Progress'"
+            (click)="setActiveTab('In Progress')">
+            <div class="d-flex align-items-center gap-2 cursor-pointer">
+              <i class="bi bi-gear text-secondary fs-5"></i>
+              <span class="fw-semibold text-secondary">All Open Cases</span>
+              <span class="badge bg-secondary bg-opacity-25 text-secondary rounded-pill">{{ inProgressTickets.length
+                }}</span>
+            </div>
+            <div class="active-indicator bg-primary position-absolute bottom-0 start-0 w-100"
+              *ngIf="activeTab === 'In Progress'"></div>
+          </div>
+
+          <div class="tab-item pb-3 position-relative" [class.active]="activeTab === 'Closed'"
+            (click)="setActiveTab('Closed')">
+            <div class="d-flex align-items-center gap-2 cursor-pointer">
+              <i class="bi bi-check-circle-fill text-success fs-5"></i>
+              <span class="fw-semibold text-secondary">All Closed Cases</span>
+              <span class="badge bg-success bg-opacity-25 text-success rounded-pill">{{ closedTickets.length }}</span>
+            </div>
+            <div class="active-indicator bg-primary position-absolute bottom-0 start-0 w-100"
+              *ngIf="activeTab === 'Closed'"></div>
+          </div>
+
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive p-4">
+          <table class="table table-hover align-middle custom-table mb-0">
+            <thead>
+              <tr class="text-muted small fw-bold">
+                <th class="border-0">TICKET ID</th>
+                <th class="border-0">REQUEST FOR</th>
+                <th class="border-0">MAIN MENU</th>
+                <th class="border-0">SUBMENU</th>
+                <th class="border-0">PRIORITY</th>
+                <th class="border-0">SUBJECT</th>
+                <th class="border-0">DESCRIPTION</th>
+                <th class="border-0">Srs STSTUS</th>
+                <th class="border-0">FILE</th>
+                <th class="border-0">STATUS</th>
+                <th class="border-0">ACTIONS</th>
+                <th class="border-0">APPROVAL STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngIf="displayTickets.length; else noTickets">
+                <tr *ngFor="let ticket of displayTickets; trackBy: trackByTicketId">
+                  <td>
+                    <span class="text-primary fw-bold">TKT-{{ ticket.id | number:'3.0' }}</span>
+                    <div class="mt-2"
+                      *ngIf="ticket.isApproved === 0 || ticket.isApproved === '0' || ticket.isApproved === false || ticket.isApproved === 'False'">
+                      <span class="badge bg-danger rounded-pill"><i
+                          class="bi bi-arrow-return-left me-1"></i>Reopened</span>
+                      <div class="small text-danger mt-1 fst-italic" style="max-width: 150px; line-height: 1.2;"
+                        *ngIf="ticket.approvalRemarks">
+                        Reason: {{ ticket.approvalRemarks }}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-secondary">{{ ticket.requestFor }}</td>
+                  <td class="text-secondary">{{ ticket.mainMenu }}</td>
+                  <td class="text-secondary">{{ ticket.submenu }}</td>
+                  <td>
+                    <span class="priority-pill"
+                      [class.critical]="ticket.priority === 'High' || ticket.priority === 'CRITICAL'"
+                      [class.high]="ticket.priority === 'Medium'" [class.low]="ticket.priority === 'Low'">
+                      {{ ticket.priority || 'NORMAL' | uppercase }}
+                    </span>
+                  </td>
+                  <td class="fw-semibold text-dark">{{ ticket.subject || ticket.submenu }}</td>
+                  <td class="text-muted " style="max-width: 200px;">
+                    {{ ticket.description }}
+                  </td>
+                  <td class="text-muted " style="max-width: 200px;">
+                    <span class="priority-pill"
+                      [class.critical]="ticket.isSrsRequired === 'true' || ticket.isSrsRequired === 'TRUE'"
+                      [class.high]="ticket.isSrsRequired === 'false' || ticket.isSrsRequired === 'FALSE'">
+                      {{ ticket.isSrsRequired ? 'Yes' : 'No'}}
+                    </span>
+                  </td>
+                  <td class="text-muted">
+                    <a [href]="ticket.filePath" target="_blank" class="text-decoration-none"
+                      *ngIf="ticket.filePath; else noFile">View</a>
+                    <ng-template #noFile>&mdash;</ng-template>
+                  </td>
+                  <td>
+                    <span class="badge" [class.bg-success]="ticket.status === 'Closed'"
+                      [class.bg-warning]="ticket.status === 'Open'">
+                      {{ ticket.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="d-flex flex-column small" *ngIf="activeTab === 'Closed'; else notClosed">
+                      <span class="fw-bold text-dark">Action by: {{ ticket.updatedBy || ticket.responsibleUserIds
+                        }}</span>
+                      <span class="text-muted">Remarks: {{ ticket.remarks || 'None' }}</span>
+                    </div>
+                    <ng-template #notClosed>
+                      <div class="d-flex gap-2">
+                        <button class="btn btn-action btn-close-ticket d-flex align-items-center gap-1"
+                          (click)="openCloseModal(closeModal, ticket)">
+                          <i class="bi bi-slash-circle"></i> Close
+                        </button>
+                      </div>
+                    </ng-template>
+                  </td>
+                  <td>
+                    <ng-container
+                      *ngIf="ticket.isApproved === 1 || ticket.isApproved === '1' || ticket.isApproved === true || ticket.isApproved === 'True' || ticket.isApproved === '0' || ticket.isApproved === 'false' || ticket.isApproved === 'False'; else approvalPending">
+                      <span class="text-primary fw-bold">TKT-{{ ticket.id | number:'3.0' }}</span>
+                      <div class="mt-2">
+                        <span class="badge bg-success rounded-pill"><i
+                            class="bi bi-arrow-return-right me-1"></i>Approval
+                          Details</span>
+
+                        <div class="small text-danger mt-1 fst-italic" style="max-width: 150px; line-height: 1.2;">
+                          Approved by: {{ticket.approvedBy}} - {{ ticket.approvalRemarks }}
+                        </div>
+
+                      </div>
+                    </ng-container>
+                    <ng-template #approvalPending>
+                      <div class="mt-2">
+                        <span class="badge bg-success rounded-pill"><i
+                            class="bi bi-arrow-return-right me-1"></i>Approval
+                          Pending </span> for <span class="text-primary fw-bold">TKT-{{ ticket.id | number:'3.0'
+                          }}</span>
+                      </div>
+                    </ng-template>
+                  </td>
+                </tr>
+              </ng-container>
+              <ng-template #noTickets>
+                <tr>
+                  <td colspan="10" class="text-center py-5 text-muted">
+                    No tickets found for this status.
+                  </td>
+                </tr>
+              </ng-template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Close Ticket Modal -->
+  <ng-template #closeModal let-modal>
+    <div class="modal-header border-0 pb-0">
+      <h5 class="modal-title fw-bold text-dark">Close Ticket</h5>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body pt-3">
+      <p class="text-muted mb-4">Please provide remarks/description to close this ticket.</p>
+
+      <form [formGroup]="closeTicketForm">
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-secondary small">REMARKS <span class="text-danger">*</span></label>
+          <textarea class="form-control bg-light border-0 p-3" formControlName="remarks" rows="4"
+            placeholder="Enter closing remarks..."
+            [class.is-invalid]="closeTicketForm.get('remarks')?.invalid && closeTicketForm.get('remarks')?.touched">
+          </textarea>
+          <div class="invalid-feedback"
+            *ngIf="closeTicketForm.get('remarks')?.invalid && closeTicketForm.get('remarks')?.touched">Remarks are
+            required to close the ticket.</div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer border-0 pt-0">
+      <button type="button" class="btn btn-light" (click)="modal.dismiss()">Cancel</button>
+      <button type="button" class="btn btn-primary px-4" (click)="submitCloseTicket(modal)">Submit</button>
+    </div>
+  </ng-template>
+
+  <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" [fullScreen]="true" size="default" type="ball-spin-clockwise">
+     <img src="assets/images/spinner.gif" alt="Loading..." />
+      <p>Loading...</p>
+  </ngx-spinner>
+</ng-template>
