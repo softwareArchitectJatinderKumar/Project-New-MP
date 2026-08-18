@@ -116,7 +116,7 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
 
   ngOnInit(): void {
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML =
-      'Placement IT Support <span class="themeClr" >Help Desk  </span> Registration Form';
+      'Placement Support <span class="themeClr"> Help Desk </span> Registration Page';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width =
       '164px';
     const loginName = this.route.snapshot.paramMap.get('loginName');
@@ -790,81 +790,141 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
     return file ? file.name : null;
   }
 
-  filterText: any;
+  // --- Search & Pagination Logic ---
+  filterText: string = '';
   selectedSessionId: any = 0;
   dataSource: any;
-  filterData() {
-    const lowerCaseFilter = this.filterText
-      ? this.filterText.toLowerCase()
-      : '';
 
-    this.tickets = this.filteredTickets.filter((event) => {
-      // Check if session ID matches (0 means all)
+  recordsPerPage: string = '10';
+  readonly recordsPerPageOptions: string[] = ['5', '10', '15', '20', 'All'];
 
-      // Flatten object values to string and check if any matches filter text
-      const textMatch =
-        lowerCaseFilter === '' ||
-        Object.values(event).some((value) => {
-          if (value != null) {
-            return String(value).toLowerCase().includes(lowerCaseFilter);
-          }
-          return false;
-        });
+  private matchesSearch(t: HelpDeskTicket, term: string): boolean {
+    if (!term) return true;
+    const q = term.toLowerCase().trim();
+    const idStr = String(t.id || '');
+    const formattedId = `tkt-${idStr}`.toLowerCase();
 
-      // Both conditions must be true
-      return textMatch;
-    });
+    return (
+      idStr.toLowerCase().includes(q) ||
+      formattedId.includes(q) ||
+      Boolean(t.requestFor && t.requestFor.toLowerCase().includes(q)) ||
+      Boolean(t.mainMenu && t.mainMenu.toLowerCase().includes(q)) ||
+      Boolean(t.submenu && t.submenu.toLowerCase().includes(q)) ||
+      Boolean(t.priority && t.priority.toLowerCase().includes(q)) ||
+      Boolean(t.subject && t.subject.toLowerCase().includes(q)) ||
+      Boolean(t.description && t.description.toLowerCase().includes(q)) ||
+      Boolean(t.status && t.status.toLowerCase().includes(q)) ||
+      Boolean(t.remarks && t.remarks.toLowerCase().includes(q)) ||
+      Boolean(
+        t.approvalRemarks && t.approvalRemarks.toLowerCase().includes(q),
+      ) ||
+      Boolean(t.updatedBy && String(t.updatedBy).toLowerCase().includes(q)) ||
+      Boolean(
+        t.approvedBy && String(t.approvedBy).toLowerCase().includes(q),
+      ) ||
+      Boolean(
+        t.createdBy && String(t.createdBy).toLowerCase().includes(q),
+      ) ||
+      Boolean(
+        t.responsibleUserIds &&
+          String(t.responsibleUserIds).toLowerCase().includes(q),
+      )
+    );
   }
 
-  recordsPerPage = 10;
+  filterData(): void {
+    this.currentPage = 1;
+    const searchText = (this.filterText ?? '').trim();
+    if (!searchText) {
+      this.filteredTickets = [...this.tickets];
+    } else {
+      this.filteredTickets = this.tickets.filter((t) =>
+        this.matchesSearch(t, searchText),
+      );
+    }
+    this.cdr.markForCheck();
+  }
+
+  clearSearch(): void {
+    this.filterText = '';
+    this.filterData();
+  }
+
   get totalPages(): number {
-    return Math.ceil(this.filteredTickets.length / this.recordsPerPage);
+    if (this.recordsPerPage === 'All' || this.filteredTickets.length === 0) {
+      return 1;
+    }
+    const perPage = Number(this.recordsPerPage) || 10;
+    return Math.ceil(this.filteredTickets.length / perPage) || 1;
   }
-  get pagesArray(): number[] {
-    return Array.from({ length: this.totalPages }, (_, index) => index + 1);
+
+  get startRecord(): number {
+    if (this.filteredTickets.length === 0) return 0;
+    if (this.recordsPerPage === 'All') return 1;
+    const perPage = Number(this.recordsPerPage) || 10;
+    return (this.currentPage - 1) * perPage + 1;
   }
-  changePage(page: number): void {
-    this.currentPage = page;
+
+  get endRecord(): number {
+    if (this.recordsPerPage === 'All') {
+      return this.filteredTickets.length;
+    }
+    const perPage = Number(this.recordsPerPage) || 10;
+    return Math.min(this.currentPage * perPage, this.filteredTickets.length);
   }
+
+  get pageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let start = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
+    let end = Math.min(this.totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
   getRecordsForCurrentPage(): any[] {
-    const startIndex = (this.currentPage - 1) * this.recordsPerPage;
-    const endIndex = startIndex + this.recordsPerPage;
-    return this.filteredTickets.slice(startIndex, endIndex);
-  }
-  onPageChange(event: any): void {
-    this.currentPage = event.pageIndex + 1;
-    this.recordsPerPage = event.pageSize;
+    if (this.recordsPerPage === 'All') {
+      return this.filteredTickets;
+    }
+    const perPage = Number(this.recordsPerPage) || 10;
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = Math.max(1, this.totalPages);
+    }
+    const startIndex = (this.currentPage - 1) * perPage;
+    return this.filteredTickets.slice(startIndex, startIndex + perPage);
   }
 
-  // Pagination logic
+  onRecordsPerPageChange(): void {
+    this.currentPage = 1;
+    this.cdr.markForCheck();
+  }
 
-  // Pagination logic
-  AtotalPages(): number {
-    return Math.ceil(this.tickets.length / this.recordsPerPage);
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.cdr.markForCheck();
+    }
   }
 
   nextPage(): void {
-    if (this.currentPage < this.AtotalPages()) {
+    if (this.currentPage < this.totalPages) {
       this.currentPage++;
+      this.cdr.markForCheck();
     }
   }
 
   prevPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
+      this.cdr.markForCheck();
     }
-  }
-
-  setPageSize(size: number): void {
-    this.recordsPerPage = size;
-    this.currentPage = 1; // Reset to first page when changing page size
-  }
-
-  recordsPerPageOptions = [5, 10, 25, 50];
-  // Current page number (1-based)
-
-  onRecordsPerPageChange(): void {
-    this.currentPage = 1; // Reset to first page
   }
 
   @ViewChild('deleteTicketModal') deleteTicketModal: TemplateRef<any>;

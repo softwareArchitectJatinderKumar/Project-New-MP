@@ -75,6 +75,7 @@ export class FinalApproval implements OnInit {
   protected isAccessDenied = false;
   protected loading = false;
   protected tickets: HelpDeskTicket[] = [];
+  protected searchTerm: string = '';
 
   protected selectedTicketIds: string[] = [];
   protected rowRemarks: Record<string, string> = {};
@@ -122,7 +123,7 @@ export class FinalApproval implements OnInit {
     //   ' Final Approvals',
     // );
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML =
-      'Placement IT Support <span class="themeClr" >Help Desk  </span> Final Approvals';
+      'Placement Support <span class="themeClr" >Help Desk  </span> Admin Dashboard';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width =
       '164px';
     const loginName = this.route.snapshot.paramMap.get('loginName');
@@ -272,19 +273,24 @@ export class FinalApproval implements OnInit {
   }
 
   isAllSelected(): boolean {
-    const tickets = this.tickets;
-    const selectable = tickets.filter((t) => !t.approvalRemarks);
+    const selectable = this.displayTickets.filter((t) => !t.approvalRemarks);
     if (selectable.length === 0) return false;
-    return this.selectedTicketIds.length === selectable.length;
+    return selectable.every((t) =>
+      this.selectedTicketIds.includes(String(t.id)),
+    );
   }
 
   toggleAll(event: Event): void {
     const isChecked = (event.target as HTMLInputElement).checked;
+    const selectable = this.displayTickets.filter((t) => !t.approvalRemarks);
+    const selectableIds = selectable.map((t) => String(t.id));
     if (isChecked) {
-      const selectable = this.tickets.filter((t) => !t.approvalRemarks);
-      this.selectedTicketIds = selectable.map((t) => String(t.id));
+      const set = new Set([...this.selectedTicketIds, ...selectableIds]);
+      this.selectedTicketIds = Array.from(set);
     } else {
-      this.selectedTicketIds = [];
+      this.selectedTicketIds = this.selectedTicketIds.filter(
+        (id) => !selectableIds.includes(id),
+      );
     }
   }
 
@@ -535,33 +541,80 @@ export class FinalApproval implements OnInit {
 
 
 
-  // --- Pagination State ---
+  // --- Search & Pagination Logic ---
   protected currentPage = 1;
   protected recordsPerPage: string = '10';
-  protected readonly recordsPerPageOptions: string[] = ['5', '10', '15', '20', 'All'];
+  protected readonly recordsPerPageOptions: string[] = [
+    '5',
+    '10',
+    '15',
+    '20',
+    'All',
+  ];
+
+  private matchesSearch(t: HelpDeskTicket, term: string): boolean {
+    if (!term) return true;
+    const q = term.toLowerCase().trim();
+    const idStr = String(t.id || '');
+    const formattedId = `tkt-${idStr}`.toLowerCase();
+
+    return (
+      idStr.toLowerCase().includes(q) ||
+      formattedId.includes(q) ||
+      Boolean(t.requestFor && t.requestFor.toLowerCase().includes(q)) ||
+      Boolean(t.mainMenu && t.mainMenu.toLowerCase().includes(q)) ||
+      Boolean(t.submenu && t.submenu.toLowerCase().includes(q)) ||
+      Boolean(t.priority && t.priority.toLowerCase().includes(q)) ||
+      Boolean(t.subject && t.subject.toLowerCase().includes(q)) ||
+      Boolean(t.description && t.description.toLowerCase().includes(q)) ||
+      Boolean(t.status && t.status.toLowerCase().includes(q)) ||
+      Boolean(t.remarks && t.remarks.toLowerCase().includes(q)) ||
+      Boolean(
+        t.approvalRemarks && t.approvalRemarks.toLowerCase().includes(q),
+      ) ||
+      Boolean(t.updatedBy && String(t.updatedBy).toLowerCase().includes(q)) ||
+      Boolean(
+        t.approvedBy && String(t.approvedBy).toLowerCase().includes(q),
+      ) ||
+      Boolean(
+        t.createdBy && String(t.createdBy).toLowerCase().includes(q),
+      ) ||
+      Boolean(
+        t.responsibleUserIds &&
+          String(t.responsibleUserIds).toLowerCase().includes(q),
+      )
+    );
+  }
+
+  protected get filteredTickets(): HelpDeskTicket[] {
+    if (!this.searchTerm.trim()) {
+      return this.tickets;
+    }
+    return this.tickets.filter((t) => this.matchesSearch(t, this.searchTerm));
+  }
 
   protected get displayTickets(): HelpDeskTicket[] {
     if (this.recordsPerPage === 'All') {
-      return this.tickets;
+      return this.filteredTickets;
     }
     const perPage = Number(this.recordsPerPage) || 10;
     if (this.currentPage > this.totalPages) {
       this.currentPage = Math.max(1, this.totalPages);
     }
     const start = (this.currentPage - 1) * perPage;
-    return this.tickets.slice(start, start + perPage);
+    return this.filteredTickets.slice(start, start + perPage);
   }
 
   protected get totalPages(): number {
-    if (this.recordsPerPage === 'All' || this.tickets.length === 0) {
+    if (this.recordsPerPage === 'All' || this.filteredTickets.length === 0) {
       return 1;
     }
     const perPage = Number(this.recordsPerPage) || 10;
-    return Math.ceil(this.tickets.length / perPage) || 1;
+    return Math.ceil(this.filteredTickets.length / perPage) || 1;
   }
 
   protected get startRecord(): number {
-    if (this.tickets.length === 0) return 0;
+    if (this.filteredTickets.length === 0) return 0;
     if (this.recordsPerPage === 'All') return 1;
     const perPage = Number(this.recordsPerPage) || 10;
     return (this.currentPage - 1) * perPage + 1;
@@ -569,10 +622,37 @@ export class FinalApproval implements OnInit {
 
   protected get endRecord(): number {
     if (this.recordsPerPage === 'All') {
-      return this.tickets.length;
+      return this.filteredTickets.length;
     }
     const perPage = Number(this.recordsPerPage) || 10;
-    return Math.min(this.currentPage * perPage, this.tickets.length);
+    return Math.min(this.currentPage * perPage, this.filteredTickets.length);
+  }
+
+  protected get pageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let start = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
+    let end = Math.min(this.totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  protected onSearchChange(): void {
+    this.currentPage = 1;
+    this.cdr.markForCheck();
+  }
+
+  protected clearSearch(): void {
+    this.searchTerm = '';
+    this.currentPage = 1;
+    this.cdr.markForCheck();
   }
 
   protected onRecordsPerPageChange(): void {

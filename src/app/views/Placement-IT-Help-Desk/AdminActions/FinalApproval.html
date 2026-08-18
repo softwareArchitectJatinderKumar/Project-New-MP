@@ -39,20 +39,39 @@
     <div class="card-body p-0">
 
       <!-- Header -->
-      <div class="d-flex border-bottom px-4 py-3 justify-content-between align-items-center">
+      <div class="d-flex border-bottom px-4 py-3 justify-content-between align-items-center flex-wrap gap-3">
         <div class="d-flex align-items-center gap-2">
           <i class="bi bi-list-check text-primary fs-5"></i>
           <span class="fw-semibold text-dark fs-5">All Tickets for Approval</span>
           <span class="badge bg-primary bg-opacity-25 text-primary rounded-pill">{{ tickets.length }}</span>
         </div>
 
-        <div class="d-flex gap-2" *ngIf="selectedTicketIds.length > 0">
-          <button class="btn btn-danger d-flex align-items-center gap-2" (click)="submitBulkAction('REJECT')">
-            <i class="bi bi-x-circle"></i> Reject Selected ({{ selectedTicketIds.length }})
-          </button>
-          <button class="btn btn-success d-flex align-items-center gap-2" (click)="submitBulkAction('APPROVE')">
-            <i class="bi bi-check-circle"></i> Approve Selected ({{ selectedTicketIds.length }})
-          </button>
+        <div class="d-flex align-items-center gap-3 ms-auto flex-wrap">
+          <!-- Search Box -->
+          <div style="min-width: 260px; max-width: 380px;">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-white border-end-0">
+                <i class="bi bi-search text-muted"></i>
+              </span>
+              <input type="text" class="form-control border-start-0 border-end-0 ps-0"
+                placeholder="Search tickets by ID, subject, menu..."
+                [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()">
+              <button class="btn btn-outline-secondary border-start-0 bg-white" type="button"
+                *ngIf="searchTerm" (click)="clearSearch()">
+                <i class="bi bi-x-lg text-muted"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bulk Action Buttons -->
+          <div class="d-flex gap-2" *ngIf="selectedTicketIds.length > 0">
+            <button class="btn btn-danger btn-sm d-flex align-items-center gap-2" (click)="submitBulkAction('REJECT')">
+              <i class="bi bi-x-circle"></i> Reject Selected ({{ selectedTicketIds.length }})
+            </button>
+            <button class="btn btn-success btn-sm d-flex align-items-center gap-2" (click)="submitBulkAction('APPROVE')">
+              <i class="bi bi-check-circle"></i> Approve Selected ({{ selectedTicketIds.length }})
+            </button>
+          </div>
         </div>
       </div>
 
@@ -154,7 +173,8 @@
       <!-- Pagination / Footer Controls -->
       <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top bg-light bg-opacity-50 flex-wrap gap-2" *ngIf="tickets.length > 0">
         <div class="text-muted small">
-          Showing <span class="fw-semibold text-dark">{{ startRecord }}</span> to <span class="fw-semibold text-dark">{{ endRecord }}</span> of <span class="fw-semibold text-dark">{{ tickets.length }}</span> entries
+          Showing <span class="fw-semibold text-dark">{{ startRecord }}</span> to <span class="fw-semibold text-dark">{{ endRecord }}</span> of <span class="fw-semibold text-dark">{{ filteredTickets.length }}</span> entries
+          <span *ngIf="searchTerm" class="text-muted fst-italic ms-1">(filtered from {{ tickets.length }} total entries)</span>
         </div>
 
         <div class="d-flex align-items-center gap-3">
@@ -167,13 +187,15 @@
           </div>
 
           <div class="d-flex align-items-center gap-1">
-            <button class="btn btn-outline-secondary btn-sm px-3 d-flex align-items-center gap-1" (click)="prevPage()" [disabled]="currentPage === 1">
+            <button class="btn btn-outline-secondary btn-sm px-2 d-flex align-items-center gap-1" (click)="prevPage()" [disabled]="currentPage === 1">
               <i class="bi bi-chevron-left"></i> Previous
             </button>
-            <span class="small px-2 text-muted">
-              {{ currentPage }} / {{ totalPages }}
-            </span>
-            <button class="btn btn-outline-secondary btn-sm px-3 d-flex align-items-center gap-1" (click)="nextPage()" [disabled]="currentPage >= totalPages">
+            <ng-container *ngFor="let page of pageNumbers">
+              <button class="btn btn-sm px-3" [class.btn-primary]="currentPage === page" [class.btn-outline-secondary]="currentPage !== page" (click)="changePage(page)">
+                {{ page }}
+              </button>
+            </ng-container>
+            <button class="btn btn-outline-secondary btn-sm px-2 d-flex align-items-center gap-1" (click)="nextPage()" [disabled]="currentPage >= totalPages">
               Next <i class="bi bi-chevron-right"></i>
             </button>
           </div>

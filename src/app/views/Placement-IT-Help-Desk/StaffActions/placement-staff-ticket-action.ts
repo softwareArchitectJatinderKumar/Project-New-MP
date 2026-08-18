@@ -95,6 +95,18 @@ export class PlacementStaffTicketActionPage implements OnInit {
   protected loading = false;
   protected tickets: HelpDeskTicket[] = [];
   protected activeTab: 'In Progress' | 'Closed' = 'In Progress';
+  protected searchTerm: string = '';
+
+  // Pagination State
+  protected currentPage: number = 1;
+  protected recordsPerPage: string = '10';
+  protected readonly recordsPerPageOptions: string[] = [
+    '5',
+    '10',
+    '15',
+    '20',
+    'All',
+  ];
 
   // Computed state for UI
   protected get inProgressTickets(): HelpDeskTicket[] {
@@ -109,10 +121,140 @@ export class PlacementStaffTicketActionPage implements OnInit {
     );
   }
 
-  protected get displayTickets(): HelpDeskTicket[] {
+  protected get tabTickets(): HelpDeskTicket[] {
     return this.activeTab === 'In Progress'
       ? this.inProgressTickets
       : this.closedTickets;
+  }
+
+  private matchesSearch(t: HelpDeskTicket, term: string): boolean {
+    if (!term) return true;
+    const q = term.toLowerCase().trim();
+    const idStr = String(t.id || '');
+    const formattedId = `tkt-${idStr}`.toLowerCase();
+
+    return (
+      idStr.toLowerCase().includes(q) ||
+      formattedId.includes(q) ||
+      Boolean(t.requestFor && t.requestFor.toLowerCase().includes(q)) ||
+      Boolean(t.mainMenu && t.mainMenu.toLowerCase().includes(q)) ||
+      Boolean(t.submenu && t.submenu.toLowerCase().includes(q)) ||
+      Boolean(t.priority && t.priority.toLowerCase().includes(q)) ||
+      Boolean(t.subject && t.subject.toLowerCase().includes(q)) ||
+      Boolean(t.description && t.description.toLowerCase().includes(q)) ||
+      Boolean(t.status && t.status.toLowerCase().includes(q)) ||
+      Boolean(t.remarks && t.remarks.toLowerCase().includes(q)) ||
+      Boolean(
+        t.approvalRemarks && t.approvalRemarks.toLowerCase().includes(q),
+      ) ||
+      Boolean(t.updatedBy && String(t.updatedBy).toLowerCase().includes(q)) ||
+      Boolean(
+        t.approvedBy && String(t.approvedBy).toLowerCase().includes(q),
+      ) ||
+      Boolean(
+        t.createdBy && String(t.createdBy).toLowerCase().includes(q),
+      ) ||
+      Boolean(
+        t.responsibleUserIds &&
+          String(t.responsibleUserIds).toLowerCase().includes(q),
+      )
+    );
+  }
+
+  protected get filteredTickets(): HelpDeskTicket[] {
+    const base = this.tabTickets;
+    if (!this.searchTerm.trim()) {
+      return base;
+    }
+    return base.filter((t) => this.matchesSearch(t, this.searchTerm));
+  }
+
+  protected get displayTickets(): HelpDeskTicket[] {
+    if (this.recordsPerPage === 'All') {
+      return this.filteredTickets;
+    }
+    const perPage = Number(this.recordsPerPage) || 10;
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = Math.max(1, this.totalPages);
+    }
+    const start = (this.currentPage - 1) * perPage;
+    return this.filteredTickets.slice(start, start + perPage);
+  }
+
+  protected get totalPages(): number {
+    if (this.recordsPerPage === 'All' || this.filteredTickets.length === 0) {
+      return 1;
+    }
+    const perPage = Number(this.recordsPerPage) || 10;
+    return Math.ceil(this.filteredTickets.length / perPage) || 1;
+  }
+
+  protected get startRecord(): number {
+    if (this.filteredTickets.length === 0) return 0;
+    if (this.recordsPerPage === 'All') return 1;
+    const perPage = Number(this.recordsPerPage) || 10;
+    return (this.currentPage - 1) * perPage + 1;
+  }
+
+  protected get endRecord(): number {
+    if (this.recordsPerPage === 'All') {
+      return this.filteredTickets.length;
+    }
+    const perPage = Number(this.recordsPerPage) || 10;
+    return Math.min(this.currentPage * perPage, this.filteredTickets.length);
+  }
+
+  protected get pageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let start = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
+    let end = Math.min(this.totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  protected onSearchChange(): void {
+    this.currentPage = 1;
+    this.cdr.markForCheck();
+  }
+
+  protected clearSearch(): void {
+    this.searchTerm = '';
+    this.currentPage = 1;
+    this.cdr.markForCheck();
+  }
+
+  protected onRecordsPerPageChange(): void {
+    this.currentPage = 1;
+    this.cdr.markForCheck();
+  }
+
+  protected changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.cdr.markForCheck();
+    }
+  }
+
+  protected prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.cdr.markForCheck();
+    }
+  }
+
+  protected nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.cdr.markForCheck();
+    }
   }
 
   // Modal forms
@@ -123,7 +265,7 @@ export class PlacementStaffTicketActionPage implements OnInit {
 
   ngOnInit(): void {
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML =
-      'Placement IT Support <span class="themeClr" >Help Desk  </span> Staff Action ';
+      'Placement Support <span class="themeClr" >Help Desk  </span> Staff Dashboard ';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width =
       '164px';
     const loginName = this.route.snapshot.paramMap.get('loginName');
@@ -275,6 +417,7 @@ export class PlacementStaffTicketActionPage implements OnInit {
 
   setActiveTab(tab: 'In Progress' | 'Closed'): void {
     this.activeTab = tab;
+    this.currentPage = 1;
     this.cdr.markForCheck();
   }
 

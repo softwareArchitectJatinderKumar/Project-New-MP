@@ -38,36 +38,55 @@
     <div class="card shadow-sm border-0 rounded-4 mt-3">
       <div class="card-body p-0">
 
-        <!-- Tabs -->
-        <div class="d-flex border-bottom px-4 pt-3 gap-4">
+        <!-- Header & Tabs with Search -->
+        <div class="d-flex justify-content-between align-items-center border-bottom px-4 pt-3 flex-wrap gap-3">
 
-          <div class="tab-item pb-3 position-relative" [class.active]="activeTab === 'In Progress'"
-            (click)="setActiveTab('In Progress')">
-            <div class="d-flex align-items-center gap-2 cursor-pointer">
-              <i class="bi bi-gear text-secondary fs-5"></i>
-              <span class="fw-semibold text-secondary">All Open Cases</span>
-              <span class="badge bg-secondary bg-opacity-25 text-secondary rounded-pill">{{ inProgressTickets.length
-                }}</span>
+          <!-- Tabs -->
+          <div class="d-flex gap-4">
+            <div class="tab-item pb-3 position-relative" [class.active]="activeTab === 'In Progress'"
+              (click)="setActiveTab('In Progress')">
+              <div class="d-flex align-items-center gap-2 cursor-pointer">
+                <i class="bi bi-gear text-secondary fs-5"></i>
+                <span class="fw-semibold text-secondary">All Open Cases</span>
+                <span class="badge bg-secondary bg-opacity-25 text-secondary rounded-pill">{{ inProgressTickets.length
+                  }}</span>
+              </div>
+              <div class="active-indicator bg-primary position-absolute bottom-0 start-0 w-100"
+                *ngIf="activeTab === 'In Progress'"></div>
             </div>
-            <div class="active-indicator bg-primary position-absolute bottom-0 start-0 w-100"
-              *ngIf="activeTab === 'In Progress'"></div>
+
+            <div class="tab-item pb-3 position-relative" [class.active]="activeTab === 'Closed'"
+              (click)="setActiveTab('Closed')">
+              <div class="d-flex align-items-center gap-2 cursor-pointer">
+                <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                <span class="fw-semibold text-secondary">All Closed Cases</span>
+                <span class="badge bg-success bg-opacity-25 text-success rounded-pill">{{ closedTickets.length }}</span>
+              </div>
+              <div class="active-indicator bg-primary position-absolute bottom-0 start-0 w-100"
+                *ngIf="activeTab === 'Closed'"></div>
+            </div>
           </div>
 
-          <div class="tab-item pb-3 position-relative" [class.active]="activeTab === 'Closed'"
-            (click)="setActiveTab('Closed')">
-            <div class="d-flex align-items-center gap-2 cursor-pointer">
-              <i class="bi bi-check-circle-fill text-success fs-5"></i>
-              <span class="fw-semibold text-secondary">All Closed Cases</span>
-              <span class="badge bg-success bg-opacity-25 text-success rounded-pill">{{ closedTickets.length }}</span>
+          <!-- Search Box -->
+          <div class="pb-3 ms-auto" style="min-width: 260px; max-width: 380px;">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-white border-end-0">
+                <i class="bi bi-search text-muted"></i>
+              </span>
+              <input type="text" class="form-control border-start-0 border-end-0 ps-2"
+                placeholder="Search tickets by ID, subject, menu..."
+                [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()">
+              <button class="btn btn-outline-secondary border-start-0 bg-white" type="button"
+                *ngIf="searchTerm" (click)="clearSearch()">
+                <i class="bi bi-x-lg text-muted"></i>  
+              </button>
             </div>
-            <div class="active-indicator bg-primary position-absolute bottom-0 start-0 w-100"
-              *ngIf="activeTab === 'Closed'"></div>
           </div>
 
         </div>
 
         <!-- Table -->
-        <div class="table-responsive p-4">
+        <div class="table-responsive p-4 pb-0">
           <table class="table table-hover align-middle custom-table mb-0">
             <thead>
               <tr class="text-muted small fw-bold">
@@ -175,13 +194,45 @@
               </ng-container>
               <ng-template #noTickets>
                 <tr>
-                  <td colspan="10" class="text-center py-5 text-muted">
-                    No tickets found for this status.
+                  <td colspan="12" class="text-center py-5 text-muted">
+                    No tickets found.
                   </td>
                 </tr>
               </ng-template>
             </tbody>
           </table>
+        </div>
+
+        <!-- Pagination / Footer Controls -->
+        <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top bg-light bg-opacity-50 flex-wrap gap-2" *ngIf="tabTickets.length > 0">
+          <div class="text-muted small">
+            Showing <span class="fw-semibold text-dark">{{ startRecord }}</span> to <span class="fw-semibold text-dark">{{ endRecord }}</span> of <span class="fw-semibold text-dark">{{ filteredTickets.length }}</span> entries
+            <span *ngIf="searchTerm" class="text-muted fst-italic ms-1">(filtered from {{ tabTickets.length }} total entries)</span>
+          </div>
+
+          <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+              <label for="recordsPerPageSelectStaff" class="form-label small mb-0 text-muted text-nowrap">Items per page:</label>
+              <select id="recordsPerPageSelectStaff" class="form-select form-select-sm w-auto"
+                [(ngModel)]="recordsPerPage" (change)="onRecordsPerPageChange()">
+                <option *ngFor="let option of recordsPerPageOptions" [value]="option">{{ option }}</option>
+              </select>
+            </div>
+
+            <div class="d-flex align-items-center gap-1">
+              <button class="btn btn-outline-secondary btn-sm px-2 d-flex align-items-center gap-1" (click)="prevPage()" [disabled]="currentPage === 1">
+                <i class="bi bi-chevron-left"></i> Previous
+              </button>
+              <ng-container *ngFor="let page of pageNumbers">
+                <button class="btn btn-sm px-3" [class.btn-primary]="currentPage === page" [class.btn-outline-secondary]="currentPage !== page" (click)="changePage(page)">
+                  {{ page }}
+                </button>
+              </ng-container>
+              <button class="btn btn-outline-secondary btn-sm px-2 d-flex align-items-center gap-1" (click)="nextPage()" [disabled]="currentPage >= totalPages">
+                Next <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

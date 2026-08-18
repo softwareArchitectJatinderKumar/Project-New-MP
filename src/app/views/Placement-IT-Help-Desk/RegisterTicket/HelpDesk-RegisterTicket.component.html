@@ -31,7 +31,7 @@
           <div class="row vh-100 mb-2">
             <div class="card">
               <div class="card-body">
-                <h2 class=" text-center m-3 text-success">Ticket Registration Form</h2>
+                <h2 class=" text-center m-3 ">Ticket Registration Form</h2>
                 <div class="container-fluid ">
                   <div class="card mb-4">
                     <div class="card-body">
@@ -170,7 +170,7 @@
                             <button type="button" class="btn btn-light bg-light border me-3 px-4 fw-medium"
                               (click)="form.reset()">Reset</button>
                             <button type="submit" class="btn btn-primary px-4 fw-medium" [disabled]="form.invalid"
-                              style="background-color: #4f46e5; border-color: #4f46e5;">
+                            >
                               Submit Ticket &rarr;
                             </button>
                           </div>
@@ -185,110 +185,143 @@
           </div>
         </ng-template>
       </div>
-    </div>
 
-    <div class="tab-pane fade" id="MyAllNewTicketsForm" role="tabpanel" aria-labelledby="MyAllNewTicketsForm-tab">
+
+      <div class="tab-pane fade" id="MyAllNewTicketsForm" role="tabpanel" aria-labelledby="MyAllNewTicketsForm-tab">
       <div class="row vh-100 ">
 
         <div class="col-12 stretch-card">
           <ng-container *ngIf="this.tickets.length > 0; else noRecords">
-            <div class="card shadow-sm mb-4 " *ngIf="tickets.length > 0; else noRecords">
-              <h2 class=" text-center m-3 text-success">Placement Ticket Registration Details</h2>
-              <div class="card-body">
-                <div class="row mb-3 g-3">
-                  <div class="col-md-3">
-                    <button class="btn btn-dark" (click)="exportToExcel()">
-                      <i class="fas fa-file-excel me-2"></i>Export to Excel
+            <div class="card shadow-sm mb-4">
+              <div class="card-header bg-white border-bottom py-3">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-card-checklist text-primary fs-4"></i>
+                    <h5 class="mb-0 fw-bold text-dark">Placement Ticket Registration Details</h5>
+                    <span class="badge bg-primary bg-opacity-25 text-primary rounded-pill">{{ tickets.length }}</span>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-3 ms-auto flex-wrap">
+                    <!-- Search Box -->
+                    <div style="min-width: 360px; max-width: 580px;">
+                      <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-end-0">
+                          <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0 border-end-0 ps-2"
+                          [(ngModel)]="filterText" (ngModelChange)="filterData()"
+                          placeholder="Search tickets by ID, subject, menu...">
+                        <button class="btn btn-outline-secondary border-start-0 bg-white" type="button"
+                          *ngIf="filterText" (click)="clearSearch()">
+                          <i class="bi bi-x-lg text-muted"></i>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Export to Excel -->
+                    <button class="btn btn-sm btn-dark d-flex align-items-center gap-2" (click)="exportToExcel()">
+                      <i class="fas fa-file-excel"></i> Export to Excel
                     </button>
                   </div>
-                  <div class="col-md-3">
-                    <div class="input-group">
-                      <input type="text" class="form-control" [(ngModel)]="filterText" (ngModelChange)="filterData()"
-                        placeholder="Search Ticketss...">
-                    </div>
-                  </div>
                 </div>
-                <div class="table-responsive">
-                  <table class="table table-hover">
+              </div>
+
+              <div class="card-body p-0">
+                <div class="table-responsive p-4 pb-0">
+                  <table class="table table-hover align-middle custom-table mb-0">
                     <thead class="table-light">
-                      <tr>
-                        <th>Id</th>
-                        <th>Request For</th>
-                        <th>Menu </th>
-                        <th> SubMenu</th>
-                        <th>Subject</th>
-                        <th>Priority</th>
-                        <th>Description</th>
-                        <th>File /Document</th>
-                        <th>Status</th>
-                        <th>Responsible User</th>
-                        <th>Action </th>
+                      <tr class="text-muted small fw-bold">
+                        <th>TICKET ID</th>
+                        <th>REQUEST FOR</th>
+                        <th>MAIN MENU</th>
+                        <th>SUBMENU</th>
+                        <th>PRIORITY</th>
+                        <th>SUBJECT</th>
+                        <th>DESCRIPTION</th>
+                        <th>FILE / DOCUMENT</th>
+                        <th>STATUS</th>
+                        <th>RESPONSIBLE USER</th>
+                        <th>ACTION</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let ticket of getRecordsForCurrentPage()">
-                        <td>{{ ticket.id }}</td>
-                        <td>{{ ticket.requestFor }}</td>
-                        <td>{{ ticket.mainMenu }}</td>
-                        <td>{{ ticket.submenu }}</td>
-                        <td>{{ ticket.subject }}</td>
-                        <td>{{ ticket.priority }}</td>
-                        <td>{{ ticket.description }}</td>
-                        <td>
-                          <a *ngIf="ticket.filePath; else noFile" [href]="ticket.filePath" target="_blank">View File</a>
-                          <ng-template #noFile><span class="text-muted">No File</span></ng-template>
-                        </td>
-                        <td>
-                          <span class="badge" [class.bg-success]="ticket.status === 'Closed'"
-                            [class.bg-warning]="ticket.status === 'Open'">
-                            {{ ticket.status }}
-                          </span>
-                        </td>
-                        <!-- <td>{{ ticket.createdBy }}</td> -->
-                        <td>{{ ticket.responsibleUserIds }}</td>
-                        <td>
-                          <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
-                            (click)="openDeleteModal(ticket)">
-                            <i class="bi bi-trash"></i> Delete
-                          </button>
-                        </td>
-
-                      </tr>
-                      <tr *ngIf="tickets.length === 0">
-                        <td colspan="10" class="text-center py-4 text-muted">
-                          <i class="fas fa-info-circle fa-2x mb-2"></i>
-                          <p>No matching records found</p>
-                        </td>
-                      </tr>
+                      <ng-container *ngIf="getRecordsForCurrentPage().length > 0; else noMatchingRecords">
+                        <tr *ngFor="let ticket of getRecordsForCurrentPage(); trackBy: trackByTicketId">
+                          <td>
+                            <span class="text-primary fw-bold">TKT-{{ ticket.id | number:'3.0' }}</span>
+                          </td>
+                          <td class="text-secondary">{{ ticket.requestFor }}</td>
+                          <td class="text-secondary">{{ ticket.mainMenu }}</td>
+                          <td class="text-secondary">{{ ticket.submenu }}</td>
+                          <td>
+                            <span class="priority-pill"
+                              [class.critical]="ticket.priority === 'High' || ticket.priority === 'CRITICAL'"
+                              [class.high]="ticket.priority === 'Medium'" [class.low]="ticket.priority === 'Low'">
+                              {{ ticket.priority || 'NORMAL' | uppercase }}
+                            </span>
+                          </td>
+                          <td class="fw-semibold text-dark">{{ ticket.subject }}</td>
+                          <td class="text-muted" style="max-width: 200px;">{{ ticket.description }}</td>
+                          <td>
+                            <a *ngIf="ticket.filePath; else noFile" [href]="ticket.filePath" target="_blank" class="text-decoration-none">View File</a>
+                            <ng-template #noFile><span class="text-muted">&mdash;</span></ng-template>
+                          </td>
+                          <td>
+                            <span class="badge" [class.bg-success]="ticket.status === 'Closed'"
+                              [class.bg-warning]="ticket.status === 'Open'">
+                              {{ ticket.status }}
+                            </span>
+                          </td>
+                          <td class="text-secondary small">{{ ticket.responsibleUserIds }}</td>
+                          <td>
+                            <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
+                              (click)="openDeleteModal(ticket)">
+                              <i class="bi bi-trash"></i> Delete
+                            </button>
+                          </td>
+                        </tr>
+                      </ng-container>
+                      <ng-template #noMatchingRecords>
+                        <tr>
+                          <td colspan="11" class="text-center py-5 text-muted">
+                            <i class="fas fa-info-circle fa-2x mb-2 text-secondary"></i>
+                            <p class="mb-0">No matching tickets found</p>
+                          </td>
+                        </tr>
+                      </ng-template>
                     </tbody>
                   </table>
                 </div>
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                  <div class="col-3">
-                    <span class="text-muted">
-                      Showing {{ (currentPage - 1) * recordsPerPage + 1 }} to
-                      {{ (currentPage * recordsPerPage > tickets.length) ?
-                      tickets.length : currentPage * recordsPerPage }}
-                      of {{ tickets.length }} entries
-                    </span>
+
+                <!-- Pagination / Footer Controls -->
+                <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top bg-light bg-opacity-50 flex-wrap gap-2" *ngIf="tickets.length > 0">
+                  <div class="text-muted small">
+                    Showing <span class="fw-semibold text-dark">{{ startRecord }}</span> to <span class="fw-semibold text-dark">{{ endRecord }}</span> of <span class="fw-semibold text-dark">{{ filteredTickets.length }}</span> entries
+                    <span *ngIf="filterText" class="text-muted fst-italic ms-1">(filtered from {{ tickets.length }} total entries)</span>
                   </div>
 
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-2">
+                      <label for="recordsPerPageSelect" class="form-label small mb-0 text-muted text-nowrap">Items per page:</label>
+                      <select id="recordsPerPageSelect" class="form-select form-select-sm w-auto"
+                        [(ngModel)]="recordsPerPage" (change)="onRecordsPerPageChange()">
+                        <option *ngFor="let option of recordsPerPageOptions" [value]="option">{{ option }}</option>
+                      </select>
+                    </div>
 
-                  <div class="col-3 me-2 text-end"> <label for="recordsPerPageSelect" class="me-2 mb-0">Records per
-                      page:</label></div>
-                  <div class="col-3">
-                    <select id="recordsPerPageSelect" class="form-select form-select-sm w-auto"
-                      [(ngModel)]="recordsPerPage" (change)="onRecordsPerPageChange()">
-                      <option *ngFor="let option of recordsPerPageOptions" [value]="option">{{ option }}</option>
-                    </select>
-                  </div>
-                  <div class="col-3">
-                    <button class="btn btn-dark me-2" (click)="prevPage()" [disabled]="currentPage === 1">
-                      <i class="mdi-arrow-left-bold mdi"></i>
-                    </button>
-                    <button class="btn btn-dark ms-2" (click)="nextPage()" [disabled]="currentPage === AtotalPages()">
-                      <i class="mdi-arrow-right-bold mdi"></i>
-                    </button>
+                    <div class="d-flex align-items-center gap-1">
+                      <button class="btn btn-outline-secondary btn-sm px-2 d-flex align-items-center gap-1" (click)="prevPage()" [disabled]="currentPage === 1">
+                        <i class="bi bi-chevron-left"></i> Previous
+                      </button>
+                      <ng-container *ngFor="let page of pageNumbers">
+                        <button class="btn btn-sm px-3" [class.btn-primary]="currentPage === page" [class.btn-outline-secondary]="currentPage !== page" (click)="changePage(page)">
+                          {{ page }}
+                        </button>
+                      </ng-container>
+                      <button class="btn btn-outline-secondary btn-sm px-2 d-flex align-items-center gap-1" (click)="nextPage()" [disabled]="currentPage >= totalPages">
+                        Next <i class="bi bi-chevron-right"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -307,6 +340,9 @@
         </div>
       </div>
     </div>
+    </div>
+
+
   </div>
 
 

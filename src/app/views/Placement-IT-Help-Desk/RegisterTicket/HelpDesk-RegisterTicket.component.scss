@@ -21,14 +21,14 @@
     border-radius: 0;
     
     &:hover {
-      color: #3b82f6;
+      color:  #fd7e14;
       background-color: #f1f5f9;
       border-bottom-color: #cbd5e1;
     }
     
     &.active {
-      color: #3b82f6;
-      border-bottom-color: #3b82f6;
+      color: #fd7e14;
+      border-bottom-color:  #fd7e14;
       background-color: transparent;
     }
   }
@@ -66,7 +66,7 @@
   background-color: #f8fafc;
   
   &:focus {
-    border-color: #3b82f6;
+    border-color:  #fd7e14;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
     background-color: #ffffff;
   }
@@ -83,7 +83,7 @@ textarea.form-control {
   
   &:hover {
     background-color: #f1f5f9;
-    border-color: #3b82f6 !important;
+    border-color:  #fd7e14 !important;
     transform: translateY(-2px);
   }
   
@@ -92,7 +92,7 @@ textarea.form-control {
   }
   
   &:hover i {
-    color: #3b82f6 !important;
+    color:  #fd7e14 !important;
   }
 }
 
@@ -129,7 +129,7 @@ textarea.form-control {
     &:hover {
       background-color: #f8fafc;
       transform: scale(1.002);
-      box-shadow: inset 2px 0 0 #3b82f6;
+      box-shadow: inset 2px 0 0  #fd7e14;
     }
   }
 }
@@ -203,8 +203,37 @@ textarea.form-control {
   }
 }
 
+/* Priority Pills */
+.priority-pill {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+
+  &.critical {
+    background-color: #ffeef0;
+    color: #dc3545;
+    border-color: #f5c2c7;
+  }
+
+  &.high {
+    background-color: #fff3cd;
+    color: #fd7e14;
+    border-color: #ffe69c;
+  }
+
+  &.low {
+    background-color: #d1e7dd;
+    color: #198754;
+    border-color: #a3cfbb;
+  }
+}
+
 /* Loader */
 .spinner-grow {
   animation: spinner-grow .75s linear infinite;
   opacity: 0.8;
 }
+
