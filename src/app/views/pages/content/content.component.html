@@ -3,11 +3,11 @@
     <div class="nav nav-tabs nav nav-tabs d-flex justify-content-center active" id="nav-tab" role="tablist">
       <button class="btn me-5 active" id="NewEventForm-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
         data-bs-target="#NewEventForm" type="button" role="tab" aria-controls="NewEventForm"
-        (click)="GetAllEventsData()" aria-selected="true"><label style="font-size:1.2rem;">New Event(s)</label></button>
+        (click)="GetAllEventsData()" aria-selected="true"><label style="font-size:1.2rem;">Register New Event</label></button>
 
       <button class=" btn btn-lg ms-5" id="MyAllNewEventForm-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
         data-bs-target="#MyAllNewEventForm" type="button" role="tab" aria-controls="MyAllNewEventForm"
-        (click)="GetAllEventsData()" aria-selected="false"><label style="font-size:1.2rem;">Show Events
+        (click)="GetAllEventsData()" aria-selected="false"><label style="font-size:1.2rem;">Event Record(s)
         </label></button>
     </div>
   </nav>
@@ -29,7 +29,9 @@
         <div class="row vh-100 mb-2">
           <div class="card">
             <div class="card-body">
-              <h2 class=" text-center m-3 text-success">Event Registration Form</h2>
+              <hr style="height: 1rem;" />
+              <h2 class=" text-center m-3 ">New Event Registration Form</h2>
+              <hr style="height: 1rem;" />
               <div class="container-fluid ">
                 <form [formGroup]="formdata" (ngSubmit)="Onsubmit()" class="forms-sample mt-4">
 

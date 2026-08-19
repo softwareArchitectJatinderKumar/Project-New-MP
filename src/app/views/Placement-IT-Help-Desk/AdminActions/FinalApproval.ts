@@ -47,10 +47,7 @@ export interface TicketDeleteRequest {
   ticket: HelpDeskTicket;
   remarks: string;
 }
-/**
- * Angular 14 port note: source uses `signal`/`computed`; ported to plain properties + a getter
- * (Angular 14 has no signals API).
- */
+ 
 @Component({
   selector: 'app-FinalApproval',
   templateUrl: './FinalApproval.html',
@@ -118,10 +115,7 @@ export class FinalApproval implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.pageHeaderService.setTitle(
-    //   'Placement Helpdesk Ticket ',
-    //   ' Final Approvals',
-    // );
+
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML =
       'Placement Support <span class="themeClr" >Help Desk  </span> Admin Dashboard';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width =
