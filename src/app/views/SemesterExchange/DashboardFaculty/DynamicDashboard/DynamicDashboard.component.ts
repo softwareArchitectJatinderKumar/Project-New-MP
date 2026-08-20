@@ -1126,8 +1126,8 @@ export class DynamicDashboardComponent implements OnInit {
   }
 
   ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
-    const label = userAction === 'Hod' ? 'HOD' : 'How';
-    const staticUid = userAction === 'Hod' ? '28243' : '1107';
+    const label = userAction == 'Hod' ? 'HOD' : 'HOW';
+    const staticUid = userAction == 'Hod' ? '28243' : '1107';
 
     Swal.fire({
       title: `Forward to ${label}`,
