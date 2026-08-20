@@ -76,7 +76,7 @@ interface Application {
   offerLetterPath: any;
   outBoundTicket: any;
   returnTicketPath: any;
-  visaDocumentPath:any;
+  visaDocumentPath: any;
   // ── Runtime flags set by enrichAndFilterApplications() ──────────────────
   _isCounsellor: boolean;
   _isFaculty: boolean;
@@ -245,44 +245,44 @@ export class DynamicDashboardComponent implements OnInit {
     this.filteredEmployeesData3 = [];
 
     this.showSuggestions3 = false;
-    
+
   }
-newId: any;
-onInput3() {
-  const inputValue = (this.employeeControl3.value || '')
-    .toString()
-    .toLowerCase()
-    .trim();
+  newId: any;
+  onInput3() {
+    const inputValue = (this.employeeControl3.value || '')
+      .toString()
+      .toLowerCase()
+      .trim();
 
-  if (inputValue) {
+    if (inputValue) {
 
-    this.filteredEmployeesData3 = this.EmployeeData
-      .filter(employee =>
-        employee.employeeName.toLowerCase().includes(inputValue) ||
-        employee.employeeCode.toLowerCase().includes(inputValue)
-      )
-      .slice(0, 10);
+      this.filteredEmployeesData3 = this.EmployeeData
+        .filter(employee =>
+          employee.employeeName.toLowerCase().includes(inputValue) ||
+          employee.employeeCode.toLowerCase().includes(inputValue)
+        )
+        .slice(0, 10);
 
-    if (this.filteredEmployeesData3.length > 0) {
-      this.newId = this.filteredEmployeesData3[0].employeeCode;
-      
+      if (this.filteredEmployeesData3.length > 0) {
+        this.newId = this.filteredEmployeesData3[0].employeeCode;
+
+      }
+
+      this.isForwardToUIDFormSubmitted = true;
+
+    } else {
+      this.filteredEmployeesData3 = [];
+      this.newId = '';
     }
 
-    this.isForwardToUIDFormSubmitted = true;
+    this.showSuggestions3 = true;
+    this.activeSuggestionIndex3 = -1;
 
-  } else {
-    this.filteredEmployeesData3 = [];
-    this.newId = '';
+    // if (this.CdealingFaculty === this.newId) {
+    //   alert('Cannot be same UID');
+    //   return;
+    // }
   }
-
-  this.showSuggestions3 = true;
-  this.activeSuggestionIndex3 = -1;
-
-  // if (this.CdealingFaculty === this.newId) {
-  //   alert('Cannot be same UID');
-  //   return;
-  // }
-}
 
 
   hideSuggestions3() {
@@ -297,12 +297,12 @@ onInput3() {
 
   ForwardToUIDForm!: FormGroup;
 
-CdealingFaculty:any; Roles:any;
-  ForwardToFaculty(application: Application, Role:string): void {
+  CdealingFaculty: any; Roles: any;
+  ForwardToFaculty(application: Application, Role: string): void {
     this.Roles = Role;
-    this.CdealingFaculty= application.dealingFaculty;
+    this.CdealingFaculty = application.dealingFaculty;
     this.SelectedRegNo = application.registrationNo;
-    this.SelectedAID = application.applicationId;    
+    this.SelectedAID = application.applicationId;
     this.isForwardToUIDFormSubmitted = false;
     this.currentModalRef = this.modalService.open(this.ForwardToUIDModal, {
       size: 'lg', backdrop: 'static', keyboard: false,
@@ -336,11 +336,10 @@ CdealingFaculty:any; Roles:any;
     if (!this.isForwardToUIDFormSubmitted) {
       this.ForwardToUIDForm.markAllAsTouched();
       return;
-    } else if(this.newId==this.CdealingFaculty)
-      {
-        alert('use different uid');
-         return;
-      }
+    } else if (this.newId == this.CdealingFaculty) {
+      alert('use different uid');
+      return;
+    }
     const fd = new FormData();
     fd.append('RegistrationNo', this.SelectedRegNo);
     fd.append('HODUID', this.newId);
@@ -350,9 +349,9 @@ CdealingFaculty:any; Roles:any;
 
 
   documentRows: DocumentRowConfig[] = [
-   // { label: 'Resume',          fileKey: 'resumeFileName',            approvalKey: 'resumeApproval',     docTypeParam: 'Resume' },
-   // { label: 'Consent Letter',  fileKey: 'consentLetterDocumentPath', approvalKey: 'consentApproval',    docTypeParam: 'Consent Letter' },
-  //  { label: 'Fees Proof',      fileKey: 'feesProofDocumentPath',     approvalKey: 'feesApproval',       docTypeParam: 'Fees Proof' },
+    // { label: 'Resume',          fileKey: 'resumeFileName',            approvalKey: 'resumeApproval',     docTypeParam: 'Resume' },
+    // { label: 'Consent Letter',  fileKey: 'consentLetterDocumentPath', approvalKey: 'consentApproval',    docTypeParam: 'Consent Letter' },
+    //  { label: 'Fees Proof',      fileKey: 'feesProofDocumentPath',     approvalKey: 'feesApproval',       docTypeParam: 'Fees Proof' },
     //{ label: 'Passport',        fileKey: 'passportDocumentPath',      approvalKey: 'passportApproval',   docTypeParam: 'Passport' },
     // { label: 'English Proof',   fileKey: 'englishTestDocumentFile',  approvalKey: 'englishApproval',    docTypeParam: 'English Proof' },
     // { label: 'English Test Proof',   fileKey: 'englishProofDocumentPath',  approvalKey: 'englishApproval',    docTypeParam: 'English Test Proof' },
@@ -361,7 +360,7 @@ CdealingFaculty:any; Roles:any;
     { label: 'Offer Letter', fileKey: 'offerLetterPath', approvalKey: 'offerLetterApproval', docTypeParam: 'Offer Letter' },
     { label: 'Outbound Ticket', fileKey: 'outBoundTicket', approvalKey: 'outboundApproval', docTypeParam: 'Outbound Ticket' },
     { label: 'Return Ticket', fileKey: 'returnTicketPath', approvalKey: 'returnTicketApproval', docTypeParam: 'Return Ticket' },
-    { label: 'Visa Document', fileKey: 'visaDocumentPath', approvalKey: 'visaDocumentApproval', docTypeParam: 'Visa Document' },          
+    { label: 'Visa Document', fileKey: 'visaDocumentPath', approvalKey: 'visaDocumentApproval', docTypeParam: 'Visa Document' },
   ];
 
   getFileValue(doc: DocumentRowConfig): string {
@@ -503,7 +502,9 @@ CdealingFaculty:any; Roles:any;
 
     this.selectedId = application.applicationId;
     this.selectedRegNo = application.registrationNo;
-
+    this.UniversityOption1 = application.universityOption1;
+    this.UniversityOption2 = application.universityOption2;
+    this.UniversityOption3 = application.universityOption3;
     this.AcceptForm.reset();
 
     this.modalService.open(this.AcceptModal, {
@@ -736,9 +737,9 @@ CdealingFaculty:any; Roles:any;
     this.AddRemarksForm = this.fb.group({
       Comments: ['', Validators.required],
     });
-  this.AcceptForm = this.fb.group({
-  UniversitySelected: [null, Validators.required]
-});
+    this.AcceptForm = this.fb.group({
+      UniversitySelected: [null, Validators.required]
+    });
     this.ForwardToUIDForm = this.fb.group({
       FacultyUId: ['', Validators.required],
     });
@@ -818,14 +819,22 @@ CdealingFaculty:any; Roles:any;
       next: response => {
         this.AllApplications = Array.isArray(response?.item1) ? response.item1 : [];
         // console.log(JSON.stringify(this.AllApplications) + 'Main details of all applications')
-        this.AllFacultyApplications = this.FilterAllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | '', isForwardtoHOD: string | ''; }) => app.dealingFaculty == this.EmployeeCode);
-        this.AllAuthorityApplications = this.FilterAllAuthorityApplications = response.item1.filter((app: { dealingAuthority: string | '', dealingFaculty: string | ''; approvedUniversity: string | ''; }) => app.dealingAuthority == this.EmployeeCode && app.approvedUniversity == null);
+        this.AllFacultyApplications = this.FilterAllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | '', isForwardtoHOD: string | ''; approvedUniversity: string | ''; }) => app.dealingFaculty == this.EmployeeCode && app.isForwardtoHOD == null);
+        this.AllAuthorityApplications = this.FilterAllAuthorityApplications = response.item1.filter((app: { dealingAuthority: string | '', dealingFaculty: string | ''; approvedUniversity: string | ''; }) => app.dealingAuthority == this.EmployeeCode && app.approvedUniversity == null && app.dealingFaculty == null);
 
-        this.AllHODApplications = this.FilterAllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | ''; isLocked: string | ''; isApproved: string | ''; }) => app.dealingHODId == this.EmployeeCode && app.isForwardtoHOD == '1' );
+        // this.FilterAllAuthorityApplications = response.item1;
+
+
+        this.AllHODApplications =         this.FilterAllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | ''; isLocked: string | ''; isApproved: string | ''; isForwardedtoHOW: string | '' }) => app.dealingHODId == this.EmployeeCode && app.isForwardtoHOD == '1' && app.isForwardedtoHOW == null );
+
 
         this.AllHOWApplications = response.item1.filter((app: { dealingHow: string | ''; isForwardedtoHOW: string | ''; isLocked: string | ''; }) => app.dealingHow == this.EmployeeCode && app.isForwardedtoHOW == '1');
         this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0);
-        this.AllApprovedApplicationsforCounsellor = response.item1.filter((app: { approvedUniversity: string | ''; dealingAuthority: string | ''; }) => app.approvedUniversity?.length > 0 && app.dealingAuthority == this.EmployeeCode);
+        this.AllApprovedApplicationsforCounsellor = response.item1;//.filter((app: { approvedUniversity: string | ''; dealingAuthority: string | ''; }) => app.approvedUniversity?.length > 0 && app.dealingAuthority == this.EmployeeCode);
+
+
+
+
 
         this.enrichAndFilterApplications();
       },
@@ -1689,7 +1698,7 @@ CdealingFaculty:any; Roles:any;
         offerLetterPath: row.offerLetterPath || '',
         outBoundTicket: row.outBoundTicket || '',
         returnTicketPath: row.returnTicketPath || '',
-        visaDocumentPath: row.visaDocumentPath ||  '',
+        visaDocumentPath: row.visaDocumentPath || '',
         // Per-document approval info, keyed by DocumentRowConfig.approvalKey
         ...approvalByKey
       };
@@ -1822,6 +1831,61 @@ CdealingFaculty:any; Roles:any;
       // 2. Add your backend API update logic here
       // this.documentService.updateStatus(this.selectedRemarks.id, docType, 'REJECTED', reason)
       //   .subscribe(...);
+    }
+  }
+
+  getApplicationStatus(row: any): string {
+
+    const isApproved = row?.isApproved;
+    const approvedUniversity = row?.approvedUniversity;
+
+    // REJECTED
+    if (
+      isApproved === false ||
+      isApproved === 'False' ||
+      isApproved === 'false' ||
+      isApproved === 0 ||
+      isApproved === '0'
+    ) {
+      return 'Rejected';
+    }
+
+    // APPROVED
+    if (
+      (
+        isApproved === true ||
+        isApproved === 'True' ||
+        isApproved === 'true' ||
+        isApproved === 1 ||
+        isApproved === '1'
+      ) &&
+      approvedUniversity !== null &&
+      approvedUniversity !== undefined &&
+      String(approvedUniversity).trim() !== ''
+    ) {
+      return 'Approved';
+    }
+
+    // PENDING
+    return 'Pending';
+  }
+  getApplicationStatusClass(row: any): string {
+
+    const status = this.getApplicationStatus(row);
+
+    switch (status) {
+
+      case 'Approved':
+        return 'bg-success';
+
+      case 'Rejected':
+        return 'bg-danger';
+
+      case 'Pending':
+        return 'bg-warning text-dark';
+
+      default:
+        return 'bg-secondary';
     }
   }
 }

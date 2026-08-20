@@ -130,7 +130,7 @@
                 <button class="nav-link" [class.active]="counsellorActiveTab === 'allApproved'"
                     (click)="switchCounsellorTab('allApproved')">
                     <i class="bi bi-table me-1"></i>
-                    All Approved Applications
+                    All Applications
                     <span class="badge bg-secondary ms-1">{{ AllApprovedApplicationsforCounsellor.length }}</span>
                 </button>
             </li>
@@ -160,15 +160,10 @@
                             aria-describedby="basic-addon1" />
                     </div>
                 </div>
-
-
             </div>
 
-
-
-
             <ngx-datatable class="bootstrap table table-striped material"
-                [rows]="FilterAllAuthorityApplications | roleFilter:'_isCounsellor'"
+                [rows]="FilterAllAuthorityApplications"
                 [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
                 [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true">
 
@@ -207,7 +202,23 @@
                 <ng-container *ngTemplateOutlet="counsellingStatusColumn"></ng-container>
 
                 <ng-container *ngTemplateOutlet="applicationStatusColumn"></ng-container>
-
+                <ngx-datatable-column name="Application Status" [width]="130">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                
+                        <span class="badge" [ngClass]="getApplicationStatusClass(row)">
+                            {{ getApplicationStatus(row) }}
+                        </span>
+                
+                    </ng-template>
+                </ngx-datatable-column>
+                
+                <!-- <ngx-datatable-column name="Application Status" [width]="130">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <span class="badge" [ngClass]="approvalClass(row.isApproved)">
+                            {{ approvalLabel(row.isApproved) }} 
+                        </span>
+                    </ng-template>
+                </ngx-datatable-column> -->
                 <!-- counsellor Actions -->
                 <ngx-datatable-column name="Actions" [sortable]="false" [width]="380">
                     <ng-template let-row="row" ngx-datatable-cell-template>
@@ -271,6 +282,24 @@
 
                 <!-- d) Forwarded status (to HOD, to HoW) -->
                 <ng-container *ngTemplateOutlet="forwardedColumn"></ng-container>
+
+                <ngx-datatable-column name="Application Status" [width]="130">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                
+                        <span class="badge" [ngClass]="getApplicationStatusClass(row)">
+                            {{ getApplicationStatus(row) }}
+                        </span>
+                
+                    </ng-template>
+                </ngx-datatable-column>
+         
+                <!-- <ngx-datatable-column name="Application Status" [width]="130">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <span class="badge" [ngClass]="approvalClass(row.isApproved)">
+                            {{ approvalLabel(row.isApproved) }}
+                        </span>
+                    </ng-template>
+                </ngx-datatable-column> -->
 
                 <!-- a) View Details + e) View All Remarks -->
                 <ngx-datatable-column name="Actions" [sortable]="false" [width]="240">
@@ -361,6 +390,16 @@
                     </span>
                 </ng-template>
             </ngx-datatable-column>
+
+            <ngx-datatable-column name="Application Status" [width]="130">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                
+                        <span class="badge" [ngClass]="getApplicationStatusClass(row)">
+                            {{ getApplicationStatus(row) }}
+                        </span>
+                
+                    </ng-template>
+                </ngx-datatable-column>
 
             <ngx-datatable-column name="Actions" [sortable]="false" [width]="510">
                 <ng-template let-row="row" ngx-datatable-cell-template>
@@ -456,7 +495,7 @@
 
 
             </div>
-            <ngx-datatable class="bootstrap table table-striped material" [rows]="FilterAllHODApplications"
+            <ngx-datatable class="bootstrap table table-striped material" [rows]="AllHODApplications"
                 [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
                 [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true">
                 <ngx-datatable-column name="Application Date" prop="createdOn" [width]="50"></ngx-datatable-column>
@@ -502,13 +541,15 @@
 
                 <ng-container *ngTemplateOutlet="counsellingStatusColumn"></ng-container>
 
-                <!-- <ngx-datatable-column name="Application Status" [width]="130">
+                <ngx-datatable-column name="Application Status" [width]="130">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <span class="badge" [ngClass]="approvalClass(row.isApproved)">
-                            {{ approvalLabel(row.isApproved) }}
+                
+                        <span class="badge" [ngClass]="getApplicationStatusClass(row)">
+                            {{ getApplicationStatus(row) }}
                         </span>
+                
                     </ng-template>
-                </ngx-datatable-column> -->
+                </ngx-datatable-column>
 
                 <!-- <ngx-datatable-column name="Fwd. to HoW" [width]="110">
                     <ng-template let-row="row" ngx-datatable-cell-template>
@@ -656,6 +697,23 @@
                 <!-- d) Forwarded status (to HOD, to HoW) -->
                 <ng-container *ngTemplateOutlet="forwardedColumn"></ng-container>
 
+                <ngx-datatable-column name="Application Status" [width]="130">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                
+                        <span class="badge" [ngClass]="getApplicationStatusClass(row)">
+                            {{ getApplicationStatus(row) }}
+                        </span>
+                
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <!-- <ngx-datatable-column name="Application Status" [width]="130">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <span class="badge" [ngClass]="approvalClass(row.isApproved)">
+                        {{ approvalLabel(row.isApproved) }}
+                    </span>
+                </ng-template>
+            </ngx-datatable-column> -->
                 <!-- Counselling remarks inline preview -->
                 <!-- <ngx-datatable-column name="Counselling Remarks" prop="counsellingRemarks" [width]="50">
                     <ng-template let-row="row" ngx-datatable-cell-template>
@@ -728,6 +786,24 @@
                         </span>
                     </ng-template>
                 </ngx-datatable-column>
+
+                <ngx-datatable-column name="Application Status" [width]="130">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                
+                        <span class="badge" [ngClass]="getApplicationStatusClass(row)">
+                            {{ getApplicationStatus(row) }}
+                        </span>
+                
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <!-- <ngx-datatable-column name="Application Status" [width]="130">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <span class="badge" [ngClass]="approvalClass(row.isApproved)">
+                            {{ approvalLabel(row.isApproved) }}
+                        </span>
+                    </ng-template>
+                </ngx-datatable-column> -->
 
                 <!-- a) View Details + e) View All Remarks -->
                 <ngx-datatable-column name="Actions" [sortable]="false" [width]="240">
@@ -831,13 +907,23 @@
                     </ng-template>
                 </ngx-datatable-column>
 
+                <ngx-datatable-column name="Application Status" [width]="130">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                
+                        <span class="badge" [ngClass]="getApplicationStatusClass(row)">
+                            {{ getApplicationStatus(row) }}
+                        </span>
+                
+                    </ng-template>
+                </ngx-datatable-column>
+
                 <!-- <ngx-datatable-column name="Application Status" [width]="130">
-                <ng-template let-row="row" ngx-datatable-cell-template>
-                    <span class="badge" [ngClass]="approvalClass(row.isApproved)">
-                        {{ approvalLabel(row.isApproved) }}
-                    </span>
-                </ng-template>
-            </ngx-datatable-column> -->
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <span class="badge" [ngClass]="approvalClass(row.isApproved)">
+                            {{ approvalLabel(row.isApproved) }}
+                        </span>
+                    </ng-template>
+                </ngx-datatable-column> -->
 
                 <ngx-datatable-column name="Actions" [sortable]="false" [width]="490">
                     <ng-template let-row="row" ngx-datatable-cell-template>
@@ -901,14 +987,24 @@
                 <ngx-datatable-column name="Approved University" prop="approvedUniversity" [width]="100"></ngx-datatable-column>
                 <ngx-datatable-column name="Contact No" prop="phoneNumber" [width]="110"></ngx-datatable-column>
                 <!-- <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="115"></ngx-datatable-column> -->
-                <ngx-datatable-column name="Approval Status" prop="isLocked" [width]="50">
+                <!-- <ngx-datatable-column name="Approval Status" prop="isLocked" [width]="50">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <span class="badge" [ngClass]="approvalClass(row.isLocked)">
                             {{ approvalLabel(row.isLocked) }}
                         </span>
                     </ng-template>
-                </ngx-datatable-column>
+                </ngx-datatable-column> -->
 
+                <ngx-datatable-column name="Application Status" [width]="130">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                
+                        <span class="badge" [ngClass]="getApplicationStatusClass(row)">
+                            {{ getApplicationStatus(row) }}
+                        </span>
+                
+                    </ng-template>
+                </ngx-datatable-column>
+                
                 <ng-container *ngTemplateOutlet="counsellingStatusColumn"></ng-container>
                 <ngx-datatable-column name="Faculty" [width]="50">
                     <ng-template let-row="row" ngx-datatable-cell-template>
@@ -957,6 +1053,13 @@
                     </ng-template>
                 </ngx-datatable-column>
 
+                <ngx-datatable-column name="Application Status" [width]="130">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <span class="badge" [ngClass]="approvalClass(row.isApproved)">
+                        {{ approvalLabel(row.isApproved) }}
+                    </span>
+                </ng-template>
+            </ngx-datatable-column>
                 <!-- a) View Details + e) View All Remarks -->
                 <ngx-datatable-column name="Actions" [sortable]="false" [width]="240">
                     <ng-template let-row="row" ngx-datatable-cell-template>
