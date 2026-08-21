@@ -25,6 +25,7 @@ import swal from 'sweetalert2';
 import { Title } from '@angular/platform-browser';
 import { Observable, BehaviorSubject, combineLatest, of } from 'rxjs';
 import { map, tap, catchError, take } from 'rxjs/operators';
+import { ColumnMode } from '@swimlane/ngx-datatable';
 import { HeadMapping, MetricMapping } from '../Services/HeadMapping.service';
 import { PlanningrankingService } from 'src/app/_services/planningranking.service';
 import { LpuPlannerServiceService } from 'src/app/_services/lpu-planner-service.service';
@@ -198,6 +199,7 @@ export class OBPMetricBinding implements OnInit {
 
   public mappingForm!: FormGroup;
 
+  ColumnMode = ColumnMode;
   public isUpdateMode = false;
   private currentEditId: any | null = null;
   public typeOptions = ['PA', 'AO', 'DE'];
@@ -445,61 +447,22 @@ export class OBPMetricBinding implements OnInit {
   }
   GetAllEventsData(): void {
     this.loadingIndicator = true;
-    const startTime = new Date().getTime();
-
-    this.mappingData$ = this.PlanningrankingService.GetHeadMappings().pipe(
-      map((response: any) => response?.item1 ?? []),
-      tap((arr: MetricMapping[]) => {
+    this.PlanningrankingService.GetHeadMappings().pipe(take(1)).subscribe({
+      next: (response: any) => {
+        const arr = response?.item1 ?? [];
         this.HeadMappingData = arr;
-        this.filteredHeadMappingData = arr;
-        this.loadingIndicator = false;
+        this.filteredHeadMappingData = [...arr];
         this.totalRecords = arr.length;
-
-        if (arr && arr.length > 0) {
-          const keys = Object.keys(arr[0]);
-
-          this.tableColumns = [
-            ...keys.filter((k) => k.toLowerCase() !== 'actions'),
-            'Actions',
-          ];
-        } else {
-          this.tableColumns = ['Actions'];
-        }
-      }),
-      catchError((err) => {
+        this.loadingIndicator = false;
+      },
+      error: (err) => {
         console.error('Failed to load head mappings', err);
         this.HeadMappingData = [];
         this.filteredHeadMappingData = [];
+        this.totalRecords = 0;
         this.loadingIndicator = false;
-        this.isLoginFailed = true;
-        return of([] as MetricMapping[]);
-      }),
-    );
-    const elapsed = new Date().getTime() - startTime;
-    const remainingDelay = Math.max(1500 - elapsed, 0);
-    setTimeout(() => {
-      this.loadingIndicator = false;
-    }, remainingDelay);
-    this.displayedData$ = combineLatest([
-      this.mappingData$,
-      this.searchTerm$,
-      this.pageSize$,
-      this.currentPage$,
-    ]).pipe(
-      map(([arr, term, size, page]) => {
-        const list: MetricMapping[] = (arr as MetricMapping[]) || [];
-        const filtered = this.applyFilter(list, term as string);
-        this.totalRecords = filtered.length;
-        return this.applyPaging(filtered, page as number, size as number);
-      }),
-      tap(() => {
-        this.loadingIndicator = false;
-      }),
-      catchError((err) => {
-        console.error('displayedData$ error', err);
-        return of([] as MetricMapping[]);
-      }),
-    );
+      },
+    });
   }
   private initForm(): void {
     this.mappingForm = this.fb.group({
@@ -516,28 +479,6 @@ export class OBPMetricBinding implements OnInit {
       SessionId: ['', Validators.required],
     });
   }
-  // ---------- Client-side filtering & paging helpers ----------
-  private applyFilter(data: MetricMapping[], term: string): MetricMapping[] {
-    if (!term) return data;
-    const lower = term.toLowerCase();
-    return data.filter((item) => {
-      return Object.keys(item).some((k) => {
-        const v = (item as any)[k];
-        return v != null && String(v).toLowerCase().includes(lower);
-      });
-    });
-  }
-  private applyPaging(
-    data: MetricMapping[],
-    page: number,
-    size: number,
-  ): MetricMapping[] {
-    if (!size || size >= 999999) {
-      return data;
-    }
-    const start = ((page || 1) - 1) * (size || 10);
-    return data.slice(start, start + (size || 10));
-  }
 
   private getProp(obj: any, key: string): any {
     if (!obj || !key) return undefined;
@@ -548,66 +489,40 @@ export class OBPMetricBinding implements OnInit {
   }
 
   public onSearch(term: string): void {
-    this.loadingIndicator = true;
-    this.searchTerm$.next(term || '');
-    this.currentPage$.next(1);
+    const val = term ? String(term).toLowerCase().trim() : '';
+    if (!val) {
+      this.filteredHeadMappingData = [...this.HeadMappingData];
+      this.totalRecords = this.filteredHeadMappingData.length;
+      return;
+    }
+    this.filteredHeadMappingData = (this.HeadMappingData || []).filter((item: any) => {
+      return Object.keys(item).some((k) => {
+        const v = item[k];
+        return v != null && String(v).toLowerCase().includes(val);
+      });
+    });
+    this.totalRecords = this.filteredHeadMappingData.length;
   }
 
   public onPageSizeChange(size: number | string): void {
     this.selectedPageSize = size;
-    this.loadingIndicator = true;
-    let s: number;
-    if (String(size).toLowerCase() === 'all') {
-      s = 999999;
-    } else {
-      s = typeof size === 'string' ? parseInt(size, 10) : size;
-    }
-    this.pageSize$.next(s || 10);
-    this.currentPage$.next(1);
   }
 
-  public goToPage(page: number): void {
-    if (page < 1) return;
-    this.currentPage$.next(page);
-  }
-
-  public get currentPage(): number {
-    return this.currentPage$.value;
-  }
-
-  public get pageSize(): number {
-    return this.pageSize$.value;
-  }
-
-  public get totalPages(): number {
-    if (this.pageSize >= 999999) {
-      return 1;
-    }
-    return Math.max(1, Math.ceil(this.totalRecords / (this.pageSize || 1)));
-  }
   public exportToExcel(): void {
     this.loadingIndicator = true;
-    this.mappingData$.pipe(take(1)).subscribe(
-      (arr: MetricMapping[]) => {
-        const data = (arr || []).map((r) => {
-          const obj: any = {};
-          Object.keys(r).forEach((k) => (obj[k] = (r as any)[k]));
-          return obj;
-        });
-        const ws = XLSX.utils.json_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'HeadMappings');
-        XLSX.writeFile(
-          wb,
-          `HeadMappings_${new Date().toISOString().slice(0, 10)}.xlsx`,
-        );
-        this.loadingIndicator = false;
-      },
-      (err) => {
-        console.error('Export failed', err);
-        this.loadingIndicator = false;
-      },
+    const data = (this.filteredHeadMappingData || []).map((r: any) => {
+      const obj: any = {};
+      Object.keys(r).forEach((k) => (obj[k] = r[k]));
+      return obj;
+    });
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'HeadMappings');
+    XLSX.writeFile(
+      wb,
+      `HeadMappings_${new Date().toISOString().slice(0, 10)}.xlsx`,
     );
+    this.loadingIndicator = false;
   }
   public isActiveOptions = [
     { label: 'Yes', value: 'Yes' },

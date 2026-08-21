@@ -62,6 +62,7 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
   private readonly spinner = inject(NgxSpinnerService);
   protected readonly requestCategoryOptions = ['UMS', 'Placement'];
   protected readonly priorityOptions = ['Low', 'Medium', 'High'];
+  protected readonly serverUrl = 'https://files.lpu.in/umsweb/Placements/DraftAnalysis/'; // https://files.lpu.in/umsweb/placements/RAGGuidelines.pdf 
   protected readonly mockResponsibleUsers = [
     { id: '31309', name: 'Jatinder Kumar (Staff)' },
     { id: '33138', name: 'Mohd Danish (Staff)' },
@@ -1009,4 +1010,71 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
     this.ticketPendingDelete = null;
     modal.close();
   }
+
+
+
+
+  onDownloadFiles(remoteUrl: string): void {
+    swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
+
+    this.mouDocumentsService.downloadMOUFile(remoteUrl).subscribe({
+      next: (blob: Blob) => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+
+        const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        swal.close();
+      },
+      error: async (err) => {
+        swal.close();
+        if (err.error instanceof Blob) {
+          const errorMsg = JSON.parse(await err.error.text());
+          swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+        } else {
+          swal.fire('Error', 'Could not connect to the server', 'error');
+        }
+      }
+    });
+  }
+  onDownloadFile(remoteUrl: string): void {
+    swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
+
+    this.mouDocumentsService.downloadMOUFile(remoteUrl).subscribe({
+      next: (blob: Blob) => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+
+        const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        swal.close();
+      },
+      error: async (err) => {
+        swal.close();
+        if (err.error instanceof Blob) {
+          const errorMsg = JSON.parse(await err.error.text());
+          swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+        } else {
+          swal.fire('Error', 'Could not connect to the server', 'error');
+        }
+      }
+    });
+  }
+
+  //downloadMOUFileWithFolder
+ 
 }

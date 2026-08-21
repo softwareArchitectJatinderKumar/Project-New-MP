@@ -6,7 +6,12 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import Swal from 'sweetalert2';
@@ -20,7 +25,6 @@ import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
 import * as XLSX from 'xlsx';
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
-
 interface Application {
   // Core identity
   applicationId: string;
@@ -33,25 +37,25 @@ interface Application {
   emailId: string;
 
   // Status flags (raw values from DB — may be numeric string or boolean string)
-  isApproved: string;       // 1 / 0 / NULL
+  isApproved: string; // 1 / 0 / NULL
   isLocked: string;
   approvalRemarks: string;
 
   // Counselling
-  counsellingStatus: string;    // 1 / 0
+  counsellingStatus: string; // 1 / 0
   counsellingRemarks: string;
   counsellingDate: string;
 
   // Forwarding
-  isForwardtoHOD: string;       // 1 / NULL
-  isForwardedtoHOW: string;     // 1 / NULL
+  isForwardtoHOD: string; // 1 / NULL
+  isForwardedtoHOW: string; // 1 / NULL
 
   // Role columns
-  dealingAuthority: string;   // Counsellor emp code
-  dealingFaculty: string;     // Faculty emp code (NULL until forwarded)
-  dealingHODId: string;       // Fixed: 28243 (NULL until forwarded to HOD)
-  dealingHow: string;         // Fixed: 12160 (NULL until forwarded to HoW)
-  dealingUId: string;        // Fixed: 12160 (NULL until forwarded to HoW)
+  dealingAuthority: string; // Counsellor emp code
+  dealingFaculty: string; // Faculty emp code (NULL until forwarded)
+  dealingHODId: string; // Fixed: 28243 (NULL until forwarded to HOD)
+  dealingHow: string; // Fixed: 12160 (NULL until forwarded to HoW)
+  dealingUId: string; // Fixed: 12160 (NULL until forwarded to HoW)
   // HOD Tab XX extras (returned by GetSemesterExchangeApplicationForHOD)
   countryName: string;
   applyingOption: string;
@@ -82,9 +86,7 @@ interface Application {
   _isFaculty: boolean;
   _isHOD: boolean;
   _isHoW: boolean;
-
 }
-
 
 interface AuthorityRemarks {
   registrationNo: string;
@@ -149,16 +151,16 @@ interface AggregatedRemarks {
 }
 
 export interface DocApprovalInfo {
-  isApproved: string;        // 'True' | 'False' | '' (empty = pending, per your getDocStatus())
+  isApproved: string; // 'True' | 'False' | '' (empty = pending, per your getDocStatus())
   approvalRemarks: string;
   approvedBy: string;
 }
 
 export interface DocumentRowConfig {
-  label: string;         // Display text, e.g. "Resume"
-  fileKey: string;        // Property on SelectedDocuments holding the file path
-  approvalKey: string;    // Property on SelectedDocuments holding the DocApprovalInfo object
-  docTypeParam: string;   // 'docType' string passed to approveDocument(...) — unchanged from your existing calls
+  label: string; // Display text, e.g. "Resume"
+  fileKey: string; // Property on SelectedDocuments holding the file path
+  approvalKey: string; // Property on SelectedDocuments holding the DocApprovalInfo object
+  docTypeParam: string; // 'docType' string passed to approveDocument(...) — unchanged from your existing calls
 }
 
 export type RowState = 'pending' | 'approved' | 'rejected' | 'noFile';
@@ -191,61 +193,46 @@ export class DynamicDashboardComponent implements OnInit {
   isForwardToUIDFormSubmitted: any;
 
   onKeydown3(event: KeyboardEvent) {
-
     if (!this.filteredEmployeesData3?.length) {
       return;
     }
 
     if (event.key === 'ArrowDown') {
-
       event.preventDefault();
 
       this.activeSuggestionIndex3 =
-        (this.activeSuggestionIndex3 + 1)
-        % this.filteredEmployeesData3.length;
-    }
-
-    else if (event.key === 'ArrowUp') {
-
+        (this.activeSuggestionIndex3 + 1) % this.filteredEmployeesData3.length;
+    } else if (event.key === 'ArrowUp') {
       event.preventDefault();
 
       this.activeSuggestionIndex3 =
-        (this.activeSuggestionIndex3 - 1 +
-          this.filteredEmployeesData3.length)
-        % this.filteredEmployeesData3.length;
-    }
-
-    else if (event.key === 'Enter') {
-
+        (this.activeSuggestionIndex3 - 1 + this.filteredEmployeesData3.length) %
+        this.filteredEmployeesData3.length;
+    } else if (event.key === 'Enter') {
       event.preventDefault();
 
       if (
         this.activeSuggestionIndex3 >= 0 &&
         this.activeSuggestionIndex3 < this.filteredEmployeesData3.length
       ) {
-
         this.selectEmployee3(
-          this.filteredEmployeesData3[
-          this.activeSuggestionIndex3
-          ]
+          this.filteredEmployeesData3[this.activeSuggestionIndex3],
         );
       }
     }
   }
-
 
   selectEmployee3(employee: Employee) {
     this.ResponsiblePerson3 = employee.employeeCode;
     this.AssignedToUid3 = employee.employeeCode;
 
     this.employeeControl3.setValue(
-      `${employee.employeeName} (${employee.employeeCode})`
+      `${employee.employeeName} (${employee.employeeCode})`,
     );
 
     this.filteredEmployeesData3 = [];
 
     this.showSuggestions3 = false;
-
   }
   newId: any;
   onInput3() {
@@ -255,21 +242,17 @@ export class DynamicDashboardComponent implements OnInit {
       .trim();
 
     if (inputValue) {
-
-      this.filteredEmployeesData3 = this.EmployeeData
-        .filter(employee =>
+      this.filteredEmployeesData3 = this.EmployeeData.filter(
+        (employee) =>
           employee.employeeName.toLowerCase().includes(inputValue) ||
-          employee.employeeCode.toLowerCase().includes(inputValue)
-        )
-        .slice(0, 10);
+          employee.employeeCode.toLowerCase().includes(inputValue),
+      ).slice(0, 10);
 
       if (this.filteredEmployeesData3.length > 0) {
         this.newId = this.filteredEmployeesData3[0].employeeCode;
-
       }
 
       this.isForwardToUIDFormSubmitted = true;
-
     } else {
       this.filteredEmployeesData3 = [];
       this.newId = '';
@@ -284,20 +267,16 @@ export class DynamicDashboardComponent implements OnInit {
     // }
   }
 
-
   hideSuggestions3() {
-
     setTimeout(() => {
-
       this.showSuggestions3 = false;
-
     }, 200);
   }
 
-
   ForwardToUIDForm!: FormGroup;
 
-  CdealingFaculty: any; Roles: any;
+  CdealingFaculty: any;
+  Roles: any;
   ForwardToFaculty(application: Application, Role: string): void {
     this.Roles = Role;
     this.CdealingFaculty = application.dealingFaculty;
@@ -305,7 +284,9 @@ export class DynamicDashboardComponent implements OnInit {
     this.SelectedAID = application.applicationId;
     this.isForwardToUIDFormSubmitted = false;
     this.currentModalRef = this.modalService.open(this.ForwardToUIDModal, {
-      size: 'lg', backdrop: 'static', keyboard: false,
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
     });
     // this.currentModalRef.result.then(() => this.getSEAllApplications()).catch(() => { });
     // this.cd.detectChanges();
@@ -347,7 +328,6 @@ export class DynamicDashboardComponent implements OnInit {
     this.sendForwardRequest(fd);
   }
 
-
   documentRows: DocumentRowConfig[] = [
     // { label: 'Resume',          fileKey: 'resumeFileName',            approvalKey: 'resumeApproval',     docTypeParam: 'Resume' },
     // { label: 'Consent Letter',  fileKey: 'consentLetterDocumentPath', approvalKey: 'consentApproval',    docTypeParam: 'Consent Letter' },
@@ -357,18 +337,46 @@ export class DynamicDashboardComponent implements OnInit {
     // { label: 'English Test Proof',   fileKey: 'englishProofDocumentPath',  approvalKey: 'englishApproval',    docTypeParam: 'English Test Proof' },
     //{ label: 'Affidavit',       fileKey: 'affidavitPath',             approvalKey: 'affidavitApproval',  docTypeParam: 'Affidavit' },
     //{ label: 'Indemnity Bond',  fileKey: 'indeminityBondPath',        approvalKey: 'indemnityApproval',  docTypeParam: 'Indemnity Bond' },
-    { label: 'Offer Letter', fileKey: 'offerLetterPath', approvalKey: 'offerLetterApproval', docTypeParam: 'Offer Letter' },
-    { label: 'Outbound Ticket', fileKey: 'outBoundTicket', approvalKey: 'outboundApproval', docTypeParam: 'Outbound Ticket' },
-    { label: 'Return Ticket', fileKey: 'returnTicketPath', approvalKey: 'returnTicketApproval', docTypeParam: 'Return Ticket' },
-    { label: 'Visa Document', fileKey: 'visaDocumentPath', approvalKey: 'visaDocumentApproval', docTypeParam: 'Visa Document' },
+    {
+      label: 'Offer Letter',
+      fileKey: 'offerLetterPath',
+      approvalKey: 'offerLetterApproval',
+      docTypeParam: 'Offer Letter',
+    },
+    {
+      label: 'Outbound Ticket',
+      fileKey: 'outBoundTicket',
+      approvalKey: 'outboundApproval',
+      docTypeParam: 'Outbound Ticket',
+    },
+    {
+      label: 'Return Ticket',
+      fileKey: 'returnTicketPath',
+      approvalKey: 'returnTicketApproval',
+      docTypeParam: 'Return Ticket',
+    },
+    {
+      label: 'Visa Document',
+      fileKey: 'visaDocumentPath',
+      approvalKey: 'visaDocumentApproval',
+      docTypeParam: 'Visa Document',
+    },
   ];
 
   getFileValue(doc: DocumentRowConfig): string {
-    return ((this.SelectedDocuments as any)?.[doc.fileKey] ?? '').toString().trim();
+    return ((this.SelectedDocuments as any)?.[doc.fileKey] ?? '')
+      .toString()
+      .trim();
   }
 
   getApproval(doc: DocumentRowConfig): DocApprovalInfo {
-    return (this.SelectedDocuments as any)?.[doc.approvalKey] ?? { isApproved: '', approvalRemarks: '', approvedBy: '' };
+    return (
+      (this.SelectedDocuments as any)?.[doc.approvalKey] ?? {
+        isApproved: '',
+        approvalRemarks: '',
+        approvedBy: '',
+      }
+    );
   }
 
   /**
@@ -378,7 +386,10 @@ export class DynamicDashboardComponent implements OnInit {
   getRowState(doc: DocumentRowConfig): RowState {
     if (!this.getFileValue(doc)) return 'noFile';
 
-    const status = (this.getApproval(doc)?.isApproved ?? '').toString().trim().toLowerCase();
+    const status = (this.getApproval(doc)?.isApproved ?? '')
+      .toString()
+      .trim()
+      .toLowerCase();
 
     if (!status || status === 'null') return 'pending';
     return status === 'true' ? 'approved' : 'rejected';
@@ -390,7 +401,9 @@ export class DynamicDashboardComponent implements OnInit {
   }
 
   getRemarks(doc: DocumentRowConfig): string {
-    const remarks = (this.getApproval(doc)?.approvalRemarks ?? '').toString().trim();
+    const remarks = (this.getApproval(doc)?.approvalRemarks ?? '')
+      .toString()
+      .trim();
     return remarks && remarks.toLowerCase() !== 'null' ? remarks : '';
   }
   // Added  on 7-July-26
@@ -400,19 +413,19 @@ export class DynamicDashboardComponent implements OnInit {
     this.loadingIndicator = true;
     const startTime = Date.now();
 
-    this.studentService.GetApprovedDocumentDetails('0').pipe(
-      finalize(() => this.stopLoader(startTime))
-    ).subscribe({
-      next: response => {
-        this.AllApprovedDocuments = Array.isArray(response?.item1) ? response.item1 : [];
-        this.cd.detectChanges();
-      },
-      error: err => this.LoginFailed(err),
-    });
+    this.studentService
+      .GetApprovedDocumentDetails('0')
+      .pipe(finalize(() => this.stopLoader(startTime)))
+      .subscribe({
+        next: (response) => {
+          this.AllApprovedDocuments = Array.isArray(response?.item1)
+            ? response.item1
+            : [];
+          this.cd.detectChanges();
+        },
+        error: (err) => this.LoginFailed(err),
+      });
   }
-
-
-
 
   // added on 3-July-26
 
@@ -425,12 +438,10 @@ export class DynamicDashboardComponent implements OnInit {
   }
   AllApprovedApplicationsforCounsellor: Application[] = [];
 
-
-
-
-
-  uploadedStageIDocumentCount: any; uploadedStageIIDocumentCount: any;
-  isEnglishDocumentUploaded: any; EnglishTestType: any;
+  uploadedStageIDocumentCount: any;
+  uploadedStageIIDocumentCount: any;
+  isEnglishDocumentUploaded: any;
+  EnglishTestType: any;
   FilterAllHOWApplications: Application[] = [];
   searchQueryMyHod: any;
 
@@ -451,29 +462,49 @@ export class DynamicDashboardComponent implements OnInit {
   private filterBySearch(source: Application[], query: string): Application[] {
     const q = (query ?? '').trim().toLowerCase();
     if (!q) return source;
-    return source.filter(item =>
-      Object.values(item).some(val => val !== null && val !== undefined && String(val).toLowerCase().includes(q))
+    return source.filter((item) =>
+      Object.values(item).some(
+        (val) =>
+          val !== null &&
+          val !== undefined &&
+          String(val).toLowerCase().includes(q),
+      ),
     );
   }
 
   searchMyHod(): void {
-    this.FilterAllHOWApplications = this.filterBySearch(this.AllHOWApplications, this.searchQueryMyHod);
+    this.FilterAllHOWApplications = this.filterBySearch(
+      this.AllHOWApplications,
+      this.searchQueryMyHod,
+    );
   }
 
   searchAuthority(): void {
-    this.FilterAllAuthorityApplications = this.filterBySearch(this.AllAuthorityApplications, this.searchQueryAuthority);
+    this.FilterAllAuthorityApplications = this.filterBySearch(
+      this.AllAuthorityApplications,
+      this.searchQueryAuthority,
+    );
   }
 
   searchFaculty(): void {
-    this.FilterAllFacultyApplications = this.filterBySearch(this.AllFacultyApplications, this.searchQueryFaculty);
+    this.FilterAllFacultyApplications = this.filterBySearch(
+      this.AllFacultyApplications,
+      this.searchQueryFaculty,
+    );
   }
 
   search(): void {
-    this.FilterAllHODApplications = this.filterBySearch(this.AllHODApplications, this.searchQuery);
+    this.FilterAllHODApplications = this.filterBySearch(
+      this.AllHODApplications,
+      this.searchQuery,
+    );
   }
 
   search2(): void {
-    this.FilterAllApplications = this.filterBySearch(this.AllApplications, this.searchQuery2);
+    this.FilterAllApplications = this.filterBySearch(
+      this.AllApplications,
+      this.searchQuery2,
+    );
   }
 
   exportToExcel(data: any[]): void {
@@ -484,7 +515,7 @@ export class DynamicDashboardComponent implements OnInit {
     XLSX.writeFile(wb, fileName);
   }
 
-  // added on 17-6-26 
+  // added on 17-6-26
   AcceptForm!: FormGroup;
 
   UniversitySelected: any;
@@ -497,7 +528,6 @@ export class DynamicDashboardComponent implements OnInit {
   selectedApplication: any;
 
   acceptApplication(application: Application): void {
-
     this.selectedApplication = application;
 
     this.selectedId = application.applicationId;
@@ -509,7 +539,7 @@ export class DynamicDashboardComponent implements OnInit {
 
     this.modalService.open(this.AcceptModal, {
       size: 'lg',
-      backdrop: 'static'
+      backdrop: 'static',
     });
   }
 
@@ -526,11 +556,16 @@ export class DynamicDashboardComponent implements OnInit {
 
     fd.append('RegistrationNo', this.selectedApplication.registrationNo);
 
-    fd.append('UniversitySelected', this.AcceptForm.get('UniversitySelected')?.value);
+    fd.append(
+      'UniversitySelected',
+      this.AcceptForm.get('UniversitySelected')?.value,
+    );
 
     fd.append('Action', 'Accept');
 
-    this.studentService.SendApproveRequest(fd).pipe(finalize(() => this.stopLoader(startTime)))
+    this.studentService
+      .SendApproveRequest(fd)
+      .pipe(finalize(() => this.stopLoader(startTime)))
       .subscribe({
         next: (data: any) => {
           const msg = data?.item1?.[0]?.msg;
@@ -538,7 +573,7 @@ export class DynamicDashboardComponent implements OnInit {
             Swal.fire(
               'Success!',
               'Application accepted successfully!',
-              'success'
+              'success',
             ).then(() => {
               this.modalService.dismissAll();
               this.getSEAllApplications();
@@ -547,27 +582,21 @@ export class DynamicDashboardComponent implements OnInit {
             Swal.fire(
               'No Change!',
               'The application status was not changed.',
-              'info'
+              'info',
             );
           } else {
-            Swal.fire(
-              'Error!',
-              'Failed to accept application.',
-              'error'
-            );
+            Swal.fire('Error!', 'Failed to accept application.', 'error');
           }
         },
         error: () => {
           Swal.fire(
             'Error!',
             'An error occurred while trying to accept the application.',
-            'error'
+            'error',
           );
-        }
+        },
       });
   }
-
-
 
   // ── UI / State ───────────────────────────────────────────────────────────────
   pageTitle = 'Dashboard';
@@ -620,7 +649,8 @@ export class DynamicDashboardComponent implements OnInit {
    * 'counsellor' → Evaluation section is HIDDEN in the modal  (req #3/#4)
    * 'faculty' | 'hod' | 'how' → Evaluation section is SHOWN
    */
-  selectedRemarksCallerRole: 'counsellor' | 'faculty' | 'hod' | 'how' = 'counsellor';
+  selectedRemarksCallerRole: 'counsellor' | 'faculty' | 'hod' | 'how' =
+    'counsellor';
 
   /** Active tab for HOD view. */
   hodActiveTab: 'my' | 'all' | 'allApproved' = 'my';
@@ -635,10 +665,9 @@ export class DynamicDashboardComponent implements OnInit {
   CounsellingRemarksForm!: FormGroup;
   AddRemarksForm!: FormGroup;
 
-
   // ── Global role flags ────────────────────────────────────────────────────────
-  isDealingAuthority = false;   // Counsellor
-  isdealingFaculty = false;   // Faculty
+  isDealingAuthority = false; // Counsellor
+  isdealingFaculty = false; // Faculty
   isHOD = false;
   isHoW = false;
 
@@ -664,11 +693,13 @@ export class DynamicDashboardComponent implements OnInit {
 
   // ── Modal refs ───────────────────────────────────────────────────────────────
   @ViewChild('EvaluationModal') EvaluationModal!: TemplateRef<any>;
-  @ViewChild('CounsellingRemarksModal') CounsellingRemarksModal!: TemplateRef<any>;
+  @ViewChild('CounsellingRemarksModal')
+  CounsellingRemarksModal!: TemplateRef<any>;
   @ViewChild('AddRemarksModal') AddRemarksModal!: TemplateRef<any>;
   @ViewChild('ViewRemarksModal') ViewRemarksModal!: TemplateRef<any>;
   @ViewChild('AcceptModal') AcceptModal!: TemplateRef<any>;
-  @ViewChild('DocumentApprovalsModal') DocumentApprovalsModal!: TemplateRef<any>;
+  @ViewChild('DocumentApprovalsModal')
+  DocumentApprovalsModal!: TemplateRef<any>;
 
   private currentModalRef: NgbModalRef | null = null;
 
@@ -685,8 +716,8 @@ export class DynamicDashboardComponent implements OnInit {
     private router: Router,
     private modalService: NgbModal,
     private mouDocumentsService: MouDocumentsService,
-    private title: Title
-  ) { }
+    private title: Title,
+  ) {}
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────────
 
@@ -720,12 +751,27 @@ export class DynamicDashboardComponent implements OnInit {
     //   Comments: [''],
     // });
     this.EvaluationForm = this.fb.group({
-      AcademicsMarks: ['', [Validators.required, Validators.min(0), Validators.max(10)]],
-      CommunicationSkillsMarks: ['', [Validators.required, Validators.min(0), Validators.max(10)]],
-      AttitudeMarks: ['', [Validators.required, Validators.min(0), Validators.max(10)]],
-      ExtraCurricularMarks: ['', [Validators.required, Validators.min(0), Validators.max(10)]],
-      KnowledgeMarks: ['', [Validators.required, Validators.min(0), Validators.max(10)]],
-      Comments: ['', [Validators.required, Validators.minLength(10)]]
+      AcademicsMarks: [
+        '',
+        [Validators.required, Validators.min(0), Validators.max(10)],
+      ],
+      CommunicationSkillsMarks: [
+        '',
+        [Validators.required, Validators.min(0), Validators.max(10)],
+      ],
+      AttitudeMarks: [
+        '',
+        [Validators.required, Validators.min(0), Validators.max(10)],
+      ],
+      ExtraCurricularMarks: [
+        '',
+        [Validators.required, Validators.min(0), Validators.max(10)],
+      ],
+      KnowledgeMarks: [
+        '',
+        [Validators.required, Validators.min(0), Validators.max(10)],
+      ],
+      Comments: ['', [Validators.required, Validators.minLength(10)]],
     });
     this.CounsellingRemarksForm = this.fb.group({
       Comments: ['', Validators.required],
@@ -738,7 +784,7 @@ export class DynamicDashboardComponent implements OnInit {
       Comments: ['', Validators.required],
     });
     this.AcceptForm = this.fb.group({
-      UniversitySelected: [null, Validators.required]
+      UniversitySelected: [null, Validators.required],
     });
     this.ForwardToUIDForm = this.fb.group({
       FacultyUId: ['', Validators.required],
@@ -751,60 +797,65 @@ export class DynamicDashboardComponent implements OnInit {
     this.loadingIndicator = true;
     const startTime = Date.now();
 
-    this.authService.loginTemp(loginName).pipe(
-      finalize(() => this.stopLoader(startTime))
-    ).subscribe({
-      next: data => {
-        this.storageService.saveUser(data);
-        const authToken = this.storageService.getUser();
-        if (!this.storageService.isLoggedIn() || authToken === 'Token Expired') {
-          this.LoginFailed('Token Expired or Invalid Login');
-        } else {
-          this.isLoginFailed = false;
-          this.GetEmployeeDetails();
-          this.GetEmployeeData();
-        }
-      },
-      error: () => this.LoginFailed('Database Error'),
-    });
+    this.authService
+      .loginTemp(loginName)
+      .pipe(finalize(() => this.stopLoader(startTime)))
+      .subscribe({
+        next: (data) => {
+          this.storageService.saveUser(data);
+          const authToken = this.storageService.getUser();
+          if (
+            !this.storageService.isLoggedIn() ||
+            authToken === 'Token Expired'
+          ) {
+            this.LoginFailed('Token Expired or Invalid Login');
+          } else {
+            this.isLoginFailed = false;
+            this.GetEmployeeDetails();
+            this.GetEmployeeData();
+          }
+        },
+        error: () => this.LoginFailed('Database Error'),
+      });
   }
 
   GetEmployeeData(): void {
     this.mouDocumentsService.GetEmployeeData().subscribe({
-      next: response => {
+      next: (response) => {
         this.EmployeeData = response.item1.length > 0 ? response.item1 : [];
       },
-      error: err => console.error(err)
+      error: (err) => console.error(err),
     });
   }
   private GetEmployeeDetails(): void {
     this.loadingIndicator = true;
     const startTime = Date.now();
 
-    this.mouDocumentsService.GetEmployeeDetails().pipe(
-      finalize(() => this.stopLoader(startTime))
-    ).subscribe({
-      next: response => {
-        if (response?.item1?.length > 0) {
-          const emp = response.item1[0];
-          this.EmployeeDetails = emp;
-          this.EmployeeName = emp.employeeName;
-          this.EmployeeCode = String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859 // 22413
-          this.ContactNoX = emp.contactNo;
-          this.Department = emp.department;
-          this.DepartmentName = emp.departmentName;
-          this.UserRole = emp.userRole;
+    this.mouDocumentsService
+      .GetEmployeeDetails()
+      .pipe(finalize(() => this.stopLoader(startTime)))
+      .subscribe({
+        next: (response) => {
+          if (response?.item1?.length > 0) {
+            const emp = response.item1[0];
+            this.EmployeeDetails = emp;
+            this.EmployeeName = emp.employeeName;
+            this.EmployeeCode = '30922'; // String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859 // 22413
+            this.ContactNoX = emp.contactNo;
+            this.Department = emp.department;
+            this.DepartmentName = emp.departmentName;
+            this.UserRole = emp.userRole;
 
-          // Fetch applications and remarks in parallel
-          this.getSEAllApplications();
-          this.getAllAuthorityRemarks();
-          this.getAllApprovedDocuments();
-        } else {
-          this.LoginFailed('No employee details found.');
-        }
-      },
-      error: err => this.LoginFailed(err),
-    });
+            // Fetch applications and remarks in parallel
+            this.getSEAllApplications();
+            this.getAllAuthorityRemarks();
+            this.getAllApprovedDocuments();
+          } else {
+            this.LoginFailed('No employee details found.');
+          }
+        },
+        error: (err) => this.LoginFailed(err),
+      });
   }
 
   // ── Data Fetch ────────────────────────────────────────────────────────────────
@@ -813,77 +864,119 @@ export class DynamicDashboardComponent implements OnInit {
     this.loadingIndicator = true;
     const startTime = Date.now();
 
-    this.studentService.getAllApplicationsforHOD().pipe(
-      finalize(() => this.stopLoader(startTime))
-    ).subscribe({
-      next: response => {
-        this.AllApplications = Array.isArray(response?.item1) ? response.item1 : [];
-        // console.log(JSON.stringify(this.AllApplications) + 'Main details of all applications')
-        this.AllFacultyApplications = this.FilterAllFacultyApplications = response.item1.filter((app: { dealingFaculty: string | '', isForwardtoHOD: string | ''; approvedUniversity: string | ''; }) => app.dealingFaculty == this.EmployeeCode && app.isForwardtoHOD == null);
-        this.AllAuthorityApplications = this.FilterAllAuthorityApplications = response.item1.filter((app: { dealingAuthority: string | '', dealingFaculty: string | ''; approvedUniversity: string | ''; }) => app.dealingAuthority == this.EmployeeCode && app.approvedUniversity == null && app.dealingFaculty == null);
+    this.studentService
+      .getAllApplicationsforHOD()
+      .pipe(finalize(() => this.stopLoader(startTime)))
+      .subscribe({
+        next: (response) => {
+          this.AllApplications = Array.isArray(response?.item1)
+            ? response.item1
+            : [];
+          // console.log(JSON.stringify(this.AllApplications) + 'Main details of all applications')
+          this.AllFacultyApplications = this.FilterAllFacultyApplications =
+            response.item1.filter(
+              (app: {
+                dealingFaculty: string | '';
+                isForwardtoHOD: string | '';
+                approvedUniversity: string | '';
+              }) =>
+                app.dealingFaculty == this.EmployeeCode &&
+                app.isForwardtoHOD == null,
+            );
+          this.AllAuthorityApplications = this.FilterAllAuthorityApplications =
+            response.item1.filter(
+              (app: {
+                dealingAuthority: string | '';
+                dealingFaculty: string | '';
+                approvedUniversity: string | '';
+              }) =>
+                app.dealingAuthority == this.EmployeeCode &&
+                app.approvedUniversity == null &&
+                app.dealingFaculty == null,
+            );
 
-        // this.FilterAllAuthorityApplications = response.item1;
+          // this.FilterAllAuthorityApplications = response.item1;
 
+          this.AllHODApplications = this.FilterAllHODApplications =
+            response.item1.filter(
+              (app: {
+                dealingHODId: string | '';
+                isForwardtoHOD: string | '';
+                isLocked: string | '';
+                isApproved: string | '';
+                isForwardedtoHOW: string | '';
+              }) =>
+                app.dealingHODId == this.EmployeeCode &&
+                app.isForwardtoHOD == '1' &&
+                app.isForwardedtoHOW == null,
+            );
 
-        this.AllHODApplications =         this.FilterAllHODApplications = response.item1.filter((app: { dealingHODId: string | ''; isForwardtoHOD: string | ''; isLocked: string | ''; isApproved: string | ''; isForwardedtoHOW: string | '' }) => app.dealingHODId == this.EmployeeCode && app.isForwardtoHOD == '1' && app.isForwardedtoHOW == null );
+          this.AllHOWApplications = response.item1.filter(
+            (app: {
+              dealingHow: string | '';
+              isForwardedtoHOW: string | '';
+              isLocked: string | '';
+            }) =>
+              app.dealingHow == this.EmployeeCode &&
+              app.isForwardedtoHOW == '1',
+          );
+          this.AllApprovedApplications = response.item1.filter(
+            (app: { approvedUniversity: string | '' }) =>
+              app.approvedUniversity?.length > 0,
+          );
+          this.AllApprovedApplicationsforCounsellor = response.item1; //.filter((app: { approvedUniversity: string | ''; dealingAuthority: string | ''; }) => app.approvedUniversity?.length > 0 && app.dealingAuthority == this.EmployeeCode);
 
-
-        this.AllHOWApplications = response.item1.filter((app: { dealingHow: string | ''; isForwardedtoHOW: string | ''; isLocked: string | ''; }) => app.dealingHow == this.EmployeeCode && app.isForwardedtoHOW == '1');
-        this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) => app.approvedUniversity?.length > 0);
-        this.AllApprovedApplicationsforCounsellor = response.item1;//.filter((app: { approvedUniversity: string | ''; dealingAuthority: string | ''; }) => app.approvedUniversity?.length > 0 && app.dealingAuthority == this.EmployeeCode);
-
-
-
-
-
-        this.enrichAndFilterApplications();
-      },
-      error: err => this.LoginFailed(err),
-    });
+          this.enrichAndFilterApplications();
+        },
+        error: (err) => this.LoginFailed(err),
+      });
   }
 
   private getAllAuthorityRemarks(): void {
     this.loadingIndicator = true;
     const startTime = Date.now();
 
-    this.studentService.getAllRemarks().pipe(
-      finalize(() => this.stopLoader(startTime))
-    ).subscribe({
-      next: response => {
-        this.AllAuthorityRemarks = Array.isArray(response?.item1) ? response.item1 : [];
+    this.studentService
+      .getAllRemarks()
+      .pipe(finalize(() => this.stopLoader(startTime)))
+      .subscribe({
+        next: (response) => {
+          this.AllAuthorityRemarks = Array.isArray(response?.item1)
+            ? response.item1
+            : [];
 
-        this.cd.detectChanges();
-      },
-      error: err => this.LoginFailed(err),
-    });
+          this.cd.detectChanges();
+        },
+        error: (err) => this.LoginFailed(err),
+      });
   }
-
-
-
 
   private GetAllApplicationsforHOD(): void {
     this.loadingIndicator = true;
     const startTime = Date.now();
 
-    this.studentService.getAllApplicationsforHOD().pipe(
-      finalize(() => this.stopLoader(startTime))
-    ).subscribe({
-      next: response => {
-        this.hodAllApplications = Array.isArray(response?.item1) ? response.item1 : [];
+    this.studentService
+      .getAllApplicationsforHOD()
+      .pipe(finalize(() => this.stopLoader(startTime)))
+      .subscribe({
+        next: (response) => {
+          this.hodAllApplications = Array.isArray(response?.item1)
+            ? response.item1
+            : [];
 
-        //  this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) =>app.approvedUniversity?.trim().length > 0 );
+          //  this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) =>app.approvedUniversity?.trim().length > 0 );
 
-        this.AllApprovedApplications = response.item1.filter(
-          (app: { approvedUniversity: string | null }) =>
-            app.approvedUniversity &&
-            app.approvedUniversity !== 'null' &&
-            app.approvedUniversity.trim().length > 0
-        );
-        // this.AllApprovedApplications = response.item1.filter((app: { isLocked: any, isApproved: any ; }) => app.isLocked=='True' || app.isApproved=='True');
-        this.cd.detectChanges();
-      },
-      error: err => this.LoginFailed(err),
-    });
+          this.AllApprovedApplications = response.item1.filter(
+            (app: { approvedUniversity: string | null }) =>
+              app.approvedUniversity &&
+              app.approvedUniversity !== 'null' &&
+              app.approvedUniversity.trim().length > 0,
+          );
+          // this.AllApprovedApplications = response.item1.filter((app: { isLocked: any, isApproved: any ; }) => app.isLocked=='True' || app.isApproved=='True');
+          this.cd.detectChanges();
+        },
+        error: (err) => this.LoginFailed(err),
+      });
   }
 
   // ── Role Enrichment & Filtering ───────────────────────────────────────────────
@@ -899,61 +992,60 @@ export class DynamicDashboardComponent implements OnInit {
     this.isdealingFaculty = false;
     this.isDealingAuthority = false;
 
-
     let hasFacultyRows = false;
 
-    this.AllApplications = this.FilterAllApplications = this.AllApplications.map(app => {
-      const authority = this.normalise(app.dealingAuthority);
-      const faculty = this.normalise(app.dealingFaculty);
-      const hodId = this.normalise(app.dealingHODId);
-      const how = this.normalise(app.dealingHow);
+    this.AllApplications = this.FilterAllApplications =
+      this.AllApplications.map((app) => {
+        const authority = this.normalise(app.dealingAuthority);
+        const faculty = this.normalise(app.dealingFaculty);
+        const hodId = this.normalise(app.dealingHODId);
+        const how = this.normalise(app.dealingHow);
 
-      this.UniversityOption1 = this.normalise(app.universityOption1);
-      this.UniversityOption2 = this.normalise(app.universityOption2);
-      this.UniversityOption3 = this.normalise(app.universityOption3);
-      this.uploadedStageIDocumentCount = this.normalise(app.uploadedStageIDocumentCount);
-      this.uploadedStageIIDocumentCount = this.normalise(app.uploadedStageIIDocumentCount);
-      this.EnglishTestType = this.normalise(app.englishTestType);
+        this.UniversityOption1 = this.normalise(app.universityOption1);
+        this.UniversityOption2 = this.normalise(app.universityOption2);
+        this.UniversityOption3 = this.normalise(app.universityOption3);
+        this.uploadedStageIDocumentCount = this.normalise(
+          app.uploadedStageIDocumentCount,
+        );
+        this.uploadedStageIIDocumentCount = this.normalise(
+          app.uploadedStageIIDocumentCount,
+        );
+        this.EnglishTestType = this.normalise(app.englishTestType);
 
-      // Counsellor row: DealingAuthority === empCode
-      //   AND not acting as HOD or HoW on this same row
-      app._isCounsellor =
-        emp !== null &&
-        authority === emp &&
-        hodId !== emp &&
-        how !== emp;
+        // Counsellor row: DealingAuthority === empCode
+        //   AND not acting as HOD or HoW on this same row
+        app._isCounsellor =
+          emp !== null && authority === emp && hodId !== emp && how !== emp;
 
-      // Faculty row: DealingFaculty === empCode
-      //   AND not acting as HOD or HoW on this same row
-      app._isFaculty =
-        emp !== null &&
-        faculty === emp &&
-        hodId !== emp &&
-        how !== emp;
+        // Faculty row: DealingFaculty === empCode
+        //   AND not acting as HOD or HoW on this same row
+        app._isFaculty =
+          emp !== null && faculty === emp && hodId !== emp && how !== emp;
 
-      // HOD row: DealingHODId === empCode
-      app._isHOD = emp !== null && hodId === emp;
+        // HOD row: DealingHODId === empCode
+        app._isHOD = emp !== null && hodId === emp;
 
-      // HoW row: DealingHow === empCode
-      app._isHoW = emp !== null && how === emp && hodId !== emp; // HoW role is exclusive of HOD role
+        // HoW row: DealingHow === empCode
+        app._isHoW = emp !== null && how === emp && hodId !== emp; // HoW role is exclusive of HOD role
 
-      app._isHoW = emp !== null && authority !== emp && hodId !== emp && how == emp;
+        app._isHoW =
+          emp !== null && authority !== emp && hodId !== emp && how == emp;
 
+        if (app._isFaculty) hasFacultyRows = true;
 
-      if (app._isFaculty) hasFacultyRows = true;
-
-      return app;
-    });
-
+        return app;
+      });
 
     if (hasFacultyRows) {
-      this.AllApplications.forEach(app => {
-        if (app._isCounsellor) { app._isCounsellor = false; }
+      this.AllApplications.forEach((app) => {
+        if (app._isCounsellor) {
+          app._isCounsellor = false;
+        }
       });
     }
 
     // ── Raise global role flags from the finalised per-row values ────────────
-    this.AllApplications.forEach(app => {
+    this.AllApplications.forEach((app) => {
       if (app._isCounsellor) this.isDealingAuthority = true;
       if (app._isFaculty) this.isdealingFaculty = true;
       if (app._isHOD) this.isHOD = true;
@@ -968,17 +1060,19 @@ export class DynamicDashboardComponent implements OnInit {
   private normalise(val: any): string | null {
     if (val === null || val === undefined) return null;
     const s = String(val).trim();
-    return (s === '' || s.toLowerCase() === 'null') ? null : s;
+    return s === '' || s.toLowerCase() === 'null' ? null : s;
   }
 
   private buildVisibleApplications(): void {
-    this.hodMyApplications = this.AllApplications.filter(a => this.isTrue(a.isForwardtoHOD));
+    this.hodMyApplications = this.AllApplications.filter((a) =>
+      this.isTrue(a.isForwardtoHOD),
+    );
     if (this.isHOD) {
       this.GetAllApplicationsforHOD();
     }
 
     this.visibleApplications = this.AllApplications.filter(
-      a => a._isCounsellor || a._isFaculty || a._isHoW
+      (a) => a._isCounsellor || a._isFaculty || a._isHoW,
     );
   }
 
@@ -988,11 +1082,15 @@ export class DynamicDashboardComponent implements OnInit {
     else if (this.isdealingFaculty) roles = 'Faculty';
     else if (this.isHOD) roles = 'HOD';
     else if (this.isHoW) roles = 'HoW';
-    else if (!this.isdealingFaculty || !this.isdealingFaculty || !this.isHOD || !this.isHoW) roles = 'Semester Exchange Admin'
+    else if (
+      !this.isdealingFaculty ||
+      !this.isdealingFaculty ||
+      !this.isHOD ||
+      !this.isHoW
+    )
+      roles = 'Semester Exchange Admin';
 
-    this.pageTitle = roles.length
-      ? `** ${roles} Dashboard **`
-      : 'Dashboard';
+    this.pageTitle = roles.length ? `** ${roles} Dashboard **` : 'Dashboard';
     this.title.setTitle(this.pageTitle);
   }
 
@@ -1020,10 +1118,14 @@ export class DynamicDashboardComponent implements OnInit {
       else if (application._isFaculty) Role = 'Faculty';
       else if (application._isCounsellor) Role = 'Counsellor';
       this.router.navigateByUrl(
-        `ApplicationDetails/${this.LoginName}/${application.registrationNo}/${Role}`
+        `ApplicationDetails/${this.LoginName}/${application.registrationNo}/${Role}`,
       );
     } else {
-      Swal.fire('Navigation Error', 'Login name or registration number is missing.', 'error');
+      Swal.fire(
+        'Navigation Error',
+        'Login name or registration number is missing.',
+        'error',
+      );
     }
   }
 
@@ -1061,12 +1163,12 @@ export class DynamicDashboardComponent implements OnInit {
       showCancelButton: true,
       confirmButtonText: 'Submit',
       showLoaderOnConfirm: true,
-      preConfirm: reason => {
+      preConfirm: (reason) => {
         if (!reason) Swal.showValidationMessage('Reason is required!');
         return reason;
       },
       allowOutsideClick: () => !Swal.isLoading(),
-    }).then(result => {
+    }).then((result) => {
       if (result.isConfirmed && result.value) {
         const fd = new FormData();
         fd.append('RegistrationNo', application.registrationNo);
@@ -1081,22 +1183,29 @@ export class DynamicDashboardComponent implements OnInit {
     this.loadingIndicator = true;
     const startTime = Date.now();
 
-    this.studentService.SendApproveRequest(formData).pipe(
-      finalize(() => this.stopLoader(startTime))
-    ).subscribe({
-      next: (data: any) => {
-        const msg = data?.item1?.[0]?.msg;
-        if (msg === 'Approved') {
-          Swal.fire('Action was successfully Processed', 'success')
-            .then(() => this.getSEAllApplications());
-        } else if (msg === 'Disapproved') {
-          Swal.fire('Action was successfully Processed', 'info');
-        } else {
-          Swal.fire('Error!', `Failed to ${action} application.`, 'error');
-        }
-      },
-      error: () => Swal.fire('Error!', `An error occurred while trying to ${action} the application.`, 'error'),
-    });
+    this.studentService
+      .SendApproveRequest(formData)
+      .pipe(finalize(() => this.stopLoader(startTime)))
+      .subscribe({
+        next: (data: any) => {
+          const msg = data?.item1?.[0]?.msg;
+          if (msg === 'Approved') {
+            Swal.fire('Action was successfully Processed', 'success').then(() =>
+              this.getSEAllApplications(),
+            );
+          } else if (msg === 'Disapproved') {
+            Swal.fire('Action was successfully Processed', 'info');
+          } else {
+            Swal.fire('Error!', `Failed to ${action} application.`, 'error');
+          }
+        },
+        error: () =>
+          Swal.fire(
+            'Error!',
+            `An error occurred while trying to ${action} the application.`,
+            'error',
+          ),
+      });
   }
 
   // ── Forwarding ────────────────────────────────────────────────────────────────
@@ -1109,12 +1218,12 @@ export class DynamicDashboardComponent implements OnInit {
       showCancelButton: true,
       confirmButtonText: 'Forward',
       showLoaderOnConfirm: true,
-      preConfirm: uid => {
+      preConfirm: (uid) => {
         if (!uid) Swal.showValidationMessage('Employee Code is required!');
         return uid;
       },
       allowOutsideClick: () => !Swal.isLoading(),
-    }).then(result => {
+    }).then((result) => {
       if (result.isConfirmed && result.value) {
         const fd = new FormData();
         fd.append('RegistrationNo', application.registrationNo);
@@ -1136,8 +1245,8 @@ export class DynamicDashboardComponent implements OnInit {
       showCancelButton: true,
       confirmButtonText: 'Yes, Forward',
       cancelButtonText: 'Cancel',
-      allowOutsideClick: () => !Swal.isLoading()
-    }).then(result => {
+      allowOutsideClick: () => !Swal.isLoading(),
+    }).then((result) => {
       if (result.isConfirmed) {
         const fd = new FormData();
         fd.append('RegistrationNo', application.registrationNo);
@@ -1152,18 +1261,28 @@ export class DynamicDashboardComponent implements OnInit {
     this.loadingIndicator = true;
     const startTime = Date.now();
 
-    this.studentService.SendForwardRequest(formData).pipe(
-      finalize(() => this.stopLoader(startTime))
-    ).subscribe({
-      next: (data: any) => {
-        if (data?.item1?.[0]?.msg === 'Success') {
-          Swal.fire('Success!', 'Action Applied!', 'success').then(() => this.getSEAllApplications());
-        } else {
-          Swal.fire('Failed!', 'Action Failed!', 'error').then(() => this.getSEAllApplications());
-        }
-      },
-      error: () => Swal.fire('Error!', 'An error occurred while forwarding the application.', 'error'),
-    });
+    this.studentService
+      .SendForwardRequest(formData)
+      .pipe(finalize(() => this.stopLoader(startTime)))
+      .subscribe({
+        next: (data: any) => {
+          if (data?.item1?.[0]?.msg === 'Success') {
+            Swal.fire('Success!', 'Action Applied!', 'success').then(() =>
+              this.getSEAllApplications(),
+            );
+          } else {
+            Swal.fire('Failed!', 'Action Failed!', 'error').then(() =>
+              this.getSEAllApplications(),
+            );
+          }
+        },
+        error: () =>
+          Swal.fire(
+            'Error!',
+            'An error occurred while forwarding the application.',
+            'error',
+          ),
+      });
     this.modalService.dismissAll();
   }
 
@@ -1178,12 +1297,13 @@ export class DynamicDashboardComponent implements OnInit {
       showCancelButton: true,
       confirmButtonText: 'Assign',
       showLoaderOnConfirm: true,
-      preConfirm: code => {
-        if (!code) Swal.showValidationMessage('Counsellor Employee Code is required!');
+      preConfirm: (code) => {
+        if (!code)
+          Swal.showValidationMessage('Counsellor Employee Code is required!');
         return code;
       },
       allowOutsideClick: () => !Swal.isLoading(),
-    }).then(result => {
+    }).then((result) => {
       if (result.isConfirmed && result.value) {
         const fd = new FormData();
         fd.append('RegistrationNo', application.registrationNo);
@@ -1204,12 +1324,13 @@ export class DynamicDashboardComponent implements OnInit {
       showCancelButton: true,
       confirmButtonText: 'Assign',
       showLoaderOnConfirm: true,
-      preConfirm: code => {
-        if (!code) Swal.showValidationMessage('Faculty Employee Code is required!');
+      preConfirm: (code) => {
+        if (!code)
+          Swal.showValidationMessage('Faculty Employee Code is required!');
         return code;
       },
       allowOutsideClick: () => !Swal.isLoading(),
-    }).then(result => {
+    }).then((result) => {
       if (result.isConfirmed && result.value) {
         const fd = new FormData();
         fd.append('RegistrationNo', application.registrationNo);
@@ -1232,9 +1353,13 @@ export class DynamicDashboardComponent implements OnInit {
     this.isEvaluationFormSubmitted = false;
 
     this.currentModalRef = this.modalService.open(this.EvaluationModal, {
-      size: 'lg', backdrop: 'static', keyboard: false,
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
     });
-    this.currentModalRef.result.then(() => this.getSEAllApplications()).catch(() => { });
+    this.currentModalRef.result
+      .then(() => this.getSEAllApplications())
+      .catch(() => {});
     this.cd.detectChanges();
   }
 
@@ -1242,7 +1367,6 @@ export class DynamicDashboardComponent implements OnInit {
     this.isEvaluationFormSubmitted = true;
 
     if (this.EvaluationForm.invalid) {
-
       this.EvaluationForm.markAllAsTouched();
 
       return;
@@ -1263,8 +1387,11 @@ export class DynamicDashboardComponent implements OnInit {
     const startTime = Date.now();
 
     const v = this.EvaluationForm.value;
-    const total = +v.AcademicsMarks + +v.CommunicationSkillsMarks +
-      +v.AttitudeMarks + +v.ExtraCurricularMarks +
+    const total =
+      +v.AcademicsMarks +
+      +v.CommunicationSkillsMarks +
+      +v.AttitudeMarks +
+      +v.ExtraCurricularMarks +
       +v.KnowledgeMarks;
 
     const fd = new FormData();
@@ -1280,46 +1407,35 @@ export class DynamicDashboardComponent implements OnInit {
     fd.append('DealingUId', this.EmployeeCode || 'Unknown');
 
     this.ServicesSM.StudentEvalutionAddNew(fd)
-      .pipe(
-        finalize(() => this.stopLoader(startTime))
-      )
+      .pipe(finalize(() => this.stopLoader(startTime)))
       .subscribe({
         next: (data: any) => {
-
           const code = data?.item1?.[0]?.returnData;
 
           if (code > 0) {
-
             Swal.fire(
               'Success!',
               'Evaluation Marks Updated Successfully',
-              'success'
+              'success',
             ).then(() => {
               this.currentModalRef?.close();
               window.location.reload();
             });
-
           } else if (code === '-1' || code === -1) {
-
-            Swal.fire(
-              'Info',
-              'Evaluation Marks Already Uploaded',
-              'info'
-            ).then(() => {
-              this.currentModalRef?.close();
-              window.location.reload();
-            });
-
+            Swal.fire('Info', 'Evaluation Marks Already Uploaded', 'info').then(
+              () => {
+                this.currentModalRef?.close();
+                window.location.reload();
+              },
+            );
           } else {
-
             Swal.fire(
               'Error!',
               'Unable to complete the request.',
-              'error'
+              'error',
             ).then(() => {
               window.location.reload();
             });
-
           }
         },
 
@@ -1327,11 +1443,11 @@ export class DynamicDashboardComponent implements OnInit {
           Swal.fire(
             'Error!',
             'Unable to complete the request. Please try again later.',
-            'error'
+            'error',
           ).then(() => {
             window.location.reload();
           });
-        }
+        },
       });
   }
   // ── Counselling Remarks (Counsellor submits) ──────────────────────────────────
@@ -1344,21 +1460,37 @@ export class DynamicDashboardComponent implements OnInit {
     this.isCounsellingFormSubmitted = false;
 
     // Pre-fill if already counselled
-    if (this.isTrue(application.counsellingStatus) && application.counsellingRemarks) {
-      this.CounsellingRemarksForm.get('Comments')?.setValue(application.counsellingRemarks);
+    if (
+      this.isTrue(application.counsellingStatus) &&
+      application.counsellingRemarks
+    ) {
+      this.CounsellingRemarksForm.get('Comments')?.setValue(
+        application.counsellingRemarks,
+      );
     }
 
-    this.currentModalRef = this.modalService.open(this.CounsellingRemarksModal, {
-      size: 'lg', backdrop: 'static', keyboard: false,
-    });
-    this.currentModalRef.result.then(() => this.getSEAllApplications()).catch(() => { });
+    this.currentModalRef = this.modalService.open(
+      this.CounsellingRemarksModal,
+      {
+        size: 'lg',
+        backdrop: 'static',
+        keyboard: false,
+      },
+    );
+    this.currentModalRef.result
+      .then(() => this.getSEAllApplications())
+      .catch(() => {});
     this.cd.detectChanges();
   }
 
   submitCounsellingRemarksForm(): void {
     this.isCounsellingFormSubmitted = true;
     if (this.CounsellingRemarksForm.invalid) {
-      Swal.fire('Validation Error', 'Please enter your counselling remarks.', 'error');
+      Swal.fire(
+        'Validation Error',
+        'Please enter your counselling remarks.',
+        'error',
+      );
       return;
     }
 
@@ -1367,23 +1499,38 @@ export class DynamicDashboardComponent implements OnInit {
 
     const fd = new FormData();
     fd.append('ApplicationId', this.ApplicationId || '');
-    fd.append('CounsellingRemarks', this.CounsellingRemarksForm.value.Comments.trim());
+    fd.append(
+      'CounsellingRemarks',
+      this.CounsellingRemarksForm.value.Comments.trim(),
+    );
     fd.append('Action', 'Counsellor');
 
-    this.ServicesSM.UpdateCounsellingRemarks(fd).pipe(
-      finalize(() => this.stopLoader(startTime))
-    ).subscribe({
-      next: (data: any) => {
-        const msg = data?.item1?.[0]?.msg ?? data?.item1?.[0]?.Msg;
-        if (msg === 'Success') {
-          Swal.fire('Success!', 'Counselling Remarks Saved Successfully', 'success')
-            .then(() => this.currentModalRef?.close());
-        } else {
-          Swal.fire('Error!', msg || 'Some Technical Issue Occurred', 'error');
-        }
-      },
-      error: () => Swal.fire('Error!', 'Unable to complete the request. Please try again later.', 'error'),
-    });
+    this.ServicesSM.UpdateCounsellingRemarks(fd)
+      .pipe(finalize(() => this.stopLoader(startTime)))
+      .subscribe({
+        next: (data: any) => {
+          const msg = data?.item1?.[0]?.msg ?? data?.item1?.[0]?.Msg;
+          if (msg === 'Success') {
+            Swal.fire(
+              'Success!',
+              'Counselling Remarks Saved Successfully',
+              'success',
+            ).then(() => this.currentModalRef?.close());
+          } else {
+            Swal.fire(
+              'Error!',
+              msg || 'Some Technical Issue Occurred',
+              'error',
+            );
+          }
+        },
+        error: () =>
+          Swal.fire(
+            'Error!',
+            'Unable to complete the request. Please try again later.',
+            'error',
+          ),
+      });
   }
 
   // ── Faculty: Add Remarks ──────────────────────────────────────────────────────
@@ -1396,9 +1543,13 @@ export class DynamicDashboardComponent implements OnInit {
     this.isAddRemarksFormSubmitted = false;
 
     this.currentModalRef = this.modalService.open(this.AddRemarksModal, {
-      size: 'lg', backdrop: 'static', keyboard: false,
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
     });
-    this.currentModalRef.result.then(() => this.getSEAllApplications()).catch(() => { });
+    this.currentModalRef.result
+      .then(() => this.getSEAllApplications())
+      .catch(() => {});
     this.cd.detectChanges();
   }
 
@@ -1417,22 +1568,30 @@ export class DynamicDashboardComponent implements OnInit {
     fd.append('CounsellingRemarks', this.AddRemarksForm.value.Comments.trim());
     fd.append('Action', 'Faculty');
 
-    this.ServicesSM.UpdateCounsellingRemarks(fd).pipe(
-      finalize(() => this.stopLoader(startTime))
-    ).subscribe({
-      next: (data: any) => {
-        const msg = data?.item1?.[0]?.msg ?? data?.item1?.[0]?.Msg;
-        if (msg === 'Success') {
-          Swal.fire('Success!', 'Remarks Saved Successfully', 'success')
-            .then(() => this.currentModalRef?.close());
-        } else {
-          Swal.fire('Error!', msg || 'Some Technical Issue Occurred', 'error');
-        }
-      },
-      error: () => Swal.fire('Error!', 'Unable to complete the request. Please try again later.', 'error'),
-    });
-
-
+    this.ServicesSM.UpdateCounsellingRemarks(fd)
+      .pipe(finalize(() => this.stopLoader(startTime)))
+      .subscribe({
+        next: (data: any) => {
+          const msg = data?.item1?.[0]?.msg ?? data?.item1?.[0]?.Msg;
+          if (msg === 'Success') {
+            Swal.fire('Success!', 'Remarks Saved Successfully', 'success').then(
+              () => this.currentModalRef?.close(),
+            );
+          } else {
+            Swal.fire(
+              'Error!',
+              msg || 'Some Technical Issue Occurred',
+              'error',
+            );
+          }
+        },
+        error: () =>
+          Swal.fire(
+            'Error!',
+            'Unable to complete the request. Please try again later.',
+            'error',
+          ),
+      });
   }
 
   // ── Unified View Remarks Modal ────────────────────────────────────────────────
@@ -1454,13 +1613,17 @@ export class DynamicDashboardComponent implements OnInit {
    * @param callerRole 'counsellor' → Evaluation section hidden (req #3/#4)
    *                   'faculty' | 'hod' | 'how' → Evaluation section shown
    */
-  viewAllRemarks(row: Application, callerRole: 'counsellor' | 'faculty' | 'hod' | 'how' = 'counsellor'): void {
+  viewAllRemarks(
+    row: Application,
+    callerRole: 'counsellor' | 'faculty' | 'hod' | 'how' = 'counsellor',
+  ): void {
     this.selectedRemarksCallerRole = callerRole;
 
     // ── Collect ALL remarks rows for this registration number ────────────────
-    const allRows: AuthorityRemarks[] = this.AllAuthorityRemarks?.filter(
-      x => x.registrationNo === row.registrationNo
-    ) ?? [];
+    const allRows: AuthorityRemarks[] =
+      this.AllAuthorityRemarks?.filter(
+        (x) => x.registrationNo === row.registrationNo,
+      ) ?? [];
 
     // First row drives the shared header fields (counselling, HOD, HoW etc.)
     const first = allRows[0];
@@ -1468,49 +1631,60 @@ export class DynamicDashboardComponent implements OnInit {
     // ── Build AggregatedRemarks (shared fields only — no evaluation data) ────
     this.selectedRemarks = first
       ? {
-        registrationNo: row.registrationNo,
-        applicationId: row.applicationId || first.applicationId || '',
-        dealingUId: first.dealingUId || row.dealingUId || '',
-        // Counselling
-        counsellingRemarks: first.counsellingRemarks || row.counsellingRemarks || '',
-        counsellingDate: first.counsellingDate || row.counsellingDate || '',
-        counsellingDone: this.isTrue(first.counsellingStatus ?? row.counsellingStatus),
+          registrationNo: row.registrationNo,
+          applicationId: row.applicationId || first.applicationId || '',
+          dealingUId: first.dealingUId || row.dealingUId || '',
+          // Counselling
+          counsellingRemarks:
+            first.counsellingRemarks || row.counsellingRemarks || '',
+          counsellingDate: first.counsellingDate || row.counsellingDate || '',
+          counsellingDone: this.isTrue(
+            first.counsellingStatus ?? row.counsellingStatus,
+          ),
 
-        // Faculty / Interview
-        facultyRemarks:
-          first.facultyRemarks || first.dealingUserInterviewRemarks || '',
+          // Faculty / Interview
+          facultyRemarks:
+            first.facultyRemarks || first.dealingUserInterviewRemarks || '',
 
-        // HOD
-        hodRemarks: first.hodRemarks || first.dealingHODRemarks || first.dealingHODInterviewRemarks || '',
-        forwardedToHOD: this.isTrue(first.isForwardtoHOD ?? row.isForwardtoHOD),
+          // HOD
+          hodRemarks:
+            first.hodRemarks ||
+            first.dealingHODRemarks ||
+            first.dealingHODInterviewRemarks ||
+            '',
+          forwardedToHOD: this.isTrue(
+            first.isForwardtoHOD ?? row.isForwardtoHOD,
+          ),
 
-        // HoW
-        howRemarks: first.howRemarks || first.dealingHowRemarks || '',
-        forwardedToHoW: this.isTrue(first.isForwardedtoHOW ?? row.isForwardedtoHOW),
+          // HoW
+          howRemarks: first.howRemarks || first.dealingHowRemarks || '',
+          forwardedToHoW: this.isTrue(
+            first.isForwardedtoHOW ?? row.isForwardedtoHOW,
+          ),
 
-        // Approval / Rejection
-        approvalRemarks: first.ApprovalRemarks || row.approvalRemarks || '',
-      }
+          // Approval / Rejection
+          approvalRemarks: first.ApprovalRemarks || row.approvalRemarks || '',
+        }
       : {
-        // No remarks row at all — still show the modal with inline app data
-        registrationNo: row.registrationNo,
-        applicationId: row.applicationId || '',
-        dealingUId: '',
-        counsellingRemarks: row.counsellingRemarks || '',
-        counsellingDate: row.counsellingDate || '',
-        counsellingDone: this.isTrue(row.counsellingStatus),
-        facultyRemarks: '',
-        hodRemarks: '',
-        forwardedToHOD: this.isTrue(row.isForwardtoHOD),
-        howRemarks: '',
-        forwardedToHoW: this.isTrue(row.isForwardedtoHOW),
-        approvalRemarks: row.approvalRemarks || '',
-      };
+          // No remarks row at all — still show the modal with inline app data
+          registrationNo: row.registrationNo,
+          applicationId: row.applicationId || '',
+          dealingUId: '',
+          counsellingRemarks: row.counsellingRemarks || '',
+          counsellingDate: row.counsellingDate || '',
+          counsellingDone: this.isTrue(row.counsellingStatus),
+          facultyRemarks: '',
+          hodRemarks: '',
+          forwardedToHOD: this.isTrue(row.isForwardtoHOD),
+          howRemarks: '',
+          forwardedToHoW: this.isTrue(row.isForwardedtoHOW),
+          approvalRemarks: row.approvalRemarks || '',
+        };
 
     // ── All rows → one evaluation card each in the modal ────────────────────
     // Keep every row that has at least one evaluation mark populated.
     this.selectedRemarksEvaluations = allRows.filter(
-      r => r.academicsMarks != null && r.academicsMarks !== ''
+      (r) => r.academicsMarks != null && r.academicsMarks !== '',
     );
 
     // alert(JSON.stringify(this.selectedRemarksEvaluations));
@@ -1520,28 +1694,39 @@ export class DynamicDashboardComponent implements OnInit {
       backdrop: 'static',
       keyboard: false,
     });
-    this.currentModalRef.result.catch(() => { });
+    this.currentModalRef.result.catch(() => {});
     this.cd.detectChanges();
   }
 
   /** Returns true if any remark type has content for this row. */
   hasAnyRemarks(row: Application): boolean {
-    const r = this.AllAuthorityRemarks.find(x => x.registrationNo === row.registrationNo);
+    const r = this.AllAuthorityRemarks.find(
+      (x) => x.registrationNo === row.registrationNo,
+    );
     return !!(
       row.counsellingRemarks ||
       r?.counsellingRemarks ||
-      r?.dealingUserInterviewRemarks || r?.facultyRemarks ||
-      r?.dealingHODRemarks || r?.hodRemarks ||
-      r?.dealingHowRemarks || r?.howRemarks ||
+      r?.dealingUserInterviewRemarks ||
+      r?.facultyRemarks ||
+      r?.dealingHODRemarks ||
+      r?.hodRemarks ||
+      r?.dealingHowRemarks ||
+      r?.howRemarks ||
       r?.ApprovalRemarks ||
       row.approvalRemarks ||
       r?.academicsMarks
     );
   }
   hasAnyERemarks(row: Application): boolean {
-    const r = this.AllAuthorityRemarks.find(x => x.dealingUserInterviewRemarks.length > 0 || x.dealingHODInterviewRemarks.length > 0);
+    const r = this.AllAuthorityRemarks.find(
+      (x) =>
+        x.dealingUserInterviewRemarks.length > 0 ||
+        x.dealingHODInterviewRemarks.length > 0,
+    );
     return !!(
-      row._isFaculty || row._isHOD || row._isHoW ||
+      row._isFaculty ||
+      row._isHOD ||
+      row._isHoW ||
       r?.dealingUserInterviewRemarks ||
       r?.dealingHODInterviewRemarks
     );
@@ -1577,24 +1762,39 @@ export class DynamicDashboardComponent implements OnInit {
 
   private stopLoader(startTime: number): void {
     const elapsed = Date.now() - startTime;
-    setTimeout(() => {
-      this.loadingIndicator = false;
-      this.cd.detectChanges();
-    }, Math.max(this.minLoadingTime - elapsed, 0));
+    setTimeout(
+      () => {
+        this.loadingIndicator = false;
+        this.cd.detectChanges();
+      },
+      Math.max(this.minLoadingTime - elapsed, 0),
+    );
   }
 
   // ── Form Control Getters ──────────────────────────────────────────────────────
 
-  get evaluationFormControls() { return this.EvaluationForm.controls; }
-  get counsellingRemarksFormControls() { return this.CounsellingRemarksForm.controls; }
-  get addRemarksFormControls() { return this.AddRemarksForm.controls; }
-  get addUniversitySelectedFormControls() { return this.AcceptForm.controls; }
+  get evaluationFormControls() {
+    return this.EvaluationForm.controls;
+  }
+  get counsellingRemarksFormControls() {
+    return this.CounsellingRemarksForm.controls;
+  }
+  get addRemarksFormControls() {
+    return this.AddRemarksForm.controls;
+  }
+  get addUniversitySelectedFormControls() {
+    return this.AcceptForm.controls;
+  }
 
   // ── Error Helper ──────────────────────────────────────────────────────────────
 
   private LoginFailed(error: any): void {
     this.isLoginFailed = true;
-    Swal.fire({ title: 'Login Failed', text: 'Login details are invalid', icon: 'warning' });
+    Swal.fire({
+      title: 'Login Failed',
+      text: 'Login details are invalid',
+      icon: 'warning',
+    });
     const el = document.getElementById('DealingUserDashboardId');
     if (el) el.hidden = true;
     this.cd.detectChanges();
@@ -1604,28 +1804,25 @@ export class DynamicDashboardComponent implements OnInit {
   documents: any[] = [];
 
   downloadDocument(fileName: string) {
-
     if (!fileName) {
       return;
     }
 
-    window.open(
-      this.SERVER_URL + fileName,
-      '_blank'
-    );
-
+    window.open(this.SERVER_URL + fileName, '_blank');
   }
-  //  for Counsellor to Approved / Reject the Document uploaded 
+  //  for Counsellor to Approved / Reject the Document uploaded
   SelectedDocuments: any;
   viewAllDocuments(row: Application): void {
-    const allRows: Application[] = this.AllApplications?.filter(
-      x => x.registrationNo === row.registrationNo
-    ) ?? [];
+    const allRows: Application[] =
+      this.AllApplications?.filter(
+        (x) => x.registrationNo === row.registrationNo,
+      ) ?? [];
 
     // 1. Get all individual document approvals matching this application
-    const appDocsApprovalList = this.AllApprovedDocuments?.filter(
-      x => x.applicationId == row.applicationId
-    ) ?? [];
+    const appDocsApprovalList =
+      this.AllApprovedDocuments?.filter(
+        (x) => x.applicationId == row.applicationId,
+      ) ?? [];
 
     // console.log('appDocsApprovalList **--', JSON.stringify(this.AllApprovedDocuments));
 
@@ -1638,11 +1835,13 @@ export class DynamicDashboardComponent implements OnInit {
 
     const getDocStatus = (docTypeParam: string): DocApprovalInfo => {
       const key = normaliseDocKey(docTypeParam);
-      const matchedDoc = appDocsApprovalList.find(d => normaliseDocKey(d.documentName) === key);
+      const matchedDoc = appDocsApprovalList.find(
+        (d) => normaliseDocKey(d.documentName) === key,
+      );
       return {
         isApproved: matchedDoc?.approvalStatus || '',
         approvalRemarks: matchedDoc?.approvalRemarks || '',
-        approvedBy: matchedDoc?.approvedBy || ''
+        approvedBy: matchedDoc?.approvedBy || '',
       };
     };
 
@@ -1653,7 +1852,7 @@ export class DynamicDashboardComponent implements OnInit {
     // added later — gets matched the same case-insensitive way, instead of
     // a hand-maintained keyword per document.
     const approvalByKey: { [approvalKey: string]: DocApprovalInfo } = {};
-    this.documentRows.forEach(doc => {
+    this.documentRows.forEach((doc) => {
       approvalByKey[doc.approvalKey] = getDocStatus(doc.docTypeParam);
     });
 
@@ -1664,13 +1863,21 @@ export class DynamicDashboardComponent implements OnInit {
         dealingUId: first.dealingUId || row.dealingUId || '',
 
         // Document paths / filenames
-        resumeFileName: first.resumeDocumentPath || row.resumeDocumentPath || '',
-        consentLetterDocumentPath: first.consentLetterDocumentPath || row.consentLetterDocumentPath || '',
-        feesProofDocumentPath: first.feesProofDocumentPath || row.feesProofDocumentPath || '',
-        passportDocumentPath: first.passportDocumentPath || row.passportDocumentPath || '',
-        englishProofDocumentPath: first.englishProofDocumentPath || row.englishProofDocumentPath || '',
+        resumeFileName:
+          first.resumeDocumentPath || row.resumeDocumentPath || '',
+        consentLetterDocumentPath:
+          first.consentLetterDocumentPath ||
+          row.consentLetterDocumentPath ||
+          '',
+        feesProofDocumentPath:
+          first.feesProofDocumentPath || row.feesProofDocumentPath || '',
+        passportDocumentPath:
+          first.passportDocumentPath || row.passportDocumentPath || '',
+        englishProofDocumentPath:
+          first.englishProofDocumentPath || row.englishProofDocumentPath || '',
         affidavitPath: first.affidavitPath || row.affidavitPath || '',
-        indeminityBondPath: first.indeminityBondPath || row.indeminityBondPath || '',
+        indeminityBondPath:
+          first.indeminityBondPath || row.indeminityBondPath || '',
         offerLetterPath: first.offerLetterPath || row.offerLetterPath || '',
         outBoundTicket: first.outBoundTicket || row.outBoundTicket || '',
         returnTicketPath: first.returnTicketPath || row.returnTicketPath || '',
@@ -1682,7 +1889,7 @@ export class DynamicDashboardComponent implements OnInit {
         // Fallback variables for backwards compatibility if needed elsewhere
         isApproved: appDocsApprovalList[0]?.approvalStatus || '',
         approvalRemarks: appDocsApprovalList[0]?.approvalRemarks || '',
-        approvedBy: appDocsApprovalList[0]?.approvedBy || ''
+        approvedBy: appDocsApprovalList[0]?.approvedBy || '',
       };
     } else {
       this.SelectedDocuments = {
@@ -1700,7 +1907,7 @@ export class DynamicDashboardComponent implements OnInit {
         returnTicketPath: row.returnTicketPath || '',
         visaDocumentPath: row.visaDocumentPath || '',
         // Per-document approval info, keyed by DocumentRowConfig.approvalKey
-        ...approvalByKey
+        ...approvalByKey,
       };
     }
     // console.log('SelectedDocuments', JSON.stringify(this.SelectedDocuments));
@@ -1710,7 +1917,7 @@ export class DynamicDashboardComponent implements OnInit {
       backdrop: 'static',
       keyboard: false,
     });
-    this.currentModalRef.result.catch(() => { });
+    this.currentModalRef.result.catch(() => {});
     this.cd.detectChanges();
   }
 
@@ -1718,8 +1925,12 @@ export class DynamicDashboardComponent implements OnInit {
    * Handles the approval logic for a specific document
    * @param docType string identifier for the document type
    */
-  approveDocument(FileName: string, DocumentName: any, ApplicationId: any, Action: any): void {
-
+  approveDocument(
+    FileName: string,
+    DocumentName: any,
+    ApplicationId: any,
+    Action: any,
+  ): void {
     Swal.fire({
       title: `${Action} Action`,
       text: `Application ${ApplicationId}`,
@@ -1736,11 +1947,8 @@ export class DynamicDashboardComponent implements OnInit {
       },
 
       allowOutsideClick: () => !Swal.isLoading(),
-
     }).then((result) => {
-
       if (result.isConfirmed && result.value) {
-
         this.loadingIndicator = true;
         const startTime = Date.now();
 
@@ -1752,74 +1960,59 @@ export class DynamicDashboardComponent implements OnInit {
         fd.append('ApprovalRemarks', result.value);
         fd.append('Action', Action);
 
-        this.studentService.UpdateDocumentStatus(fd)
+        this.studentService
+          .UpdateDocumentStatus(fd)
           .pipe(finalize(() => this.stopLoader(startTime)))
           .subscribe({
-
             next: (data: any) => {
-
               const msg = data?.item1?.[0]?.msg;
 
               if (msg === 'Approved') {
-
                 Swal.fire(
                   'Success!',
                   'Application accepted successfully!',
-                  'success'
+                  'success',
                 ).then(() => {
                   this.modalService.dismissAll();
                   this.getSEAllApplications();
                 });
-
               } else if (msg === 'Disapproved') {
-
                 Swal.fire(
                   'Rejected!',
                   'The Document was rejected.',
-                  'info'
+                  'info',
                 ).then(() => {
                   window.location.reload();
                 });
-
               } else {
-
                 Swal.fire(
                   'Error!',
                   'Failed to accept application.',
-                  'error'
+                  'error',
                 ).then(() => {
                   window.location.reload();
                 });
-
               }
-
             },
 
             error: () => {
-
               Swal.fire(
                 'Error!',
                 'An error occurred while trying to accept the application.',
-                'error'
+                'error',
               ).then(() => {
                 window.location.reload();
               });
-
-            }
-
+            },
           });
-
       }
-
     });
-
   }
   /**
    * Handles the rejection logic for a specific document
    * @param docType string identifier for the document type
    */
   rejectDocument(docType: string): void {
-
     // 1. Update local UI state
     // this.selectedRemarks.documentStatuses[docType] = 'REJECTED';
 
@@ -1827,7 +2020,6 @@ export class DynamicDashboardComponent implements OnInit {
     const reason = prompt(`Enter reason for rejecting the ${docType}:`);
     if (reason !== null) {
       // this.selectedRemarks.documentStatuses[`${docType}Reason`] = reason;
-
       // 2. Add your backend API update logic here
       // this.documentService.updateStatus(this.selectedRemarks.id, docType, 'REJECTED', reason)
       //   .subscribe(...);
@@ -1835,7 +2027,6 @@ export class DynamicDashboardComponent implements OnInit {
   }
 
   getApplicationStatus(row: any): string {
-
     const isApproved = row?.isApproved;
     const approvedUniversity = row?.approvedUniversity;
 
@@ -1852,13 +2043,11 @@ export class DynamicDashboardComponent implements OnInit {
 
     // APPROVED
     if (
-      (
-        isApproved === true ||
+      (isApproved === true ||
         isApproved === 'True' ||
         isApproved === 'true' ||
         isApproved === 1 ||
-        isApproved === '1'
-      ) &&
+        isApproved === '1') &&
       approvedUniversity !== null &&
       approvedUniversity !== undefined &&
       String(approvedUniversity).trim() !== ''
@@ -1870,11 +2059,9 @@ export class DynamicDashboardComponent implements OnInit {
     return 'Pending';
   }
   getApplicationStatusClass(row: any): string {
-
     const status = this.getApplicationStatus(row);
 
     switch (status) {
-
       case 'Approved':
         return 'bg-success';
 

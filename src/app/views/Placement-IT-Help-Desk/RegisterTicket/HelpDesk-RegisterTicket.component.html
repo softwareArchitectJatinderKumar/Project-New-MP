@@ -263,8 +263,22 @@
                           <td class="fw-semibold text-dark">{{ ticket.subject }}</td>
                           <td class="text-muted" style="max-width: 200px;">{{ ticket.description }}</td>
                           <td>
-                            <a *ngIf="ticket.filePath; else noFile" [href]="ticket.filePath" target="_blank" class="text-decoration-none">View File</a>
-                            <ng-template #noFile><span class="text-muted">&mdash;</span></ng-template>
+                            <!-- <a *ngIf="ticket.filePath; else noFile" [href]="ticket.filePath" target="_blank" class="text-decoration-none">View File</a>
+                            <ng-template #noFile><span class="text-muted">&mdash;</span></ng-template> -->
+
+
+                            <ng-container *ngIf="ticket.filePath; else NoFile">
+                                                        <!-- <td> <a class="btn btn-dark me-2" [href]="ticket.filePath"
+                                                                target="_blank"> <i class="bi bi-eye"></i>
+                                                            </a> </td> -->
+ <button class="btn btn-secondary ms-3" (click)="onDownloadFile(ticket.filePath)"
+                                [disabled]="ticket.filePath<1">
+                                <i class="bi bi-download"></i>
+                            </button>
+                                                    </ng-container>
+                                                    <ng-template #NoFile>
+                                                        <td> No Doc Uploaded </td>
+                                                    </ng-template>
                           </td>
                           <td>
                             <span class="badge" [class.bg-success]="ticket.status === 'Closed'"

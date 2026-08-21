@@ -150,7 +150,7 @@
           </div>
         </div>
         <div class="row g-3">
-  
+
 
 
           <!-- Is Active (Update Mode Only) -->
@@ -218,178 +218,125 @@
     <div class="card-header bg-primary text-white">
       <h5 class="mb-0">Existing Mappings Details</h5>
     </div>
-    <div class="card-body p-0">
+    <div class="card-body p-3">
       <!-- Search and Filter Bar -->
-      <div class="p-3 d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center">
-          <label class="me-2 mb-0">Search:</label>
-          <input class="form-control me-3" style="width: 240px;" placeholder="Search..."
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-4 d-flex align-items-center">
+          <label class="me-2 mb-0 fw-bold">Search:</label>
+          <input class="form-control" placeholder="Search mappings..."
             (input)="onSearch($any($event.target).value)">
-          <label class="me-2 mb-0">Per page:</label>
-          <select class="form-select" style="width: 100px;" (change)="onPageSizeChange($any($event.target).value)">
+        </div>
+        <div class="col-md-5 d-flex align-items-center">
+          <label class="me-2 mb-0 fw-bold">Per page:</label>
+          <select class="form-select w-auto me-3" (change)="onPageSizeChange($any($event.target).value)">
             <option *ngFor="let s of pageSizes" [value]="s" [selected]="s == selectedPageSize">{{ s }}</option>
           </select>
-          <button class="btn btn-secondary ms-3" (click)="exportToExcel()" [disabled]="totalRecords<1">
-            Export to Excel
+          <button class="btn btn-secondary" (click)="exportToExcel()" [disabled]="totalRecords < 1">
+            <i class="mdi mdi-file-excel me-1"></i> Export to Excel
           </button>
         </div>
-        <div class="text-muted">Total: {{ totalRecords }}</div>
-      </div>
-
-      <!-- Table -->
-      <div class="table-responsive">
-        <table class="table table-striped table-hover mb-0">
-          <thead class="bg-secondary text-white">
-            <tr>
-              <th *ngFor="let col of tableColumns"><span class="text-dark">{{ col }}</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let record of displayedData$ | async">
-              <td *ngFor="let col of tableColumns">
-                <ng-container [ngSwitch]="col">
-
-                  <!-- ID -->
-                  <ng-container *ngSwitchCase="'id'">
-                    {{ $any(record)['id'] }}
-                  </ng-container>
-
-                  <!-- Head UID -->
-                  <ng-container *ngSwitchCase="'headUID'">
-                    {{ getEmployeeDisplay($any(record)['headUID']) }}
-                  </ng-container>
-
-                  <!-- Assistant UID -->
-                  <ng-container *ngSwitchCase="'assistantUID'">
-                    {{ getEmployeeDisplay($any(record)['assistantUID']) }}
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'AssistantUID'">
-                    {{ getEmployeeDisplay($any(record)['AssistantUID']) }}
-                  </ng-container>
-
-                  <!-- Session ID (New) -->
-                  <ng-container *ngSwitchCase="'sessionId'">
-                    {{ getSessionDisplay($any(record)['sessionId']) }}
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'SessionId'">
-                    {{ getSessionDisplay($any(record)['SessionId']) }}
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'SessionID'">
-                    {{ getSessionDisplay($any(record)['SessionID']) }}
-                  </ng-container>
-
-                  <!-- Start Date (New) -->
-                  <ng-container *ngSwitchCase="'startDate'">
-                    {{ getDateDisplay($any(record)['startDate']) }}
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'StartDate'">
-                    {{ getDateDisplay($any(record)['StartDate']) }}
-                  </ng-container>
-
-                  <!-- End Date (New) -->
-                  <ng-container *ngSwitchCase="'endDate'">
-                    {{ getDateDisplay($any(record)['endDate']) }}
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'EndDate'">
-                    {{ getDateDisplay($any(record)['EndDate']) }}
-                  </ng-container>
-
-                  <!-- Is Active -->
-                  <ng-container *ngSwitchCase="'isActive'">
-                    <span class="badge" [ngClass]="$any(record)['isActive'] ? 'bg-success' : 'bg-danger'">
-                      {{ $any(record)['isActive'] ? 'Active' : 'Inactive' }}
-                    </span>
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'IsActive'">
-                    <span class="badge" [ngClass]="$any(record)['IsActive'] ? 'bg-success' : 'bg-danger'">
-                      {{ $any(record)['IsActive'] ? 'Active' : 'Inactive' }}
-                    </span>
-                  </ng-container>
-
-                  <!-- Metric ID -->
-                  <ng-container *ngSwitchCase="'metricId'">
-                    {{ getMetricDescriptionDisplay($any(record)['metricId']) }}
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'MetricId'">
-                    {{ getMetricDescriptionDisplay($any(record)['MetricId']) }}
-                  </ng-container>
-
-                  <!-- Head UID -->
-                  <ng-container *ngSwitchCase="'HeadUID'">
-                    {{ getEmployeeDisplay($any(record)['HeadUID']) }}
-                  </ng-container>
-
-                  <!-- Type -->
-                  <ng-container *ngSwitchCase="'type'">
-                    {{ $any(record)['type'] }}
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'Type'">
-                    {{ $any(record)['Type'] }}
-                  </ng-container>
-
-                  <!-- School ID -->
-                  <ng-container *ngSwitchCase="'SchoolID'">
-                    {{ getSchoolNamesDisplay($any(record)['SchoolID']) }}
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'SchoolId'">
-                    {{ getSchoolNamesDisplay($any(record)['SchoolId']) }}
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'schoolId'">
-                    {{ getSchoolNamesDisplay($any(record)['schoolId']) }}
-                  </ng-container>
-
-                  <!-- School Division IDs -->
-                  <ng-container *ngSwitchCase="'SchoolDivisionIDs'">
-                    {{ getSchoolNamesDisplay($any(record)['SchoolDivisionIDs']) }}
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'SchoolDivisionIds'">
-                    {{ getSchoolNamesDisplay($any(record)['SchoolDivisionIds']) }}
-                  </ng-container>
-
-                  <!-- School Ids -->
-                  <ng-container *ngSwitchCase="'SchoolIds'">
-                    {{ getSchoolNamesDisplay($any(record)['SchoolIds']) }}
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'schoolIds'">
-                    {{ getSchoolNamesDisplay($any(record)['schoolIds']) }}
-                  </ng-container>
-
-                  <!-- Actions -->
-                  <ng-container *ngSwitchCase="'Actions'">
-                    <button type="button" class="btn  btn-info me-1 p-2" (click)="onEdit(record)">
-                      <i class="mdi mdi-pencil"></i>
-                    </button>
-                    <button type="button" class="btn btn-danger p-2" (click)="onDelete(record)">
-                      <i class="mdi mdi-trash-can"></i>
-                    </button>
-                  </ng-container>
-
-                  <!-- Default -->
-                  <ng-container *ngSwitchDefault>
-                    {{ $any(record)[col] }}
-                  </ng-container>
-                </ng-container>
-              </td>
-            </tr>
-          </tbody>
-          <tfoot *ngIf="(displayedData$ | async)?.length === 0">
-            <tr>
-              <td [attr.colspan]="tableColumns.length" class="text-center text-muted">No records found.</td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-
-      <!-- Pagination -->
-      <div class="d-flex justify-content-between align-items-center p-3">
-        <div>
-          <button class="btn btn-dark me-2" [disabled]="currentPage <= 1"
-            (click)="goToPage(currentPage - 1)">Prev</button>
-          <button class="btn btn-dark bg-primary" [disabled]="currentPage >= totalPages"
-            (click)="goToPage(currentPage + 1)">Next</button>
+        <div class="col-md-3 text-end text-muted">
+          Total: <strong>{{ totalRecords }}</strong>
         </div>
-        <div>Page {{ currentPage }} / {{ totalPages }}</div>
       </div>
+
+      <!-- ngx-datatable -->
+      <ngx-datatable
+        class="bootstrap table table-striped material"
+        [rows]="filteredHeadMappingData"
+        [loadingIndicator]="loadingIndicator"
+        [columnMode]="ColumnMode.force"
+        [footerHeight]="50"
+        [limit]="selectedPageSize === 'All' ? (filteredHeadMappingData.length || 1) : +selectedPageSize"
+        [headerHeight]="50"
+        [rowHeight]="'auto'"
+        [scrollbarH]="true"
+        [messages]="{ emptyMessage: 'No records found', totalMessage: 'total' }">
+
+        <!-- ID -->
+        <ngx-datatable-column name="ID" prop="id" [width]="70">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{ row.id || row.Id }}
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Planner Session -->
+        <ngx-datatable-column name="Planner Session" [width]="170">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{ getSessionDisplay(row.sessionId || row.SessionId || row.sessionID) }}
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Head UID -->
+        <ngx-datatable-column name="Head UID" [width]="190">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{ getEmployeeDisplay(row.headUID || row.HeadUID || row.headUid) }}
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Assistant UID -->
+        <ngx-datatable-column name="Assistant UID" [width]="190">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{ getEmployeeDisplay(row.assistantUID || row.AssistantUID || row.assistantUid) }}
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Metric -->
+        <ngx-datatable-column name="Metric ID & Description" [width]="240">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{ getMetricDescriptionDisplay(row.metricId || row.MetricId || row.metricid) }}
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Type -->
+        <ngx-datatable-column name="Type" [width]="80">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <span class="badge bg-secondary">{{ row.type || row.Type || 'PA' }}</span>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- School Division -->
+        <ngx-datatable-column name="School Division" [width]="180">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{ getSchoolNamesDisplay(row.SchoolID || row.schoolID || row.SchoolDivisionIDs || row.SchoolIds || row.schoolIds) }}
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Start Date -->
+        <ngx-datatable-column name="Start Date" [width]="120">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{ getDateDisplay(row.startDate || row.StartDate) }}
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- End Date -->
+        <ngx-datatable-column name="End Date" [width]="120">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{ getDateDisplay(row.endDate || row.EndDate) }}
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Status -->
+        <ngx-datatable-column name="Status" [width]="100">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <span class="badge" [ngClass]="(row.isActive || row.IsActive) ? 'bg-success' : 'bg-danger'">
+              {{ (row.isActive || row.IsActive) ? 'Active' : 'Inactive' }}
+            </span>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Actions -->
+        <ngx-datatable-column name="Actions" [sortable]="false" [width]="110">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <button type="button" class="btn btn-info btn-sm p-1 " (click)="onEdit(row)" title="Edit">
+              <i class="mdi mdi-pencil ms-1 me-1"></i>
+            </button>
+            <button type="button" class="btn btn-danger btn-sm p-1" (click)="onDelete(row)" title="Inactive">
+              <i class="mdi mdi-trash-can ms-1 me-1"></i>
+            </button>
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
     </div>
   </div>
 </div>

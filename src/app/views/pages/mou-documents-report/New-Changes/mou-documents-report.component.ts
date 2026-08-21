@@ -326,7 +326,7 @@ export class MouDocumentsReportComponent implements OnInit {
   ngOnInit(): void {
     (<HTMLInputElement>document.getElementById('stMain')).innerHTML = '<span class="themeClr">MOU </span> Document <span class="themeClr">Approvals</span>';
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
-    this.serverUrl = 'https://files.lpu.in/umsweb/MOUDocuments/';
+    this.serverUrl = 'https://files.lpu.in/umsweb/MOUDocuments/'; //Placements
     this.loadingIndicator = false;
     const loginName = this.route.snapshot.params['loginName'];
     if (loginName != '' && loginName != undefined) {
