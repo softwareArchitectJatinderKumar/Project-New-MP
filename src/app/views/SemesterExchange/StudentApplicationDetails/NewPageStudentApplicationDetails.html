@@ -94,9 +94,9 @@
       <div class="col-md-4 mt-3 mb-3">
         <label class="form-label fw-semibold">{{ doc.label }}</label>
         <div class="d-flex align-items-center gap-2" *ngIf="hasDocument(doc.key); else NoUpload">
-          <a class="btn btn-outline-primary btn-sm" [href]="getDocumentUrl(doc.key)" target="_blank" rel="noopener">
+          <button type="button" class="btn btn-outline-primary btn-sm" (click)="onDownloadFile(stuApplication?.[doc.key])">
             <span class="material-icons md-18">description</span> View Uploaded
-          </a>
+          </button>
         </div>
         <ng-template #NoUpload>
           <p class="text-muted">No document uploaded.</p>

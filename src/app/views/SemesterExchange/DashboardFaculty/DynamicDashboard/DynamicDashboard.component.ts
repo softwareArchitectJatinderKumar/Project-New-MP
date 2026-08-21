@@ -840,7 +840,7 @@ export class DynamicDashboardComponent implements OnInit {
             const emp = response.item1[0];
             this.EmployeeDetails = emp;
             this.EmployeeName = emp.employeeName;
-            this.EmployeeCode = '30922'; // String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859 // 22413
+            this.EmployeeCode = String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859 // 22413
             this.ContactNoX = emp.contactNo;
             this.Department = emp.department;
             this.DepartmentName = emp.departmentName;
@@ -1803,12 +1803,60 @@ export class DynamicDashboardComponent implements OnInit {
 
   documents: any[] = [];
 
-  downloadDocument(fileName: string) {
-    if (!fileName) {
+  downloadDocument(fileName: any) {
+    const fileStr = String(fileName ?? '').trim();
+    if (!fileStr || ['na', 'n/a', 'none', 'null', 'undefined'].includes(fileStr.toLowerCase())) {
+      Swal.fire({
+        title: 'File Not Found',
+        text: 'No document file is available for download.',
+        icon: 'info',
+      });
       return;
     }
 
-    window.open(this.SERVER_URL + fileName, '_blank');
+    const fullUrl = fileStr.startsWith('http://') || fileStr.startsWith('https://')
+      ? fileStr
+      : `${this.SERVER_URL}${fileStr}`;
+
+    Swal.fire({
+      title: 'Downloading...',
+      text: 'Please wait while your document is being retrieved.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading(null);
+      },
+    });
+
+    this.studentService.downloadFile(fullUrl).subscribe({
+      next: (blob: Blob) => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+
+        const name = fileStr.split('/').pop() || 'Document.pdf';
+        link.download = name;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        Swal.close();
+      },
+      error: async (err) => {
+        Swal.close();
+        if (err?.error instanceof Blob) {
+          try {
+            const errorMsg = JSON.parse(await err.error.text());
+            Swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+          } catch {
+            Swal.fire('Error', 'Download failed', 'error');
+          }
+        } else {
+          Swal.fire('Error', 'Could not connect to the server or download file', 'error');
+        }
+      },
+    });
   }
   //  for Counsellor to Approved / Reject the Document uploaded
   SelectedDocuments: any;

@@ -21,6 +21,8 @@ import {
   from '../../models/application.models';
 import Swal from 'sweetalert2';
 
+import { SemesterExchangeStuDetailsService } from 'src/app/_services/semester-exchange-stu-details.service';
+
 /**
  * Stage I Documents — dedicated component (separated out of the former
  * combined Stage1/Stage2 view). Shows every Stage I document required from
@@ -48,7 +50,10 @@ export class Stage1DocumentComponent implements OnChanges {
   private fileInputs = new Map<FileSelectedEvent['key'], HTMLInputElement>();
   private wasParentLoading = false;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private studentService: SemesterExchangeStuDetailsService,
+  ) {}
 
   /** Once a document has been Approved or Rejected, its upload/replace input is disabled. */
   isUploadDisabled(documentName: string): boolean {
@@ -59,6 +64,64 @@ export class Stage1DocumentComponent implements OnChanges {
   approvalLabel(documentName: string): string {
     console.log(this.documentApprovals)
     return documentApprovalLabel(this.documentApprovals, documentName);
+  }
+
+
+
+  viewFile(fileName: any): void {
+    const fileStr = String(fileName ?? '').trim();
+    if (!fileStr || ['na', 'n/a', 'none', 'null', 'undefined'].includes(fileStr.toLowerCase())) {
+      Swal.fire({
+        title: 'File Not Found',
+        text: 'No document file is available for download.',
+        icon: 'info',
+      });
+      return;
+    }
+
+    const fullUrl = fileStr.startsWith('http://') || fileStr.startsWith('https://')
+      ? fileStr
+      : `${this.localServerUrl}${fileStr}`;
+
+    Swal.fire({
+      title: 'Downloading...',
+      text: 'Please wait while your document is being retrieved.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading(null);
+      },
+    });
+
+    this.studentService.downloadFile(fullUrl).subscribe({
+      next: (blob: Blob) => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+
+        const name = fileStr.split('/').pop() || 'Document.pdf';
+        link.download = name;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        Swal.close();
+      },
+      error: async (err) => {
+        Swal.close();
+        if (err?.error instanceof Blob) {
+          try {
+            const errorMsg = JSON.parse(await err.error.text());
+            Swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+          } catch {
+            Swal.fire('Error', 'Download failed', 'error');
+          }
+        } else {
+          Swal.fire('Error', 'Could not connect to the server or download file', 'error');
+        }
+      },
+    });
   }
 
   readonly docKeys: Array<{
@@ -99,10 +162,7 @@ export class Stage1DocumentComponent implements OnChanges {
     return !!this.getUploadedPath(doc);
   }
 
-  viewFile(fileName: string): void {
-    if (!fileName) return;
-    window.open(this.localServerUrl + fileName, '_blank');
-  }
+
 
   getStageDocument(documentName: string): StageDetailRow | undefined {
     return this.stagesDetail.find(x =>

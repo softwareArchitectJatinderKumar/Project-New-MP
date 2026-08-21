@@ -208,19 +208,14 @@ export class ApprovedApplicationComponent {
     return { raw: file, fileName: file.name, base64 };
   }
 
+  activeTab: 'application'| 'stage1' | 'stage2' = 'stage1';
+  currentStep = 0;
+  /** Drives the transition loader shown while moving between wizard steps or nav tabs. */
+  isSwitching = false;
 
+  private readonly transitionDelayMs = 350;
 
-
-
-  
-    activeTab: 'application'| 'stage1' | 'stage2' = 'stage1';
-    currentStep = 0;
-    /** Drives the transition loader shown while moving between wizard steps or nav tabs. */
-    isSwitching = false;
-  
-    private readonly transitionDelayMs = 350;
-  
-    constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef) {}
   
     nextStep(): void {
       if (this.isEditingStep[this.currentStep]) {

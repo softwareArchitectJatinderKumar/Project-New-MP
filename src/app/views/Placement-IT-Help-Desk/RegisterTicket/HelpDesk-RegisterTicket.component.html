@@ -4,8 +4,8 @@
     <nav>
       <div class="nav nav-tabs nav nav-tabs d-flex justify-content-center active" id="nav-tab" role="tablist">
         <button class="btn me-5 active" id="NewTicketsForm-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
-          data-bs-target="#NewTicketsForm" type="button" role="tab" aria-controls="NewTicketsForm" (click)="loadAllData()"
-          aria-selected="true"><label style="font-size:1.2rem;">New Ticket </label></button>
+          data-bs-target="#NewTicketsForm" type="button" role="tab" aria-controls="NewTicketsForm"
+          (click)="loadAllData()" aria-selected="true"><label style="font-size:1.2rem;">New Ticket </label></button>
 
         <button class=" btn btn-lg ms-5" id="MyAllNewTicketsForm-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
           data-bs-target="#MyAllNewTicketsForm" type="button" role="tab" aria-controls="MyAllNewTicketsForm"
@@ -97,8 +97,8 @@
                             <label class="form-label fw-bold text-uppercase"
                               style="font-size: 0.75rem; letter-spacing: 0.5px;">Subject <span
                                 class="text-danger">*</span></label>
-                            <input class="form-control bg-light" placeholder="Enter subject..." formControlName="subject"
-                              [class.is-invalid]="isInvalid('subject')" />
+                            <input class="form-control bg-light" placeholder="Enter subject..."
+                              formControlName="subject" [class.is-invalid]="isInvalid('subject')" />
                           </div>
 
 
@@ -106,8 +106,9 @@
                             <label class="form-label fw-bold text-uppercase"
                               style="font-size: 0.75rem; letter-spacing: 0.5px;">Description <span
                                 class="text-danger">*</span></label>
-                            <textarea class="form-control bg-light" rows="4" placeholder="Describe the issue in detail..."
-                              formControlName="description" [class.is-invalid]="isInvalid('description')"></textarea>
+                            <textarea class="form-control bg-light" rows="4"
+                              placeholder="Describe the issue in detail..." formControlName="description"
+                              [class.is-invalid]="isInvalid('description')"></textarea>
                           </div>
 
                           <!-- Row 3-->
@@ -152,8 +153,8 @@
                             <div class="border rounded p-3 bg-light" style="max-height: 150px; overflow-y: auto;"
                               [class.border-danger]="isInvalid('responsibleUsers')">
                               <div class="form-check mb-2" *ngFor="let user of mockResponsibleUsers">
-                                <input class="form-check-input" type="checkbox" [value]="user.id" [id]="'user-' + user.id"
-                                  [checked]="isResponsibleUserSelected(user.id)"
+                                <input class="form-check-input" type="checkbox" [value]="user.id"
+                                  [id]="'user-' + user.id" [checked]="isResponsibleUserSelected(user.id)"
                                   (change)="onResponsibleUserChange($event, user.id)">
                                 <label class="form-check-label text-secondary" style="font-size: 0.9rem;"
                                   [for]="'user-' + user.id">
@@ -169,8 +170,7 @@
                           <div class="col-12 mt-4 d-flex">
                             <button type="button" class="btn btn-light bg-light border me-3 px-4 fw-medium"
                               (click)="form.reset()">Reset</button>
-                            <button type="submit" class="btn btn-primary px-4 fw-medium" [disabled]="form.invalid"
-                            >
+                            <button type="submit" class="btn btn-primary px-4 fw-medium" [disabled]="form.invalid">
                               Submit Ticket &rarr;
                             </button>
                           </div>
@@ -188,208 +188,209 @@
 
 
       <div class="tab-pane fade" id="MyAllNewTicketsForm" role="tabpanel" aria-labelledby="MyAllNewTicketsForm-tab">
-      <div class="row vh-100 ">
+        <div class="row vh-100 ">
 
-        <div class="col-12 stretch-card">
-          <ng-container *ngIf="this.tickets.length > 0; else noRecords">
-            <div class="card shadow-sm mb-4">
-              <div class="card-header bg-white border-bottom py-3">
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-card-checklist text-primary fs-4"></i>
-                    <h5 class="mb-0 fw-bold text-dark">Placement Ticket Registration Details</h5>
-                    <span class="badge bg-primary bg-opacity-25 text-primary rounded-pill">{{ tickets.length }}</span>
-                  </div>
-
-                  <div class="d-flex align-items-center gap-3 ms-auto flex-wrap">
-                    <!-- Search Box -->
-                    <div style="min-width: 360px; max-width: 580px;">
-                      <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-white border-end-0">
-                          <i class="bi bi-search text-muted"></i>
-                        </span>
-                        <input type="text" class="form-control border-start-0 border-end-0 ps-2"
-                          [(ngModel)]="filterText" (ngModelChange)="filterData()"
-                          placeholder="Search tickets by ID, subject, menu...">
-                        <button class="btn btn-outline-secondary border-start-0 bg-white" type="button"
-                          *ngIf="filterText" (click)="clearSearch()">
-                          <i class="bi bi-x-lg text-muted"></i>
-                        </button>
-                      </div>
-                    </div>
-
-                    <!-- Export to Excel -->
-                    <button class="btn btn-sm btn-dark d-flex align-items-center gap-2" (click)="exportToExcel()">
-                      <i class="fas fa-file-excel"></i> Export to Excel
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="card-body p-0">
-                <div class="table-responsive p-4 pb-0">
-                  <table class="table table-hover align-middle custom-table mb-0">
-                    <thead class="table-light">
-                      <tr class="text-muted small fw-bold">
-                        <th>TICKET ID</th>
-                        <th>REQUEST FOR</th>
-                        <th>MAIN MENU</th>
-                        <th>SUBMENU</th>
-                        <th>PRIORITY</th>
-                        <th>SUBJECT</th>
-                        <th>DESCRIPTION</th>
-                        <th>FILE / DOCUMENT</th>
-                        <th>STATUS</th>
-                        <th>RESPONSIBLE USER</th>
-                        <th>ACTION</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <ng-container *ngIf="getRecordsForCurrentPage().length > 0; else noMatchingRecords">
-                        <tr *ngFor="let ticket of getRecordsForCurrentPage(); trackBy: trackByTicketId">
-                          <td>
-                            <span class="text-primary fw-bold">TKT-{{ ticket.id | number:'3.0' }}</span>
-                          </td>
-                          <td class="text-secondary">{{ ticket.requestFor }}</td>
-                          <td class="text-secondary">{{ ticket.mainMenu }}</td>
-                          <td class="text-secondary">{{ ticket.submenu }}</td>
-                          <td>
-                            <span class="priority-pill"
-                              [class.critical]="ticket.priority === 'High' || ticket.priority === 'CRITICAL'"
-                              [class.high]="ticket.priority === 'Medium'" [class.low]="ticket.priority === 'Low'">
-                              {{ ticket.priority || 'NORMAL' | uppercase }}
-                            </span>
-                          </td>
-                          <td class="fw-semibold text-dark">{{ ticket.subject }}</td>
-                          <td class="text-muted" style="max-width: 200px;">{{ ticket.description }}</td>
-                          <td>
-                            <!-- <a *ngIf="ticket.filePath; else noFile" [href]="ticket.filePath" target="_blank" class="text-decoration-none">View File</a>
-                            <ng-template #noFile><span class="text-muted">&mdash;</span></ng-template> -->
-
-
-                            <ng-container *ngIf="ticket.filePath; else NoFile">
-                                                        <!-- <td> <a class="btn btn-dark me-2" [href]="ticket.filePath"
-                                                                target="_blank"> <i class="bi bi-eye"></i>
-                                                            </a> </td> -->
- <button class="btn btn-secondary ms-3" (click)="onDownloadFile(ticket.filePath)"
-                                [disabled]="ticket.filePath<1">
-                                <i class="bi bi-download"></i>
-                            </button>
-                                                    </ng-container>
-                                                    <ng-template #NoFile>
-                                                        <td> No Doc Uploaded </td>
-                                                    </ng-template>
-                          </td>
-                          <td>
-                            <span class="badge" [class.bg-success]="ticket.status === 'Closed'"
-                              [class.bg-warning]="ticket.status === 'Open'">
-                              {{ ticket.status }}
-                            </span>
-                          </td>
-                          <td class="text-secondary small">{{ ticket.responsibleUserIds }}</td>
-                          <td>
-                            <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
-                              (click)="openDeleteModal(ticket)">
-                              <i class="bi bi-trash"></i> Delete
-                            </button>
-                          </td>
-                        </tr>
-                      </ng-container>
-                      <ng-template #noMatchingRecords>
-                        <tr>
-                          <td colspan="11" class="text-center py-5 text-muted">
-                            <i class="fas fa-info-circle fa-2x mb-2 text-secondary"></i>
-                            <p class="mb-0">No matching tickets found</p>
-                          </td>
-                        </tr>
-                      </ng-template>
-                    </tbody>
-                  </table>
-                </div>
-
-                <!-- Pagination / Footer Controls -->
-                <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top bg-light bg-opacity-50 flex-wrap gap-2" *ngIf="tickets.length > 0">
-                  <div class="text-muted small">
-                    Showing <span class="fw-semibold text-dark">{{ startRecord }}</span> to <span class="fw-semibold text-dark">{{ endRecord }}</span> of <span class="fw-semibold text-dark">{{ filteredTickets.length }}</span> entries
-                    <span *ngIf="filterText" class="text-muted fst-italic ms-1">(filtered from {{ tickets.length }} total entries)</span>
-                  </div>
-
-                  <div class="d-flex align-items-center gap-3">
+          <div class="col-12 stretch-card">
+            <ng-container *ngIf="this.tickets.length > 0; else noRecords">
+              <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom py-3">
+                  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                     <div class="d-flex align-items-center gap-2">
-                      <label for="recordsPerPageSelect" class="form-label small mb-0 text-muted text-nowrap">Items per page:</label>
-                      <select id="recordsPerPageSelect" class="form-select form-select-sm w-auto"
-                        [(ngModel)]="recordsPerPage" (change)="onRecordsPerPageChange()">
-                        <option *ngFor="let option of recordsPerPageOptions" [value]="option">{{ option }}</option>
-                      </select>
+                      <i class="bi bi-card-checklist text-primary fs-4"></i>
+                      <h5 class="mb-0 fw-bold text-dark">Placement Ticket Registration Details</h5>
+                      <span class="badge bg-primary bg-opacity-25 text-primary rounded-pill">{{ tickets.length }}</span>
                     </div>
 
-                    <div class="d-flex align-items-center gap-1">
-                      <button class="btn btn-outline-secondary btn-sm px-2 d-flex align-items-center gap-1" (click)="prevPage()" [disabled]="currentPage === 1">
-                        <i class="bi bi-chevron-left"></i> Previous
-                      </button>
-                      <ng-container *ngFor="let page of pageNumbers">
-                        <button class="btn btn-sm px-3" [class.btn-primary]="currentPage === page" [class.btn-outline-secondary]="currentPage !== page" (click)="changePage(page)">
-                          {{ page }}
-                        </button>
-                      </ng-container>
-                      <button class="btn btn-outline-secondary btn-sm px-2 d-flex align-items-center gap-1" (click)="nextPage()" [disabled]="currentPage >= totalPages">
-                        Next <i class="bi bi-chevron-right"></i>
+                    <div class="d-flex align-items-center gap-3 ms-auto flex-wrap">
+                      <!-- Search Box -->
+                      <div style="min-width: 360px; max-width: 580px;">
+                        <div class="input-group input-group-sm">
+                          <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search text-muted"></i>
+                          </span>
+                          <input type="text" class="form-control border-start-0 border-end-0 ps-2"
+                            [(ngModel)]="filterText" (ngModelChange)="filterData()"
+                            placeholder="Search tickets by ID, subject, menu...">
+                          <button class="btn btn-outline-secondary border-start-0 bg-white" type="button"
+                            *ngIf="filterText" (click)="clearSearch()">
+                            <i class="bi bi-x-lg text-muted"></i>
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Export to Excel -->
+                      <button class="btn btn-sm btn-dark d-flex align-items-center gap-2" (click)="exportToExcel()">
+                        <i class="fas fa-file-excel"></i> Export to Excel
                       </button>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </ng-container>
-          <ng-template #noRecords>
-            <div class="container-fluid">
-              <div class="card">
-                <div class="card-body">
-                  <label class="text-center fs-2 text-danger d-flex justify-content-center"> No Record(s) are
-                    Available .</label>
-                </div>
-              </div>
-            </div>
-          </ng-template>
-        </div>
-      </div>
-    </div>
-    </div>
+                <div class="card-body p-0">
+                  <div class="table-responsive p-4 pb-0">
+                    <table class="table table-hover align-middle custom-table mb-0">
+                      <thead class="table-light">
+                        <tr class="text-muted small fw-bold">
+                          <th>TICKET ID</th>
+                          <th>REQUEST FOR</th>
+                          <th>MAIN MENU</th>
+                          <th>SUBMENU</th>
+                          <th>PRIORITY</th>
+                          <th>SUBJECT</th>
+                          <th>DESCRIPTION</th>
+                          <th>FILE / DOCUMENT</th>
+                          <th>STATUS</th>
+                          <th>RESPONSIBLE USER</th>
+                          <th>ACTION</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <ng-container *ngIf="getRecordsForCurrentPage().length > 0; else noMatchingRecords">
+                          <tr *ngFor="let ticket of getRecordsForCurrentPage(); trackBy: trackByTicketId">
+                            <td>
+                              <span class="text-primary fw-bold">TKT-{{ ticket.id | number:'3.0' }}</span>
+                            </td>
+                            <td class="text-secondary">{{ ticket.requestFor }}</td>
+                            <td class="text-secondary">{{ ticket.mainMenu }}</td>
+                            <td class="text-secondary">{{ ticket.submenu }}</td>
+                            <td>
+                              <span class="priority-pill"
+                                [class.critical]="ticket.priority === 'High' || ticket.priority === 'CRITICAL'"
+                                [class.high]="ticket.priority === 'Medium'" [class.low]="ticket.priority === 'Low'">
+                                {{ ticket.priority || 'NORMAL' | uppercase }}
+                              </span>
+                            </td>
+                            <td class="fw-semibold text-dark">{{ ticket.subject }}</td>
+                            <td class="text-muted" style="max-width: 200px;">{{ ticket.description }}</td>
+                            <td>
 
 
+                              <ng-container *ngIf="ticket.filePath; else NoFile">
+
+                                <button class="btn btn-secondary ms-3" (click)="onDownloadFile(ticket.filePath)"
+                                  [disabled]="ticket.filePath<1">
+                                  <i class="bi bi-download"></i>
+                                </button>
+                              </ng-container>
+                              <ng-template #NoFile>
+                            <td> No Doc Uploaded </td>
+</ng-template>
+</td>
+<td>
+  <span class="badge" [class.bg-success]="ticket.status === 'Closed'" [class.bg-warning]="ticket.status === 'Open'">
+    {{ ticket.status }}
+  </span>
+</td>
+<td class="text-secondary small">{{ ticket.responsibleUserIds }}</td>
+<td>
+  <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
+    (click)="openDeleteModal(ticket)">
+    <i class="bi bi-trash"></i> Delete
+  </button>
+</td>
+</tr>
+</ng-container>
+<ng-template #noMatchingRecords>
+  <tr>
+    <td colspan="11" class="text-center py-5 text-muted">
+      <i class="fas fa-info-circle fa-2x mb-2 text-secondary"></i>
+      <p class="mb-0">No matching tickets found</p>
+    </td>
+  </tr>
+</ng-template>
+</tbody>
+</table>
+</div>
+
+<!-- Pagination / Footer Controls -->
+<div
+  class="d-flex justify-content-between align-items-center px-4 py-3 border-top bg-light bg-opacity-50 flex-wrap gap-2"
+  *ngIf="tickets.length > 0">
+  <div class="text-muted small">
+    Showing <span class="fw-semibold text-dark">{{ startRecord }}</span> to <span class="fw-semibold text-dark">{{
+      endRecord }}</span> of <span class="fw-semibold text-dark">{{ filteredTickets.length }}</span> entries
+    <span *ngIf="filterText" class="text-muted fst-italic ms-1">(filtered from {{ tickets.length }} total
+      entries)</span>
   </div>
 
-
-
-  <!-- Delete Ticket Modal -->
-  <ng-template #deleteTicketModal let-modal>
-    <div class="modal-header border-0 pb-0">
-      <h5 class="modal-title fw-bold text-dark">Delete Ticket</h5>
-      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  <div class="d-flex align-items-center gap-3">
+    <div class="d-flex align-items-center gap-2">
+      <label for="recordsPerPageSelect" class="form-label small mb-0 text-muted text-nowrap">Items per page:</label>
+      <select id="recordsPerPageSelect" class="form-select form-select-sm w-auto" [(ngModel)]="recordsPerPage"
+        (change)="onRecordsPerPageChange()">
+        <option *ngFor="let option of recordsPerPageOptions" [value]="option">{{ option }}</option>
+      </select>
     </div>
-    <div class="modal-body pt-3">
-      <p class="text-muted mb-4">Please provide remarks/reason to delete this ticket.</p>
 
-      <form [formGroup]="deleteTicketForm">
-        <div class="mb-3">
-          <label class="form-label fw-semibold text-secondary small">REMARKS <span class="text-danger">*</span></label>
-          <textarea class="form-control bg-light border-0 p-3" formControlName="remarks" rows="4"
-            placeholder="Enter delete remarks..."
-            [class.is-invalid]="deleteTicketForm.get('remarks')?.invalid && deleteTicketForm.get('remarks')?.touched">
+    <div class="d-flex align-items-center gap-1">
+      <button class="btn btn-outline-secondary btn-sm px-2 d-flex align-items-center gap-1" (click)="prevPage()"
+        [disabled]="currentPage === 1">
+        <i class="bi bi-chevron-left"></i> Previous
+      </button>
+      <ng-container *ngFor="let page of pageNumbers">
+        <button class="btn btn-sm px-3" [class.btn-primary]="currentPage === page"
+          [class.btn-outline-secondary]="currentPage !== page" (click)="changePage(page)">
+          {{ page }}
+        </button>
+      </ng-container>
+      <button class="btn btn-outline-secondary btn-sm px-2 d-flex align-items-center gap-1" (click)="nextPage()"
+        [disabled]="currentPage >= totalPages">
+        Next <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</ng-container>
+<ng-template #noRecords>
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-body">
+        <label class="text-center fs-2 text-danger d-flex justify-content-center"> No Record(s) are
+          Available .</label>
+      </div>
+    </div>
+  </div>
+</ng-template>
+</div>
+</div>
+</div>
+</div>
+
+
+</div>
+
+
+
+<!-- Delete Ticket Modal -->
+<ng-template #deleteTicketModal let-modal>
+  <div class="modal-header border-0 pb-0">
+    <h5 class="modal-title fw-bold text-dark">Delete Ticket</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body pt-3">
+    <p class="text-muted mb-4">Please provide remarks/reason to delete this ticket.</p>
+
+    <form [formGroup]="deleteTicketForm">
+      <div class="mb-3">
+        <label class="form-label fw-semibold text-secondary small">REMARKS <span class="text-danger">*</span></label>
+        <textarea class="form-control bg-light border-0 p-3" formControlName="remarks" rows="4"
+          placeholder="Enter delete remarks..."
+          [class.is-invalid]="deleteTicketForm.get('remarks')?.invalid && deleteTicketForm.get('remarks')?.touched">
         </textarea>
-          <div *ngIf="deleteTicketForm.get('remarks')?.invalid && deleteTicketForm.get('remarks')?.touched"
-            class="invalid-feedback">Remarks are required to delete the ticket.</div>
-        </div>
-      </form>
-    </div>
-    <div class="modal-footer border-0 pt-0">
-      <button type="button" class="btn btn-light" (click)="modal.dismiss()">Cancel</button>
-      <button type="button" class="btn btn-danger px-4" (click)="submitDeleteTicket(modal)">Delete</button>
-    </div>
-  </ng-template>
+        <div *ngIf="deleteTicketForm.get('remarks')?.invalid && deleteTicketForm.get('remarks')?.touched"
+          class="invalid-feedback">Remarks are required to delete the ticket.</div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer border-0 pt-0">
+    <button type="button" class="btn btn-light" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-danger px-4" (click)="submitDeleteTicket(modal)">Delete</button>
+  </div>
+</ng-template>
 
-  <ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" [fullScreen]="true" size="default" type="ball-spin-clockwise">
-     <img src="assets/images/spinner.gif" alt="Loading..." />
-      <p>Loading...</p>
-  </ngx-spinner>
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" [fullScreen]="true" size="default" type="ball-spin-clockwise">
+  <img src="assets/images/spinner.gif" alt="Loading..." />
+  <p>Loading...</p>
+</ngx-spinner>
 </ng-template>

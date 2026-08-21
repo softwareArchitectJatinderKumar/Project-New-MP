@@ -115,7 +115,63 @@ export class StudentApplicationDetailsComponent implements OnInit {
     (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
   }
 
-   DashboardVisit() {
+  onDownloadFile(remoteUrl: any): void {
+    const fileStr = String(remoteUrl ?? '').trim();
+    if (!fileStr || ['na', 'n/a', 'none', 'null', 'undefined'].includes(fileStr.toLowerCase())) {
+      Swal.fire({
+        title: 'File Not Found',
+        text: 'No document file is available for download.',
+        icon: 'info',
+      });
+      return;
+    }
+
+    const fullUrl = fileStr.startsWith('http://') || fileStr.startsWith('https://')
+      ? fileStr
+      : `${this.serverUrl}${fileStr}`;
+
+    Swal.fire({
+      title: 'Downloading...',
+      text: 'Please wait while your document is being retrieved.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading(null);
+      },
+    });
+
+    this.studentService.downloadFile(fullUrl).subscribe({
+      next: (blob: Blob) => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+
+        const fileName = fileStr.split('/').pop() || 'Document.pdf';
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        Swal.close();
+      },
+      error: async (err) => {
+        Swal.close();
+        if (err?.error instanceof Blob) {
+          try {
+            const errorMsg = JSON.parse(await err.error.text());
+            Swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+          } catch {
+            Swal.fire('Error', 'Download failed', 'error');
+          }
+        } else {
+          Swal.fire('Error', 'Could not connect to the server or download file', 'error');
+        }
+      },
+    });
+  }
+
+  DashboardVisit() {
     if (this.Role === 'Student') {
     this.router.navigateByUrl('StudentDashboard/' + this.LoginName + '/' + this.RegistrationNo);
   }

@@ -736,15 +736,60 @@ export class HODDashboardComponent implements OnInit {
 
 
 
-  viewDocument(documentPath: string) {
-    if (!documentPath || documentPath === 'undefined' || documentPath.trim() === '') {
-      alert('No document available.');
+  viewDocument(documentPath: any) {
+    const fileStr = String(documentPath ?? '').trim();
+    if (!fileStr || ['na', 'n/a', 'none', 'null', 'undefined'].includes(fileStr.toLowerCase())) {
+      Swal.fire({
+        title: 'File Not Found',
+        text: 'No document file is available for download.',
+        icon: 'info',
+      });
       return;
     }
-    // In real app, replace with the actual URL or blob viewer
-    alert(`Viewing document: ${documentPath}`);
-    // Example - open in new tab if URL present:
-    window.open(`${this.serverUrl}${documentPath}`, '_blank');
+
+    const fullUrl = fileStr.startsWith('http://') || fileStr.startsWith('https://')
+      ? fileStr
+      : `${this.serverUrl}${fileStr}`;
+
+    Swal.fire({
+      title: 'Downloading...',
+      text: 'Please wait while your document is being retrieved.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading(null);
+      },
+    });
+
+    this.studentService.downloadFile(fullUrl).subscribe({
+      next: (blob: Blob) => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+
+        const fileName = fileStr.split('/').pop() || 'Document.pdf';
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        Swal.close();
+      },
+      error: async (err) => {
+        Swal.close();
+        if (err?.error instanceof Blob) {
+          try {
+            const errorMsg = JSON.parse(await err.error.text());
+            Swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+          } catch {
+            Swal.fire('Error', 'Download failed', 'error');
+          }
+        } else {
+          Swal.fire('Error', 'Could not connect to the server or download file', 'error');
+        }
+      },
+    });
   }
 
   ApplicationId: any;

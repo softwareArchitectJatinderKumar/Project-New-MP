@@ -162,8 +162,8 @@
         <div class="d-flex align-items-center gap-2">
           <input type="file" (change)="onFileSelected($event, 'feesProofDocumentPath')" [disabled]="!isEditable"
             class="form-control" />
-          <a *ngIf="stuApplication?.feesProofDocumentPath !== 'undefined'" class="btn btn-outline-primary btn-sm"
-            [href]="serverUrl + stuApplication.feesProofDocumentPath" target="_blank">Download</a>
+          <button type="button" *ngIf="stuApplication?.feesProofDocumentPath && stuApplication?.feesProofDocumentPath !== 'undefined'" class="btn btn-outline-primary btn-sm"
+            (click)="onDownloadFile(stuApplication.feesProofDocumentPath)">Download</button>
         </div>
       </div>
 
@@ -173,8 +173,8 @@
         <div class="d-flex align-items-center gap-2">
           <input type="file" (change)="onFileSelected($event, 'resumeDocumentPath')" [disabled]="!isEditable"
             class="form-control" />
-          <a *ngIf="stuApplication?.resumeDocumentPath !== 'undefined'" class="btn btn-outline-primary btn-sm"
-            [href]="serverUrl + stuApplication.resumeDocumentPath" target="_blank">Download</a>
+          <button type="button" *ngIf="stuApplication?.resumeDocumentPath && stuApplication?.resumeDocumentPath !== 'undefined'" class="btn btn-outline-primary btn-sm"
+            (click)="onDownloadFile(stuApplication.resumeDocumentPath)">Download</button>
         </div>
       </div>
 
@@ -184,8 +184,8 @@
         <div class="d-flex align-items-center gap-2">
           <input type="file" (change)="onFileSelected($event, 'consentLetterDocumentPath')" [disabled]="!isEditable"
             class="form-control" />
-          <a *ngIf="stuApplication?.consentLetterDocumentPath !== 'undefined'" class="btn btn-outline-primary btn-sm"
-            [href]="serverUrl + stuApplication.consentLetterDocumentPath" target="_blank">Download</a>
+          <button type="button" *ngIf="stuApplication?.consentLetterDocumentPath && stuApplication?.consentLetterDocumentPath !== 'undefined'" class="btn btn-outline-primary btn-sm"
+            (click)="onDownloadFile(stuApplication.consentLetterDocumentPath)">Download</button>
         </div>
       </div>
     </div>

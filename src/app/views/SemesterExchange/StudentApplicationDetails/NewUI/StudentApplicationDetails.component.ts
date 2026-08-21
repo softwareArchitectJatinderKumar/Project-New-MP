@@ -171,6 +171,65 @@ export class StudentApplicationDetailsComponent implements OnInit, OnDestroy {
 
   printDetails(): void { window.print(); }
 
+  onDownloadFile(remoteUrl: any): void {
+    const urlStr = String(remoteUrl ?? '').trim();
+    if (!urlStr || ['na', 'n/a', 'none', 'null', 'undefined'].includes(urlStr.toLowerCase())) {
+      Swal.fire({
+        title: 'File Not Found',
+        text: 'No document file is available for download.',
+        icon: 'info',
+      });
+      return;
+    }
+
+    const fullUrl = urlStr.startsWith('http://') || urlStr.startsWith('https://')
+      ? urlStr
+      : `${this.serverUrl}${urlStr}`;
+
+    Swal.fire({
+      title: 'Downloading...',
+      text: 'Please wait while your document is being retrieved.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading(null);
+      },
+    });
+
+    this.studentService
+      .downloadFile(fullUrl)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (blob: Blob) => {
+          const downloadUrl = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+
+          const fileName = urlStr.split('/').pop() || 'Document.pdf';
+          link.download = fileName;
+
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(downloadUrl);
+
+          Swal.close();
+        },
+        error: async (err) => {
+          Swal.close();
+          if (err?.error instanceof Blob) {
+            try {
+              const errorMsg = JSON.parse(await err.error.text());
+              Swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+            } catch {
+              Swal.fire('Error', 'Download failed', 'error');
+            }
+          } else {
+            Swal.fire('Error', 'Could not connect to the server or download file', 'error');
+          }
+        },
+      });
+  }
+
   trackBySection(_: number, section: FormSection): string { return section.label; }
   trackByKey(_: number, key: string): string { return key; }
   trackByDocKey(_: number, doc: DocumentUpload): string { return doc.key; }

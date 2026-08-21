@@ -179,12 +179,12 @@
               <div class="doc-meta">
                 <div class="doc-label">{{ doc.label }}</div>
                 <ng-container *ngIf="application?.[doc.key]; else noUpload">
-                  <a class="doc-link"
-                     [href]="serverUrl + application![doc.key]"
-                     target="_blank"
-                     [attr.aria-label]="'View uploaded ' + doc.label">
+                  <button type="button"
+                          class="doc-link"
+                          (click)="onDownloadFile(application![doc.key])"
+                          [attr.aria-label]="'View uploaded ' + doc.label">
                     <i class="bi bi-eye" aria-hidden="true"></i> View
-                  </a>
+                  </button>
                 </ng-container>
                 <ng-template #noUpload>
                   <div class="doc-missing">No document uploaded</div>
