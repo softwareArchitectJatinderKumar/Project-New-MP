@@ -22,10 +22,10 @@
           <div class="col-md-3">
             <label for="plannerSession" class="form-label">Planner Session <span class="text-danger">*</span></label>
             <select id="plannerSession" class="form-select" (change)="onPlannerSessionChange($event)"
-              formControlName="SessionId">
+              formControlName="SessionId" [class.is-invalid]="mappingForm.get('SessionId')?.invalid && mappingForm.get('SessionId')?.touched">
               <option value="">-- Select a Planner Session --</option>
-              <option *ngFor="let session of allPlannerSessions" [value]="session.id">
-                {{ session.session }}
+              <option *ngFor="let session of allPlannerSessions" [value]="session.id || session.Id">
+                {{ session.session || session.sessionName || session.Session || session.SessionName || ('Session ' + (session.id || session.Id)) }}
               </option>
             </select>
             <div class="text-danger mt-1 small"
@@ -33,8 +33,8 @@
               Planner Session is required.
             </div>
             <div *ngIf="selectedPlannerSession" class="text-info mt-2 small">
-              Session Period: {{ getDateDisplay(selectedPlannerSession.startDate) }} to {{
-              getDateDisplay(selectedPlannerSession.endDate) }}
+              Session Period: {{ getDateDisplay(selectedPlannerSession.startDate || selectedPlannerSession.StartDate) }} to {{
+              getDateDisplay(selectedPlannerSession.endDate || selectedPlannerSession.EndDate) }}
             </div>
           </div>
           <!-- Head UID -->
@@ -43,7 +43,7 @@
             <div class="position-relative">
               <input type="text" id="HeadUID" name="HeadUID" required class="form-control" [formControl]="headControl"
                 placeholder="Search by name or code" (input)="onHeadInput()" (focus)="showHeadSuggestions = true"
-                (blur)="hideHeadSuggestions()" />
+                (blur)="hideHeadSuggestions()" (keydown)="onKeydown($event, 'head')" />
               <div class="text-danger mt-1 small"
                 *ngIf="mappingForm.get('HeadUID')?.invalid && mappingForm.get('HeadUID')?.touched">
                 Head UID is required.
@@ -58,7 +58,7 @@
                 </button>
               </div>
             </div>
-            <div *ngIf="AssignedToUid > 0" class="text-primary mt-2 small">
+            <div *ngIf="AssignedToUid" class="text-primary mt-2 small">
               Selected Head Id: <strong>{{ AssignedToUid }}</strong>
             </div>
           </div>
@@ -69,7 +69,8 @@
             <div class="position-relative">
               <input type="text" id="AssistantUID" name="AssistantUID" required class="form-control"
                 [formControl]="assistantControl" placeholder="Search by name or code" (input)="onAssistantInput()"
-                (focus)="showAssistantSuggestions = true" (blur)="hideAssistantSuggestions()" />
+                (focus)="showAssistantSuggestions = true" (blur)="hideAssistantSuggestions()"
+                (keydown)="onKeydown($event, 'assistant')" />
               <div class="text-danger mt-1 small"
                 *ngIf="mappingForm.get('AssistantUID')?.invalid && mappingForm.get('AssistantUID')?.touched">
                 Assistant UID is required.
@@ -84,7 +85,7 @@
                 </button>
               </div>
             </div>
-            <div *ngIf="AssistantUid > 0" class="text-primary mt-2 small">
+            <div *ngIf="AssistantUid" class="text-primary mt-2 small">
               Selected Assistant UID: <strong>{{ AssistantUid }}</strong>
             </div>
           </div>
@@ -106,7 +107,7 @@
                 <button type="button" class="list-group-item list-group-item-action"
                   *ngFor="let metric of filteredMetricData; let i = index"
                   [class.active]="i === activeMetricSuggestionIndex" (mousedown)="selectMetric(metric)">
-                  {{ metric.description }} ({{ metric.id }})
+                  {{ metric.id }} :: {{ metric.description }}
                 </button>
               </div>
             </div>
@@ -120,30 +121,14 @@
 
           <!-- Start Date (New) -->
           <div class="col-md-3">
-            <label for="startDate" class="form-label">Start Date <span class="text-danger">*</span></label>
-            <input type="date" id="startDate" class="form-control" formControlName="StartDate"
-              [class.is-invalid]="mappingForm.get('StartDate')?.invalid && mappingForm.get('StartDate')?.touched" />
-            <div class="invalid-feedback d-block"
-              *ngIf="mappingForm.get('StartDate')?.invalid && mappingForm.get('StartDate')?.touched">
-              <span *ngIf="mappingForm.get('StartDate')?.getError('required')">Start Date is required.</span>
-              <span *ngIf="mappingForm.get('StartDate')?.getError('startDateBeforeSession')">
-                Start Date must be on or after {{ selectedPlannerSession?.startDate | date:'short' }}.
-              </span>
-            </div>
+            <label for="startDate" class="form-label">Start Date <span class="text-muted">(Optional)</span></label>
+            <input type="date" id="startDate" class="form-control" formControlName="StartDate" />
           </div>
 
           <!-- End Date (New) -->
           <div class="col-md-3">
-            <label for="endDate" class="form-label">End Date <span class="text-danger">*</span></label>
-            <input type="date" id="endDate" class="form-control" formControlName="EndDate"
-              [class.is-invalid]="mappingForm.get('EndDate')?.invalid && mappingForm.get('EndDate')?.touched" />
-            <div class="invalid-feedback d-block"
-              *ngIf="mappingForm.get('EndDate')?.invalid && mappingForm.get('EndDate')?.touched">
-              <span *ngIf="mappingForm.get('EndDate')?.getError('required')">End Date is required.</span>
-              <span *ngIf="mappingForm.get('EndDate')?.getError('endDateBeforeSession')">
-                End Date must be on or after {{ selectedPlannerSession?.endDate | date:'short' }}.
-              </span>
-            </div>
+            <label for="endDate" class="form-label">End Date <span class="text-muted">(Optional)</span></label>
+            <input type="date" id="endDate" class="form-control" formControlName="EndDate" />
           </div>
             <!-- School Division -->
           <div class="col-md-3">
@@ -242,7 +227,7 @@
             (input)="onSearch($any($event.target).value)">
           <label class="me-2 mb-0">Per page:</label>
           <select class="form-select" style="width: 100px;" (change)="onPageSizeChange($any($event.target).value)">
-            <option *ngFor="let s of pageSizes" [value]="s" [selected]="s === pageSize">{{ s }}</option>
+            <option *ngFor="let s of pageSizes" [value]="s" [selected]="s == selectedPageSize">{{ s }}</option>
           </select>
           <button class="btn btn-secondary ms-3" (click)="exportToExcel()" [disabled]="totalRecords<1">
             Export to Excel
@@ -278,20 +263,35 @@
                   <ng-container *ngSwitchCase="'assistantUID'">
                     {{ getEmployeeDisplay($any(record)['assistantUID']) }}
                   </ng-container>
+                  <ng-container *ngSwitchCase="'AssistantUID'">
+                    {{ getEmployeeDisplay($any(record)['AssistantUID']) }}
+                  </ng-container>
 
                   <!-- Session ID (New) -->
                   <ng-container *ngSwitchCase="'sessionId'">
                     {{ getSessionDisplay($any(record)['sessionId']) }}
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'SessionId'">
+                    {{ getSessionDisplay($any(record)['SessionId']) }}
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'SessionID'">
+                    {{ getSessionDisplay($any(record)['SessionID']) }}
                   </ng-container>
 
                   <!-- Start Date (New) -->
                   <ng-container *ngSwitchCase="'startDate'">
                     {{ getDateDisplay($any(record)['startDate']) }}
                   </ng-container>
+                  <ng-container *ngSwitchCase="'StartDate'">
+                    {{ getDateDisplay($any(record)['StartDate']) }}
+                  </ng-container>
 
                   <!-- End Date (New) -->
                   <ng-container *ngSwitchCase="'endDate'">
                     {{ getDateDisplay($any(record)['endDate']) }}
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'EndDate'">
+                    {{ getDateDisplay($any(record)['EndDate']) }}
                   </ng-container>
 
                   <!-- Is Active -->
@@ -300,30 +300,58 @@
                       {{ $any(record)['isActive'] ? 'Active' : 'Inactive' }}
                     </span>
                   </ng-container>
+                  <ng-container *ngSwitchCase="'IsActive'">
+                    <span class="badge" [ngClass]="$any(record)['IsActive'] ? 'bg-success' : 'bg-danger'">
+                      {{ $any(record)['IsActive'] ? 'Active' : 'Inactive' }}
+                    </span>
+                  </ng-container>
 
                   <!-- Metric ID -->
                   <ng-container *ngSwitchCase="'metricId'">
                     {{ getMetricDescriptionDisplay($any(record)['metricId']) }}
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'MetricId'">
+                    {{ getMetricDescriptionDisplay($any(record)['MetricId']) }}
+                  </ng-container>
+
+                  <!-- Head UID -->
+                  <ng-container *ngSwitchCase="'HeadUID'">
+                    {{ getEmployeeDisplay($any(record)['HeadUID']) }}
                   </ng-container>
 
                   <!-- Type -->
                   <ng-container *ngSwitchCase="'type'">
                     {{ $any(record)['type'] }}
                   </ng-container>
+                  <ng-container *ngSwitchCase="'Type'">
+                    {{ $any(record)['Type'] }}
+                  </ng-container>
 
                   <!-- School ID -->
                   <ng-container *ngSwitchCase="'SchoolID'">
                     {{ getSchoolNamesDisplay($any(record)['SchoolID']) }}
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'SchoolId'">
+                    {{ getSchoolNamesDisplay($any(record)['SchoolId']) }}
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'schoolId'">
+                    {{ getSchoolNamesDisplay($any(record)['schoolId']) }}
                   </ng-container>
 
                   <!-- School Division IDs -->
                   <ng-container *ngSwitchCase="'SchoolDivisionIDs'">
                     {{ getSchoolNamesDisplay($any(record)['SchoolDivisionIDs']) }}
                   </ng-container>
+                  <ng-container *ngSwitchCase="'SchoolDivisionIds'">
+                    {{ getSchoolNamesDisplay($any(record)['SchoolDivisionIds']) }}
+                  </ng-container>
 
                   <!-- School Ids -->
                   <ng-container *ngSwitchCase="'SchoolIds'">
                     {{ getSchoolNamesDisplay($any(record)['SchoolIds']) }}
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'schoolIds'">
+                    {{ getSchoolNamesDisplay($any(record)['schoolIds']) }}
                   </ng-container>
 
                   <!-- Actions -->
