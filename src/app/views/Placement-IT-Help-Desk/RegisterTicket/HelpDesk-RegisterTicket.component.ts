@@ -1,6 +1,7 @@
 import {
   ChangeDetectorRef,
   Component,
+  ElementRef,
   EventEmitter,
   OnInit,
   TemplateRef,
@@ -402,6 +403,32 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
       });
   }
 
+  public resetForm(): void {
+    this.form.reset({
+      requestCategory: '',
+      subCategory: '',
+      subMenu: '',
+      priority: '',
+      subject: '',
+      description: '',
+      file: null,
+      srsRequired: false,
+      responsibleUsers: [],
+    });
+    this.form.get('subCategory')?.disable({ emitEvent: false });
+    this.form.get('subMenu')?.disable({ emitEvent: false });
+    this.subCategoryOptions = [];
+    this.subMenuOptions = [];
+    this.FileData = null;
+    this.FileName = null;
+    this.fileData = null as any;
+    this.fileStatus = false;
+    if (this.fileInput?.nativeElement) {
+      this.fileInput.nativeElement.value = '';
+    }
+    this.cdr.markForCheck();
+  }
+
   protected isInvalid(controlName: string): boolean {
     const control = this.form.get(controlName);
     return !!control && control.touched && control.invalid;
@@ -460,12 +487,16 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
               title: 'Error',
               text: item?.msg || item?.message || 'Failed to create ticket',
               icon: 'error',
+            }).then(() => {
+              window.location.reload();
             });
           }
         },
         error: () => {
           this.spinner.hide();
-          Swal.fire({ title: 'Something went Wrong', icon: 'error' });
+          Swal.fire({ title: 'Something went Wrong', icon: 'error' }).then(() => {
+            window.location.reload();
+          });
         },
       });
   }
@@ -512,17 +543,19 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
 
   private handleSubmitResult(ticket: HelpDeskTicket | null): void {
     if (!ticket) {
-      Swal.fire({ title: 'Something went Wrong', icon: 'error' });
+      Swal.fire({ title: 'Something went Wrong', icon: 'error' }).then(() => {
+        window.location.reload();
+      });
       return;
     }
     Swal.fire({
       title: 'Help Desk Request Registered Successfully',
       text: `Ticket ID: ${ticket.id}`,
       icon: 'success',
+    }).then(() => {
+      window.location.reload();
     });
-    this.form.reset({ requestCategory: '' });
-    this.subCategoryOptions = [];
-    this.subMenuOptions = [];
+    this.resetForm();
     this.refreshTickets();
   }
 
@@ -709,25 +742,32 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
     // );
   }
 
+  @ViewChild('fileInput') fileInput?: ElementRef<HTMLInputElement>;
+
   protected onResponsibleUserChange(event: Event, id: string): void {
     const isChecked = (event.target as HTMLInputElement).checked;
     const usersControl = this.form.get('responsibleUsers');
     if (!usersControl) return;
 
-    let currentUsers = usersControl.value as string[];
+    let currentUsers: string[] = Array.isArray(usersControl.value)
+      ? [...usersControl.value]
+      : [];
     if (isChecked) {
-      currentUsers = [...currentUsers, id];
+      if (!currentUsers.includes(id)) {
+        currentUsers = [...currentUsers, id];
+      }
     } else {
       currentUsers = currentUsers.filter((u) => u !== id);
     }
     usersControl.setValue(currentUsers);
     usersControl.markAsTouched();
+    this.cdr.markForCheck();
   }
 
   protected isResponsibleUserSelected(id: string): boolean {
     const usersControl = this.form.get('responsibleUsers');
-    if (!usersControl) return false;
-    return (usersControl.value as string[]).includes(id);
+    if (!usersControl || !Array.isArray(usersControl.value)) return false;
+    return usersControl.value.includes(id);
   }
 
   FileData: any;
