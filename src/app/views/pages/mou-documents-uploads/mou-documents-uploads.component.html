@@ -418,10 +418,13 @@
                                                         date:'dd/MM/yyyy'}} </td>
 
                                                     <ng-container *ngIf="DocumentRow.filePath; else NoFile">
-                                                        <td> <a class="btn btn-dark me-2" [href]="DocumentRow.filePath"
-                                                                target="_blank"> <i class="bi bi-eye"></i>
-                                                            </a> </td>
-
+                                                        <!-- <td> <a class="btn btn-dark me-2" [href]="DocumentRow.filePath"
+                                                                                                                    target="_blank"> <i class="bi bi-eye"></i>
+                                                                                                                </a> </td> -->
+                                                    
+                                                        <td><button class="btn btn-dark" (click)="onDownloadFile(DocumentRow.filePath)">
+                                                                <i class="bi bi-file-earmark-text"></i> </button></td>
+                                                    
                                                     </ng-container>
                                                     <ng-template #NoFile>
                                                         <td> No Doc Uploaded </td>
@@ -666,10 +669,11 @@
                                                         date:'dd/MM/yyyy'}} </td>
 
                                                     <ng-container *ngIf="DocumentRow.filePath; else NoFile">
-                                                        <td> <a class="btn btn-dark me-2" [href]="DocumentRow.filePath"
+                                                        <!-- <td> <a class="btn btn-dark me-2" [href]="DocumentRow.filePath"
                                                                 target="_blank"> <i class="bi bi-eye"></i>
-                                                            </a> </td>
-
+                                                            </a> </td> -->
+                                                              <td><button class="btn btn-dark" (click)="onDownloadFile(DocumentRow.filePath)">
+                                                                <i class="bi bi-file-earmark-text"></i> </button></td>  
                                                     </ng-container>
                                                     <ng-template #NoFile>
                                                         <td> No Doc Uploaded </td>
