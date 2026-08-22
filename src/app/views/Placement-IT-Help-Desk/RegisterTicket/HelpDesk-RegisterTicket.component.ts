@@ -837,7 +837,7 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
   dataSource: any;
 
   recordsPerPage: string = '10';
-  readonly recordsPerPageOptions: string[] = ['5', '10', '15', '20', 'All'];
+  readonly recordsPerPageOptions: string[] = ['5', '10', '15', '20', '25'];
 
   private matchesSearch(t: HelpDeskTicket, term: string): boolean {
     if (!term) return true;
