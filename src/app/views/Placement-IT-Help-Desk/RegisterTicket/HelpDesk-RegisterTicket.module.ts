@@ -43,7 +43,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     CommonModule,
     RouterModule.forChild(routes),
     FormsModule,
-    FeatherIconModule,
+    // FeatherIconModule,
     NgbDropdownModule,
     NgbDatepickerModule,
     NgApexchartsModule,

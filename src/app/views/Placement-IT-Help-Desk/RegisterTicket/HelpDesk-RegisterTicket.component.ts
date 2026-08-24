@@ -39,6 +39,7 @@ import {
   HelpDeskSearchCriteria,
   HelpDeskTicket, HelpDeskStaffDetails
 } from 'src/app/_model/help-desk.model';
+import { forkJoin } from 'rxjs';
 
 export interface TicketDeleteRequest {
   ticket: HelpDeskTicket;
@@ -124,7 +125,7 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
       '164px';
     const loginName = this.route.snapshot.paramMap.get('loginName');
     if (loginName) {
-      this.loadStaff();
+   
       this.authenticate(loginName);
     } else {
       // this.GetEmployeeDetails();
@@ -320,6 +321,7 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
         this.storageService.saveUser(data);
 
         this.GetEmployeeDetails();
+        this.loadStaff();
       },
       error: () => {
         this.spinner.hide();
@@ -373,6 +375,8 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
           }));
           this.tickets = mappedTickets;
           this.filteredTickets = mappedTickets;
+          this.selectedTicketIds = [];
+          this.isBulkDelete = false;
           this.loading = false;
           this.spinner.hide();
           this.cdr.markForCheck();
@@ -572,6 +576,8 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
           }));
           this.tickets = mappedTickets;
           this.filteredTickets = mappedTickets;
+          this.selectedTicketIds = [];
+          this.isBulkDelete = false;
           this.hasActiveFilter = false;
           this.searchText = '';
           this.currentPage = 1;
@@ -959,18 +965,81 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
   });
 
   private ticketPendingDelete: HelpDeskTicket | null = null;
+  protected selectedTicketIds: string[] = [];
+  protected isBulkDelete: boolean = false;
 
   trackByTicketId(_index: number, ticket: HelpDeskTicket): number {
     return ticket.id;
   }
 
-  openDeleteModal(ticket: HelpDeskTicket): void {
-    this.ticketPendingDelete = ticket;
+  isAllSelected(): boolean {
+    const currentPageRecords = this.getRecordsForCurrentPage();
+    if (currentPageRecords.length === 0) return false;
+    return currentPageRecords.every((t) =>
+      this.selectedTicketIds.includes(String(t.id))
+    );
+  }
+
+  toggleAll(event: Event): void {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    const currentPageRecords = this.getRecordsForCurrentPage();
+    const pageIds = currentPageRecords.map((t) => String(t.id));
+    if (isChecked) {
+      const set = new Set([...this.selectedTicketIds, ...pageIds]);
+      this.selectedTicketIds = Array.from(set);
+    } else {
+      this.selectedTicketIds = this.selectedTicketIds.filter(
+        (id) => !pageIds.includes(id)
+      );
+    }
+    this.cdr.markForCheck();
+  }
+
+  toggleSelection(ticketId: any, event: Event): void {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    const current = [...this.selectedTicketIds];
+    const idStr = String(ticketId);
+    if (isChecked) {
+      if (!current.includes(idStr)) {
+        current.push(idStr);
+        this.selectedTicketIds = current;
+      }
+    } else {
+      this.selectedTicketIds = current.filter((id) => id !== idStr);
+    }
+    this.cdr.markForCheck();
+  }
+
+  isTicketSelected(ticketId: any): boolean {
+    return this.selectedTicketIds.includes(String(ticketId));
+  }
+
+  openBulkDeleteModal(): void {
+    if (this.selectedTicketIds.length === 0) {
+      swal.fire('Warning', 'Please select at least one ticket to delete.', 'warning');
+      return;
+    }
+    this.isBulkDelete = true;
+    this.ticketPendingDelete = null;
     this.deleteTicketForm.reset({ remarks: '' });
-    // this.modalService.open({ centered: true });
 
     this.modalService
-      .open(this.deleteTicketModal, { size: 'xl', backdrop: 'static' })
+      .open(this.deleteTicketModal, { size: 'lg', backdrop: 'static' })
+      .result.then(() => {
+        setTimeout(() => {
+          window.dispatchEvent(new Event('resize'));
+        }, 200);
+      })
+      .catch(() => { });
+  }
+
+  openDeleteModal(ticket: HelpDeskTicket): void {
+    this.isBulkDelete = false;
+    this.ticketPendingDelete = ticket;
+    this.deleteTicketForm.reset({ remarks: '' });
+
+    this.modalService
+      .open(this.deleteTicketModal, { size: 'lg', backdrop: 'static' })
       .result.then(() => {
         setTimeout(() => {
           window.dispatchEvent(new Event('resize'));
@@ -984,13 +1053,52 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
       this.deleteTicketForm.markAllAsTouched();
       return;
     }
-    if (!this.ticketPendingDelete) return;
     const remarks = this.deleteTicketForm.value.remarks ?? '';
+
+    if (this.isBulkDelete) {
+      if (this.selectedTicketIds.length === 0) return;
+      this.spinner.show();
+      const requests = this.selectedTicketIds.map((id) => {
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('Id', id);
+        formData.append('Action', 'Delete');
+        formData.append('Remarks', remarks);
+        formData.append('LoginName', this.createdBy || this.EmployeeCode || '');
+        return this.placementService.PlacementHelpDeskTicketsCrudOperations(formData);
+      });
+
+      forkJoin(requests).subscribe({
+        next: (_responses: any[]) => {
+          this.spinner.hide();
+          swal.fire(
+            'Success',
+            `${this.selectedTicketIds.length} ticket(s) deleted successfully`,
+            'success'
+          );
+          this.selectedTicketIds = [];
+          this.isBulkDelete = false;
+          this.refreshTickets();
+          modal.close();
+        },
+        error: () => {
+          this.spinner.hide();
+          swal.fire('Error', 'An error occurred while deleting selected tickets.', 'error');
+          this.refreshTickets();
+          modal.close();
+        }
+      });
+      return;
+    }
+
+    if (!this.ticketPendingDelete) return;
 
     const formData = new FormData();
     formData.append('id', this.ticketPendingDelete.id.toString());
+    formData.append('Id', this.ticketPendingDelete.id.toString());
     formData.append('Action', 'Delete');
     formData.append('Remarks', remarks);
+    formData.append('LoginName', this.createdBy || this.EmployeeCode || '');
 
     this.spinner.show();
     this.placementService
@@ -1015,6 +1123,10 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
                 text: item.msg || item.message || 'Ticket deleted successfully',
                 icon: 'success',
               });
+              if (this.ticketPendingDelete) {
+                const deletedId = String(this.ticketPendingDelete.id);
+                this.selectedTicketIds = this.selectedTicketIds.filter(id => id !== deletedId);
+              }
               this.refreshTickets();
             }
           }
@@ -1029,7 +1141,6 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
         },
       });
 
-    // this.deleteTicket.emit({ ticket: this.ticketPendingDelete, remarks });
     this.ticketPendingDelete = null;
     modal.close();
   }

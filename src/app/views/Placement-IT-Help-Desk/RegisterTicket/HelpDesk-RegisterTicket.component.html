@@ -216,7 +216,13 @@
                           </button>
                         </div>
                       </div>
-      
+
+                      <!-- Delete Selected Button -->
+                      <button class="btn btn-sm btn-danger d-flex align-items-center gap-2" *ngIf="selectedTicketIds.length > 0"
+                        (click)="openBulkDeleteModal()">
+                        <i class="bi bi-trash"></i> Delete Selected ({{ selectedTicketIds.length }})
+                      </button>
+
                       <!-- Export to Excel -->
                       <button class="btn btn-sm btn-dark d-flex align-items-center gap-2" (click)="exportToExcel()">
                         <i class="fas fa-file-excel"></i> Export to Excel
@@ -229,6 +235,10 @@
                     <table class="table table-hover align-middle custom-table mb-0">
                       <thead class="table-light">
                         <tr class="text-muted small fw-bold">
+                          <th style="width: 40px;">
+                            <input type="checkbox" class="form-check-input" (change)="toggleAll($event)"
+                              [checked]="isAllSelected()">
+                          </th>
                           <th>TICKET ID</th>
                           <th>REQUEST FOR</th>
                           <th>MAIN MENU</th>
@@ -244,7 +254,12 @@
                       </thead>
                       <tbody>
                         <ng-container *ngIf="getRecordsForCurrentPage().length > 0; else noMatchingRecords">
-                          <tr *ngFor="let ticket of getRecordsForCurrentPage(); trackBy: trackByTicketId">
+                          <tr *ngFor="let ticket of getRecordsForCurrentPage(); trackBy: trackByTicketId"
+                            [class.table-active]="isTicketSelected(ticket.id)">
+                            <td style="width: 40px;">
+                              <input type="checkbox" class="form-check-input" (change)="toggleSelection(ticket.id, $event)"
+                                [checked]="isTicketSelected(ticket.id)">
+                            </td>
                             <td>
                               <span class="text-primary fw-bold">TKT-{{ ticket.id | number:'3.0' }}</span>
                             </td>
@@ -291,7 +306,7 @@
                         </ng-container>
                         <ng-template #noMatchingRecords>
                           <tr>
-                            <td colspan="11" class="text-center py-5 text-muted">
+                            <td colspan="12" class="text-center py-5 text-muted">
                               <i class="fas fa-info-circle fa-2x mb-2 text-secondary"></i>
                               <p class="mb-0">No matching tickets found</p>
                             </td>
@@ -367,11 +382,15 @@
 <!-- Delete Ticket Modal -->
 <ng-template #deleteTicketModal let-modal>
   <div class="modal-header border-0 pb-0">
-    <h5 class="modal-title fw-bold text-dark">Delete Ticket</h5>
+    <h5 class="modal-title fw-bold text-dark">
+      {{ isBulkDelete ? 'Delete Multiple Tickets (' + selectedTicketIds.length + ')' : 'Delete Ticket' }}
+    </h5>
     <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
   </div>
   <div class="modal-body pt-3">
-    <p class="text-muted mb-4">Please provide remarks/reason to delete this ticket.</p>
+    <p class="text-muted mb-4">
+      {{ isBulkDelete ? 'Please provide remarks/reason to delete the ' + selectedTicketIds.length + ' selected tickets.' : 'Please provide remarks/reason to delete this ticket.' }}
+    </p>
 
     <form [formGroup]="deleteTicketForm">
       <div class="mb-3">
@@ -387,7 +406,9 @@
   </div>
   <div class="modal-footer border-0 pt-0">
     <button type="button" class="btn btn-light" (click)="modal.dismiss()">Cancel</button>
-    <button type="button" class="btn btn-danger px-4" (click)="submitDeleteTicket(modal)">Delete</button>
+    <button type="button" class="btn btn-danger px-4" (click)="submitDeleteTicket(modal)">
+      {{ isBulkDelete ? 'Delete (' + selectedTicketIds.length + ')' : 'Delete' }}
+    </button>
   </div>
 </ng-template>
 
