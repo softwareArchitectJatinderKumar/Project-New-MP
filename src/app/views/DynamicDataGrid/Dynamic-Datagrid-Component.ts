@@ -26,7 +26,7 @@ export class DataGridComponent implements OnInit, AfterViewInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   
-  pageSizeOptions: number[] = [5, 10, 25, 50, 100];
+  pageSizeOptions: number[] = [5, 10, 25, 50];
   searchText: string = '';
 
   constructor() { }

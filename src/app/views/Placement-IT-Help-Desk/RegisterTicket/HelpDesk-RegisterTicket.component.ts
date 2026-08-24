@@ -37,7 +37,7 @@ import { HelpDeskApi } from 'src/app/_services/help-desk-api';
 import { NgxSpinnerService } from 'ngx-spinner';
 import {
   HelpDeskSearchCriteria,
-  HelpDeskTicket,
+  HelpDeskTicket, HelpDeskStaffDetails
 } from 'src/app/_model/help-desk.model';
 
 export interface TicketDeleteRequest {
@@ -63,7 +63,7 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
   private readonly spinner = inject(NgxSpinnerService);
   protected readonly requestCategoryOptions = ['UMS', 'Placement'];
   protected readonly priorityOptions = ['Low', 'Medium', 'High'];
-  protected readonly serverUrl = 'https://files.lpu.in/umsweb/Placements/DraftAnalysis/'; // https://files.lpu.in/umsweb/placements/RAGGuidelines.pdf 
+  protected readonly serverUrl ='https://files.lpu.in/Placements/DraftAnalysis/';//'http://172.19.2.206/umsweb/Placements/DraftAnalysis/';// 'https://files.lpu.in/Placements/DraftAnalysis/'; // https://files.lpu.in/umsweb/placements/RAGGuidelines.pdf 
   protected readonly mockResponsibleUsers = [
     { id: '31309', name: 'Jatinder Kumar (Staff)' },
     { id: '33138', name: 'Mohd Danish (Staff)' },
@@ -77,6 +77,7 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
   protected loading = false;
 
   protected tickets: HelpDeskTicket[] = [];
+  protected ResponsibleStaff: HelpDeskStaffDetails[] = [];
   protected filteredTickets: HelpDeskTicket[] = [];
 
   protected searchText = '';
@@ -123,6 +124,7 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
       '164px';
     const loginName = this.route.snapshot.paramMap.get('loginName');
     if (loginName) {
+      this.loadStaff();
       this.authenticate(loginName);
     } else {
       // this.GetEmployeeDetails();
@@ -130,58 +132,37 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
     }
   }
 
-  // ngOnInit(): void {
-  //   (<HTMLInputElement>document.getElementById('stMain')).innerHTML =
-  //     'Placement IT Support <span class="themeClr" >Help Desk  </span> Registration Form';
-  //   (<HTMLInputElement>document.getElementById('imgLogo')).style.width =
-  //     '164px';
-  //   let loginName = this.route.snapshot.params['loginName'];
-  //   const now = new Date();
-  //   this.today = now.toISOString().split('T')[0];
-  //   if (loginName != '' && loginName != undefined) {
-  //     this.getToken(loginName);
-  //   }
-  // }
 
-  // getToken(id: any) {
-  //   this.authService.loginTemp(id).subscribe({
-  //     next: (data) => {
-  //       this.storageService.saveUser(data);
-  //       this.GetEmployeeDetails();
-  //     },
-  //     error: (_err) => {
-  //       this.LoginFailed(_err);
-  //     },
-  //   });
-  // }
-  // LoginFailed(_NewError: any) {
-  //   this.isLoginFailed = true;
-  //   swal.fire({
-  //     title: 'Login Failed',
-  //     text: 'Login details are Invalid!',
-  //     icon: 'warning',
-  //   });
-  //   // const element = document.getElementById('EventCalenders');
-  //   // if (element) {
-  //   //   element.hidden = true;
-  //   // }
-  // }
+  public loadStaff(): void {
+    this.loading = true;
+    this.spinner.show();
+    const formData = new FormData();
+    formData.append('Action', 'GetStaff');
 
-  // constructor() {
-  //   this.form
-  //     .get('requestCategory')
-  //     ?.valueChanges.subscribe((value) => this.onRequestCategoryChange(value));
-  //   this.form
-  //     .get('subCategory')
-  //     ?.valueChanges.subscribe((value) => this.onSubCategoryChange(value));
+    this.placementService
+      .PlacementHelpDeskGetStaff(formData)
+      .subscribe({
+        next: (res: any) => {
+          const data = res?.item1 || res || [];
+          const mappedStaff: HelpDeskStaffDetails[] = data.map((item: any) => ({
+            EmployeeName: item.employeeName || item.EmployeeName,
+            EmployeeCode: item.employeeCode || item.EmployeeCode,
+            Department: item.department || item.Department,
+          }));
+          this.ResponsibleStaff = mappedStaff;
+          this.loading = false;
+          this.spinner.hide();
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          Swal.fire('Error', 'Failed to load staff.', 'error');
+          this.loading = false;
+          this.spinner.hide();
+          this.cdr.markForCheck();
+        },
+      });
+  }
 
-  //   const loginName = this.route.snapshot.params['loginName'];
-  //   if (loginName) {
-  //     this.authenticate(loginName);
-  //   } else {
-  //     this.handleAccessDenied();
-  //   }
-  // }
   private LoadForm(): void {
     this.form
       .get('requestCategory')
@@ -190,6 +171,8 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
       .get('subCategory')
       ?.valueChanges.subscribe((value) => this.onSubCategoryChange(value));
   }
+
+
   EmployeeDetails: any[] = [];
   EmployeeName: string = '';
   EmployeeCode: string = '';
@@ -250,11 +233,11 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
             id: String(item.menuId || item.MenuId || item),
             name: String(
               item.menuName ||
-                item.MenuId ||
-                item.Name ||
-                item.name ||
-                item.text ||
-                item,
+              item.MenuId ||
+              item.Name ||
+              item.name ||
+              item.text ||
+              item,
             ),
           }));
           this.subCategoryOptions = options;
@@ -300,11 +283,11 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
             id: String(item.menuId || item.MenuId || item),
             name: String(
               item.menuName ||
-                item.MenuName ||
-                item.Name ||
-                item.name ||
-                item.text ||
-                item,
+              item.MenuName ||
+              item.Name ||
+              item.name ||
+              item.text ||
+              item,
             ),
           }));
           if (options.length === 0) {
@@ -609,10 +592,10 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
     this.filteredTickets = !lower
       ? this.tickets
       : this.tickets.filter((ticket) =>
-          Object.values(ticket).some(
-            (v) => v != null && String(v).toLowerCase().includes(lower),
-          ),
-        );
+        Object.values(ticket).some(
+          (v) => v != null && String(v).toLowerCase().includes(lower),
+        ),
+      );
     this.currentPage = 1;
   }
 
@@ -868,7 +851,7 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
       ) ||
       Boolean(
         t.responsibleUserIds &&
-          String(t.responsibleUserIds).toLowerCase().includes(q),
+        String(t.responsibleUserIds).toLowerCase().includes(q),
       )
     );
   }
@@ -993,7 +976,7 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
           window.dispatchEvent(new Event('resize'));
         }, 200);
       })
-      .catch(() => {});
+      .catch(() => { });
   }
 
   submitDeleteTicket(modal: any): void {
@@ -1116,5 +1099,5 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
   }
 
   //downloadMOUFileWithFolder
- 
+
 }

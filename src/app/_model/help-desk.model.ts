@@ -21,6 +21,12 @@ export interface HelpDeskTicket {
   updatedBy?: string;
   isSrsRequired?: boolean | string | number | null;
 }
+export interface HelpDeskStaffDetails {
+ EmployeeName: string;
+ EmployeeCode: string;
+ Department: string;
+ 
+}
 
 export type NewHelpDeskTicket = Omit<HelpDeskTicket, 'id' | 'createdAt'>;
 
