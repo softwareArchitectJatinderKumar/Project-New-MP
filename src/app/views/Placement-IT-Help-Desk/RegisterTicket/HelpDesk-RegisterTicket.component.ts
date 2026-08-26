@@ -196,14 +196,14 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
           this.loadingIndicator = false;
           this.showNoDataFoundMessage = false;
           this.isAccessDenied = false;
-          this.isLoginFailed = false; // <-- Ensure this is reset on success
+          this.isLoginFailed = false;  
           this.LoadForm();
           this.loadAllData();
         } else {
           this.EmployeeDetails = [];
           this.showNoDataFoundMessage = true;
           this.spinner.hide();
-          this.handleAccessDenied(); // <-- Call handleAccessDenied() instead of manual flags
+          this.handleAccessDenied();  
         }
       },
       error: (err) => {

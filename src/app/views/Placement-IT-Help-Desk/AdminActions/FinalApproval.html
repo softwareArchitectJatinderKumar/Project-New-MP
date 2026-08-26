@@ -94,7 +94,7 @@
               <th class="border-0">FILE</th>
               <th class="border-0">STATUS</th>
               <th class="border-0">FINAL APPROVALS</th>
-              <th class="border-0">DELETE</th>
+              <!-- <th class="border-0">DELETE</th> -->
             </tr>
           </thead>
           <tbody>
@@ -127,7 +127,7 @@
                     *ngIf="ticket.filePath; else noFile">View</a>
                   <ng-template #noFile>&mdash;</ng-template> -->
                   <ng-container *ngIf="ticket.filePath; else NoFile">
-                    
+
                       <button class="btn btn-secondary ms-3" (click)="onDownloadFile(ticket.filePath)">
                         <i class="bi bi-download"></i>
                       </button>
@@ -161,11 +161,11 @@
                     </div>
                   </ng-template>
                 </td>
-                <td>
+                <!-- <td>
                   <button class="btn btn-sm btn-outline-danger" (click)="openDeleteModal(deleteModal, ticket)">
                     <i class="bi bi-trash"></i>
                   </button>
-                </td>
+                </td> -->
               </tr>
             </ng-container>
             <ng-template #noTickets>

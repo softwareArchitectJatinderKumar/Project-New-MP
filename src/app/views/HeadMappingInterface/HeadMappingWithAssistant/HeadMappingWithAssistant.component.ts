@@ -737,16 +737,34 @@ export class OBPMetricBinding implements OnInit {
         .pipe(take(1))
         .subscribe({
           next: (res: any) => {
-            swal.fire({
-              title: 'Success!',
-              text: 'New record added successfully!',
-              icon: 'success',
-            });
+            const sres = res?.item1?.[0] ?? res;
+            if (sres?.msg === '-1') {
+              swal.fire({ title: 'Duplicate Entry Failed to insert', icon: 'error' });
+              setTimeout(() => {
+                window.location.reload();
+              }, 2200);
+            } else if (sres?.msg === '1' || sres?.msg) {
+              swal.fire({
+                title: 'Addition done : ',
+                text: sres.msg,
+                icon: 'success',
+              });
+              setTimeout(() => {
+                window.location.reload();
+              }, 2200);
+            } else {
+              swal.fire({
+                title: 'Success!',
+                text: 'Record added successfully!',
+                icon: 'success',
+              });
+              setTimeout(() => {
+                window.location.reload();
+              }, 2200);
+            }
+
             this.GetAllEventsData();
             this.loadingIndicator = false;
-            setTimeout(() => {
-              window.location.reload();
-            }, 2200);
           },
           error: (err: any) => {
             console.error('InsertHeadMapping failed', err);
@@ -755,8 +773,15 @@ export class OBPMetricBinding implements OnInit {
               text: 'An error occurred while adding the new record.',
               icon: 'error',
             });
+            this.GetAllEventsData();
             this.loadingIndicator = false;
+            setTimeout(() => {
+              window.location.reload();
+            }, 2200);
           },
+          complete: () => {
+            this.loadingIndicator = false;
+          }
         });
     }
 

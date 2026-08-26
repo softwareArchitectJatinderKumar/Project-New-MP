@@ -369,8 +369,8 @@ getTransferAllocationService(PlannerSessionId:any,LoginName:any): Observable<any
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders().set('Authorization', 'Bearer ' + authToken);
     return this.http.post(
-       'https://localhost:44362/api/Placement/PlacementHelpDeskGetStaff',
-      // AUTH_API_LOCAL + 'api/Placement/PlacementHelpDeskGetStaff',
+      //  'https://localhost:44362/api/Placement/PlacementHelpDeskGetStaff',
+      AUTH_API_LOCAL + 'api/Placement/PlacementHelpDeskGetStaff',
       dataSoft,
       { headers },
     );

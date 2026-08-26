@@ -32,8 +32,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
 @NgModule({
   imports: [
 
-    DataGridModule, // This gives you access to the <app-data-grid> selector
-    CommonModule,
+    // DataGridModule, // This gives you access to the <app-data-grid> selector
+    // CommonModule,
     RouterModule.forChild(routes),
     NgxDatatableModule,
     NgbNavModule,
