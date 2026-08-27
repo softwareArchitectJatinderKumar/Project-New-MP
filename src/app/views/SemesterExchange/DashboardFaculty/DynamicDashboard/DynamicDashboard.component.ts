@@ -919,8 +919,8 @@ export class DynamicDashboardComponent implements OnInit {
               app.isForwardedtoHOW == '1',
           );
           this.AllApprovedApplications = response.item1.filter(
-            (app: { approvedUniversity: string | '' }) =>
-              app.approvedUniversity?.length > 0,
+            (app: { approvedUniversity: string | '' ; isApproved: string | '' }) =>
+              app.approvedUniversity?.length > 0 && app.isApproved == 'True',
           );
           this.AllApprovedApplicationsforCounsellor = response.item1; //.filter((app: { approvedUniversity: string | ''; dealingAuthority: string | ''; }) => app.approvedUniversity?.length > 0 && app.dealingAuthority == this.EmployeeCode);
 
