@@ -22,6 +22,7 @@ import { MatSort } from '@angular/material/sort';
 import { ColumnMode } from '@swimlane/ngx-datatable';
 import { fromEvent } from 'rxjs';
 import { map, debounceTime } from 'rxjs/operators';
+import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
 @Component({
   selector: 'app-SGRC-Casess',
   templateUrl: './SGRC-Casess.component.html',
@@ -143,7 +144,7 @@ export class SGRCComponenent implements OnInit {
   constructor(private Agreement: AgreementEntryService,
     private studendGservice: StudentGrievanceServicesService,
     private studendGservicelocal: StudentGrievanceServicesLocalService,
-
+    private mouDocumentsService: MouDocumentsService,
     private fb: FormBuilder, private cdRef: ChangeDetectorRef,
     @Inject(DOCUMENT) document: Document,
     private route: ActivatedRoute,
@@ -445,6 +446,36 @@ export class SGRCComponenent implements OnInit {
   onSelectFile(a: any) {
     window.open(a['fileName'], '_blank');
   }
+    onSelectFiles(remoteUrl: string): void {
+      swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
+  
+      this.mouDocumentsService.downloadMOUFile(remoteUrl).subscribe({
+        next: (blob: Blob) => {
+          const downloadUrl = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+  
+          const fileName = remoteUrl.split('/').pop() || 'Document.pdf';
+          link.download = fileName;
+  
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(downloadUrl);
+  
+          swal.close();
+        },
+        error: async (err) => {
+          swal.close();
+          if (err.error instanceof Blob) {
+            const errorMsg = JSON.parse(await err.error.text());
+            swal.fire('Error', errorMsg.message || 'Download failed', 'error');
+          } else {
+            swal.fire('Error', 'Could not connect to the server', 'error');
+          }
+        }
+      });
+    }
 
 
   onSelect(a: any) {

@@ -880,8 +880,7 @@ export class DynamicDashboardComponent implements OnInit {
                 isForwardtoHOD: string | '';
                 approvedUniversity: string | '';
               }) =>
-                app.dealingFaculty == this.EmployeeCode &&
-                app.isForwardtoHOD == null,
+                app.dealingFaculty == this.EmployeeCode
             );
           this.AllAuthorityApplications = this.FilterAllAuthorityApplications =
             response.item1.filter(
@@ -891,7 +890,6 @@ export class DynamicDashboardComponent implements OnInit {
                 approvedUniversity: string | '';
               }) =>
                 app.dealingAuthority == this.EmployeeCode &&
-                app.approvedUniversity == null &&
                 app.dealingFaculty == null,
             );
 
