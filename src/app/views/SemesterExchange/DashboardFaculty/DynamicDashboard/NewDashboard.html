@@ -126,7 +126,7 @@
                 </button>
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item d-none">
                 <button class="nav-link" [class.active]="counsellorActiveTab === 'allApproved'"
                     (click)="switchCounsellorTab('allApproved')">
                     <i class="bi bi-table me-1"></i>
@@ -223,42 +223,48 @@
                 <ngx-datatable-column name="Actions" [sortable]="false" [width]="380">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <button class="btn btn-info btn-sm me-1 mb-1" (click)="GetStudentApplication(row)">
-                            <i class="bi bi-eye me-1"></i>View Application
-                        </button>
-                        <!-- a) Forward to Faculty -->
-                        <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToFaculty(row,'Faculty')"
-                        [disabled]="!hasAnyRemarks(row)">
-                            <!-- [disabled]="row.dealingFaculty?.length > '0'"> -->
-                            <i class="bi bi-send me-1"></i>Forward to Faculty
-                        </button>
-                        <!-- b) Submit Counselling Remarks -->
-                        <button class="btn btn-primary btn-sm me-1 mb-1" (click)="submitCounsellingRemarks(row)">
-                            <i class="bi bi-chat-left-text me-1"></i>
-                            {{ isTrue(row.counsellingStatus) ? 'Update Remarks' : 'Add Remarks' }}
-                        </button>
-                        <!-- c) View Remarks — evaluation hidden for Counsellor (req #3/#4) -->
+                            <!-- <i class="bi bi-eye me-1"></i> -->
+                            View Application
+                        </button>                   
+                      
                         <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewAllRemarks(row, 'counsellor')"
                             [disabled]="!hasAnyRemarks(row)">
-                            <i class="bi bi-eye me-1"></i>View Remarks
+                            <!-- <i class="bi bi-eye me-1"></i> -->
+                            View Remarks
                         </button>
-                        <!-- d) Reject -->
+                        <button class="btn btn-primary btn-sm me-1 mb-1" (click)="submitCounsellingRemarks(row)"
+                        [ngClass]="{
+                                'd-none': isTrue(row.counsellingStatus),
+                                'd-block': !isTrue(row.counsellingStatus)
+                            }" 
+                        >
+                            <!-- <i class="bi bi-chat-left-text me-1"></i> -->
+                            Add Remarks
+                            <!-- {{ isTrue(row.counsellingStatus) ? 'Update Remarks' : 'Add Remarks' }} -->
+                        </button>
                         <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)" >
                             <!-- [disabled]="approvalLabel(row.isApproved) != 'Pending'"> -->
-                            <i class="bi bi-x-circle me-1"></i>Reject
-                        </button>
-
-
-
+                            <!-- <i class="bi bi-x-circle me-1"></i> -->
+                            Reject
+                        </button> 
                         <button class="btn btn-danger btn-sm me-1 mb-1" (click)="viewAllDocuments(row)">
-                            <i class="bi bi-x-circle me-1"></i>Document Approvals 
+                            <!-- <i class="bi bi-x-circle me-1"></i> -->
+                            Document Approvals 
                         </button>
+                         <button class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToFaculty(row,'Faculty')" [ngClass]="{
+                                'd-none': row.dealingFaculty?.length > 0,
+                                'd-block': !row.dealingFaculty?.length
+                            }" [disabled]="!hasAnyRemarks(row)">
+                            <!-- <i class="bi bi-send me-1"></i> -->
+                            Forward to Faculty
+                        </button>        
                     </ng-template>
                 </ngx-datatable-column>
             </ngx-datatable>
         </div>
 
 
-        <div *ngIf="counsellorActiveTab === 'allApproved'">
+        <div *ngIf="counsellorActiveTab === 'allApproved'" class="d-none">
             <p class="text-muted small mb-2">
                 Full application list from
                 Assign counsellors and monitor forwarding status here.
@@ -308,7 +314,7 @@
                         <button class="btn btn-info btn-sm me-1 mb-1" (click)="GetStudentApplication(row)">
                             <i class="bi bi-eye me-1"></i>View Application
                         </button>
-                        <button class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewAllRemarks(row, 'hod')"
+                        <button  class="btn btn-secondary btn-sm me-1 mb-1" (click)="viewAllRemarks(row, 'hod')"
                             [disabled]="!hasAnyRemarks(row)">
                             <i class="bi bi-chat-square-text me-1"></i>View Remarks
                         </button>
@@ -497,7 +503,7 @@
 
 
             </div>
-            <ngx-datatable class="bootstrap table table-striped material" [rows]="AllHODApplications"
+            <ngx-datatable class="bootstrap table table-striped material" [rows]="FilterAllHODApplications"
                 [loadingIndicator]="loadingIndicator" [columnMode]="ColumnMode.force" [footerHeight]="50" [limit]="10"
                 [headerHeight]="80" [rowHeight]="'auto'" [scrollbarH]="true">
                 <ngx-datatable-column name="Application Date" prop="createdOn" [width]="50"></ngx-datatable-column>

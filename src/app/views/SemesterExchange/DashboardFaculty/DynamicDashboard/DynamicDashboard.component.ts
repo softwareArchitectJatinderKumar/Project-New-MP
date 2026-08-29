@@ -889,8 +889,7 @@ export class DynamicDashboardComponent implements OnInit {
                 dealingFaculty: string | '';
                 approvedUniversity: string | '';
               }) =>
-                app.dealingAuthority == this.EmployeeCode &&
-                app.dealingFaculty == null,
+                app.dealingAuthority == this.EmployeeCode  
             );
 
           // this.FilterAllAuthorityApplications = response.item1;

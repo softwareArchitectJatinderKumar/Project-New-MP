@@ -112,25 +112,7 @@
                           </div>
 
                           <!-- Row 3-->
-                          <div class="col-md-4">
-                            <label class="form-label fw-bold text-uppercase"
-                              style="font-size: 0.75rem; letter-spacing: 0.5px;">
-                              SRS Required
-                              <span class="text-muted fw-normal text-capitalize">
-                                (Optional)
-                              </span>
-                            </label>
-
-                            <div class="form-check d-flex align-items-center p-3 rounded bg-light"
-                              style="border: 2px dashed #dee2e6; min-height: 75px;">
-                              <input type="checkbox" class="form-check-input me-2" id="srsRequired"
-                                formControlName="srsRequired" />
-
-                              <label class="form-check-label" for="srsRequired" style="cursor: pointer; color: red;">
-                                Check this if SRS Required
-                              </label>
-                            </div>
-                          </div>
+                         
                           <div class="col-md-4">
                             <label class="form-label fw-bold text-uppercase"
                               style="font-size: 0.75rem; letter-spacing: 0.5px;">Attach File <span
@@ -141,7 +123,7 @@
                               <i class="bi bi-paperclip fs-3 text-secondary"></i>
                               <div class="mt-2 text-secondary" style="font-size: 0.85rem;">Click to upload a file</div>
                               <small class="text-black-50" style="font-size: 0.75rem;">PDF, DOC, PNG, JPG up to
-                                10MB</small>
+                                1MB</small>
                               <div class="mt-2 text-success fw-medium" *ngIf="fileName">{{ fileName }}</div>
                             </div>
                           </div>
@@ -152,7 +134,7 @@
                                 class="text-danger">*</span></label>
                             <div class="border rounded p-3 bg-light" style="max-height: 150px; overflow-y: auto;"
                               [class.border-danger]="isInvalid('responsibleUsers')">
-                              <div class="form-check mb-2" *ngFor="let user of ResponsibleStaff">
+                              <span class="form-check mb-2" *ngFor="let user of ResponsibleStaff">
                                 <input class="form-check-input" type="checkbox" [value]="user.EmployeeCode"
                                   [id]="'user-' + user.EmployeeCode" [checked]="isResponsibleUserSelected(user.EmployeeCode)"
                                   (change)="onResponsibleUserChange($event, user.EmployeeCode)">
@@ -160,7 +142,7 @@
                                   [for]="'user-' + user.EmployeeCode">
                                   {{ user.EmployeeName }}
                                 </label>
-                              </div>
+                              </span>
                             </div>
                             <div class="text-danger small mt-1" *ngIf="isInvalid('responsibleUsers')">Please select at
                               least one responsible user</div>

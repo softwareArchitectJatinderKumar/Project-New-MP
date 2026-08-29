@@ -399,7 +399,7 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
       subject: '',
       description: '',
       file: null,
-      srsRequired: false,
+      // srsRequired: false,
       responsibleUsers: [],
     });
     this.form.get('subCategory')?.disable({ emitEvent: false });
@@ -444,7 +444,7 @@ export class HelpDeskRegisterTicketComponent implements OnInit {
     formData.append('MainMenu', subCategoryName ?? '');
     formData.append('SubMenu', subMenuName ?? '');
     formData.append('Subject', value.subject ?? '');
-    formData.append('IsSrsRequired', value.srsRequired ? 'True' : 'False');
+    // formData.append('IsSrsRequired', value.srsRequired ? 'True' : 'False');
     formData.append('Priority', value.priority ?? '');
     formData.append('Description', value.description ?? '');
     formData.append('Remarks', '');
