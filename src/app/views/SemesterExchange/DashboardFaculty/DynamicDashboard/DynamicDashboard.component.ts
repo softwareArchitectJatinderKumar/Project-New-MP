@@ -841,6 +841,12 @@ export class DynamicDashboardComponent implements OnInit {
             this.EmployeeDetails = emp;
             this.EmployeeName = emp.employeeName;
             this.EmployeeCode = String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859 // 22413
+            this.EmployeeCode = '30922'; // String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859 // 22413
+            // this.EmployeeCode = '34923'; // String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859 // 22413
+            // this.EmployeeCode ='33333';// String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859 // 22413
+            // this.EmployeeCode = '30922';//String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859 // 22413
+            // this.EmployeeCode = '28243';//String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859 // 22413
+            // this.EmployeeCode = '1107'; //String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859 // 22413
             this.ContactNoX = emp.contactNo;
             this.Department = emp.department;
             this.DepartmentName = emp.departmentName;
@@ -879,8 +885,7 @@ export class DynamicDashboardComponent implements OnInit {
                 dealingFaculty: string | '';
                 isForwardtoHOD: string | '';
                 approvedUniversity: string | '';
-              }) =>
-                app.dealingFaculty == this.EmployeeCode
+              }) => app.dealingFaculty == this.EmployeeCode,
             );
           this.AllAuthorityApplications = this.FilterAllAuthorityApplications =
             response.item1.filter(
@@ -888,8 +893,7 @@ export class DynamicDashboardComponent implements OnInit {
                 dealingAuthority: string | '';
                 dealingFaculty: string | '';
                 approvedUniversity: string | '';
-              }) =>
-                app.dealingAuthority == this.EmployeeCode  
+              }) => app.dealingAuthority == this.EmployeeCode,
             );
 
           // this.FilterAllAuthorityApplications = response.item1;
@@ -918,7 +922,10 @@ export class DynamicDashboardComponent implements OnInit {
               app.isForwardedtoHOW == '1',
           );
           this.AllApprovedApplications = response.item1.filter(
-            (app: { approvedUniversity: string | '' ; isApproved: string | '' }) =>
+            (app: {
+              approvedUniversity: string | '';
+              isApproved: string | '';
+            }) =>
               app.approvedUniversity?.length > 0 && app.isApproved == 'True',
           );
           this.AllApprovedApplicationsforCounsellor = response.item1; //.filter((app: { approvedUniversity: string | ''; dealingAuthority: string | ''; }) => app.approvedUniversity?.length > 0 && app.dealingAuthority == this.EmployeeCode);
@@ -1232,6 +1239,16 @@ export class DynamicDashboardComponent implements OnInit {
   }
 
   ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
+    if (userAction === 'Hod' && this.isFacultyRemarksNullOrBlank(application)) {
+      Swal.fire({
+        title: 'Remarks Required',
+        text: 'Please submit evaluation remarks before forwarding the application to HOD.',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+
     const label = userAction == 'Hod' ? 'HOD' : 'HOW';
     const staticUid = userAction == 'Hod' ? '28243' : '1107';
 
@@ -1740,6 +1757,67 @@ export class DynamicDashboardComponent implements OnInit {
     return s === '1' || s === 'true';
   }
 
+  isFacultyRemarksNullOrBlank(row: Application): boolean {
+    const r = this.AllAuthorityRemarks?.find(
+      (x) => x.registrationNo === row.registrationNo,
+    );
+    const remarks = r?.facultyRemarks || r?.dealingUserInterviewRemarks;
+    return !remarks || remarks.trim() === '';
+  }
+
+  isForwardToHODNull(row: Application): boolean {
+    return (
+      row.isForwardtoHOD === null ||
+      row.isForwardtoHOD === undefined ||
+      String(row.isForwardtoHOD).trim() === '' ||
+      String(row.isForwardtoHOD).trim().toLowerCase() === 'null'
+    );
+  }
+
+  isDealingHODRemarksNullOrBlank(row: Application): boolean {
+    const r = this.AllAuthorityRemarks?.find(
+      (x) => x.registrationNo === row.registrationNo,
+    );
+    const remarks =
+      r?.dealingHODRemarks || r?.hodRemarks || r?.dealingHODInterviewRemarks;
+    return !remarks || remarks.trim() === '';
+  }
+
+  isForwardToHOWNull(row: Application): boolean {
+    return (
+      row.isForwardedtoHOW === null ||
+      row.isForwardedtoHOW === undefined ||
+      String(row.isForwardedtoHOW).trim() === '' ||
+      String(row.isForwardedtoHOW).trim().toLowerCase() === 'null'
+    );
+  }
+
+  isAcceptOrForwardDisabled(row: Application): boolean {
+    const testType = (row.englishTestType || '').toLowerCase();
+    const count = Number(row.uploadedStageIDocumentCount || 0);
+    const cond1 =
+      ['notrequired', 'applied', 'notgiven'].includes(testType) && count < 6;
+    const cond2 = ['appeared', 'given'].includes(testType) && count < 7;
+    const cond3 =
+      this.approvalLabel(row.isApproved) === 'Rejected' ||
+      row.isLocked === 'True' ||
+      row.isLocked === '1' ||
+      row.isLocked === '0' ||
+      row.isLocked === 'false';
+    return cond1 || cond2 || cond3;
+  }
+
+  isForwardToHODDisabled(row: Application): boolean {
+    return (
+      this.isFacultyRemarksNullOrBlank(row) ||
+      this.isAcceptOrForwardDisabled(row)
+    );
+  }
+
+  isDealingFacultyNullOrBlank(row: Application): boolean {
+    return !row.dealingFaculty || row.dealingFaculty.trim() === '';
+  }
+
   /** Converts isApproved (1/0/NULL) to a human label. */
   approvalLabel(val: string): string {
     if (this.isTrue(val)) return 'Approved';
@@ -1802,7 +1880,10 @@ export class DynamicDashboardComponent implements OnInit {
 
   downloadDocument(fileName: any) {
     const fileStr = String(fileName ?? '').trim();
-    if (!fileStr || ['na', 'n/a', 'none', 'null', 'undefined'].includes(fileStr.toLowerCase())) {
+    if (
+      !fileStr ||
+      ['na', 'n/a', 'none', 'null', 'undefined'].includes(fileStr.toLowerCase())
+    ) {
       Swal.fire({
         title: 'File Not Found',
         text: 'No document file is available for download.',
@@ -1811,9 +1892,10 @@ export class DynamicDashboardComponent implements OnInit {
       return;
     }
 
-    const fullUrl = fileStr.startsWith('http://') || fileStr.startsWith('https://')
-      ? fileStr
-      : `${this.SERVER_URL}${fileStr}`;
+    const fullUrl =
+      fileStr.startsWith('http://') || fileStr.startsWith('https://')
+        ? fileStr
+        : `${this.SERVER_URL}${fileStr}`;
 
     Swal.fire({
       title: 'Downloading...',
@@ -1850,7 +1932,11 @@ export class DynamicDashboardComponent implements OnInit {
             Swal.fire('Error', 'Download failed', 'error');
           }
         } else {
-          Swal.fire('Error', 'Could not connect to the server or download file', 'error');
+          Swal.fire(
+            'Error',
+            'Could not connect to the server or download file',
+            'error',
+          );
         }
       },
     });
