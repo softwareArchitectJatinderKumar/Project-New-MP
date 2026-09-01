@@ -17,10 +17,10 @@ interface IStudentDetails {
 }
 
 interface IApiTupleResponse {
-  item1: any[]; // ExamDescription, University, Perecentage
-  item2: any[]; // Term, coursecode, Delivered, Attended... (Course Attendance)
-  item3: any[]; // GradeNum, Grade, RecordCount (Grade Summary)
-  item4: IStudentDetails[]; // RegisterationNumber, Name, Section... (Student Details)
+  item1: any[];
+  item2: any[];
+  item3: any[];
+  item4: IStudentDetails[];
 }
 
 interface IFormattedApiResponse {
@@ -30,7 +30,7 @@ interface IFormattedApiResponse {
   StudentDetails: IStudentDetails;
 }
 
-//  const AUTH_API = 'https://localhost:44362/';
+// const AUTH_API = 'https://localhost:44362/';
 // const AUTH_API_LOCAL = 'https://localhost:44362/';
 const AUTH_API = 'https://projectsapi.lpu.in/';
 const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';

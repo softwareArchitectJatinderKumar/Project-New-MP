@@ -140,7 +140,6 @@
         <div *ngIf="counsellorActiveTab === 'my'">
             <p class="text-muted small mb-2">
                 Showing applications assigned to {{this.EmployeeCode}}.
-
             </p>
 
             <div class="col-md-12 d-flex justify-content-center">
@@ -223,28 +222,34 @@
                 <ngx-datatable-column name="Actions" [sortable]="false" [width]="380">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <button class="btn btn-info btn-sm me-1 mb-1" (click)="GetStudentApplication(row)">
-                            View Application
+                          View Application
                         </button>
 
-                        <button *ngIf="hasAnyRemarks(row)" class="btn btn-info btn-sm me-1 mb-1" (click)="viewAllRemarks(row, 'counsellor')">
-                            View Remarks
+                        <button *ngIf="hasAnyRemarks(row); else Btn" class="btn btn-info btn-sm me-1 mb-1" (click)="viewAllRemarks(row, 'counsellor')">
+                          View Remarks
                         </button>
-                        
-                        <button *ngIf="!isTrue(row.counsellingStatus)" class="btn btn-primary btn-sm me-1 mb-1" (click)="submitCounsellingRemarks(row)">
-                            Add Remarks
+                        <ng-template #Btn>
+                          <button *ngIf="!isTrue(row.counsellingStatus)" class="btn btn-primary btn-sm me-1 mb-1" (click)="submitCounsellingRemarks(row)">
+                            Submit Remarks
                         </button>
-                        
-                        <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)">
+                        </ng-template>
+                        <button *ngIf="isTrue(row.counsellingStatus) && isDealingFacultyNullOrBlank(row) && getApplicationStatus(row) != 'Rejected'" class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToFaculty(row,'Faculty')">
+                            Forward to Faculty
+                        </button>
+
+                         <button *ngIf="getApplicationStatus(row) != 'Rejected'" class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)">
                             Reject
                         </button>
-                        
+                        <ng-template #RejectBtn>
+                          <span class="badge bg-danger me-3" >
+                            Rejected
+                        </span>
+                        </ng-template>
+
                         <button class="btn btn-danger btn-sm me-1 mb-1" (click)="viewAllDocuments(row)">
                             Document Approvals
                         </button>
-                        
-                        <button *ngIf="isTrue(row.counsellingStatus) && isDealingFacultyNullOrBlank(row)" class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToFaculty(row,'Faculty')">
-                            Forward to Faculty
-                        </button>
+
                     </ng-template>
                 </ngx-datatable-column>
             </ngx-datatable>
@@ -372,6 +377,8 @@
             <ngx-datatable-column name="Approved University" prop="approvedUniversity"
                 [width]="60"></ngx-datatable-column>
 
+            <ngx-datatable-column name="Dealing Authority" prop="dealingAuthority" [width]="80"></ngx-datatable-column>
+
             <ng-container *ngTemplateOutlet="counsellingStatusColumn"></ng-container>
 
             <ng-container *ngTemplateOutlet="applicationStatusColumn"></ng-container>
@@ -412,9 +419,9 @@
                     <button *ngIf="isForwardToHODNull(row) && !isFacultyRemarksNullOrBlank(row)" class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'Hod')">
                         <i class="bi bi-send me-1"></i>Forward to HOD
                     </button>
-                      
+
                     <span *ngIf="!isForwardToHODNull(row)" class="badge bg-success me-1 mb-1">
-                        Forwarded to HOD
+                       <i class="bi bi-clipboard-check me-1"></i> Forwarded to HOD
                     </span>
                 </ng-template>
             </ngx-datatable-column>
@@ -428,7 +435,7 @@
            Tab (X)  My Applications — DealingFaculty is non-null (faculty assigned)
            Tab (XX) All Applications — from GetSemesterExchangeApplicationForHOD()
     ════════════════════════════════════════════════════════════════════════════ -->
-    <ng-container *ngIf="isHOD ">
+    <ng-container *ngIf="isHOD">
         <h5 class="text-success fw-bold mb-3">
             <i class="bi bi-building me-2"></i>Head of Department Dashboard
         </h5>
@@ -462,7 +469,6 @@
         <div *ngIf="hodActiveTab === 'my'">
             <p class="text-muted small mb-2">
                 Showing applications assigned to {{this.EmployeeCode}}.
-
             </p>
 
             <div class="col-md-12 d-flex justify-content-center">
@@ -499,9 +505,8 @@
                     [width]="60"></ngx-datatable-column>
                 <ngx-datatable-column name="Stage II Count" prop="uploadedStageIIDocumentCount"
                     [width]="60"></ngx-datatable-column>
-                <ngx-datatable-column name="Approved University" prop="approvedUniversity"
-                    [width]="60"></ngx-datatable-column>
-
+                <ngx-datatable-column name="Approved University" prop="approvedUniversity" [width]="60"></ngx-datatable-column>
+                <ngx-datatable-column name="Forward to HOW" prop="isForwardedtoHOW" [width]="60"></ngx-datatable-column>
                 <ngx-datatable-column name="Faculty" [width]="60">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <ng-container *ngIf="row.dealingFaculty; else noCounsellors">
@@ -557,33 +562,36 @@
                             <i class="bi bi-eye me-1"></i>View Application
                         </button>
                         <!-- a) View Remarks — shows evaluation for HOD (req #4) -->
-                        <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewAllRemarks(row, 'hod')">
-                            <i class="bi bi-eye me-1"></i>View Remarks
-                        </button>
+
                         <!-- b) Submit Evaluation Remarks -->
-                        <button *ngIf="isDealingHODRemarksNullOrBlank(row)" class="btn btn-primary btn-sm me-1 mb-1" (click)="UploadEvaluationRemarks(row, 'HOD')">
+                        <button *ngIf="isDealingHODRemarksNullOrBlank(row); else EvaluationRemarks" class="btn btn-primary btn-sm me-1 mb-1" (click)="UploadEvaluationRemarks(row, 'HOD')">
                             <i class="bi bi-clipboard-check me-1"></i>Submit Remarks
                         </button>
+                        <ng-template #EvaluationRemarks>
+                            <button class="btn btn-info btn-sm me-1 mb-1" (click)="viewAllRemarks(row, 'hod')">
+                                <i class="bi bi-eye me-1"></i>View Remarks
+                            </button>
+                        </ng-template>
                         <!-- c) Accept -->
-                        <button *ngIf="!isAcceptOrForwardDisabled(row)" type="button" class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)">
+                        <button *ngIf="getApplicationStatus(row)!=='Rejected'; else NoAccept" type="button" class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)">
                             <i class="bi bi-check-circle me-1"></i>
                             Accept
                         </button>
-                        <span *ngIf="isAcceptOrForwardDisabled(row)" class="badge bg-danger me-1 mb-1">
-                            Accept NA
-                        </span>
-
+                        <ng-template #NoAccept>
+                            <span class="badge bg-success me-1 mb-1">
+                               Rejected
+                            </span>
+                        </ng-template>
                         <!-- d) Reject -->
-                        <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)">
+                        <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)" *ngIf="getApplicationStatus(row)!=='Rejected'">
                             <i class="bi bi-x-circle me-1"></i>Reject
                         </button>
-                        <!-- e) Forward to HoW -->
-                        <button *ngIf="isForwardToHOWNull(row) && !isAcceptOrForwardDisabled(row)" class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'How')">
+
+                        <!-- e) Forward to HoW && !isAcceptOrForwardDisabled(row) Removed the Condition check for documents as per manu sir on 31-8-26-->
+                        <button *ngIf="isForwardToHOWNull(row) && !isDealingHODRemarksNullOrBlank(row) && getApplicationStatus(row)!=='Rejected';" class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'How')">
                             <i class="bi bi-send me-1"></i>Forward to HoW
                         </button>
-                        <span *ngIf="isForwardToHOWNull(row) && isAcceptOrForwardDisabled(row)" class="badge bg-danger me-1 mb-1">
-                            Forward to HoW NA
-                        </span>
+
 
 
 
@@ -812,7 +820,7 @@
          Filter rule:  DealingHow === EmployeeCode AND DealingFaculty non-null
          Actions: View Application | View Remarks | Submit Evaluation | Accept/Reject
     ════════════════════════════════════════════════════════════════════════════ -->
-    <ng-container *ngIf="isHoW && !isHOD ">
+    <ng-container *ngIf="isHoW && !isHOD">
         <h5 class="text-warning fw-bold mb-3">
             <i class="bi bi-diagram-3 me-2"></i>Head of Wing Dashboard
             <span class="badge bg-secondary ms-2">{{ (AllHOWApplications | roleFilter:'_isHoW').length }}
@@ -851,58 +859,47 @@
                 <ngx-datatable-column name="Approved University" prop="approvedUniversity" [width]="60"></ngx-datatable-column>
                 <ngx-datatable-column name="Contact No" prop="phoneNumber" [width]="110"></ngx-datatable-column>
                 <!-- <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="115"></ngx-datatable-column> -->
-                <ngx-datatable-column name="Approval Status" prop="isLocked" [width]="115">
+                <!-- <ngx-datatable-column name="Approval Status" prop="isLocked" [width]="115">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <span class="badge" [ngClass]="approvalClass(row.isLocked)">
                             {{ approvalLabel(row.isLocked) }}
                         </span>
                     </ng-template>
+                </ngx-datatable-column> -->
+                <ngx-datatable-column name="Dealing Counsellor Id" [width]="160">
+                  <ng-template let-row="row" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.dealingAuthority; else noCounsellor">
+                      <span class="badge bg-success">{{ row.dealingAuthority }}</span>
+                    </ng-container>
+                    <ng-template #noCounsellor>
+                      <button class="btn btn-outline-warning btn-sm" (click)="assignCounsellor(row)">
+                        <i class="bi bi-person-plus me-1"></i>Assign
+                      </button>
+                    </ng-template>
+                  </ng-template>
                 </ngx-datatable-column>
 
                 <ng-container *ngTemplateOutlet="counsellingStatusColumn"></ng-container>
-                <ngx-datatable-column name="Faculty" [width]="160">
-                    <ng-template let-row="row" ngx-datatable-cell-template>
-                        <ng-container *ngIf="row.dealingFaculty; else noCounsellors">
-                            <span class="badge bg-success">{{ row.dealingFaculty }}</span>
-                        </ng-container>
-                        <ng-template #noCounsellors>
-                            <button class="btn btn-outline-warning btn-sm" (click)="assignFaculty(row)">
-                                <i class="bi bi-person-plus me-1"></i>Assign
-                            </button>
-                        </ng-template>
+                <ngx-datatable-column name="Dealing Faculty Id" [width]="160">
+                  <ng-template let-row="row" ngx-datatable-cell-template>
+                    <ng-container *ngIf="row.dealingFaculty; else noCounsellors">
+                      <span class="badge bg-success">{{ row.dealingFaculty }}</span>
+                    </ng-container>
+                    <ng-template #noCounsellors>
+                      <button class="btn btn-outline-warning btn-sm" (click)="assignFaculty(row)">
+                        <i class="bi bi-person-plus me-1"></i>Assign
+                      </button>
                     </ng-template>
-                </ngx-datatable-column>
-
-                <ngx-datatable-column name="Counsellor" [width]="160">
-                    <ng-template let-row="row" ngx-datatable-cell-template>
-                        <ng-container *ngIf="row.dealingAuthority; else noCounsellor">
-                            <span class="badge bg-success">{{ row.dealingAuthority }}</span>
-                        </ng-container>
-                        <ng-template #noCounsellor>
-                            <button class="btn btn-outline-warning btn-sm" (click)="assignCounsellor(row)">
-                                <i class="bi bi-person-plus me-1"></i>Assign
-                            </button>
-                        </ng-template>
-                    </ng-template>
+                  </ng-template>
                 </ngx-datatable-column>
 
                 <ngx-datatable-column name="Application Status" [width]="130">
-                    <ng-template let-row="row" ngx-datatable-cell-template>
-
-                        <span class="badge" [ngClass]="getApplicationStatusClass(row)">
-                            {{ getApplicationStatus(row) }}
-                        </span>
-
-                    </ng-template>
-                </ngx-datatable-column>
-
-                <!-- <ngx-datatable-column name="Application Status" [width]="130">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <span class="badge" [ngClass]="approvalClass(row.isApproved)">
                             {{ approvalLabel(row.isApproved) }}
                         </span>
                     </ng-template>
-                </ngx-datatable-column> -->
+                </ngx-datatable-column>
 
                 <ngx-datatable-column name="Actions" [sortable]="false" [width]="490">
                     <ng-template let-row="row" ngx-datatable-cell-template>
