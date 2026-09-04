@@ -583,13 +583,23 @@
                             <span class="badge bg-success me-1 mb-1"><i class="bi bi-clipboard-check me-1"></i>Remarks Submitted</span>
                         </ng-template>
                         <!-- c) Accept -->
-                        <button *ngIf="getApplicationStatus(row)!=='Rejected'; else NoAccept" type="button" class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)">
+                        <button *ngIf="getApplicationStatus(row)!=='Rejected' &&
+                         
+                                                  (
+                                                    ['notrequired', 'applied', 'notgiven'].includes((row.englishTestType || '').toLowerCase()) &&
+                                                    row.uploadedStageIDocumentCount == 6
+                                                  ) ||
+                                                  (
+                                                   ['appeared', 'given'].includes((row.englishTestType || '').toLowerCase())  &&
+                                                    row.uploadedStageIDocumentCount == 7
+                                                  )
+                        ; else NoAccept" type="button" class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)">
                             <i class="bi bi-check-circle me-1"></i>
                             Accept
                         </button>
                         <ng-template #NoAccept>
-                            <span class="badge bg-success me-1 mb-1">
-                               Rejected
+                            <span class="badge bg-danger me-1 mb-1">
+                               <i class="bi bi-x-circle me-1"></i> Accept NA
                             </span>
                         </ng-template>
                         <!-- d) Reject -->
@@ -598,8 +608,11 @@
                         </button>
 
                         <!-- e) Forward to HoW && !isAcceptOrForwardDisabled(row) Removed the Condition check for documents as per manu sir on 31-8-26-->
-                        <button *ngIf="isForwardToHOWNull(row) && !isDealingHODRemarksNullOrBlank(row) && getApplicationStatus(row)!=='Rejected';" class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'How')">
-                            <i class="bi bi-send me-1"></i>Forward to HoW
+                        <button *ngIf="(['notrequired', 'applied', 'notgiven'].includes((row.englishTestType || '').toLowerCase()) && row.uploadedStageIDocumentCount == 6) ||
+                                        (['appeared', 'given'].includes((row.englishTestType || '').toLowerCase())  && row.uploadedStageIDocumentCount == 7 ) 
+                                        && !isDealingHODRemarksNullOrBlank(row) && getApplicationStatus(row)!=='Rejected';"
+                        class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'How')">
+                            <i class="bi bi-send me-1"></i>Forward to HoW**
                         </button>
 
 
@@ -1515,7 +1528,6 @@
         </form>
     </div>
 </ng-template>
-
 
 <!-- ─── Add Remarks Modal (Faculty) ──────────────────────────────────────── -->
 <ng-template #AddRemarksModal let-modal>
