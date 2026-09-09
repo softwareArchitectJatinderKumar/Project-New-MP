@@ -137,7 +137,7 @@ getData(Title : any,Value: any, LoginName: any){
 
   this.modalService.open(this.viewDescModal2, { size: 'sm' }).result.then(
     (result: string) => {
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }
   ).catch((res: any) => { });
 
@@ -175,7 +175,7 @@ getRMSDSRRatingDataDetails(Title: any, LoginName: any) {
     },
     complete: () => {
       this.dataShowingRMSDSRRatingDataDetails = true;
-      console.log('Data fetching complete');
+      // console.log('Data fetching complete');
     }
   });
 }
@@ -231,7 +231,7 @@ isLoading: boolean = false;
       },
       complete: () => {
         this.dataShowing = true;
-        console.log('Data fetching complete');
+        // console.log('Data fetching complete');
       }
     });
   }

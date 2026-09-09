@@ -414,7 +414,7 @@ debugger;
     this.selectedRowId = val;
     this.modalService.open(this.modelSmall, {size: 'sm'}).result.then((result) => {
 
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => {});
   }
 

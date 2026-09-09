@@ -715,7 +715,7 @@ export class MouActivityApprovalsComponent implements OnInit {
   private handleStatusChange(formData: FormData, action: string) {
 
     formData.forEach((value, key) => {
-      console.log(key, value);
+      // console.log(key, value);
     });
     this.mouDocumentsService.ApproveMouActionTakenDocument(formData).subscribe((data: any) => {
       if (action === 'Approve' && data.responseData === 'Cancel') {

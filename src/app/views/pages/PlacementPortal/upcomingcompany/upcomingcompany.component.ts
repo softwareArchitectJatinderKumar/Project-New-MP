@@ -47,7 +47,7 @@ export class UpcomingcompanyComponent implements OnInit {
         // console.log("Upcomming Placement Drives details " + JSON.stringify(this.UpcomingDriveDetails));
       },
       error: err => {
-        console.log(err);
+        // console.log(err);
       }
     });
   }

@@ -52,10 +52,10 @@ export class EditorsComponent implements OnInit {
   }
 
   onFocus = () => {
-    console.log("On Focus");
+    // console.log("On Focus");
   }
   onBlur = () => {
-    console.log("Blurred");
+    // console.log("Blurred");
   }
 
 }

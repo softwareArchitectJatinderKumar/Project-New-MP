@@ -151,10 +151,10 @@ export class NewCifInstrumentComponent implements OnInit {
   }
 
   onFocus = () => {
-    console.log("On Focus");
+    // console.log("On Focus");
   }
   onBlur = () => {
-    console.log("Blurred");
+    // console.log("Blurred");
   }
 
 
@@ -372,7 +372,7 @@ export class NewCifInstrumentComponent implements OnInit {
     this.InstrumentTitles = aa['instrumentName'];
     this.modalService.open(this.viewDescModal, { size: 'sm' }).result.then((result) => {
 
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => { });
   }
 

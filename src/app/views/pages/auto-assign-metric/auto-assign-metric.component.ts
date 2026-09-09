@@ -74,7 +74,7 @@ export class AutoAssignMetricComponent implements OnInit , AfterViewInit{
     private AuthSession: LoginSessionService,
     private router: Router, private route: ActivatedRoute,
     ) { debugger ; 
-      console.log("Loading")
+      // console.log("Loading")
     }
 
   getDropdownData(): void {
@@ -281,7 +281,7 @@ LoadForm()
               }
           },
           error: err => {
-              console.log(err)
+              // console.log(err)
           }
       });
   }

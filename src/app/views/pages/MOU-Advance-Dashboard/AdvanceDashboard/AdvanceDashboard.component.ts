@@ -212,7 +212,7 @@ export class MouActivityActionPlanComponent implements OnInit {
         if (response.item1.length > 0) {
           this.filteredMouActivityAssigned = this.MouActivityAssigned = response.item1;
           this.dataSource.data = this.MouActivityAssigned;
-          console.log("assigned Data" + JSON.stringify(this.MouActivityAssigned));
+          // console.log("assigned Data" + JSON.stringify(this.MouActivityAssigned));
           this.MouActivityDocuments.sort((a, b) => {
             return (b.id - a.id);
           });
@@ -739,7 +739,7 @@ export class MouActivityActionPlanComponent implements OnInit {
     // formData.forEach((value, key) => console.log(`${key}: ${value}`));
     this.mouDocumentsService.MouNewActivityPlanAddNew(formData).subscribe({
       next: (data: any) => {
-        console.log("Response received:", data);
+        // console.log("Response received:", data);
 
         if (data?.item1?.length > 0) {
           const result = data.item1[0]?.msg;

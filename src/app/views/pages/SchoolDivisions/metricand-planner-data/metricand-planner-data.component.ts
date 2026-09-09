@@ -217,7 +217,7 @@ export class MetricandPlannerDataComponent implements OnInit {
 
         modalRef.result
           .then((result) => {
-            console.log('Modal closed: ' + result);
+            // console.log('Modal closed: ' + result);
           })
           .catch((res) => { });
       });

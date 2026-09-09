@@ -79,7 +79,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
   }
 
   save() {
-    console.log('passs');
+    // console.log('passs');
     
   }
 

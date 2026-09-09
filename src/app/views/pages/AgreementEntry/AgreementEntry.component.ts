@@ -344,7 +344,7 @@ this.AgreementType2=[
     this.viewdescription = val;
     this.modalService.open(this.viewDescModal, {size: 'sm'}).result.then((result) => {
 
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => {});
 
   }
@@ -661,7 +661,7 @@ if($event != undefined){
 
   onFileSelected(e: any) {
     
-    console.log(e);
+    // console.log(e);
     const target = e.target as HTMLInputElement;
     const file: File = (target.files as FileList)[0];
     this.FileData = file;
@@ -815,7 +815,7 @@ this.AgreementTypeDisplay2 = [];
 }
 
 AddMouEntryData1(user:any){
-console.log(user)
+// console.log(user)
 }
 AddMouEntryData(){
 

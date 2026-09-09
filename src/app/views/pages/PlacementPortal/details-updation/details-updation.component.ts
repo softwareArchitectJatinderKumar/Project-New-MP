@@ -81,7 +81,7 @@ export class DetailsUpdationComponent implements OnInit {
   }
 
   LoginFailed(err: any) {
-    console.log('Error.' + err);
+    // console.log('Error.' + err);
   }
 
   UpdateDetails(StudentDetails: any){

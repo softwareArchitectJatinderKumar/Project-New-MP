@@ -1299,7 +1299,7 @@ export class StudentFormComponent implements OnInit {
       alert('Please fill all required fields correctly.');
       return;
     }
-    console.log('Form submitted', this.applicationForm.value);
+    // console.log('Form submitted', this.applicationForm.value);
     alert('Application submitted successfully!');
   }
 

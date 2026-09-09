@@ -50,7 +50,7 @@ export class HomeComponent implements OnInit {
       // this.GetUploadedCheckListDocuments(stageIdFromRoute);
       // const encryptedStageId = +params['RegistrationId'];
       this.registrationNumber = +params['RegistrationId'];
-      console.log("registrationNumber  Home page= " + this.registrationNumber)
+      // console.log("registrationNumber  Home page= " + this.registrationNumber)
     });
   }
   ngOnInit(): void {
@@ -91,7 +91,7 @@ export class HomeComponent implements OnInit {
     });
   }
   refreshData() {
-    console.log(" tests ")
+    // console.log(" tests ")
   }
 
   LoginFailed(NewError: any) {

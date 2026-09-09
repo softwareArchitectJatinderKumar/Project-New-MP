@@ -420,7 +420,7 @@ export class SGRCComponenent implements OnInit {
   openVerticalCenteredModal(ticketNumber: any) {
     this.ticketNumber = ticketNumber;
     this.modalService.open(this.verticalCenteredModal, { centered: true }).result.then((result: string) => {
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res: any) => { });
   }
 
@@ -484,7 +484,7 @@ export class SGRCComponenent implements OnInit {
     this.sgrcRemarks = '';
     this.ticketNumbers = a['ticketNumber'];
     this.modalService.open(this.viewDescModal, { size: 'sm' }).result.then((result) => {
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => { });
   }
 
@@ -519,7 +519,7 @@ export class SGRCComponenent implements OnInit {
     this.sgrcStatus = '';
     this.sgrcRemarks = '';
     this.modalService.open(this.viewDescModal, { size: 'sm' }).result.then((result) => {
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => { });
   }
 
@@ -620,7 +620,7 @@ export class SGRCComponenent implements OnInit {
         }
         this.modalService.open(this.viewDescModal2, { size: 'sm' }).result.then(
           (result) => {
-            console.log("Modal closed" + result);
+            // console.log("Modal closed" + result);
           }
         ).catch((res) => { });
 

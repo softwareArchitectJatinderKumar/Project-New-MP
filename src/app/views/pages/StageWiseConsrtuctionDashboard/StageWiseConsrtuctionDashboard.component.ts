@@ -262,10 +262,10 @@ export class StageWiseConsrtuctionDashboardComponent implements OnInit {
     this.GetMetricStageAllocationDetails(row.id);
     this.modalRef = this.modalService.open(this.TakeActionModal, { size: 'md' });
     this.modalRef.result.then((result) => {
-      console.log('Closed with:', result);
+      // console.log('Closed with:', result);
       // window.location.reload(); // optional
     }).catch((reason) => {
-      console.log('Dismissed with:', reason);
+      // console.log('Dismissed with:', reason);
     });
     // this.modalService.open(this.TakeActionModal, { size: 'md' }).result.then((result) => {  
     //   // window.location.reload();     

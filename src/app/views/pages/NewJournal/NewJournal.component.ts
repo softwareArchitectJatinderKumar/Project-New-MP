@@ -404,15 +404,15 @@ export class NewJournalComponent implements OnInit {
   }
 
   onFocus = () => {
-    console.log("On Focus");
+    // console.log("On Focus");
   }
   onBlur = () => {
-    console.log("Blurred");
+    // console.log("Blurred");
   }
 
 
   onSubmitFinal() {
-    console.log(this.editorForm.value);
+    // console.log(this.editorForm.value);
   }
 
   LoadForm(): void {

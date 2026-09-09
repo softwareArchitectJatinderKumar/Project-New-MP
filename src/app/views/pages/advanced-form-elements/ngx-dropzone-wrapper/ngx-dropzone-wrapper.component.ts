@@ -25,11 +25,11 @@ export class NgxDropzoneWrapperComponent implements OnInit {
   }
 
   onUploadError(event: any): void {
-    console.log('onUploadError:', event);
+    // console.log('onUploadError:', event);
   }
 
   onUploadSuccess(event: any): void {
-    console.log('onUploadSuccess:', event);
+    // console.log('onUploadSuccess:', event);
   }
 
   resetDropzoneUploads(): void {

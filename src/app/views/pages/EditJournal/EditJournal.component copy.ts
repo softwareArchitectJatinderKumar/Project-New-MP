@@ -196,10 +196,10 @@ this.validationForm2 = this.formBuilder.group({
   }
 
   onFocus = () => {
-    console.log("On Focus");
+    // console.log("On Focus");
   }
   onBlur = () => {
-    console.log("Blurred");
+    // console.log("Blurred");
   }
 
 
@@ -275,7 +275,7 @@ let vals =
 
   onFileSelected(e: any): void {
     debugger;
-    console.log(e);
+    // console.log(e);
     const target = e.target as HTMLInputElement;
     const file: File = (target.files as FileList)[0];
    

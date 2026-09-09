@@ -283,7 +283,7 @@ applyFilter(event: Event): void {
 
   submitForm(form: NgForm) {
     if (form.valid) {
-      console.log('Form Data:', this.data);
+      // console.log('Form Data:', this.data);
       // Submit to server or perform your action
     }
   }

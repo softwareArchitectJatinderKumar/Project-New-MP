@@ -9,7 +9,7 @@ export class CohortnetworkService {
   authToken : any;
   constructor(private http: HttpClient, private storageService: StorageService) { }
   getData(url: any)  {
-    console.log('url:  ' +  url);
+    // console.log('url:  ' +  url);
     return this.http.get<HttpResponse<any>>( url); 
   }
 //   getRoadmap(url: string) : Observable<HttpResponse<any>> {
@@ -43,10 +43,10 @@ export class CohortnetworkService {
 // }
 
 postWithAuth(url: any, param ?: any): Observable<HttpResponse<any>> {
-  console.log('url: ' + url);
+  // console.log('url: ' + url);
 
       const authToken = this.storageService.getUser();
-      console.log("token", authToken);
+      // console.log("token", authToken);
       const headers = new HttpHeaders({
         Authorization: `Bearer ${authToken}`
       });
@@ -56,7 +56,7 @@ postWithAuth(url: any, param ?: any): Observable<HttpResponse<any>> {
 }
 
 getRoadmap(url: string): Observable<HttpResponse<any>> {
-  console.log('url: ' + url);
+  // console.log('url: ' + url);
  
   
       const authToken =   this.storageService.getUser();

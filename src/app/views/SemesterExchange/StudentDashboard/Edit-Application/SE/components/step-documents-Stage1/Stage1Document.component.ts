@@ -62,7 +62,7 @@ export class Stage1DocumentComponent implements OnChanges {
 
   /** 'Approved' | 'Rejected' | '' — shown next to the upload input once a decision exists. */
   approvalLabel(documentName: string): string {
-    console.log(this.documentApprovals)
+    // console.log(this.documentApprovals)
     return documentApprovalLabel(this.documentApprovals, documentName);
   }
 

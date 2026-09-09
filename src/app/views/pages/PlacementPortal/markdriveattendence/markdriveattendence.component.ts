@@ -76,7 +76,7 @@ export class MarkdriveattendenceComponent implements OnInit {
         }
       },
       error: err => {
-        console.log(err)
+        // console.log(err)
       }
     });
   }
@@ -95,7 +95,7 @@ export class MarkdriveattendenceComponent implements OnInit {
         }
       },
       error: err => {
-        console.log(err)
+        // console.log(err)
       }
     });
   }

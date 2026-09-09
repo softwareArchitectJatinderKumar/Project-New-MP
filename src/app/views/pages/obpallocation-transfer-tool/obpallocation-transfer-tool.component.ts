@@ -337,9 +337,9 @@ export class OBPAllocationTransferToolComponent {
           { title: 'Transfer Allocations', text: 'Something wrong try again later !', icon: 'error' }
 
         ).then(() => {
-          console.log(this.MarkasCompleteFilteredRecords);
+          // console.log(this.MarkasCompleteFilteredRecords);
           this.MarkasCompleteFilteredRecords = this.MarkasCompleteFilteredRecords.filter(item => !item.selected);
-          console.log(this.MarkasCompleteFilteredRecords);
+          // console.log(this.MarkasCompleteFilteredRecords);
 
           //    this.refreshModal();
           //    this.closeModal(); // Optionally close the modal

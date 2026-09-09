@@ -123,7 +123,7 @@ export class RMSDealingOfficialReportComponent implements OnInit {
       },
       complete: () => {
         this.dataShowing = true;
-        console.log('Data fetching complete');
+        // console.log('Data fetching complete');
         this.isLoading = false; 
       }
     });

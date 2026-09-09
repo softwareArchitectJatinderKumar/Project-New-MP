@@ -92,7 +92,7 @@ export class ModalComponent {
 
   openScrollableModal(content: TemplateRef<any>) {
     this.modalService.open(content, {scrollable: true}).result.then((result) => {
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => {});
   }
 }`
@@ -130,7 +130,7 @@ export class ModalComponent {
 
   openVerticalCenteredModal(content: TemplateRef<any>) {
     this.modalService.open(content, {centered: true}).result.then((result) => {
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => {});
   }
 }`
@@ -202,19 +202,19 @@ export class ModalComponent {
 
   openXlModal(content: TemplateRef<any>) {
     this.modalService.open(content, {size: 'xl'}).result.then((result) => {
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => {});
   }
 
   openLgModal(content: TemplateRef<any>) {
     this.modalService.open(content, {size: 'lg'}).result.then((result) => {
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => {});
   }
   
   openSmModal(content: TemplateRef<any>) {
     this.modalService.open(content, {size: 'sm'}).result.then((result) => {
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => {});
   }
 }`
@@ -251,31 +251,31 @@ export class ModalComponent implements OnInit {
 
   openScrollableModal(content: TemplateRef<any>) {
     this.modalService.open(content, {scrollable: true}).result.then((result) => {
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => {});
   }
 
   openVerticalCenteredModal(content: TemplateRef<any>) {
     this.modalService.open(content, {centered: true}).result.then((result) => {
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => {});
   }
 
   openXlModal(content: TemplateRef<any>) {
     this.modalService.open(content, {size: 'xl'}).result.then((result) => {
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => {});
   }
 
   openLgModal(content: TemplateRef<any>) {
     this.modalService.open(content, {size: 'lg'}).result.then((result) => {
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => {});
   }
   
   openSmModal(content: TemplateRef<any>) {
     this.modalService.open(content, {size: 'sm'}).result.then((result) => {
-      console.log("Modal closed" + result);
+      // console.log("Modal closed" + result);
     }).catch((res) => {});
   }
 
