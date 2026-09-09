@@ -445,6 +445,11 @@ export class DynamicDashboardComponent implements OnInit {
   FilterAllHOWApplications: Application[] = [];
   searchQueryMyHod: any;
 
+  AllSuperAdminApplications: Application[] = [];
+  FilterAllSuperAdminApplications: Application[] = [];
+  searchQuerySuperAdmin: any;
+  statusFilterSuperAdmin: string = 'All';
+
   FilterAllAuthorityApplications: Application[] = [];
   searchQueryAuthority: any;
 
@@ -453,6 +458,27 @@ export class DynamicDashboardComponent implements OnInit {
 
   searchQuery: any;
   searchQuery2: any;
+
+  statusFilterAuthority: string = 'All';
+  statusFilterFaculty: string = 'All';
+  statusFilterHOD: string = 'All';
+  statusFilterHODAll: string = 'All';
+  statusFilterHOW: string = 'All';
+
+  /**
+   * Filters an array of applications by their Application Status (Pending, Approved, Rejected).
+   */
+  private filterByStatus(
+    source: Application[],
+    statusFilter: string,
+  ): Application[] {
+    if (!statusFilter || statusFilter === 'All') return source;
+    return source.filter(
+      (item) =>
+        this.getApplicationStatus(item).toLowerCase() ===
+        statusFilter.toLowerCase(),
+    );
+  }
 
   /**
    * Free-text search shared by every dashboard's search box — matches the
@@ -473,38 +499,51 @@ export class DynamicDashboardComponent implements OnInit {
   }
 
   searchMyHod(): void {
-    this.FilterAllHOWApplications = this.filterBySearch(
+    let result = this.filterBySearch(
       this.AllHOWApplications,
       this.searchQueryMyHod,
     );
+    result = this.filterByStatus(result, this.statusFilterHOW);
+    this.FilterAllHOWApplications = this.sortByApplicationStatus(result);
+  }
+
+  searchSuperAdmin(): void {
+    let result = this.filterBySearch(
+      this.AllSuperAdminApplications,
+      this.searchQuerySuperAdmin,
+    );
+    result = this.filterByStatus(result, this.statusFilterSuperAdmin);
+    this.FilterAllSuperAdminApplications = this.sortByApplicationStatus(result);
   }
 
   searchAuthority(): void {
-    this.FilterAllAuthorityApplications = this.filterBySearch(
+    let result = this.filterBySearch(
       this.AllAuthorityApplications,
       this.searchQueryAuthority,
     );
+    result = this.filterByStatus(result, this.statusFilterAuthority);
+    this.FilterAllAuthorityApplications = this.sortByApplicationStatus(result);
   }
 
   searchFaculty(): void {
-    this.FilterAllFacultyApplications = this.filterBySearch(
+    let result = this.filterBySearch(
       this.AllFacultyApplications,
       this.searchQueryFaculty,
     );
+    result = this.filterByStatus(result, this.statusFilterFaculty);
+    this.FilterAllFacultyApplications = this.sortByApplicationStatus(result);
   }
 
   search(): void {
-    this.FilterAllHODApplications = this.filterBySearch(
-      this.AllHODApplications,
-      this.searchQuery,
-    );
+    let result = this.filterBySearch(this.AllHODApplications, this.searchQuery);
+    result = this.filterByStatus(result, this.statusFilterHOD);
+    this.FilterAllHODApplications = this.sortByApplicationStatus(result);
   }
 
   search2(): void {
-    this.FilterAllApplications = this.filterBySearch(
-      this.AllApplications,
-      this.searchQuery2,
-    );
+    let result = this.filterBySearch(this.AllApplications, this.searchQuery2);
+    result = this.filterByStatus(result, this.statusFilterHODAll);
+    this.FilterAllApplications = this.sortByApplicationStatus(result);
   }
 
   exportToExcel(data: any[]): void {
@@ -647,10 +686,14 @@ export class DynamicDashboardComponent implements OnInit {
   /**
    * Role of the user who triggered viewAllRemarks().
    * 'counsellor' → Evaluation section is HIDDEN in the modal  (req #3/#4)
-   * 'faculty' | 'hod' | 'how' → Evaluation section is SHOWN
+   * 'faculty' | 'hod' | 'how' | 'superadmin' → Evaluation section is SHOWN
    */
-  selectedRemarksCallerRole: 'counsellor' | 'faculty' | 'hod' | 'how' =
-    'counsellor';
+  selectedRemarksCallerRole:
+    | 'counsellor'
+    | 'faculty'
+    | 'hod'
+    | 'how'
+    | 'superadmin' = 'counsellor';
 
   /** Active tab for HOD view. */
   hodActiveTab: 'my' | 'all' | 'allApproved' = 'my';
@@ -670,6 +713,7 @@ export class DynamicDashboardComponent implements OnInit {
   isdealingFaculty = false; // Faculty
   isHOD = false;
   isHoW = false;
+  isSuperAdmin = false;
 
   // ── Employee info ────────────────────────────────────────────────────────────
   EmployeeCode: string | null = null;
@@ -841,13 +885,15 @@ export class DynamicDashboardComponent implements OnInit {
             this.EmployeeDetails = emp;
             this.EmployeeName = emp.employeeName;
             this.EmployeeCode = String(emp.employeeCode).trim(); //34923 // 33333 // 28243 // 1107 //31859 // 22413
-            // this.EmployeeCode = '1107'; // 34923 // 33333 // 28243 // 1107 //31859 // 22413
+            // this.EmployeeCode = '20260'; // 34923 // 33333 // 28243 // 1107 //31859 // 22413
             // this.EmployeeCode = '34923';
-            // this.EmployeeCode ='33333';
+            // this.EmployeeCode = '33333';
             // this.EmployeeCode = '30922';
             // this.EmployeeCode = '28243';
             // this.EmployeeCode = '31886';
-            // this.EmployeeCode = '1107';
+            // this.EmployeeCode = '25010';
+            this.EmployeeCode = '1107';
+            // this.EmployeeCode = '18499';
             this.ContactNoX = emp.contactNo;
             this.Department = emp.department;
             this.DepartmentName = emp.departmentName;
@@ -880,26 +926,29 @@ export class DynamicDashboardComponent implements OnInit {
             ? response.item1
             : [];
           // console.log(JSON.stringify(this.AllApplications) + 'Main details of all applications')
-          this.AllFacultyApplications = this.FilterAllFacultyApplications =
+          this.AllFacultyApplications = this.sortByApplicationStatus(
             response.item1.filter(
               (app: {
                 dealingFaculty: string | '';
                 isForwardtoHOD: string | '';
                 approvedUniversity: string | '';
               }) => app.dealingFaculty == this.EmployeeCode,
-            );
-          this.AllAuthorityApplications = this.FilterAllAuthorityApplications =
+            ),
+          );
+          this.searchFaculty();
+
+          this.AllAuthorityApplications = this.sortByApplicationStatus(
             response.item1.filter(
               (app: {
                 dealingAuthority: string | '';
                 dealingFaculty: string | '';
                 approvedUniversity: string | '';
               }) => app.dealingAuthority == this.EmployeeCode,
-            );
+            ),
+          );
+          this.searchAuthority();
 
-          // this.FilterAllAuthorityApplications = response.item1;
-
-          this.AllHODApplications = this.FilterAllHODApplications =
+          this.AllHODApplications = this.sortByApplicationStatus(
             response.item1.filter(
               (app: {
                 dealingHODId: string | '';
@@ -909,27 +958,39 @@ export class DynamicDashboardComponent implements OnInit {
                 isForwardedtoHOW: string | '';
               }) =>
                 app.dealingHODId == this.EmployeeCode &&
-                app.isForwardtoHOD == '1' &&
-                app.isForwardedtoHOW == null,
-            );
+                app.isForwardtoHOD == '1',
+            ),
+          );
+          this.search();
 
-          this.AllHOWApplications = response.item1.filter(
-            (app: {
-              dealingHow: string | '';
-              isForwardedtoHOW: string | '';
-              isLocked: string | '';
-            }) =>
-              app.dealingHow == this.EmployeeCode &&
-              app.isForwardedtoHOW == '1',
+          this.AllHOWApplications = this.sortByApplicationStatus(
+            response.item1.filter(
+              (app: {
+                dealingHow: string | '';
+                isForwardedtoHOW: string | '';
+                isLocked: string | '';
+              }) =>
+                app.dealingHow == this.EmployeeCode &&
+                app.isForwardedtoHOW == '1',
+            ),
           );
-          this.AllApprovedApplications = response.item1.filter(
-            (app: {
-              approvedUniversity: string | '';
-              isApproved: string | '';
-            }) =>
-              app.approvedUniversity?.length > 0 && app.isApproved == 'True',
+          this.searchMyHod();
+          this.AllApprovedApplications = this.sortByApplicationStatus(
+            response.item1.filter(
+              (app: {
+                approvedUniversity: string | '';
+                isApproved: string | '';
+              }) =>
+                app.approvedUniversity?.length > 0 && app.isApproved == 'True',
+            ),
           );
-          this.AllApprovedApplicationsforCounsellor = response.item1; //.filter((app: { approvedUniversity: string | ''; dealingAuthority: string | ''; }) => app.approvedUniversity?.length > 0 && app.dealingAuthority == this.EmployeeCode);
+          this.AllApprovedApplicationsforCounsellor =
+            this.sortByApplicationStatus(response.item1);
+
+          this.AllSuperAdminApplications = this.sortByApplicationStatus(
+            Array.isArray(response?.item1) ? response.item1 : [],
+          );
+          this.searchSuperAdmin();
 
           this.enrichAndFilterApplications();
         },
@@ -965,17 +1026,19 @@ export class DynamicDashboardComponent implements OnInit {
       .pipe(finalize(() => this.stopLoader(startTime)))
       .subscribe({
         next: (response) => {
-          this.hodAllApplications = Array.isArray(response?.item1)
-            ? response.item1
-            : [];
+          this.hodAllApplications = this.sortByApplicationStatus(
+            Array.isArray(response?.item1) ? response.item1 : [],
+          );
 
           //  this.AllApprovedApplications = response.item1.filter((app: { approvedUniversity: string | ''; }) =>app.approvedUniversity?.trim().length > 0 );
 
-          this.AllApprovedApplications = response.item1.filter(
-            (app: { approvedUniversity: string | null }) =>
-              app.approvedUniversity &&
-              app.approvedUniversity !== 'null' &&
-              app.approvedUniversity.trim().length > 0,
+          this.AllApprovedApplications = this.sortByApplicationStatus(
+            response.item1.filter(
+              (app: { approvedUniversity: string | null }) =>
+                app.approvedUniversity &&
+                app.approvedUniversity !== 'null' &&
+                app.approvedUniversity.trim().length > 0,
+            ),
           );
           // this.AllApprovedApplications = response.item1.filter((app: { isLocked: any, isApproved: any ; }) => app.isLocked=='True' || app.isApproved=='True');
           this.cd.detectChanges();
@@ -990,6 +1053,7 @@ export class DynamicDashboardComponent implements OnInit {
     this.AllApplications = this.AllApplications || [];
 
     const emp = this.EmployeeCode ? this.EmployeeCode.trim() : null;
+    this.isSuperAdmin = emp === '31309';
 
     // Reset all global role flags
     this.isHOD = false;
@@ -999,7 +1063,7 @@ export class DynamicDashboardComponent implements OnInit {
 
     let hasFacultyRows = false;
 
-    this.AllApplications = this.FilterAllApplications =
+    this.AllApplications = this.sortByApplicationStatus(
       this.AllApplications.map((app) => {
         const authority = this.normalise(app.dealingAuthority);
         const faculty = this.normalise(app.dealingFaculty);
@@ -1039,23 +1103,27 @@ export class DynamicDashboardComponent implements OnInit {
         if (app._isFaculty) hasFacultyRows = true;
 
         return app;
-      });
+      }),
+    );
+    this.search2();
 
-    if (hasFacultyRows) {
+    if (!this.isSuperAdmin) {
+      if (hasFacultyRows) {
+        this.AllApplications.forEach((app) => {
+          if (app._isCounsellor) {
+            app._isCounsellor = false;
+          }
+        });
+      }
+
+      // ── Raise global role flags from the finalised per-row values ────────────
       this.AllApplications.forEach((app) => {
-        if (app._isCounsellor) {
-          app._isCounsellor = false;
-        }
+        if (app._isCounsellor) this.isDealingAuthority = true;
+        if (app._isFaculty) this.isdealingFaculty = true;
+        if (app._isHOD) this.isHOD = true;
+        if (app._isHoW) this.isHoW = true;
       });
     }
-
-    // ── Raise global role flags from the finalised per-row values ────────────
-    this.AllApplications.forEach((app) => {
-      if (app._isCounsellor) this.isDealingAuthority = true;
-      if (app._isFaculty) this.isdealingFaculty = true;
-      if (app._isHOD) this.isHOD = true;
-      if (app._isHoW) this.isHoW = true;
-    });
 
     this.buildPageTitle();
     this.buildVisibleApplications();
@@ -1069,21 +1137,24 @@ export class DynamicDashboardComponent implements OnInit {
   }
 
   private buildVisibleApplications(): void {
-    this.hodMyApplications = this.AllApplications.filter((a) =>
-      this.isTrue(a.isForwardtoHOD),
+    this.hodMyApplications = this.sortByApplicationStatus(
+      this.AllApplications.filter((a) => this.isTrue(a.isForwardtoHOD)),
     );
     if (this.isHOD) {
       this.GetAllApplicationsforHOD();
     }
 
-    this.visibleApplications = this.AllApplications.filter(
-      (a) => a._isCounsellor || a._isFaculty || a._isHoW,
+    this.visibleApplications = this.sortByApplicationStatus(
+      this.AllApplications.filter(
+        (a) => a._isCounsellor || a._isFaculty || a._isHoW,
+      ),
     );
   }
 
   private buildPageTitle(): void {
     var roles: any = '';
-    if (this.isDealingAuthority) roles = 'Counsellor';
+    if (this.isSuperAdmin) roles = 'Super Admin';
+    else if (this.isDealingAuthority) roles = 'Counsellor';
     else if (this.isdealingFaculty) roles = 'Faculty';
     else if (this.isHOD) roles = 'HOD';
     else if (this.isHoW) roles = 'HoW';
@@ -1118,7 +1189,8 @@ export class DynamicDashboardComponent implements OnInit {
   GetStudentApplication(application: Application): void {
     if (this.LoginName && application.registrationNo) {
       var Role = '';
-      if (application._isHOD) Role = 'HOD';
+      if (this.isSuperAdmin) Role = 'HOD';
+      else if (application._isHOD) Role = 'HOD';
       else if (application._isHoW) Role = 'HoW';
       else if (application._isFaculty) Role = 'Faculty';
       else if (application._isCounsellor) Role = 'Counsellor';
@@ -1630,7 +1702,12 @@ export class DynamicDashboardComponent implements OnInit {
    */
   viewAllRemarks(
     row: Application,
-    callerRole: 'counsellor' | 'faculty' | 'hod' | 'how' = 'counsellor',
+    callerRole:
+      | 'counsellor'
+      | 'faculty'
+      | 'hod'
+      | 'how'
+      | 'superadmin' = 'counsellor',
   ): void {
     this.selectedRemarksCallerRole = callerRole;
 
@@ -1758,6 +1835,79 @@ export class DynamicDashboardComponent implements OnInit {
     return s === '1' || s === 'true';
   }
 
+  isCounsellorRemarksSubmitted(row: Application): boolean {
+    if (
+      this.isTrue(row.counsellingStatus) ||
+      (row.counsellingRemarks && row.counsellingRemarks.trim() !== '')
+    ) {
+      return true;
+    }
+    const allRows =
+      this.AllAuthorityRemarks?.filter(
+        (x) => x.registrationNo === row.registrationNo,
+      ) || [];
+    return allRows.some((r) => {
+      const by = (r.remarksBy || '').trim().toLowerCase();
+      const rem = (r.counsellingRemarks || r.dealingUidRemarks || '').trim();
+      return (
+        by === 'counsellor' ||
+        this.isTrue(r.counsellingStatus) ||
+        (rem !== '' && rem.toLowerCase() !== 'null')
+      );
+    });
+  }
+
+  isFacultyRemarksSubmitted(row: Application): boolean {
+    if (!this.isFacultyRemarksNullOrBlank(row)) {
+      return true;
+    }
+    const allRows =
+      this.AllAuthorityRemarks?.filter(
+        (x) => x.registrationNo === row.registrationNo,
+      ) || [];
+    return allRows.some((r) => {
+      const by = (r.remarksBy || '').trim().toLowerCase();
+      const rem = (
+        r.facultyRemarks ||
+        r.dealingUserInterviewRemarks ||
+        ''
+      ).trim();
+      return by === 'faculty' || (rem !== '' && rem.toLowerCase() !== 'null');
+    });
+  }
+
+  isHODRemarksSubmitted(row: Application): boolean {
+    if (!this.isDealingHODRemarksNullOrBlank(row)) {
+      return true;
+    }
+    const allRows =
+      this.AllAuthorityRemarks?.filter(
+        (x) => x.registrationNo === row.registrationNo,
+      ) || [];
+    return allRows.some((r) => {
+      const by = (r.remarksBy || '').trim().toLowerCase();
+      const rem = (
+        r.dealingHODRemarks ||
+        r.hodRemarks ||
+        r.dealingHODInterviewRemarks ||
+        ''
+      ).trim();
+      return by === 'hod' || (rem !== '' && rem.toLowerCase() !== 'null');
+    });
+  }
+
+  isHowRemarksSubmitted(row: Application): boolean {
+    const allRows =
+      this.AllAuthorityRemarks?.filter(
+        (x) => x.registrationNo === row.registrationNo,
+      ) || [];
+    return allRows.some((r) => {
+      const by = (r.remarksBy || '').trim().toLowerCase();
+      const rem = (r.howRemarks || r.dealingHowRemarks || '').trim();
+      return by === 'how' || (rem !== '' && rem.toLowerCase() !== 'null');
+    });
+  }
+
   isFacultyRemarksNullOrBlank(row: Application): boolean {
     const r = this.AllAuthorityRemarks?.find(
       (x) => x.registrationNo === row.registrationNo,
@@ -1771,7 +1921,8 @@ export class DynamicDashboardComponent implements OnInit {
       row.isForwardtoHOD === null ||
       row.isForwardtoHOD === undefined ||
       String(row.isForwardtoHOD).trim() === '' ||
-      String(row.isForwardtoHOD).trim().toLowerCase() === 'null'
+      String(row.isForwardtoHOD).trim().toLowerCase() === 'null' ||
+      String(row.isForwardtoHOD).trim() === '0'
     );
   }
 
@@ -1789,8 +1940,31 @@ export class DynamicDashboardComponent implements OnInit {
       row.isForwardedtoHOW === null ||
       row.isForwardedtoHOW === undefined ||
       String(row.isForwardedtoHOW).trim() === '' ||
-      String(row.isForwardedtoHOW).trim().toLowerCase() === 'null'
+      String(row.isForwardedtoHOW).trim().toLowerCase() === 'null' ||
+      String(row.isForwardedtoHOW).trim() === '0'
     );
+  }
+
+  canAcceptApplication(row: Application): boolean {
+    if (!row || this.getApplicationStatus(row) === 'Rejected') return false;
+    const testType = (row.englishTestType || '').toLowerCase();
+    const count = Number(row.uploadedStageIDocumentCount || 0);
+    const cond1 =
+      ['notrequired', 'applied', 'notgiven'].includes(testType) && count === 6;
+    const cond2 = ['appeared', 'given'].includes(testType) && count === 7;
+    return cond1 || cond2;
+  }
+
+  canForwardToHow(row: Application): boolean {
+    if (!row || this.getApplicationStatus(row) === 'Rejected') return false;
+    if (!this.isForwardToHOWNull(row)) return false;
+    if (!this.isHODRemarksSubmitted(row)) return false;
+    const testType = (row.englishTestType || '').toLowerCase();
+    const count = Number(row.uploadedStageIDocumentCount || 0);
+    const cond1 =
+      ['notrequired', 'applied', 'notgiven'].includes(testType) && count === 6;
+    const cond2 = ['appeared', 'given'].includes(testType) && count === 7;
+    return cond1 || cond2;
   }
 
   isAcceptOrForwardDisabled(row: Application): boolean {
@@ -1816,19 +1990,49 @@ export class DynamicDashboardComponent implements OnInit {
   }
 
   isDealingFacultyNullOrBlank(row: Application): boolean {
-    return !row.dealingFaculty || row.dealingFaculty.trim() === '';
+    return (
+      !row.dealingFaculty ||
+      row.dealingFaculty.trim() === '' ||
+      row.dealingFaculty.trim().toLowerCase() === 'null'
+    );
   }
 
-  /** Converts isApproved (1/0/NULL) to a human label. */
-  approvalLabel(val: string): string {
-    if (this.isTrue(val)) return 'Approved';
-    if (val === '0' || val === 'False' || val === 'false') return 'Rejected';
+  /** Converts isApproved / isLocked (1/0/NULL) or row object to a human label. */
+  approvalLabel(val: any): string {
+    if (val && typeof val === 'object') {
+      return this.getApplicationStatus(val);
+    }
+    if (this.isTrue(val) || String(val).trim().toLowerCase() === 'approved')
+      return 'Approved';
+    if (
+      val === '0' ||
+      val === 0 ||
+      val === false ||
+      val === 'False' ||
+      val === 'false' ||
+      String(val).trim().toLowerCase() === 'rejected' ||
+      String(val).trim().toLowerCase() === 'disapproved'
+    )
+      return 'Rejected';
     return 'Pending';
   }
 
-  approvalClass(val: string): string {
-    if (this.isTrue(val)) return 'bg-success';
-    if (val === '0' || val === 'False' || val === 'false') return 'bg-danger';
+  approvalClass(val: any): string {
+    if (val && typeof val === 'object') {
+      return this.getApplicationStatusClass(val);
+    }
+    if (this.isTrue(val) || String(val).trim().toLowerCase() === 'approved')
+      return 'bg-success';
+    if (
+      val === '0' ||
+      val === 0 ||
+      val === false ||
+      val === 'False' ||
+      val === 'false' ||
+      String(val).trim().toLowerCase() === 'rejected' ||
+      String(val).trim().toLowerCase() === 'disapproved'
+    )
+      return 'bg-danger';
     return 'bg-warning text-dark';
   }
 
@@ -2159,37 +2363,85 @@ export class DynamicDashboardComponent implements OnInit {
   }
 
   getApplicationStatus(row: any): string {
-    const isApproved = row?.isApproved;
-    const approvedUniversity = row?.approvedUniversity;
+    if (!row) return 'Pending';
 
-    // REJECTED
+    const isApp = row.isApproved;
+    const isLock = row.isLocked;
+
+    // 1. REJECTED: check explicit rejection first
     if (
-      isApproved === false ||
-      isApproved === 'False' ||
-      isApproved === 'false' ||
-      isApproved === 0 ||
-      isApproved === '0'
+      isApp === false ||
+      isApp === 0 ||
+      isApp === '0' ||
+      isApp === 'False' ||
+      isApp === 'false' ||
+      isLock === false ||
+      isLock === 0 ||
+      isLock === '0' ||
+      isLock === 'False' ||
+      isLock === 'false' ||
+      String(isApp).trim().toLowerCase() === 'rejected' ||
+      String(isApp).trim().toLowerCase() === 'disapproved' ||
+      String(isLock).trim().toLowerCase() === 'rejected' ||
+      String(isLock).trim().toLowerCase() === 'disapproved'
     ) {
       return 'Rejected';
     }
 
-    // APPROVED
+    // 2. APPROVED: if either isLocked or isApproved is true/1/approved
     if (
-      (isApproved === true ||
-        isApproved === 'True' ||
-        isApproved === 'true' ||
-        isApproved === 1 ||
-        isApproved === '1') &&
-      approvedUniversity !== null &&
-      approvedUniversity !== undefined &&
-      String(approvedUniversity).trim() !== ''
+      this.isTrue(isApp) ||
+      this.isTrue(isLock) ||
+      String(isApp).trim().toLowerCase() === 'approved' ||
+      String(isLock).trim().toLowerCase() === 'approved'
     ) {
       return 'Approved';
     }
 
-    // PENDING
+    // 3. PENDING: otherwise
     return 'Pending';
   }
+
+  /** Returns numeric sorting rank for application status: Pending (0) on top, Approved (1), Rejected (2) at bottom. */
+  getStatusRank(row: any): number {
+    const status = this.getApplicationStatus(row);
+    if (status === 'Pending') return 0;
+    if (status === 'Approved') return 1;
+    if (status === 'Rejected') return 2;
+    return 3;
+  }
+
+  /**
+   * Sorts applications so Pending is at the top, and Approved/Rejected are at the bottom.
+   * Within the same status, sorts by applicationId descending (newer first).
+   */
+  sortByApplicationStatus(applications: Application[]): Application[] {
+    if (!applications || !applications.length) return [];
+    return [...applications].sort((a, b) => {
+      const rankA = this.getStatusRank(a);
+      const rankB = this.getStatusRank(b);
+      if (rankA !== rankB) {
+        return rankA - rankB;
+      }
+      const idA = Number(a?.applicationId) || 0;
+      const idB = Number(b?.applicationId) || 0;
+      if (idA && idB && idA !== idB) {
+        return idB - idA;
+      }
+      return 0;
+    });
+  }
+
+  /** Comparator function for ngx-datatable-column header sorting */
+  statusComparator = (
+    valueA: any,
+    valueB: any,
+    rowA: any,
+    rowB: any,
+  ): number => {
+    return this.getStatusRank(rowA) - this.getStatusRank(rowB);
+  };
+
   getApplicationStatusClass(row: any): string {
     const status = this.getApplicationStatus(row);
 
