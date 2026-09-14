@@ -894,6 +894,7 @@ export class DynamicDashboardComponent implements OnInit {
             // this.EmployeeCode = '25010';
             // this.EmployeeCode = '1107';
             // this.EmployeeCode = '18499';
+            // this.EmployeeCode = '31886';
             this.ContactNoX = emp.contactNo;
             this.Department = emp.department;
             this.DepartmentName = emp.departmentName;
