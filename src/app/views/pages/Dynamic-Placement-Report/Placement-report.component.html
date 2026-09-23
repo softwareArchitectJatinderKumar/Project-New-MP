@@ -1,0 +1,131 @@
+<div class="container-fluid" id="adminPage" *ngIf="isLoginFailed==false; else loginFailed">
+            <div class="row vh-100">
+                <ng-container *ngIf="DocumentsData.length > 0 ; else noRecords">
+                    <div class="col-12 stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="col-12 d-flex justify-content-center">
+                                    <div class="col-sm-2 ">
+                                        <div class="mb-3 ms-5">
+                                            <button (click)="exportToExcel()" class="btn btn-dark ">Export to
+                                                Excel</button>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+
+
+                                <div *ngIf="filteredMouDocumentsData.length >0; else SeachNoRecords">
+                                    <table id="dataTableExample " class="table table-responsive">
+                                        <thead>
+                                            <tr>
+                                                <th class="form-label fs-6 ">Stream </th>
+                                                <th class="form-label fs-6 ">Coordinator </th>
+                                                <th class="form-label fs-6 ">CoordinatorType </th>
+                                                <th class="form-label fs-6 ">Department </th>
+                                                <th class="form-label fs-6  ">School </th>
+                                                <th class="form-label fs-6 ">EmailID</th>
+                                                <th class="form-label fs-6"> MobileNo</th>
+                                                <th class="form-label fs-6 ">STATUS</th>
+                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <ng-container *ngFor="let DocumentRow of getRecordsForCurrentPage()">
+                                                <tr>
+                                                    <td class="fw-bold fs-6 "> <label class="form-label "> {{DocumentRow.Stream}} </label> </td>
+                                                    <td class="fw-bold fs-6 "> <label class="form-label "> {{DocumentRow.Coordinator}} </label> </td>
+                                                    <td class="fw-bold fs-6 "> <label class="form-label "> {{DocumentRow.CoordinatorType}} </label> </td>
+                                                    <td class="fw-bold fs-6 "> <label class="form-label "> {{DocumentRow.Department}} </label> </td>
+                                                    <td class="fw-bold fs-6 "> <label class="form-label "> {{DocumentRow.School}} </label> </td>
+                                                    <td class="fw-bold fs-6 "> <label class="form-label "> {{DocumentRow.EmailID}} </label> </td>
+                                                    <td class="fw-bold fs-6 "> <label class="form-label "> {{DocumentRow.MobileNo}} </label> </td>
+                                                    <td class="fw-bold fs-6 "> <label class="form-label "> {{DocumentRow.STATUS}} </label> </td>
+
+                                                     
+
+
+                                                </tr>
+                                            </ng-container>
+                                        </tbody>
+                                    </table>
+                                    <div class="row d-flex justify-content-between mt-5 mb-3 align-items-center">
+                                        <div class="  text-end">
+                                            <mat-paginator [length]="filteredMouDocumentsData.length"
+                                                [pageSize]="recordsPerPage" [pageSizeOptions]="[5, 10, 25, 50]"
+                                                (page)="onPageChange($event)">
+                                            </mat-paginator>
+                                        </div>
+                                        <div class=" text-end">
+                                            Total Records: {{ filteredMouDocumentsData.length }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <ng-template #SeachNoRecords>
+                                    <div class="col-12 stretch-card">
+                                        <table id="dataTableExample" class="table">
+                                            <thead>
+                                              <tr>
+                                                <th class="form-label fs-6 ">Stream </th>
+                                                <th class="form-label fs-6 ">Coordinator </th>
+                                                <th class="form-label fs-6 ">CoordinatorType </th>
+                                                <th class="form-label fs-6 ">Department </th>
+                                                <th class="form-label fs-6  ">School </th>
+                                                <th class="form-label fs-6 ">EmailID</th>
+                                                <th class="form-label fs-6"> MobileNo</th>
+                                                <th class="form-label fs-6 ">STATUS</th>
+                                                
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="8" class="text-center"> <label
+                                                            class="text-center fs-2 ">
+                                                            No  Record(s) found .</label>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-template #noRecords>
+                    <div class="col-12 stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <label class="text-center fs-2  d-flex justify-content-center"> No Record(s) are
+                                    Available .</label>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </div>
+</div>
+
+<ng-template #loginFailed>
+    <div class="text-center " *ngIf="isLoginFailed">
+        <h3 class="text-center fs-2 m-5 text-warn pt-2 "> Unauthorised Access </h3>
+        <div class="row mt-4 mb-4 d-flex justify-content-center ">
+            <div class="col-3 ">
+                <ul class="list-group  w-20">
+                    <Label class="form-label fs-4 badge bg-white themeClr">Why ? </Label>
+                    <li class="list-group-item">You are trying to access the page not available for you.</li>
+                    <li class="list-group-item">Your current session has expired.</li>
+                </ul>
+            </div>
+
+            <div class="col-3 ">
+                <ul class="list-group  w-20">
+                    <Label class="form-label fs-4 badge bg-white themeClr">Try Following step(s) :- </Label>
+                    <li class="list-group-item">Logout your current session. </li>
+                    <li class="list-group-item">Try Login again.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</ng-template>

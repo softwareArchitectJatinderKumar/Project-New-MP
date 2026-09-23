@@ -298,6 +298,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'PlacementDetailsReport/:loginName',
+        loadChildren: () =>
+          import('./views/pages/PlacementDetails-Report/placement-details-report.module').then(
+            (m) => m.PlacementDetailsReportModule,
+          ),
+      },
+      {
         path: 'MouNewRequest/:loginName', // 23-sep-25 added newmouid , ExportExcel fixed on 12-May-26 added Mou Renewal Page
         loadChildren: () =>
           import('./views/pages/mou-documents-uploads/mou-documents-uploads.module').then(
@@ -393,10 +400,10 @@ const routes: Routes = [
       //   path: 'placementdrive/:loginName',
       //   loadChildren: () => import('./views/pages/placement-drive/placement-drive.module').then(m => m.PlacementDriveModule)
       // },
-      // {
-      //   path: 'planningreport/:loginName',
-      //   loadChildren: () => import('./views/pages/planning-report/planning-report.module').then(m => m.PlanningReportModule)
-      // },
+      {
+        path: 'CoordinatorReport/:loginName',
+        loadChildren: () => import('./views/pages/Dynamic-Placement-Report/Placement-report.module').then(m => m.placementReportModule)
+      },
       // {
       //   path: 'placementdrivehodapproval/:loginName',
       //   loadChildren: () => import('./views/pages/placement-drive-hodapproval/placement-drive-hodapproval.module').then(m => m.PlacementDriveHODApprovalModule)

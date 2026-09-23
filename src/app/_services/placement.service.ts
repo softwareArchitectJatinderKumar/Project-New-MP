@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { StorageService } from './storage.service';
 
@@ -7,7 +7,7 @@ import { StorageService } from './storage.service';
 // const AUTH_API_LOCAL = 'https://localhost:44362/';
 
 const AUTH_API = 'https://projectsapi.lpu.in/';
-const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';//'https://localhost:44362/';
+const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/'; //'https://localhost:44362/';
 
 // const httpOptions = {
 //   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -17,342 +17,381 @@ const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';//'https://localhost:44362/
   providedIn: 'root',
 })
 export class PlacementService {
-  constructor(private http: HttpClient,private storageService: StorageService) {}
+  constructor(
+    private http: HttpClient,
+    private storageService: StorageService,
+  ) {}
 
   getBatchyears(): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
-    return this.http.get(
-      AUTH_API + 'api/Placement/Get',
-     {headers}
-    );
+    return this.http.get(AUTH_API + 'api/Placement/Get', { headers });
   }
-
 
   getPlannerSession(): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
-    return this.http.get(
-      AUTH_API + 'api/Planning/GetPlanningSession',
-     {headers}
-    );
+    return this.http.get(AUTH_API + 'api/Planning/GetPlanningSession', {
+      headers,
+    });
   }
 
-  getAuthBatchyears(type:any): Observable<any> {
+  getAuthBatchyears(type: any): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
     return this.http.get(
-      AUTH_API + 'api/Placement/GetAuthenticationBatchYear?type='+type,
-     {headers}
+      AUTH_API + 'api/Placement/GetAuthenticationBatchYear?type=' + type,
+      { headers },
     );
   }
 
-  getCompanyByBatchyears(batchYear:any): Observable<any> {
+  getCompanyByBatchyears(batchYear: any): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
     return this.http.get(
-      AUTH_API + 'api/Placement/GetCompanyBatchWise?batchYear='+batchYear,
-     {headers}
+      AUTH_API + 'api/Placement/GetCompanyBatchWise?batchYear=' + batchYear,
+      { headers },
     );
   }
-
-
 
   getReportType(): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
+
+    //httpOptions.headers.set('Authentication', 'Bearer ' + token);
+    return this.http.get(AUTH_API + 'api/Planning/GetQueryType', { headers });
+  }
+
+  getCompanyByAuthBatchyears(batchYear: any, type: any): Observable<any> {
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
     return this.http.get(
-      AUTH_API + 'api/Planning/GetQueryType',
-     {headers}
+      AUTH_API +
+        'api/Placement/GetCompanyAuthenticationBatchWise?batchYear=' +
+        batchYear +
+        '&type=' +
+        type,
+      { headers },
     );
   }
 
-
-  getCompanyByAuthBatchyears(batchYear:any,type:any): Observable<any> {
+  getStreamByBatchyears(batchYear: any, companyId: any): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
     return this.http.get(
-      AUTH_API + 'api/Placement/GetCompanyAuthenticationBatchWise?batchYear='+batchYear+'&type='+type,
-     {headers}
+      AUTH_API +
+        'api/Placement/GetStreamByBatchYear?batchYear=' +
+        batchYear +
+        '&companyId=' +
+        companyId,
+      { headers },
     );
   }
 
-  getStreamByBatchyears(batchYear:any,companyId:any): Observable<any> {
+  getStreamByAuthBatchyears(
+    batchYear: any,
+    companyId: any,
+    type: any,
+  ): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
     return this.http.get(
-      AUTH_API + 'api/Placement/GetStreamByBatchYear?batchYear='+batchYear + '&companyId='+companyId,
-     {headers}
+      AUTH_API +
+        'api/Placement/GetStreamByAuthBatchYear?batchYear=' +
+        batchYear +
+        '&companyId=' +
+        companyId +
+        '&type=' +
+        type,
+      { headers },
     );
   }
 
-  getStreamByAuthBatchyears(batchYear:any,companyId:any,type:any): Observable<any> {
+  getDriveByStreamBatchyears(
+    batchYear: any,
+    companyId: any,
+    stream: any,
+  ): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
     return this.http.get(
-      AUTH_API + 'api/Placement/GetStreamByAuthBatchYear?batchYear='+batchYear + '&companyId='+companyId+'&type='+type,
-     {headers}
+      AUTH_API +
+        'api/Placement/GetSoftSkillPlacementDrive?batchYear=' +
+        batchYear +
+        '&companyId=' +
+        companyId +
+        '&stream=' +
+        stream,
+      { headers },
     );
   }
 
-  getDriveByStreamBatchyears(batchYear:any,companyId:any,stream:any): Observable<any> {
+  getAuthDriveByStreamBatchyears(
+    batchYear: any,
+    companyId: any,
+    stream: any,
+    type: any,
+  ): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
     return this.http.get(
-      AUTH_API + 'api/Placement/GetSoftSkillPlacementDrive?batchYear='+batchYear + '&companyId='+companyId + '&stream='+stream,
-     {headers}
+      AUTH_API +
+        'api/Placement/GetAuthSoftSkillPlacementDrive?batchYear=' +
+        batchYear +
+        '&companyId=' +
+        companyId +
+        '&stream=' +
+        stream +
+        '&type=' +
+        type,
+      { headers },
     );
   }
 
-  getAuthDriveByStreamBatchyears(batchYear:any,companyId:any,stream:any,type:any): Observable<any> {
+  getRounds(): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
+
+    //httpOptions.headers.set('Authentication', 'Bearer ' + token);
+    return this.http.get(AUTH_API + 'api/Placement/GetRoundData', { headers });
+  }
+
+  getDriveAttendanceDetails(driveId: any, roundId: any): Observable<any> {
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
     return this.http.get(
-      AUTH_API + 'api/Placement/GetAuthSoftSkillPlacementDrive?batchYear='+batchYear + '&companyId='+companyId + '&stream='+stream+'&type='+type,
-     {headers}
+      AUTH_API +
+        'api/Placement/GetPlacementStudentsDriveAttendanceDetails?driveId=' +
+        driveId +
+        '&roundId=' +
+        roundId,
+      { headers },
     );
   }
 
-
-    getRounds(): Observable<any> {
+  getmouData(sessionId: any): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
     return this.http.get(
-      AUTH_API + 'api/Placement/GetRoundData',
-     {headers}
+      AUTH_API + 'api/Placement/GetMouDashboardData?sessionId=' + sessionId,
+      { headers },
     );
   }
 
-
-      getDriveAttendanceDetails(driveId:any,roundId:any): Observable<any> {
+  addSoftSkillData(dataSoft: any[]): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
-
-    //httpOptions.headers.set('Authentication', 'Bearer ' + token);
-    return this.http.get(
-      AUTH_API + 'api/Placement/GetPlacementStudentsDriveAttendanceDetails?driveId='+driveId+'&roundId='+roundId,
-     {headers}
-    );
-  }
-
-  getmouData(sessionId:any): Observable<any> {
-    let token = this.storageService.getUser();
-    let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
-
-    //httpOptions.headers.set('Authentication', 'Bearer ' + token);
-    return this.http.get(
-      AUTH_API + 'api/Placement/GetMouDashboardData?sessionId='+sessionId,
-     {headers}
-    );
-  }
-
-
-  addSoftSkillData(dataSoft:any[]): Observable<any> {
-    let token = this.storageService.getUser();
-    let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
     return this.http.post(
-      AUTH_API + 'api/Placement/AddPlacementSoftSkillData',dataSoft,
-     {headers}
+      AUTH_API + 'api/Placement/AddPlacementSoftSkillData',
+      dataSoft,
+      { headers },
     );
   }
 
-
-  getPlannerReportData(dataSoft:any): Observable<any> {
+  getPlannerReportData(dataSoft: any): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
+
+    //httpOptions.headers.set('Authentication', 'Bearer ' + token);
+    return this.http.post(AUTH_API + 'api/Planning/RunQuery', dataSoft, {
+      headers,
+    });
+  }
+
+  getLinkedQueryData(dataSoft: any): Observable<any> {
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
+
+    //httpOptions.headers.set('Authentication', 'Bearer ' + token);
+    return this.http.post(AUTH_API + 'api/Planning/RunLinkedQuery', dataSoft, {
+      headers,
+    });
+  }
+
+  updateFinalSubmitSoftSkillData(dataSoft: any): Observable<any> {
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
     return this.http.post(
-      AUTH_API + 'api/Planning/RunQuery',dataSoft,
-     {headers}
+      AUTH_API + 'api/Placement/UpdatePlacementDataForFinalSubmit',
+      dataSoft,
+      { headers },
     );
   }
 
-  getLinkedQueryData(dataSoft:any): Observable<any> {
+  getSoftSkillData(dataSoft: any): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
     return this.http.post(
-      AUTH_API + 'api/Planning/RunLinkedQuery',dataSoft,
-     {headers}
+      AUTH_API + 'api/Placement/GetPlacementSoftSkillRequestDetailShow',
+      dataSoft,
+      { headers },
     );
   }
 
-
-
-  updateFinalSubmitSoftSkillData(dataSoft:any): Observable<any> {
+  addFeedback(dataSoft: any): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
-    return this.http.post(
-      AUTH_API + 'api/Placement/UpdatePlacementDataForFinalSubmit',dataSoft,
-     {headers}
-    );
-  }
-
-  getSoftSkillData(dataSoft:any): Observable<any> {
-    let token = this.storageService.getUser();
-    let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
-
-    //httpOptions.headers.set('Authentication', 'Bearer ' + token);
-    return this.http.post(
-      AUTH_API + 'api/Placement/GetPlacementSoftSkillRequestDetailShow',dataSoft,
-     {headers}
-    );
-    
-  }
-
-
-  addFeedback(dataSoft:any): Observable<any> {
-    let token = this.storageService.getUser();
-    let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
-
-    //httpOptions.headers.set('Authentication', 'Bearer ' + token);
-    return this.http.post(
-      AUTH_API + 'api/Planning/AddFeedbackForm',dataSoft,
-     {headers}
-    );
+    return this.http.post(AUTH_API + 'api/Planning/AddFeedbackForm', dataSoft, {
+      headers,
+    });
   }
   //05-10-2024
   getDivisionsService(): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
-    return this.http.get(
-      AUTH_API + 'api/Planning/GetSchoolDivisions?type=d',
-     {headers}
-    );
+    return this.http.get(AUTH_API + 'api/Planning/GetSchoolDivisions?type=d', {
+      headers,
+    });
   }
 
-  getQuarterAchievementService(SessionIdNew:any,DivID:any): Observable<any> {
+  getQuarterAchievementService(SessionIdNew: any, DivID: any): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
     return this.http.get(
-      AUTH_API + 'api/Planning/GetQuarterWiseAchievements?SessionIdNew='+SessionIdNew+'&DivID='+DivID,
-     {headers}
+      AUTH_API +
+        'api/Planning/GetQuarterWiseAchievements?SessionIdNew=' +
+        SessionIdNew +
+        '&DivID=' +
+        DivID,
+      { headers },
     );
   }
-//15-10-2024
-getTransferAllocationService(PlannerSessionId:any,LoginName:any): Observable<any> {
-  let token = this.storageService.getUser();
-  let headers = new HttpHeaders()
-  .set('Authorization', 'Bearer ' + token)
-  .set('Content-Type', 'application/json'); 
+  //15-10-2024
+  getTransferAllocationService(
+    PlannerSessionId: any,
+    LoginName: any,
+  ): Observable<any> {
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
-  //httpOptions.headers.set('Authentication', 'Bearer ' + token);
-  return this.http.get(
-    AUTH_API + 'api/Planning/GetTransferAllocations?PlannerSessionId='+PlannerSessionId,
-   {headers}
-  );
-}
+    //httpOptions.headers.set('Authentication', 'Bearer ' + token);
+    return this.http.get(
+      AUTH_API +
+        'api/Planning/GetTransferAllocations?PlannerSessionId=' +
+        PlannerSessionId,
+      { headers },
+    );
+  }
 
   //16-10-2024
-  TransferOBPMetricAllocation(TransferredData: any, type: string): Observable<any> {
+  TransferOBPMetricAllocation(
+    TransferredData: any,
+    type: string,
+  ): Observable<any> {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
-        .set('Authorization', 'Bearer ' + token)
-        .set('Content-Type', 'application/json');
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
     // Properly stringify the data for the POST request
     return this.http.post(
-        `${AUTH_API}api/Planning/OBPTransferAllocations?Type=${type}`,
-        TransferredData,
-        { headers }
-    );
-}
-
-  getOBPDepartmentService(LoginName:any): Observable<any> {
-    let token = this.storageService.getUser();
-    let headers = new HttpHeaders()
-    .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
-
-    //httpOptions.headers.set('Authentication', 'Bearer ' + token);
-    return this.http.get(
-      AUTH_API + 'api/Planning/OBPGetDepartments?LoginName='+LoginName,
-     {headers}
+      `${AUTH_API}api/Planning/OBPTransferAllocations?Type=${type}`,
+      TransferredData,
+      { headers },
     );
   }
 
+  getOBPDepartmentService(LoginName: any): Observable<any> {
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
 
-  
+    //httpOptions.headers.set('Authentication', 'Bearer ' + token);
+    return this.http.get(
+      AUTH_API + 'api/Planning/OBPGetDepartments?LoginName=' + LoginName,
+      { headers },
+    );
+  }
+
   getPlacementMenuDetails(dataSoft: FormData): Observable<any> {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders().set('Authorization', 'Bearer ' + authToken);
-    return this.http.post(AUTH_API_LOCAL + 'api/Placement/PlacementGetUserMenus', dataSoft, {
-      headers,
-    });
+    return this.http.post(
+      AUTH_API_LOCAL + 'api/Placement/PlacementGetUserMenus',
+      dataSoft,
+      {
+        headers,
+      },
+    );
   }
 
   PlacementHelpDeskTicketsCrudOperations(dataSoft: FormData): Observable<any> {
@@ -364,7 +403,7 @@ getTransferAllocationService(PlannerSessionId:any,LoginName:any): Observable<any
       { headers },
     );
   }
- 
+
   PlacementHelpDeskGetStaff(dataSoft: FormData): Observable<any> {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders().set('Authorization', 'Bearer ' + authToken);
@@ -375,5 +414,98 @@ getTransferAllocationService(PlannerSessionId:any,LoginName:any): Observable<any
       { headers },
     );
   }
+
+  getAllPlacementCoordinator(): Observable<any> {
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
+
+    //httpOptions.headers.set('Authentication', 'Bearer ' + token);
+    return this.http.get(
+      'https://localhost:44362/api/Placement/GetAllPlacementCoordinatorDetails',
+      // AUTH_API + 'api/Placement/GetAllPlacementCoordinatorDetails',
+      { headers },
+    );
+  }
+
+  getBatchYears(): Observable<any> {
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
+    // Calling the existing endpoint that uses pGetCurrentBatchYearForDrives
+    return this.http.get<any>(
+      // 'https://localhost:44362/api/Placement/PlacementBatchYears',
+        AUTH_API +'api/Placement/PlacementBatchYears',
+      { headers },
+    );
+  }
+
+  getStreams(): Observable<any> {
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
+    // Calling the existing endpoint that uses pGetCurrentBatchYearForDrives
+    return this.http.get<any>(
+        AUTH_API +'api/Placement/PlacementStream',
+      // 'https://localhost:44362/api/Placement/PlacementStream',
+      { headers },
+    );
+  }
+
+  getSubStreams(streamList: string, batchYear: string): Observable<any> {
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
+    return this.http.get<any>(
+      // 'https://localhost:44362/api/Placement/GetSubStreams?streamList=' + streamList + '&batchYear=' + batchYear,
+        AUTH_API +'api/Placement/GetSubStreams?streamList=' + streamList + '&batchYear=' + batchYear,
+      { headers },
+    );
+  }
  
+  getPlacementData(batchYear: string, streamId: number, subStreamId: string): Observable<any> {
+    let token = this.storageService.getUser();
+    let headers = new HttpHeaders()
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json');
+    return this.http.get<any>(
+      // 'https://localhost:44362/api/Placement/GetPlacementDetailsDetails?batchYear=' + batchYear + '&streamId=' + streamId + '&subStreamId=' + subStreamId,
+        AUTH_API +'api/Placement/GetPlacementDetailsDetails?batchYear=' + batchYear + '&streamId=' + streamId + '&subStreamId=' + subStreamId,
+      { headers },
+    );
+  }
+
+ 
+
+
+
+GetPlacementDriveCandidates(Type: string, DriveId: string): Observable<any> {
+  let token = this.storageService.getUser();
+  let headers = new HttpHeaders()
+    .set('Authorization', 'Bearer ' + token)
+    .set('Content-Type', 'application/json');
+  return this.http.get<any>(
+    AUTH_API + 'api/Placement/GetPlacementDriveCandidates?Type=' + Type + '&DriveId=' + DriveId,
+    // 'https://localhost:44362/api/Placement/GetPlacementDriveCandidates?Type=' + Type + '&DriveId=' + DriveId,
+    { headers },
+  );
+}
+
+
+// GetPlacementDriveMasterDetails
+
+GetPlacementDrivesDetails(DriveId: string): Observable<any> {
+  let token = this.storageService.getUser();
+  let headers = new HttpHeaders()
+    .set('Authorization', 'Bearer ' + token)
+    .set('Content-Type', 'application/json');
+  return this.http.get<any>(
+    AUTH_API + 'api/Placement/GetPlacementDriveMasterDetails?DriveId=' + DriveId,
+    { headers },
+  );
+}
 }

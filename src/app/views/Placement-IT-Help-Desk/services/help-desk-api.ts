@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
-import { HelpDeskTicket, NewHelpDeskTicket } from '@features/help-desk/models/help-desk.model';
+import { HelpDeskTicket, NewHelpDeskTicket } from '../models/help-desk.model';
 
 /**
  * In-memory Help Desk ticket store. There is no backend for this feature yet, so this service

@@ -6,6 +6,9 @@ const AUTH_API = 'https://projectsapi.lpu.in/';
 const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
 // const AUTH_API = 'https://localhost:7125/'; //'https://projectsapi.lpu.in/';
 // const AUTH_API_LOCAL = 'https://localhost:7125/'; //'https://localhost:7125/';
+
+//  const AUTH_API = 'https://localhost:44362/';
+// const AUTH_API_LOCAL = 'https://localhost:44362/';
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 };

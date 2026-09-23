@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { StudentFormComponent } from './StudentForm.component';
+import { PlanningReportComponent } from './planning-report.component';
 
-describe('StudentFormComponent', () => {
-  let component: StudentFormComponent;
-  let fixture: ComponentFixture<StudentFormComponent>;
+describe('PlanningReportComponent', () => {
+  let component: PlanningReportComponent;
+  let fixture: ComponentFixture<PlanningReportComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ StudentFormComponent ]
+      declarations: [ PlanningReportComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(StudentFormComponent);
+    fixture = TestBed.createComponent(PlanningReportComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -21,4 +21,3 @@ describe('StudentFormComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-

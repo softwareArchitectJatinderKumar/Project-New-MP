@@ -1,0 +1,416 @@
+<div class="modal-header border-0 pb-0">
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('Cross click')"></button>
+</div>
+<div class="modal-body p-4" style="background: #f4f7fb;">
+  <div *ngIf="loadingIndicator" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  
+  <div *ngIf="!loadingIndicator && driveDetails" class="job-container">
+    
+    <!-- ============================================== -->
+    <!-- STUDENT VIEW (Modern Layout) -->
+    <!-- ============================================== -->
+    <div *ngIf="isStudent">
+      <!-- Hero Section -->
+      <div class="hero-card position-relative">
+      
+      <!-- Download Button (Staff Only) -->
+      <div *ngIf="!isStudent" class="position-absolute" style="top: 15px; right: 15px; z-index: 10;">
+        <button (click)="downloadJD()" class="btn" style="background:#ffc107; color:#000; border:2px solid #fff; border-radius:25px; padding:8px 16px; font-weight:700; font-size:14px; box-shadow:0 4px 12px rgba(255,193,7,0.4); cursor:pointer;" title="Download JD Details">
+          <i class="fa fa-download me-1"></i> Download
+        </button>
+      </div>
+
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <span class="badge-drive">{{ driveDetails.MainDetails?.DriveTypeName }}</span>
+          <h2 class="mt-3 mb-3">{{ driveDetails.MainDetails?.CompanyName }} - {{ driveDetails.JobDetails?.[0]?.Designation || 'NA' }}</h2>
+          <p class="mb-2"><i class="fa fa-graduation-cap me-2"></i>{{ driveDetails.MainDetails?.StreamName }} <span *ngIf="driveDetails.MainDetails?.SubStreams">({{ driveDetails.MainDetails?.SubStreams }})</span> {{ driveDetails.MainDetails?.BatchYear }} batch</p>
+          <p class="mb-2" *ngIf="driveDetails.MainDetails?.Venue"><i class="fa fa-building me-2"></i>Venue: {{ driveDetails.MainDetails?.Venue }}</p>
+          <p><i class="fa fa-map-marker-alt me-2"></i>{{ driveDetails.JobDetails?.[0]?.JobLocation || 'NA' }}</p>
+        </div>
+        <div class="col-md-4 text-center border-start border-white border-3 ps-md-4 mt-3 mt-md-0">
+          <h4 class="mb-2">{{ driveDetails.MainDetails?.DriveTypeName === 'COMPETITIVE EVENT' || driveDetails.MainDetails?.DriveTypeName === 'TEST' ? 'Test Code' : 'Drive Code' }}</h4>
+          <h5 class="bg-light text-dark px-3 py-2 rounded-pill d-inline-block">{{ driveDetails.MainDetails?.DriveCode }}</h5>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 Info Cards -->
+    <div class="row g-4 mb-4">
+      <div class="col-lg-3 col-md-6">
+        <div class="info-card d-flex flex-column align-items-center justify-content-center">
+          <i class="fa fa-user-graduate fa-3x text-primary mb-3"></i>
+          <h6 class="mb-2">Eligibility</h6>
+          <div class="info-value">{{ driveDetails.JobDetails?.[0]?.Eligibility || 'NA' }}</div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="info-card d-flex flex-column align-items-center justify-content-center">
+          <i class="fa fa-money-bill-wave fa-3x text-success mb-3"></i>
+          <h6 class="mb-2">Salary Package</h6>
+          <div class="salary-package">{{ driveDetails.JobDetails?.[0]?.SalaryDesc || 'NA' }}</div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="info-card d-flex flex-column align-items-center justify-content-center">
+          <i class="fa fa-file-contract fa-3x text-info mb-3"></i>
+          <h6 class="mb-2">Bond Details</h6>
+          <div class="salary-desc">{{ driveDetails.MainDetails?.BondDetails || 'NA' }}</div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="info-card d-flex flex-column align-items-center justify-content-center">
+          <i class="fa fa-clock fa-3x text-danger mb-3"></i>
+          <h6 class="mb-2">Apply Before</h6>
+          <div class="info-value fw-bold fs-5 highlight-red">{{ (driveDetails.MainDetails?.LastDate | date:'medium') || driveDetails.MainDetails?.CommunicationLastDate || 'NA' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accordion Sections -->
+    <div class="accordion" id="mainAccordion">
+
+      <!-- Job Profile -->
+      <div class="accordion-item" *ngIf="driveDetails.MainDetails?.JobProfile">
+        <h2 class="accordion-header">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#jobProfileBox" aria-expanded="true">
+            <i class="fa fa-briefcase me-3 text-success"></i>Job Profile
+          </button>
+        </h2>
+        <div id="jobProfileBox" class="accordion-collapse collapse show" data-bs-parent="#mainAccordion">
+          <div class="accordion-body">
+            <div class="p-3 border rounded bg-light mb-3">
+              <strong>Job Profile Details:</strong><br>
+              <div [innerHTML]="driveDetails.MainDetails?.JobProfile"></div>
+            </div>
+            <div class="p-3 border rounded bg-light" *ngIf="driveDetails.MainDetails?.SkillsRequired">
+              <strong><i class="fa fa-cogs text-primary me-2"></i>Skills Required:</strong><br>
+              <span class="badge bg-primary me-1 mb-1">{{ driveDetails.MainDetails?.SkillsRequired }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selection Process -->
+      <div class="accordion-item" *ngIf="driveDetails.Rounds && driveDetails.Rounds.length > 0">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#selectionBox">
+            <i class="fa fa-list-ol me-3 text-success"></i>Selection Process
+          </button>
+        </h2>
+        <div id="selectionBox" class="accordion-collapse collapse" data-bs-parent="#mainAccordion">
+          <div class="accordion-body">
+            <div class="mb-3 p-3 border rounded bg-light" *ngIf="driveDetails.MainDetails?.SelectionProcedure">
+              <strong>Selection Procedure:</strong><br>
+              <div [innerHTML]="driveDetails.MainDetails?.SelectionProcedure"></div>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover table-bordered" style="font-family: Arial; font-size: 12px;">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Round Name</th>
+                    <th>Expected Start Time</th>
+                    <th>Expected End Time</th>
+                    <th>Round Description</th>
+                    <th>Is Elimination</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let round of driveDetails.Rounds">
+                    <td><strong>{{ round.Name || round.RoundDescription }}</strong></td>
+                    <td [ngClass]="{'highlight-yellow': round.IsNotifyLater === 'Notified later'}">
+                      {{ round.IsNotifyLater === 'Notified later' ? 'Will be notified later' : round.ExpectedStartTime }}
+                    </td>
+                    <td [ngClass]="{'highlight-yellow': round.IsNotifyLater === 'Notified later'}">
+                      {{ round.IsNotifyLater === 'Notified later' ? 'Will be notified later' : (round.ExpectedEndTime || round.ExpectedStartTime) }}
+                    </td>
+                    <td>{{ round.RoundDescription || round.Name }}</td>
+                    <td>
+                      <span class="badge" [ngClass]="round.IsElimination === 'YES' || round.IsElimination === 'Yes' || round.IsElimination === '1' ? 'bg-danger' : 'bg-success'">
+                        {{ round.IsElimination === '1' ? 'Yes' : (round.IsElimination === '0' ? 'No' : round.IsElimination) }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Details & Dates -->
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#contactBox">
+            <i class="fa fa-phone me-3 text-success"></i>Contact Details & Dates
+          </button>
+        </h2>
+        <div id="contactBox" class="accordion-collapse collapse" data-bs-parent="#mainAccordion">
+          <div class="accordion-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <i class="fa fa-user-circle text-primary me-2"></i><strong>Whom to contact:</strong><br>
+                {{ driveDetails.MainDetails?.Contact1Name || driveDetails.MainDetails?.Contact1Details }}
+              </div>
+              <div class="col-md-6">
+                <i class="fa fa-headset text-info me-2"></i><strong>For any Query Contact:</strong><br>
+                {{ driveDetails.MainDetails?.Contact2Name || driveDetails.MainDetails?.Contact2Details }}
+              </div>
+              <div class="col-md-6">
+                <i class="fa fa-calendar text-warning me-2"></i><strong>{{ driveDetails.MainDetails?.DriveTypeName === 'COMPETITIVE EVENT' || driveDetails.MainDetails?.DriveTypeName === 'TEST' ? 'Test Date' : 'Drive Date' }}:</strong><br>
+                <span [ngClass]="driveDetails.MainDetails?.DriveDateStatus === 'NotifiedLater' ? 'highlight-yellow' : 'highlight-date'">
+                  {{ driveDetails.MainDetails?.DriveDateStatus === 'NotifiedLater' ? 'NotifiedLater' : (((driveDetails.MainDetails?.DriveDate || driveDetails.MainDetails?.CommunicationDate) | date:'medium') + ' ' + (driveDetails.MainDetails?.DriveDateStatus || '')) }}
+                </span>
+              </div>
+              <div class="col-md-6" *ngIf="driveDetails.MainDetails?.DOJMonth && driveDetails.MainDetails?.DOJYear">
+                <i class="fa fa-calendar-check text-success me-2"></i><strong>Tentative Date of Joining:</strong><br>
+                <span class="highlight-date">{{ driveDetails.MainDetails?.DOJMonth }}-{{ driveDetails.MainDetails?.DOJYear }}</span>
+              </div>
+              <div class="col-md-6" *ngIf="driveDetails.MainDetails?.TestMode">
+                <i class="fa fa-laptop me-2 text-primary"></i><strong>Mode Of Test:</strong><br>
+                {{ driveDetails.MainDetails?.TestMode }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Company Information -->
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#companyBox">
+            <i class="fa fa-building me-3 text-info"></i>Company Information
+          </button>
+        </h2>
+        <div id="companyBox" class="accordion-collapse collapse" data-bs-parent="#mainAccordion">
+          <div class="accordion-body">
+            <div class="mb-3 p-3 border rounded bg-light">
+              <strong>About Company:</strong><br>
+              <div [innerHTML]="driveDetails.MainDetails?.AboutCompany || 'Kindly refer pre-requirements'"></div>
+            </div>
+            <div class="mb-3 p-3 border rounded bg-light" *ngIf="driveDetails.MainDetails?.Website">
+              <strong>Website:</strong><br>
+              <a [href]="driveDetails.MainDetails?.Website" target="_blank" class="btn btn-outline-primary btn-sm">{{ driveDetails.MainDetails?.Website }}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pre-Requirements -->
+      <div class="accordion-item instruction-box">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#preReqBox">
+            <i class="fa fa-clipboard-list me-3 text-warning"></i>Pre-Requirements
+          </button>
+        </h2>
+        <div id="preReqBox" class="accordion-collapse collapse" data-bs-parent="#mainAccordion">
+          <div class="accordion-body">
+            <div class="alert alert-warning"><i class="fa fa-exclamation-triangle me-2"></i><strong>Documents Required:</strong> Carry 2 copies of Resume, Academic Documents & Passport Photos</div>
+            <div class="alert alert-info"><i class="fa fa-suitcase me-2"></i><strong>Formal Dress Code:</strong> Mandatory for all rounds</div>
+            <div class="alert alert-secondary" *ngIf="driveDetails.MainDetails?.Gender"><i class="fa fa-venus-mars me-2"></i><strong>Eligible Gender:</strong> {{ driveDetails.MainDetails?.Gender }}</div>
+            <div class="alert alert-light border" *ngIf="driveDetails.MainDetails?.Requirements">
+              <strong>Special Requirements:</strong><br>
+              <div [innerHTML]="driveDetails.MainDetails?.Requirements"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+      <!-- Registration and Attachments (Student View) -->
+      <div class="text-center mt-5 pt-4 border-top" *ngIf="(driveDetails.MainDetails?.IsRegistrationLink === 'Yes' || driveDetails.MainDetails?.IsRegistrationLink === '1') || driveDetails.Attachment?.FileName">
+        <a *ngIf="driveDetails.MainDetails?.IsRegistrationLink === 'Yes' || driveDetails.MainDetails?.IsRegistrationLink === '1'"
+           [href]="'https://ums.lpu.in/placements/Login.aspx?DriveId=' + (driveDetails.MainDetails?.DriveId || driveDetails.MainDetails?.Drive_Id)" target="_blank"
+           class="btn btn-primary btn-lg me-3 mb-2 shadow-lg" style="border-radius: 25px; font-weight: bold;">
+          <i class="fa fa-rocket me-2"></i>Click Here to Register
+        </a>
+        <a *ngIf="driveDetails.Attachment?.FileName"
+           [href]="'https://ums.lpu.in/placements/PlacementDriveAttachments/' + driveDetails.Attachment?.FileName" target="_blank"
+           class="btn btn-warning btn-lg mb-2 shadow-lg" style="border-radius: 25px; font-weight: bold; color: black;">
+          <i class="fa fa-file-pdf me-2"></i>{{ driveDetails.Attachment?.FileName }}
+        </a>
+      </div>
+
+    </div>
+
+    <!-- ============================================== -->
+    <!-- STAFF VIEW (Classic Table Layout) -->
+    <!-- ============================================== -->
+    <div *ngIf="!isStudent" class="classic-table-view pb-4">
+      <div class="text-end mb-3">
+        <button (click)="downloadJD()" class="btn btn-dark shadow-sm px-3" style="font-weight: bold;">
+          <i class="fa fa-print me-1"></i> Print / Download Details
+        </button>
+      </div>
+
+      <div class="table-responsive">
+        <table width="100%" border="1" style="color: black; font-family: Arial; font-size: 12px; border-color: Black; background-color: Gray; margin: 0 auto; min-width: 800px;" cellpadding="3" cellspacing="1">
+          <tr>
+            <td colspan="2" align="center" width="100%" style="font-weight: bold; background-color: Black; color: #FFFFFF; padding: 8px;">
+              {{ driveDetails.MainDetails?.DriveTypeName }} for {{ driveDetails.MainDetails?.CompanyName }}<br/>
+              {{ driveDetails.MainDetails?.StreamName }} <span *ngIf="driveDetails.MainDetails?.SubStreams">({{ driveDetails.MainDetails?.SubStreams }})</span> {{ driveDetails.MainDetails?.BatchYear }} batch
+            </td>
+          </tr>
+          <tr>
+            <td width="25%" style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>Drive Code</b></td>
+            <td width="75%" style="border-left: none; background-color: white; padding: 5px;">{{ driveDetails.MainDetails?.DriveCode }}</td>
+          </tr>
+          <tr>
+            <td style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>Name & Type of Event</b></td>
+            <td style="border-left: none; background-color: white; padding: 5px;">{{ driveDetails.MainDetails?.DriveTypeName }}</td>
+          </tr>
+          <tr>
+            <td style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>Name of Company</b></td>
+            <td style="border-left: none; background-color: white; padding: 5px;">{{ driveDetails.MainDetails?.CompanyName }}</td>
+          </tr>
+          <tr>
+            <td colspan="2" style="border-right: none; background-color: white; padding: 5px;"><b>Job Description</b></td>
+          </tr>
+          <tr>
+            <td colspan="2" style="border-right: none; background-color: white; padding: 5px;">
+              <table width="100%" border="1" cellspacing="1" cellpadding="3" style="color: black; font-family: Arial; font-size: 12px; border-color: Black; background-color: Gray">
+                <tr>
+                  <td align="left" width="20%" style="font-weight: bold; background-color: Black; color: #FFFFFF; padding: 5px;">Program/Stream</td>
+                  <td align="left" width="20%" style="font-weight: bold; background-color: Black; color: #FFFFFF; padding: 5px;">Designation</td>
+                  <td align="left" width="20%" style="font-weight: bold; background-color: Black; color: #FFFFFF; padding: 5px;">Eligibility</td>
+                  <td align="left" width="20%" style="font-weight: bold; background-color: Black; color: #FFFFFF; padding: 5px;">Salary Package</td>
+                  <td align="left" width="20%" style="font-weight: bold; background-color: Black; color: #FFFFFF; padding: 5px;">Job Location</td>
+                </tr>
+                <tr *ngFor="let job of driveDetails.JobDetails">
+                  <td style="background-color: white; padding: 5px;">{{ driveDetails.MainDetails?.StreamName }}</td>
+                  <td style="background-color: white; padding: 5px;">{{ job?.Designation }}</td>
+                  <td style="background-color: white; padding: 5px;">{{ job?.Eligibility }}</td>
+                  <td style="background-color: white; padding: 5px;">{{ job?.SalaryDesc }}</td>
+                  <td style="background-color: white; padding: 5px;">{{ job?.JobLocation }}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>Year (Passing Out)</b></td>
+            <td style="border-left: none; background-color: white; padding: 5px;">{{ driveDetails.MainDetails?.BatchYear }}</td>
+          </tr>
+          <tr *ngIf="driveDetails.MainDetails?.Venue">
+            <td style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>Venue</b></td>
+            <td style="border-left: none; background-color: white; padding: 5px;">{{ driveDetails.MainDetails?.Venue }}</td>
+          </tr>
+          <tr>
+            <td style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>Drive Date</b></td>
+            <td style="border-left: none; background-color: #F7CC0A; padding: 5px;">
+              {{ driveDetails.MainDetails?.DriveDateStatus === 'NotifiedLater' ? 'NotifiedLater' : (((driveDetails.MainDetails?.DriveDate || driveDetails.MainDetails?.CommunicationDate) | date:'medium') + ' ' + (driveDetails.MainDetails?.DriveDateStatus || '')) }}
+            </td>
+          </tr>
+          <tr *ngIf="driveDetails.MainDetails?.TestMode">
+            <td style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>Mode Of Test</b></td>
+            <td style="border-left: none; background-color: white; padding: 5px;">{{ driveDetails.MainDetails?.TestMode }}</td>
+          </tr>
+          <tr>
+            <td style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>Selection Process</b></td>
+            <td style="border-left: none; background-color: white; padding: 5px;">
+              <table *ngIf="driveDetails.Rounds && driveDetails.Rounds.length > 0" width="100%" border="1" cellspacing="1" cellpadding="3" style="color: black; font-family: Arial; font-size: 12px; border-color: Black; background-color: Gray">
+                <tr>
+                  <td style="background-color: white; padding: 5px;" valign="top"><b>Round Name</b></td>
+                  <td style="background-color: white; padding: 5px;" valign="top"><b>Expected Start Time</b></td>
+                  <td style="background-color: white; padding: 5px;" valign="top"><b>Expected End Time</b></td>
+                  <td style="background-color: white; padding: 5px;" valign="top"><b>Round Decription</b></td>
+                  <td style="background-color: white; padding: 5px;" valign="top"><b>Is Elimination Round</b></td>
+                </tr>
+                <tr *ngFor="let round of driveDetails.Rounds">
+                  <td style="background-color: white; padding: 5px;" valign="top">{{ round?.Name || round?.RoundDescription }}</td>
+                  <td [ngStyle]="{'background-color': round?.IsNotifyLater === 'Notified later' ? 'yellow' : 'white'}" style="padding: 5px;" valign="top">
+                    {{ round?.IsNotifyLater === 'Notified later' ? 'Will be notified later' : round?.ExpectedStartTime }}
+                  </td>
+                  <td [ngStyle]="{'background-color': round?.IsNotifyLater === 'Notified later' ? 'yellow' : 'white'}" style="padding: 5px;" valign="top">
+                    {{ round?.IsNotifyLater === 'Notified later' ? 'Will be notified later' : (round?.ExpectedEndTime || round?.ExpectedStartTime) }}
+                  </td>
+                  <td style="background-color: white; padding: 5px;" valign="top">{{ round?.RoundDescription || round?.Name }}</td>
+                  <td style="background-color: white; padding: 5px;" valign="top">{{ round?.IsElimination }}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>Whom to contact</b></td>
+            <td style="border-left: none; background-color: white; padding: 5px;">
+              {{ driveDetails.MainDetails?.Contact1Name || driveDetails.MainDetails?.Contact1Details }}<br>
+              {{ driveDetails.MainDetails?.Contact2Name || driveDetails.MainDetails?.Contact2Details }}
+            </td>
+          </tr>
+          <tr>
+            <td style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>Last Date of Registration</b></td>
+            <td style="border-left: none; background-color: red; color: white; padding: 5px;">
+              {{ (driveDetails.MainDetails?.LastDate | date:'medium') || driveDetails.MainDetails?.CommunicationLastDate || 'NA' }}
+            </td>
+          </tr>
+          <tr *ngIf="driveDetails.MainDetails?.Gender">
+            <td style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>Eligible Gender</b></td>
+            <td style="border-left: none; background-color: white; padding: 5px;">{{ driveDetails.MainDetails?.Gender }}</td>
+          </tr>
+          <tr *ngIf="driveDetails.MainDetails?.BondDetails">
+            <td style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>Bond Details</b></td>
+            <td style="border-left: none; background-color: white; padding: 5px;">{{ driveDetails.MainDetails?.BondDetails }}</td>
+          </tr>
+          <tr *ngIf="driveDetails.MainDetails?.SkillsRequired">
+            <td style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>Skills Required</b></td>
+            <td style="border-left: none; background-color: white; padding: 5px;">{{ driveDetails.MainDetails?.SkillsRequired }}</td>
+          </tr>
+          <tr>
+            <td style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>About Company</b></td>
+            <td style="border-left: none; background-color: white; padding: 5px;">
+              <div [innerHTML]="driveDetails.MainDetails?.AboutCompany || 'kindly refer pre-requirements'"></div>
+            </td>
+          </tr>
+          <tr>
+            <td style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>Website</b></td>
+            <td style="border-left: none; background-color: white; padding: 5px;">
+              <a *ngIf="driveDetails.MainDetails?.Website" [href]="driveDetails.MainDetails?.Website" target="_blank">{{ driveDetails.MainDetails?.Website }}</a>
+              <span *ngIf="!driveDetails.MainDetails?.Website">kindly refer pre-requirements</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>Job Profile</b></td>
+            <td style="border-left: none; background-color: white; padding: 5px;">
+              <div [innerHTML]="driveDetails.MainDetails?.JobProfile || 'kindly refer pre-requirements'"></div>
+            </td>
+          </tr>
+          <tr>
+            <td style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>Pre-Requirements</b></td>
+            <td style="border-left: none; background-color: white; padding: 5px;">
+              <div [innerHTML]="driveDetails.MainDetails?.Requirements"></div>
+            </td>
+          </tr>
+          <tr>
+            <td style="border-right: none; background-color: white; padding: 5px;" valign="top"><b>Tentative Date of Joining</b></td>
+            <td style="border-left: none; background-color: #F7CC0A; padding: 5px;">{{ driveDetails.MainDetails?.DOJMonth }}/{{ driveDetails.MainDetails?.DOJYear }}</td>
+          </tr>
+          <tr *ngIf="driveDetails.MainDetails?.IsRegistrationLink === 'Yes' || driveDetails.MainDetails?.IsRegistrationLink === '1' || driveDetails.Attachment?.FileName">
+            <td colspan="2" style="border-right: none; background-color: white; padding: 15px; text-align: center;">
+              <a *ngIf="driveDetails.MainDetails?.IsRegistrationLink === 'Yes' || driveDetails.MainDetails?.IsRegistrationLink === '1'"
+                 [href]="'https://ums.lpu.in/placements/Login.aspx?DriveId=' + (driveDetails.MainDetails?.DriveId || driveDetails.MainDetails?.Drive_Id)" target="_blank"
+                 style="display: inline-block; padding: 8px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin-right: 10px;">
+                Click Here to Register
+              </a>
+              <a *ngIf="driveDetails.Attachment?.FileName"
+                 [href]="'https://ums.lpu.in/placements/PlacementDriveAttachments/' + driveDetails.Attachment?.FileName" target="_blank"
+                 style="display: inline-block; padding: 8px 15px; background: #ffc107; color: black; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                {{ driveDetails.Attachment?.FileName }}
+              </a>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <div *ngIf="!loadingIndicator && !driveDetails" class="text-center text-muted py-4">
+    No details found.
+  </div>
+</div>

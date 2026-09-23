@@ -1,0 +1,20 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ getModalTitle() }}</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('Cross click')"></button>
+</div>
+<div class="modal-body">
+  <div class="table-responsive">
+ <ngx-datatable class="bootstrap" [rows]="candidates" [loadingIndicator]="loadingIndicator"
+  [columnMode]="ColumnMode.force" [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="10"
+  [scrollbarH]="true">
+
+  <!-- Dynamic Column Loop -->
+  <ngx-datatable-column *ngFor="let col of columns" [name]="col.name" [prop]="col.prop">
+  </ngx-datatable-column>
+
+</ngx-datatable>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" (click)="activeModal.close('Close click')">Close</button>
+</div>

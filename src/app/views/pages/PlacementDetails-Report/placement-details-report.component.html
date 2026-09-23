@@ -1,0 +1,187 @@
+<div class="row" *ngIf="!isLoginFailed">
+  <div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title text-center">Placement Details</h4>
+        <hr>
+
+        <form>
+          <div class="row align-items-center mb-3">
+            <div class="col-md-3 text-right">
+              <label class="form-label mb-0">Select Batch/Year: <span class="text-danger">*</span></label>
+            </div>
+            <div class="col-md-4">
+              <!-- <select class="form-select" [(ngModel)]="selectedBatchYear" name="batchYear" (change)="onBatchYearChange()">
+                <option value="0">Select Batch Year</option>
+                <option *ngFor="let by of batchYears" [value]="by.batchYearId">{{ by.batchYear }}</option>
+              </select> -->
+              <select class="form-select" [(ngModel)]="selectedBatchYear" name="batchYear"
+                (change)="onBatchYearChange($event)">
+                <option value="0">Select Batch Year</option>
+                <option *ngFor="let by of batchYears" [value]="by.batchYear">{{ by.batchYear }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row align-items-center mb-3">
+            <div class="col-md-3 text-right">
+              <label class="form-label mb-0">Select Discipline:</label>
+            </div>
+            <div class="col-md-4">
+              <select class="form-select" [(ngModel)]="selectedStreamId" name="stream"
+                (change)="onStreamChange($event)">
+                <option value="0">Select Discipline</option>
+                <option *ngFor="let stream of streams" [value]="stream.Id">{{ stream.StreamName }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row align-items-center mb-3">
+            <div class="col-md-3 text-right">
+              <label class="form-label mb-0">Select Sub Stream:</label>
+            </div>
+            <div class="col-md-4">
+              <select class="form-select" [(ngModel)]="selectedSubStreamId" name="subStream"
+                (change)="onSubStreamChange()">
+                <option value="0">All Sub Streams</option>
+                <option *ngFor="let sub of subStreams" [value]="sub.SubStreamId || sub.subStreamId || sub.Id || sub.id">
+                  {{ sub.SubStreamName || sub.subStreamName || sub.StreamName || sub.streamName || sub.Name || sub.name
+                  }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row text-center mt-4">
+            <div class="col-md-12">
+              <button type="button" class="btn btn-primary me-2" (click)="showDetails()">Show</button>
+              <button type="button" class="btn btn-success" (click)="exportToExcel()"
+                *ngIf="placementDetails.length > 0">Export To Excel</button>
+            </div>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-12 grid-margin stretch-card" *ngIf="placementDetails.length > 0">
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive">
+          <ngx-datatable class="bootstrap" [rows]="placementDetails" [loadingIndicator]="loadingIndicator"
+            [columnMode]="ColumnMode.force" [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5"
+            [scrollbarH]="true">
+
+            <ngx-datatable-column name="Company Name" prop="CompanyName" [width]="200"></ngx-datatable-column>
+            <ngx-datatable-column name="Drive Type" prop="DriveType"></ngx-datatable-column>
+            <ngx-datatable-column name="Drive Id" prop="DriveId"></ngx-datatable-column>
+            <ngx-datatable-column name="Drive Category" prop="DriveCategory"></ngx-datatable-column>
+            <ngx-datatable-column name="Is Active" prop="ACTIVE"></ngx-datatable-column>
+            <ngx-datatable-column name="Is Conducted" prop="IsConducted"></ngx-datatable-column>
+            <ngx-datatable-column name="Company Relation" prop="CompanyRelation"></ngx-datatable-column>
+            <ngx-datatable-column name="Primary Discipline" prop="PrimaryDiscipline"></ngx-datatable-column>
+            <ngx-datatable-column name="Eligible Streams" prop="Stream"></ngx-datatable-column>
+            <ngx-datatable-column name="SubStreams" prop="SubStream"></ngx-datatable-column>
+
+            <ngx-datatable-column name="Drive Date" prop="DriveDate">
+              <ng-template let-value="value" ngx-datatable-cell-template>
+                {{ value | date: 'dd/MM/yyyy' }}
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Date Status" prop="DriveDateStatus"></ngx-datatable-column>
+            <ngx-datatable-column name="Designation" prop="Designation"></ngx-datatable-column>
+            <ngx-datatable-column name="Job Location" prop="JobLocation"></ngx-datatable-column>
+            <ngx-datatable-column name="Package" prop="SalaryPackage"></ngx-datatable-column>
+            <ngx-datatable-column name="Min Salary" prop="MinSalary"></ngx-datatable-column>
+            <ngx-datatable-column name="Max Salary" prop="MaxSalary"></ngx-datatable-column>
+            <ngx-datatable-column name="Package Description" prop="SalaryDesc"></ngx-datatable-column>
+            <ngx-datatable-column name="Vacancies" prop="Vacancies"></ngx-datatable-column>
+            <ngx-datatable-column name="Result Declared" prop="ResultDeclared"></ngx-datatable-column>
+            <ngx-datatable-column name="Provider" prop="PROVIDER"></ngx-datatable-column>
+            <ngx-datatable-column name="Provider Detail" prop="ProviderDetail"></ngx-datatable-column>
+            <ngx-datatable-column name="Ownership" prop="OWNERSHIP"></ngx-datatable-column>
+            <ngx-datatable-column name="Owner Department" prop="Department"></ngx-datatable-column>
+
+              <ngx-datatable-column name="Eligible Candidates Count" prop="TotalEligibleCandidates">
+              <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                <a href="javascript:void(0)" (click)="openCandidatesModal(row.DriveId, 'A')">{{ value }}</a>
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Registered Candidates Count" prop="TotalRegisteredCandidates">
+              <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                <a href="javascript:void(0)" (click)="openCandidatesModal(row.DriveId, 'R')">{{ value }}</a>
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Participated Candidates Count" prop="TotalParticipated">
+              <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                <a href="javascript:void(0)" (click)="openCandidatesModal(row.DriveId, 'P')">{{ value }}</a>
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Candidate Placed" prop="TotalSelectedCandidates">
+              <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                <a href="javascript:void(0)" (click)="openCandidatesModal(row.DriveId, 'S')">{{ value }}</a>
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Drive Notice" [sortable]="false">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                  <a href="javascript:void(0)" (click)="openDriveDetailsModal(row.DriveId)">View Details</a>
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Percentage Selection" prop="PercentageSelection"></ngx-datatable-column>
+            <ngx-datatable-column name="Percentage Registered Candidates"
+              prop="PercentageRegisteredCAndidates"></ngx-datatable-column>
+
+          
+            
+            <!-- <ngx-datatable-column name="Eligible Candidates Count" prop="TotalEligibleCandidates">
+              <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                <a [href]="'/frmPlacementDriveCandidates.aspx?type=A&id=' + row.DriveId" target="_blank">{{ value }}</a>
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Registered Candidates Count" prop="TotalRegisteredCandidates">
+              <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                <a [href]="'/frmPlacementDriveCandidates.aspx?type=R&id=' + row.DriveId" target="_blank">{{ value }}</a>
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Participated Candidates Count" prop="TotalParticipated">
+              <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                <a [href]="'/frmPlacementDriveCandidates.aspx?type=P&id=' + row.DriveId" target="_blank">{{ value }}</a>
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Candidate Placed" prop="TotalSelectedCandidates">
+              <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                <a [href]="'/frmPlacementDriveCandidates.aspx?type=S&id=' + row.DriveId" target="_blank">{{ value }}</a>
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Drive Notice" [sortable]="false">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                <a [href]="'/DriveDetails.aspx?id=' + row.DriveId" target="_blank">View Details</a>
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Percentage Selection" prop="PercentageSelection"></ngx-datatable-column>
+            <ngx-datatable-column name="Percentage Registered Candidates"
+              prop="PercentageRegisteredCAndidates"></ngx-datatable-column> -->
+
+          </ngx-datatable>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="isLoginFailed">
+    <div class="col-md-12 text-center mt-5">
+      <h3 class="text-danger">Unauthorized Access</h3>
+      <p>{{ errorMessage }}</p>
+    </div>
+  </div>

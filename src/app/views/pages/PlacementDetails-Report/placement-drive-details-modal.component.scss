@@ -1,0 +1,135 @@
+.job-container {
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.hero-card {
+  background: linear-gradient(135deg, #0d6efd, #1d3557);
+  color: #fff;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  margin-bottom: 24px;
+}
+
+.badge-drive {
+  background: #ffc107;
+  color: #000;
+  font-size: 14px;
+  padding: 8px 15px;
+  border-radius: 30px;
+  font-weight: 600;
+}
+
+.info-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: transform 0.2s;
+  height: 100%;
+}
+
+.info-card:hover {
+  transform: translateY(-4px);
+}
+
+.info-value {
+  font-weight: 700;
+  font-size: 14px;
+  color: #1d3557;
+}
+
+.instruction-box {
+  background: #fff3cd !important;
+  border: 2px solid #ffeaa7 !important;
+}
+
+.accordion-button {
+  padding: 20px 24px !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  background: #fff !important;
+  border-radius: 15px !important;
+  margin-bottom: 12px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.accordion-button:not(.collapsed) {
+  background: #0d6efd !important;
+  color: #f8f9fa !important;
+}
+
+.accordion-button:focus {
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
+}
+
+.accordion-item {
+  background: transparent !important;
+  border: none !important;
+}
+
+.accordion-body {
+  padding: 24px !important;
+  background: #fff;
+  border-radius: 0 0 15px 15px !important;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.salary-package {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+}
+
+.salary-desc {
+  background: linear-gradient(135deg, #17a2b8, #20c997);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 13px;
+  box-shadow: 0 6px 20px rgba(23, 162, 184, 0.3);
+}
+
+.highlight-date {
+  background: #f7cc0a !important;
+  color: #000 !important;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.highlight-red {
+  background: #dc3545 !important;
+  color: #fff !important;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.highlight-yellow {
+  background: #ffc107 !important;
+  color: #000 !important;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .hero-card {
+    padding: 20px !important;
+    border-radius: 15px !important;
+  }
+  .accordion-button {
+    font-size: 18px !important;
+    padding: 16px !important;
+  }
+}

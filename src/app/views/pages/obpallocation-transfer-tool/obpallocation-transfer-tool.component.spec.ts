@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ObpallocationTransferToolComponent } from './obpallocation-transfer-tool.component';
+import { OBPAllocationTransferToolComponent } from './obpallocation-transfer-tool.component';
 
-describe('ObpallocationTransferToolComponent', () => {
-  let component: ObpallocationTransferToolComponent;
-  let fixture: ComponentFixture<ObpallocationTransferToolComponent>;
+describe('OBPAllocationTransferToolComponent', () => {
+  let component: OBPAllocationTransferToolComponent;
+  let fixture: ComponentFixture<OBPAllocationTransferToolComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ObpallocationTransferToolComponent ]
+      declarations: [ OBPAllocationTransferToolComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ObpallocationTransferToolComponent);
+    fixture = TestBed.createComponent(OBPAllocationTransferToolComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -21,3 +21,4 @@ describe('ObpallocationTransferToolComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
