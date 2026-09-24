@@ -1265,7 +1265,7 @@
                             <i class="bi bi-clipboard-check me-1"></i>Submit Evaluation
                         </button>
                         <!-- d) Accept -->
-                        <!-- [disabled]="approvalLabel(row.isApproved) === 'Rejected' || row.isLocked=='True' || row.isLocked=='1' || row.isLocked=='0' || row.isLocked=='false'"> -->
+                        <!-- [disabled]="approvalLabel(row) === 'Rejected' || row.isLocked=='True' || row.isLocked=='1' || row.isLocked=='0' || row.isLocked=='false'"> -->
                         <button type="button" class="btn btn-success btn-sm me-1 mb-1" (click)="acceptApplication(row)"
                             [disabled]="
                                                   (
@@ -1281,13 +1281,13 @@
                             <i class="bi bi-check-circle me-1"></i>
                             <!-- ||
                                                   (
-                                                    approvalLabel(row.isApproved) === 'Rejected' || row.isLocked=='True' || row.isLocked=='1' || row.isLocked=='0' || row.isLocked=='false'
+                                                    approvalLabel(row) === 'Rejected' || row.isLocked=='True' || row.isLocked=='1' || row.isLocked=='0' || row.isLocked=='false'
                                                   ) -->
                             Accept
                         </button>
                         <!-- d) Reject -->
                         <button class="btn btn-danger btn-sm me-1 mb-1" (click)="disapproveApplication(row)">
-                            <!-- [disabled]="approvalLabel(row.isApproved) === 'Rejected' || row.isLocked=='True' || row.isLocked=='1' || row.isLocked=='0' || row.isLocked=='false'"> -->
+                            <!-- [disabled]="approvalLabel(row) === 'Rejected' || row.isLocked=='True' || row.isLocked=='1' || row.isLocked=='0' || row.isLocked=='false'"> -->
                             <i class="bi bi-x-circle me-1"></i>Reject
                         </button>
                     </ng-template>

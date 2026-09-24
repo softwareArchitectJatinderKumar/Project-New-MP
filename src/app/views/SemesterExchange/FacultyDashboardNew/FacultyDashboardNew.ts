@@ -816,16 +816,58 @@ ForwardToHod(application: Application, userAction: 'Hod' | 'How'): void {
     return s === '1' || s === 'true';
   }
 
-  /** Converts isApproved (1/0/NULL) to a human label. */
-  approvalLabel(val: string): string {
-    if (this.isTrue(val)) return 'Approved';
-    if (val === '0' || val === 'False' || val === 'false') return 'Rejected';
+  getApplicationStatus(row: any): string {
+    if (!row) return 'Pending';
+
+    const isApp = row.isApproved;
+    const isLock = row.isLocked;
+    const approvedUniv = row.approvedUniversity || row.ApprovedUniversity;
+
+    // 1. APPROVED
+    if (
+        (isApp === 1 || isApp === '1' || String(isApp).trim().toLowerCase() === 'approved' || isApp === true || isApp === 'True' || isApp === 'true') &&
+        (approvedUniv !== null && approvedUniv !== undefined && String(approvedUniv).trim() !== '')
+    ) {
+        return 'Approved';
+    }
+
+    // 2. REJECTED
+    if (
+        (
+            isApp === false || isApp === 0 || isApp === '0' || isApp === 'False' || isApp === 'false' ||
+            String(isApp).trim().toLowerCase() === 'rejected' ||
+            String(isApp).trim().toLowerCase() === 'disapproved'
+        ) && 
+        (
+            isLock === false || isLock === 0 || isLock === '0' || isLock === 'False' || isLock === 'false' ||
+            isLock === null || isLock === undefined
+        )
+    ) {
+        return 'Rejected';
+    }
+
+    // 3. PENDING
     return 'Pending';
   }
 
-  approvalClass(val: string): string {
-    if (this.isTrue(val))                                   return 'bg-success';
-    if (val === '0' || val === 'False' || val === 'false') return 'bg-danger';
+  /** Converts row object to a human label. */
+  approvalLabel(row: any): string {
+    if (row === null || row === undefined) return 'Pending';
+    if (typeof row !== 'object') {
+      return this.getApplicationStatus({ isApproved: row });
+    }
+    return this.getApplicationStatus(row);
+  }
+
+  approvalClass(row: any): string {
+    if (row === null || row === undefined) return 'bg-warning text-dark';
+    let r = row;
+    if (typeof row !== 'object') {
+      r = { isApproved: row };
+    }
+    const status = this.getApplicationStatus(r);
+    if (status === 'Approved') return 'bg-success';
+    if (status === 'Rejected') return 'bg-danger';
     return 'bg-warning text-dark';
   }
 

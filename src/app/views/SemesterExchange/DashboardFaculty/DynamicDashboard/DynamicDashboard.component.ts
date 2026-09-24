@@ -1975,7 +1975,7 @@ export class DynamicDashboardComponent implements OnInit {
       ['notrequired', 'applied', 'notgiven'].includes(testType) && count < 6;
     const cond2 = ['appeared', 'given'].includes(testType) && count < 7;
     const cond3 =
-      this.approvalLabel(row.isApproved) === 'Rejected' ||
+      this.approvalLabel(row) === 'Rejected' ||
       row.isLocked === 'True' ||
       row.isLocked === '1' ||
       row.isLocked === '0' ||
@@ -1998,42 +1998,24 @@ export class DynamicDashboardComponent implements OnInit {
     );
   }
 
-  /** Converts isApproved / isLocked (1/0/NULL) or row object to a human label. */
-  approvalLabel(val: any): string {
-    if (val && typeof val === 'object') {
-      return this.getApplicationStatus(val);
+  /** Converts row object to a human label. */
+  approvalLabel(row: any): string {
+    if (row === null || row === undefined) return 'Pending';
+    if (typeof row !== 'object') {
+      return this.getApplicationStatus({ isApproved: row });
     }
-    if (this.isTrue(val) || String(val).trim().toLowerCase() === 'approved')
-      return 'Approved';
-    if (
-      val === '0' ||
-      val === 0 ||
-      val === false ||
-      val === 'False' ||
-      val === 'false' ||
-      String(val).trim().toLowerCase() === 'rejected' ||
-      String(val).trim().toLowerCase() === 'disapproved'
-    )
-      return 'Rejected';
-    return 'Pending';
+    return this.getApplicationStatus(row);
   }
 
-  approvalClass(val: any): string {
-    if (val && typeof val === 'object') {
-      return this.getApplicationStatusClass(val);
+  approvalClass(row: any): string {
+    if (row === null || row === undefined) return 'bg-warning text-dark';
+    let r = row;
+    if (typeof row !== 'object') {
+      r = { isApproved: row };
     }
-    if (this.isTrue(val) || String(val).trim().toLowerCase() === 'approved')
-      return 'bg-success';
-    if (
-      val === '0' ||
-      val === 0 ||
-      val === false ||
-      val === 'False' ||
-      val === 'false' ||
-      String(val).trim().toLowerCase() === 'rejected' ||
-      String(val).trim().toLowerCase() === 'disapproved'
-    )
-      return 'bg-danger';
+    const status = this.getApplicationStatus(r);
+    if (status === 'Approved') return 'bg-success';
+    if (status === 'Rejected') return 'bg-danger';
     return 'bg-warning text-dark';
   }
 
@@ -2368,38 +2350,32 @@ export class DynamicDashboardComponent implements OnInit {
 
     const isApp = row.isApproved;
     const isLock = row.isLocked;
+    const approvedUniv = row.approvedUniversity || row.ApprovedUniversity;
 
-    // 1. REJECTED: check explicit rejection first
+    // 1. APPROVED
     if (
-      isApp === false ||
-      isApp === 0 ||
-      isApp === '0' ||
-      isApp === 'False' ||
-      isApp === 'false' ||
-      isLock === false ||
-      isLock === 0 ||
-      isLock === '0' ||
-      isLock === 'False' ||
-      isLock === 'false' ||
-      String(isApp).trim().toLowerCase() === 'rejected' ||
-      String(isApp).trim().toLowerCase() === 'disapproved' ||
-      String(isLock).trim().toLowerCase() === 'rejected' ||
-      String(isLock).trim().toLowerCase() === 'disapproved'
+        (isApp === 1 || isApp === '1' || String(isApp).trim().toLowerCase() === 'approved' || isApp === true || isApp === 'True' || isApp === 'true') &&
+        (approvedUniv !== null && approvedUniv !== undefined && String(approvedUniv).trim() !== '')
     ) {
-      return 'Rejected';
+        return 'Approved';
     }
 
-    // 2. APPROVED: if either isLocked or isApproved is true/1/approved
+    // 2. REJECTED
     if (
-      this.isTrue(isApp) ||
-      this.isTrue(isLock) ||
-      String(isApp).trim().toLowerCase() === 'approved' ||
-      String(isLock).trim().toLowerCase() === 'approved'
+        (
+            isApp === false || isApp === 0 || isApp === '0' || isApp === 'False' || isApp === 'false' ||
+            String(isApp).trim().toLowerCase() === 'rejected' ||
+            String(isApp).trim().toLowerCase() === 'disapproved'
+        ) && 
+        (
+            isLock === false || isLock === 0 || isLock === '0' || isLock === 'False' || isLock === 'false' ||
+            isLock === null || isLock === undefined
+        )
     ) {
-      return 'Approved';
+        return 'Rejected';
     }
 
-    // 3. PENDING: otherwise
+    // 3. PENDING
     return 'Pending';
   }
 

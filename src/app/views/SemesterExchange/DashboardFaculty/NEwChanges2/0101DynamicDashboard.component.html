@@ -81,8 +81,8 @@
 
             <ngx-datatable-column name="Application Status" [width]="130">
                 <ng-template let-row="row" ngx-datatable-cell-template>
-                    <span class="badge" [ngClass]="approvalClass(row.isApproved)">
-                        {{ approvalLabel(row.isApproved) }}
+                    <span class="badge" [ngClass]="approvalClass(row)">
+                        {{ approvalLabel(row) }}
                     </span>
                 </ng-template>
             </ngx-datatable-column>
@@ -108,7 +108,7 @@
                     <!-- d) Reject -->
                     <button class="btn btn-danger btn-sm me-1 mb-1"
                         (click)="disapproveApplication(row)"
-                        [disabled]="approvalLabel(row.isApproved) === 'Rejected'">
+                        [disabled]="approvalLabel(row) === 'Rejected'">
                         <i class="bi bi-x-circle me-1"></i>Reject
                     </button>
                 </ng-template>
@@ -155,8 +155,8 @@
 
             <ngx-datatable-column name="Application Status" [width]="130">
                 <ng-template let-row="row" ngx-datatable-cell-template>
-                    <span class="badge" [ngClass]="approvalClass(row.isApproved)">
-                        {{ approvalLabel(row.isApproved) }}
+                    <span class="badge" [ngClass]="approvalClass(row)">
+                        {{ approvalLabel(row) }}
                     </span>
                 </ng-template>
             </ngx-datatable-column>
@@ -257,8 +257,8 @@
 
                 <ngx-datatable-column name="Application Status" [width]="130">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <span class="badge" [ngClass]="approvalClass(row.isApproved)">
-                            {{ approvalLabel(row.isApproved) }}
+                        <span class="badge" [ngClass]="approvalClass(row)">
+                            {{ approvalLabel(row) }}
                         </span>
                     </ng-template>
                 </ngx-datatable-column>
@@ -288,13 +288,13 @@
                         <!-- c) Accept -->
                         <button class="btn btn-success btn-sm me-1 mb-1"
                             (click)="acceptApplication(row)"
-                            [disabled]="approvalLabel(row.isApproved) !== 'Pending'">
+                            [disabled]="approvalLabel(row) !== 'Pending'">
                             <i class="bi bi-check-circle me-1"></i>Accept
                         </button>
                         <!-- d) Reject -->
                         <button class="btn btn-danger btn-sm me-1 mb-1"
                             (click)="disapproveApplication(row)"
-                            [disabled]="approvalLabel(row.isApproved) === 'Rejected'">
+                            [disabled]="approvalLabel(row) === 'Rejected'">
                             <i class="bi bi-x-circle me-1"></i>Reject
                         </button>
                         <!-- e) Forward to HoW -->
@@ -342,8 +342,8 @@
 
                 <ngx-datatable-column name="Application Status" [width]="130">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <span class="badge" [ngClass]="approvalClass(row.isApproved)">
-                            {{ approvalLabel(row.isApproved) }}
+                        <span class="badge" [ngClass]="approvalClass(row)">
+                            {{ approvalLabel(row) }}
                         </span>
                     </ng-template>
                 </ngx-datatable-column>
@@ -440,8 +440,8 @@
 
             <ngx-datatable-column name="Application Status" [width]="130">
                 <ng-template let-row="row" ngx-datatable-cell-template>
-                    <span class="badge" [ngClass]="approvalClass(row.isApproved)">
-                        {{ approvalLabel(row.isApproved) }}
+                    <span class="badge" [ngClass]="approvalClass(row)">
+                        {{ approvalLabel(row) }}
                     </span>
                 </ng-template>
             </ngx-datatable-column>
@@ -466,13 +466,13 @@
                     <!-- d) Accept -->
                     <button class="btn btn-success btn-sm me-1 mb-1"
                         (click)="acceptApplication(row)"
-                        [disabled]="approvalLabel(row.isApproved) !== 'Pending'">
+                        [disabled]="approvalLabel(row) !== 'Pending'">
                         <i class="bi bi-check-circle me-1"></i>Accept
                     </button>
                     <!-- d) Reject -->
                     <button class="btn btn-danger btn-sm me-1 mb-1"
                         (click)="disapproveApplication(row)"
-                        [disabled]="approvalLabel(row.isApproved) === 'Rejected'">
+                        [disabled]="approvalLabel(row) === 'Rejected'">
                         <i class="bi bi-x-circle me-1"></i>Reject
                     </button>
                 </ng-template>
