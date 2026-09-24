@@ -13,7 +13,7 @@ export class PlacementDetailsService {
   private AUTH_API = 'https://projectsapi.lpu.in/';
   private AUTH_API_LOCAL = 'https://projectsapi.lpu.in/'; //'https://localhost:44362/';
 
-  private apiUrl = environment.apiUrl + 'PlacementDetails';
+  private apiUrl = this.AUTH_API + 'PlacementDetails';
   // Assuming environment.apiUrl is configured, adjust if necessary.
 
   constructor(private http: HttpClient) {}
@@ -21,13 +21,13 @@ export class PlacementDetailsService {
   getBatchYears(): Observable<any> {
     // Calling the existing endpoint that uses pGetCurrentBatchYearForDrives
     return this.http.get<any>(
-      `${environment.apiUrl}Placement/PlacementBatchYears`,
+      `${this.apiUrl}/Placement/PlacementBatchYears`,
     );
   }
 
   getStreams(): Observable<any> {
     // Calling the existing endpoint that uses pPlacementProgramMasterListing with ListType='GetStream'
-    return this.http.get<any>(`${environment.apiUrl}Placement/PlacementStream`);
+    return this.http.get<any>(`${this.apiUrl}/Placement/PlacementStream`);
   }
 
   getSubStreams(streamList: string, batchYear: string): Observable<any> {
