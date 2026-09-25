@@ -819,12 +819,16 @@
                         </ng-template>
 
                         <ng-container *ngIf="isForwardToHOWNull(row)">
-                          <button *ngIf="(['notrequired', 'applied', 'notgiven'].includes((row.englishTestType || '').toLowerCase()) && row.uploadedStageIDocumentCount == 6) ||
+                          <button *ngIf="isHODRemarksSubmitted(row) && getApplicationStatus(row)!=='Rejected' else NoForwardButton"
+                         class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'How')">
+                             <i class="bi bi-send me-1"></i>Forward to HoW**
+                         </button>
+                          <!-- <button *ngIf="(['notrequired', 'applied', 'notgiven'].includes((row.englishTestType || '').toLowerCase()) && row.uploadedStageIDocumentCount == 6) ||
                                          (['appeared', 'given'].includes((row.englishTestType || '').toLowerCase())  && row.uploadedStageIDocumentCount == 7 )
                                        && isHODRemarksSubmitted(row) && getApplicationStatus(row)!=='Rejected' else NoForwardButton"
                          class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'How')">
                              <i class="bi bi-send me-1"></i>Forward to HoW**
-                         </button>
+                         </button> -->
                          <ng-template #NoForwardButton>
                            <span class="badge bg-danger m-1">
                             Forward to HOW NA
