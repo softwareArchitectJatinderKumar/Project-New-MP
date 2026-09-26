@@ -268,6 +268,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'DressApprovals/:loginName',
+        loadChildren: () =>
+          import('./views/Dress-Material-Approvals/dress-material-Approvals.module').then(
+            (m) => m.DressMaterialApprovalsModule,
+          ),
+      },
+      {
         path: 'EventCalenderAdmin/:loginName',
         loadChildren: () =>
           import('./views/pages/calenderAdmin/contentAdmin.module').then(

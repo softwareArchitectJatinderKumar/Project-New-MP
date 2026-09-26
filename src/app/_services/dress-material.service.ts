@@ -63,10 +63,17 @@ export class DressMaterialService {
    */
   getMyMaterials(): Observable<any> {
     return this.callDressMaterialApi({
-      Action: 'View ById'
+      Action: 'View'
     });
   }
 
+
+  getMyMaterialsForApprovals(role: string): Observable<any> {
+    return this.callDressMaterialApi({
+      Action: 'Select',
+      UserType: role
+    });
+  }
   /**
    * Return a dress material by MaterialId.
    */
@@ -76,4 +83,17 @@ export class DressMaterialService {
       MaterialId: materialId
     });
   }
+
+    ApprovalAction(materialId: number, Remarks: string, Action: string): Observable<any> {
+    return this.callDressMaterialApi({
+      Action: Action,
+      MaterialId: materialId,
+      ApprovalRemarks: Remarks,
+      UserType:'Admin'
+    });
+  }
+
+
+
+  
 }

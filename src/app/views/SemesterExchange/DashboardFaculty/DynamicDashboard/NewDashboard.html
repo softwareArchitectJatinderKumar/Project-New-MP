@@ -251,7 +251,7 @@
 
                     <!-- Forward to HoW (with HOD grid logic) -->
                     <ng-container *ngIf="isForwardToHOWNull(row)">
-                        <button *ngIf="canForwardToHow(row); else NoForwardButtonSuper"
+                        <button *ngIf="isHODRemarksSubmitted(row) && getApplicationStatus(row)!=='Rejected' else NoForwardButtonSuper"
                             class="btn btn-warning btn-sm me-1 mb-1" (click)="ForwardToHod(row, 'How')">
                             <i class="bi bi-send me-1"></i>Forward to HoW
                         </button>
@@ -368,9 +368,18 @@
                 <ngx-datatable-column name="StageIICount" prop="uploadedStageIIDocumentCount"
                     [width]="20"></ngx-datatable-column>
 
-                <!-- <ngx-datatable-column name="Parent Contact" prop="parentContact" [width]="115"></ngx-datatable-column> -->
-                <ngx-datatable-column name="Approved University" prop="approvedUniversity"
-                    [width]="60"></ngx-datatable-column>
+                <ngx-datatable-column name="Approved University" prop="approvedUniversity" [width]="60"></ngx-datatable-column>
+                <!-- <ngx-datatable-column name="Forward to Faculty" [width]="60"> -->
+                    <!-- *ngIf="isCounsellorRemarksSubmitted(row) && isDealingFacultyNullOrBlank(row) && getApplicationStatus(row) != 'Rejected'; -->
+                      <!-- <ng-template let-row="row" ngx-datatable-cell-template>
+                        <ng-container *ngIf="row.dealingFaculty; else noCounsellors">
+                            <span class="badge bg-success">Already Forwarded</span>
+                        </ng-container>
+                        <ng-template #noCounsellors>
+                            <span class="badge" [ngClass]="approvalClass(row.dealingFaculty)"> Not Assigned</span>
+                        </ng-template>
+                    </ng-template>
+                </ngx-datatable-column> -->
 
 
 
@@ -427,7 +436,7 @@
                         </button>
                         <ng-template #Forwarded>
                             <span class="badge bg-danger me-1" >
-                            Forward NA
+                           Forwarded to Faculty
                         </span>
                         </ng-template>
 

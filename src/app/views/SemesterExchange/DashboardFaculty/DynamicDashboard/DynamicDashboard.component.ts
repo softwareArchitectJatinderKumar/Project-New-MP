@@ -1962,10 +1962,10 @@ export class DynamicDashboardComponent implements OnInit {
     if (!this.isHODRemarksSubmitted(row)) return false;
     const testType = (row.englishTestType || '').toLowerCase();
     const count = Number(row.uploadedStageIDocumentCount || 0);
-    const cond1 =
-      ['notrequired', 'applied', 'notgiven'].includes(testType) && count === 6;
+    const cond1 = ['notrequired', 'applied', 'notgiven'].includes(testType) && count === 6;
     const cond2 = ['appeared', 'given'].includes(testType) && count === 7;
-    return cond1 || cond2;
+    return true;
+    // return cond1 || cond2;
   }
 
   isAcceptOrForwardDisabled(row: Application): boolean {
