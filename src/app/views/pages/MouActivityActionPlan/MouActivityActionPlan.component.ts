@@ -1,6 +1,19 @@
-import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import {    AfterViewInit} from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Inject,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
+import { AfterViewInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute } from '@angular/router';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -35,138 +48,128 @@ interface MouCategory {
   selector: 'MouActivityActionPlan',
   templateUrl: './MouActivityActionPlan.component.html',
   styleUrls: ['./MouActivityActionPlan.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class MouActivityActionPlanComponent implements OnInit {
-
-
-  DeleteACtion(row:any): void{
-
-     this.newMouid = row.id;
+  DeleteACtion(row: any): void {
+    this.newMouid = row.id;
     this.TitleS = row.mouTitle;
     this.recordId = row.id;
     this.ExistingUID = row.uid;
-        // this.currentModalRef.result.then(() => this.getSEAllApplications()).catch(() => { });
+    // this.currentModalRef.result.then(() => this.getSEAllApplications()).catch(() => { });
     // this.cd.detectChanges();
-    swal.fire({
-      title: 'Delete Reason Remarks',
-      input: 'text',
-      inputPlaceholder: 'Remarks to delete ...',
-      showCancelButton: true,
-      confirmButtonText: 'Delete',
-      showLoaderOnConfirm: true,
-      preConfirm: uid => {
-        if (!uid) swal.showValidationMessage('Delete Remarks Are required!');
-        return uid;
-      },
-      allowOutsideClick: () => !swal.isLoading(),
-    }).then(result => {
-      if (result.isConfirmed && result.value) {
-        const fd = new FormData();
-        fd.append('RecordId', this.recordId);
-        fd.append('Remarks', result.value);
-        fd.append('Uid', this.ExistingUID );
-        fd.append('Mouid', this.newMouid );
-        this.DeleteActionRequest(fd);
-      }
-    });
+    swal
+      .fire({
+        title: 'Delete Reason Remarks',
+        input: 'text',
+        inputPlaceholder: 'Remarks to delete ...',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        showLoaderOnConfirm: true,
+        preConfirm: (uid) => {
+          if (!uid) swal.showValidationMessage('Delete Remarks Are required!');
+          return uid;
+        },
+        allowOutsideClick: () => !swal.isLoading(),
+      })
+      .then((result) => {
+        if (result.isConfirmed && result.value) {
+          const fd = new FormData();
+          fd.append('RecordId', this.recordId);
+          fd.append('Remarks', result.value);
+          fd.append('Uid', this.ExistingUID);
+          fd.append('Mouid', this.newMouid);
+          this.DeleteActionRequest(fd);
+        }
+      });
   }
-
 
   private DeleteActionRequest(formData: FormData): void {
     this.loadingIndicator = true;
-    this.mouDocumentsService.MOUDeleteAction(formData).pipe(
-
-    ).subscribe({
-      next: (data: any) => {
-        if (data?.item1?.[0]?.msg === 'success') {
-          swal.fire('Success!', 'Action Applied!', 'success').then(() => setTimeout(() => {
-            window.location.reload();
-          }, 1500));
-        } else {
-          swal.fire('Failed!', 'Action Failed!', 'error').then(() => setTimeout(() => {
-            window.location.reload();
-          }, 1500));
-        }
-      },
-      error: () => swal.fire('Error!', 'An error occurred.', 'error'),
-    });
+    this.mouDocumentsService
+      .MOUDeleteAction(formData)
+      .pipe()
+      .subscribe({
+        next: (data: any) => {
+          if (data?.item1?.[0]?.msg === 'success') {
+            swal.fire('Success!', 'Action Applied!', 'success').then(() =>
+              setTimeout(() => {
+                window.location.reload();
+              }, 1500),
+            );
+          } else {
+            swal.fire('Failed!', 'Action Failed!', 'error').then(() =>
+              setTimeout(() => {
+                window.location.reload();
+              }, 100),
+            );
+          }
+        },
+        error: () => swal.fire('Error!', 'An error occurred.', 'error'),
+      });
     this.modalService.dismissAll();
     this.loadingIndicator = false;
   }
 
-
   @ViewChild('topScroll')
-topScroll!: ElementRef<HTMLDivElement>;
+  topScroll!: ElementRef<HTMLDivElement>;
 
-@ViewChild('tableWrapper')
-tableWrapper!: ElementRef<HTMLDivElement>;
+  @ViewChild('tableWrapper')
+  tableWrapper!: ElementRef<HTMLDivElement>;
 
-tableScrollWidth = 0;
+  tableScrollWidth = 0;
 
-syncTopScroll(): void {
-
+  syncTopScroll(): void {
     if (this.syncing) {
-        return;
+      return;
     }
 
     this.syncing = true;
 
     this.tableWrapper.nativeElement.scrollLeft =
-        this.topScroll.nativeElement.scrollLeft;
+      this.topScroll.nativeElement.scrollLeft;
 
-    requestAnimationFrame(() => this.syncing = false);
+    requestAnimationFrame(() => (this.syncing = false));
+  }
 
-}
-
-syncBottomScroll(): void {
-
+  syncBottomScroll(): void {
     if (this.syncing) {
-        return;
+      return;
     }
 
     this.syncing = true;
 
     this.topScroll.nativeElement.scrollLeft =
-        this.tableWrapper.nativeElement.scrollLeft;
+      this.tableWrapper.nativeElement.scrollLeft;
 
-    requestAnimationFrame(() => this.syncing = false);
+    requestAnimationFrame(() => (this.syncing = false));
+  }
 
-}
-
-private syncing = false;
+  private syncing = false;
   FilterDataRow2() {
     this.applyFiltersTab2();
   }
- 
+
   ngAfterViewInit(): void {
-
     setTimeout(() => {
-
-        this.calculateScrollWidth();
-
+      this.calculateScrollWidth();
     });
+  }
 
-}
-
-
-
-calculateScrollWidth(): void {
-
+  calculateScrollWidth(): void {
     if (!this.tableWrapper) {
-        return;
+      return;
     }
 
     const body =
-        this.tableWrapper.nativeElement.querySelector('.datatable-body');
+      this.tableWrapper.nativeElement.querySelector('.datatable-body');
 
     if (!body) {
-        return;
+      return;
     }
 
     this.tableScrollWidth = body.scrollWidth;
-
-}
+  }
   @ViewChild('ModifyFacultyModal')
   ModifyFacultyModal!: TemplateRef<any>;
 
@@ -174,8 +177,11 @@ calculateScrollWidth(): void {
   // Existing Variables
   //====================================================
 
-  newMouid: any; recordId: any;
-  TitleS: any; StartDate3: any; EndDate3: any;
+  newMouid: any;
+  recordId: any;
+  TitleS: any;
+  StartDate3: any;
+  EndDate3: any;
 
   //====================================================
   // Faculty Search Variables
@@ -208,20 +214,19 @@ calculateScrollWidth(): void {
     this.activeSuggestionIndex3 = -1;
     this.ResponsiblePerson3 = '';
     this.AssignedToUid3 = '';
-    this.modalService.open(
-      this.ModifyFacultyModal,
-      {
+    this.modalService
+      .open(this.ModifyFacultyModal, {
         size: 'lg',
-        backdrop: 'static'
-      }
-    ).result.then(
-      () => {
-        setTimeout(() => {
-          window.dispatchEvent(new Event('resize'));
-        }, 200);
-      },
-      () => { }
-    );
+        backdrop: 'static',
+      })
+      .result.then(
+        () => {
+          setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+          }, 200);
+        },
+        () => {},
+      );
   }
 
   //====================================================
@@ -229,21 +234,17 @@ calculateScrollWidth(): void {
   //====================================================
 
   onInput3() {
-    const inputValue =
-      (this.employeeControl3.value || '')
-        .toString()
-        .toLowerCase()
-        .trim();
+    const inputValue = (this.employeeControl3.value || '')
+      .toString()
+      .toLowerCase()
+      .trim();
     if (inputValue) {
-      this.filteredEmployeesData3 =
-        this.EmployeeData
-          .filter(employee =>
-            employee.employeeName.toLowerCase().includes(inputValue) ||
-            employee.employeeCode.toLowerCase().includes(inputValue)
-          )
-          .slice(0, 10);
-    }
-    else {
+      this.filteredEmployeesData3 = this.EmployeeData.filter(
+        (employee) =>
+          employee.employeeName.toLowerCase().includes(inputValue) ||
+          employee.employeeCode.toLowerCase().includes(inputValue),
+      ).slice(0, 10);
+    } else {
       this.filteredEmployeesData3 = [];
     }
     this.showSuggestions3 = true;
@@ -258,13 +259,13 @@ calculateScrollWidth(): void {
     this.ResponsiblePerson3 = employee.employeeCode;
     this.AssignedToUid3 = employee.employeeCode;
     if (this.AssignedToUid3 === this.ExistingUID) {
-      swal.fire('Error', 'Select Different UID', 'error')
+      swal.fire('Error', 'Select Different UID', 'error');
       this.filteredEmployeesData3 = [];
       this.showSuggestions3 = false;
       return;
     }
     this.employeeControl3.setValue(
-      `${employee.employeeName} (${employee.employeeCode})`
+      `${employee.employeeName} (${employee.employeeCode})`,
     );
 
     this.filteredEmployeesData3 = [];
@@ -277,43 +278,30 @@ calculateScrollWidth(): void {
   //====================================================
 
   onKeydown3(event: KeyboardEvent) {
-
     if (!this.filteredEmployeesData3?.length) {
       return;
     }
 
     if (event.key === 'ArrowDown') {
-
       event.preventDefault();
 
       this.activeSuggestionIndex3 =
-        (this.activeSuggestionIndex3 + 1)
-        % this.filteredEmployeesData3.length;
-    }
-
-    else if (event.key === 'ArrowUp') {
-
+        (this.activeSuggestionIndex3 + 1) % this.filteredEmployeesData3.length;
+    } else if (event.key === 'ArrowUp') {
       event.preventDefault();
 
       this.activeSuggestionIndex3 =
-        (this.activeSuggestionIndex3 - 1 +
-          this.filteredEmployeesData3.length)
-        % this.filteredEmployeesData3.length;
-    }
-
-    else if (event.key === 'Enter') {
-
+        (this.activeSuggestionIndex3 - 1 + this.filteredEmployeesData3.length) %
+        this.filteredEmployeesData3.length;
+    } else if (event.key === 'Enter') {
       event.preventDefault();
 
       if (
         this.activeSuggestionIndex3 >= 0 &&
         this.activeSuggestionIndex3 < this.filteredEmployeesData3.length
       ) {
-
         this.selectEmployee3(
-          this.filteredEmployeesData3[
-          this.activeSuggestionIndex3
-          ]
+          this.filteredEmployeesData3[this.activeSuggestionIndex3],
         );
       }
     }
@@ -324,11 +312,8 @@ calculateScrollWidth(): void {
   //====================================================
 
   hideSuggestions3() {
-
     setTimeout(() => {
-
       this.showSuggestions3 = false;
-
     }, 200);
   }
 
@@ -337,7 +322,6 @@ calculateScrollWidth(): void {
   //====================================================
 
   checkFormValidity3(): boolean {
-
     return !!(
       this.AssignedToUid3 &&
       this.remarks3 &&
@@ -364,14 +348,21 @@ calculateScrollWidth(): void {
     formData.append('EndDate', this.EndDate3);
     this.mouDocumentsService.ReassignNewUID(formData).subscribe({
       next: (data: any) => {
-        const resultMsg = data.item1 && data.item1.length > 0 ? data.item1[0].msg : data.responseData;
+        const resultMsg =
+          data.item1 && data.item1.length > 0
+            ? data.item1[0].msg
+            : data.responseData;
         if (resultMsg === 'success') {
           swal.fire('Success', 'Assigned UID Done.', 'success');
           setTimeout(() => {
             window.location.reload();
           }, 1500);
         } else if (data.responseData == 'Failed') {
-          swal.fire('Error', 'Failed to Assign New UID. Please try again.', 'error');
+          swal.fire(
+            'Error',
+            'Failed to Assign New UID. Please try again.',
+            'error',
+          );
           setTimeout(() => {
             window.location.reload();
           }, 1500);
@@ -386,13 +377,11 @@ calculateScrollWidth(): void {
       complete: () => {
         this.clearFields();
         this.reloadGrid2();
-      }
+      },
     });
-
   }
 
   resetTab1Filters(): void {
-
     // Reset dropdowns
     this.selectedSchoolDivision = '0';
     this.Tab1statusFilter = 'all';
@@ -403,9 +392,7 @@ calculateScrollWidth(): void {
     this.searchQuery = '';
 
     // Reload all records
-    this.filteredMouActivityDocuments = [
-      ...this.MouActivityDocumentsMaster
-    ];
+    this.filteredMouActivityDocuments = [...this.MouActivityDocumentsMaster];
   }
 
   applyCombinedFiltersTab1(): void {
@@ -413,7 +400,7 @@ calculateScrollWidth(): void {
     if (this.selectedSchoolDivision === '-1') {
       filtered = [];
     } else if (this.selectedSchoolDivision !== '0') {
-      filtered = filtered.filter(item => {
+      filtered = filtered.filter((item) => {
         if (!item.schoolDivisionInvolved) {
           return false;
         }
@@ -427,7 +414,7 @@ calculateScrollWidth(): void {
     // =========================
     // Filter By MOU Status
     // =========================
-    filtered = filtered.filter(item => {
+    filtered = filtered.filter((item) => {
       if (this.Tab1statusFilter === 'all') {
         return true;
       }
@@ -438,13 +425,13 @@ calculateScrollWidth(): void {
         return item.mouStatus === 'Expired' && item.renewalCount == 0;
       }
       if (this.Tab1statusFilter === 'renewed') {
-        return item.renewalCount > 0 ||
-          (
-            item.renewalCount !== null &&
+        return (
+          item.renewalCount > 0 ||
+          (item.renewalCount !== null &&
             item.renewalCount !== undefined &&
             item.renewalCount !== '0' &&
-            item.renewalCount !== 'null'
-          );
+            item.renewalCount !== 'null')
+        );
       }
       return true;
     });
@@ -452,14 +439,16 @@ calculateScrollWidth(): void {
     // =========================
     // Filter By MOU Category
     // =========================
-    filtered = filtered.filter(item => this.matchMouCategory(item, this.SelectedMouCategoryTab1));
+    filtered = filtered.filter((item) =>
+      this.matchMouCategory(item, this.SelectedMouCategoryTab1),
+    );
 
     // =========================
     // Search Filter
     // =========================
     const query = this.searchTextTab1?.trim().toLowerCase();
     if (query) {
-      filtered = filtered.filter(item => {
+      filtered = filtered.filter((item) => {
         return Object.entries(item).some(([key, val]) => {
           if (val !== null && val !== undefined) {
             const valueString = String(val).toLowerCase();
@@ -468,10 +457,8 @@ calculateScrollWidth(): void {
               const numericId = Number(val);
               if (
                 !isNaN(numericId) &&
-                (
-                  numericId.toString().includes(query) ||
-                  `mou/${numericId}`.includes(query)
-                )
+                (numericId.toString().includes(query) ||
+                  `mou/${numericId}`.includes(query))
               ) {
                 return true;
               }
@@ -490,35 +477,27 @@ calculateScrollWidth(): void {
   }
 
   getActiveCount(): number {
-    return this.filteredMouActivityDocuments.filter(item => {
+    return this.filteredMouActivityDocuments.filter((item) => {
       return item.mouStatus === 'Active';
     }).length;
-
   }
 
   getExpiredCount(): number {
-
-    return this.filteredMouActivityDocuments.filter(item => {
-      return item.mouStatus === 'Expired' &&
-        item.renewalCount == 0;
+    return this.filteredMouActivityDocuments.filter((item) => {
+      return item.mouStatus === 'Expired' && item.renewalCount == 0;
     }).length;
-
   }
 
   getRenewedCount(): number {
-
-    return this.filteredMouActivityDocuments.filter(item => {
-
-      return item.renewalCount > 0 ||
-        (
-          item.renewalCount !== null &&
+    return this.filteredMouActivityDocuments.filter((item) => {
+      return (
+        item.renewalCount > 0 ||
+        (item.renewalCount !== null &&
           item.renewalCount !== undefined &&
           item.renewalCount !== '0' &&
-          item.renewalCount !== 'null'
-        );
-
+          item.renewalCount !== 'null')
+      );
     }).length;
-
   }
   selectedSchoolDivision: any = '0';
   selectedSchoolDivision2: any = '0';
@@ -530,17 +509,21 @@ calculateScrollWidth(): void {
 
   GetAllCategories(): void {
     this.mouDocumentsService.GetMouCategories().subscribe({
-      next: response => {
+      next: (response) => {
         if (response.item1 && response.item1.length > 0) {
-          this.AllMouCategories = response.item1.map((x: any, index: number) => ({
-            id: index + 1,
-            CategoryName: x.items
-          }));
+          this.AllMouCategories = response.item1.map(
+            (x: any, index: number) => ({
+              id: index + 1,
+              CategoryName: x.items,
+            }),
+          );
         } else {
           this.AllMouCategories = [];
         }
       },
-      error: err => { this.LoginFailed(err); }
+      error: (err) => {
+        this.LoginFailed(err);
+      },
     });
   }
 
@@ -549,13 +532,16 @@ calculateScrollWidth(): void {
       return true;
     }
     const categoryName = selected.CategoryName;
-    return String(item.mouCategory ?? '').toLowerCase() === categoryName.toLowerCase();
+    return (
+      String(item.mouCategory ?? '').toLowerCase() ===
+      categoryName.toLowerCase()
+    );
   }
 
   setSchoolDivision(event: any) {
     const selectedId = event.target.value;
     this.selectedSchoolDivision = selectedId;
-    let filtered = this.MouActivityDocumentsMaster.filter(item => {
+    let filtered = this.MouActivityDocumentsMaster.filter((item) => {
       if (this.selectedSchoolDivision === '-1') {
         return false;
       }
@@ -564,7 +550,13 @@ calculateScrollWidth(): void {
       }
 
       if (this.selectedSchoolDivision !== '1') {
-        return item.schoolDivisionInvolved && item.schoolDivisionInvolved.split(',').map((id: string) => id.trim()).includes(this.selectedSchoolDivision);
+        return (
+          item.schoolDivisionInvolved &&
+          item.schoolDivisionInvolved
+            .split(',')
+            .map((id: string) => id.trim())
+            .includes(this.selectedSchoolDivision)
+        );
       }
       return true;
     });
@@ -572,7 +564,7 @@ calculateScrollWidth(): void {
     // Then apply search filter if exists
     const query = this.searchQuery.trim().toLowerCase();
     if (query) {
-      filtered = filtered.filter(item => {
+      filtered = filtered.filter((item) => {
         return Object.entries(item).some(([key, val]) => {
           if (val !== null && val !== undefined) {
             let valueString = String(val).toLowerCase();
@@ -580,7 +572,11 @@ calculateScrollWidth(): void {
             // Special handling for mouid (Numeric & "MOU/x" String Comparison)
             if (key === 'id') {
               const numericId = Number(val);
-              if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
+              if (
+                !isNaN(numericId) &&
+                (numericId.toString().includes(query) ||
+                  `mou/${numericId}`.includes(query))
+              ) {
                 return true;
               }
             }
@@ -595,7 +591,6 @@ calculateScrollWidth(): void {
 
     this.filteredMouActivityDocuments = filtered;
   }
-
 
   // Helper: convert various API date formats (e.g. "26 Mar 2026" or ISO) to "yyyy-MM-dd"
   private parseApiDateToIso(dateVal: any): string | null {
@@ -614,7 +609,20 @@ calculateScrollWidth(): void {
     if (m) {
       const day = m[1].padStart(2, '0');
       const monthName = m[2].toLowerCase().slice(0, 3);
-      const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+      const months = [
+        'jan',
+        'feb',
+        'mar',
+        'apr',
+        'may',
+        'jun',
+        'jul',
+        'aug',
+        'sep',
+        'oct',
+        'nov',
+        'dec',
+      ];
       const monthIndex = months.indexOf(monthName);
       if (monthIndex >= 0) {
         const year = m[3];
@@ -625,7 +633,11 @@ calculateScrollWidth(): void {
   }
 
   formatDate(date: Date): string {
-    const DateX = new Date(date).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+    const DateX = new Date(date).toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
     return DateX;
   }
   @ViewChild('OpenMouRenewalModal', { read: TemplateRef, static: false })
@@ -651,7 +663,6 @@ calculateScrollWidth(): void {
     if (this.isIndefiniteMou) {
       this.MouEndDate = '';
       this.moustatus = 'Active';
-
     } else {
       this.updateMouStatus(); // Recalculate status if unchecked
     }
@@ -661,9 +672,10 @@ calculateScrollWidth(): void {
     const query = this.mouForm.get('lpuSpocName')?.value?.toLowerCase();
 
     if (query && query.length >= 2) {
-      this.filteredEmployeesData = this.EmployeeData.filter(emp =>
-        emp.employeeName.toLowerCase().includes(query) ||
-        emp.employeeCode.toLowerCase().includes(query)
+      this.filteredEmployeesData = this.EmployeeData.filter(
+        (emp) =>
+          emp.employeeName.toLowerCase().includes(query) ||
+          emp.employeeCode.toLowerCase().includes(query),
       ).slice(0, 10); // Limit to top 10 for clean UI
 
       this.showSuggestions = true;
@@ -681,19 +693,18 @@ calculateScrollWidth(): void {
     // IMPORTANT: This updates the Reactive Form state for the API
     this.mouForm.patchValue({
       lpuSpocName: employee.employeeName,
-      lpuSpocUid: employee.employeeCode // This ensures the UID is captured
+      lpuSpocUid: employee.employeeCode, // This ensures the UID is captured
     });
 
     // Update the separate search control if you are still using it
-    this.employeeControl.setValue(`${employee.employeeName} (${employee.employeeCode})`);
+    this.employeeControl.setValue(
+      `${employee.employeeName} (${employee.employeeCode})`,
+    );
 
     this.filteredEmployeesData = [];
     this.showSuggestions = false;
     this.checkUIDValidity();
   }
-
-
-
 
   onRenewFileSelected(event: any): void {
     const file = event.target.files[0];
@@ -705,7 +716,7 @@ calculateScrollWidth(): void {
     const allowedTypes = [
       'application/pdf',
       'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     ];
     if (!allowedTypes.includes(file.type)) {
       this.renewalFileError = 'Only PDF and Word documents are allowed.';
@@ -744,8 +755,8 @@ calculateScrollWidth(): void {
       }
       swal.fire({
         title: 'Validation Error',
-        html: `<p>Please fill in all required fields:</p><ul class="text-start">${invalidFields.map(f => `<li>${this.getFieldDisplayName(f)}</li>`).join('')}</ul>`,
-        icon: 'error'
+        html: `<p>Please fill in all required fields:</p><ul class="text-start">${invalidFields.map((f) => `<li>${this.getFieldDisplayName(f)}</li>`).join('')}</ul>`,
+        icon: 'error',
       });
       return;
     }
@@ -756,7 +767,11 @@ calculateScrollWidth(): void {
     }
 
     if (!this.renewalFileBase64) {
-      swal.fire('Error', 'File is still being processed. Please try again.', 'error');
+      swal.fire(
+        'Error',
+        'File is still being processed. Please try again.',
+        'error',
+      );
       return;
     }
 
@@ -766,7 +781,11 @@ calculateScrollWidth(): void {
     let newMouStatus = 'Active';
     const today = new Date();
     const startDate = val.startDate ? new Date(val.startDate) : null;
-    const endDate = val.isIndefinite ? null : (val.endDate ? new Date(val.endDate) : null);
+    const endDate = val.isIndefinite
+      ? null
+      : val.endDate
+        ? new Date(val.endDate)
+        : null;
 
     if (val.isIndefinite) {
       newMouStatus = 'Active';
@@ -801,35 +820,42 @@ calculateScrollWidth(): void {
 
     formData.append('CreatedBy', this.EmployeeCode);
 
-    swal.fire({
-      title: 'Renew MOU',
-      text: 'Are you sure you want to renew this MOU? This will create a new MOU and mark the old one as Renewed.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, renew MOU',
-      cancelButtonText: 'Cancel'
-    }).then((result) => {
-      if (result.value) {
-        this.mouDocumentsService.MouRenewalDetails(formData).subscribe({
-          next: (data: any) => {
-            const resultMsg = data.item1 && data.item1.length > 0 ? data.item1[0].msg : data.responseData;
-            if (resultMsg === 'success') {
-              swal.fire('Success', 'Renewed MOU.', 'success');
-              window.location.reload();
-            } else if (data.responseData == 'Failed') {
-              swal.fire('Error', 'Failed to create new MOU. Please try again.', 'error');
-              window.location.reload();
-            }
-          },
-          error: (err) => {
-            swal.fire('Error', 'Failed to upload new MOU document.', 'error');
-          }
-        });
-      }
-    });
-
+    swal
+      .fire({
+        title: 'Renew MOU',
+        text: 'Are you sure you want to renew this MOU? This will create a new MOU and mark the old one as Renewed.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, renew MOU',
+        cancelButtonText: 'Cancel',
+      })
+      .then((result) => {
+        if (result.value) {
+          this.mouDocumentsService.MouRenewalDetails(formData).subscribe({
+            next: (data: any) => {
+              const resultMsg =
+                data.item1 && data.item1.length > 0
+                  ? data.item1[0].msg
+                  : data.responseData;
+              if (resultMsg === 'success') {
+                swal.fire('Success', 'Renewed MOU.', 'success');
+                window.location.reload();
+              } else if (data.responseData == 'Failed') {
+                swal.fire(
+                  'Error',
+                  'Failed to create new MOU. Please try again.',
+                  'error',
+                );
+                window.location.reload();
+              }
+            },
+            error: (err) => {
+              swal.fire('Error', 'Failed to upload new MOU document.', 'error');
+            },
+          });
+        }
+      });
   }
-
 
   initForm() {
     this.mouForm = this.fb.group({
@@ -843,12 +869,11 @@ calculateScrollWidth(): void {
       spocEmail: ['', [Validators.required, Validators.email]],
       spocContact: [''],
       lpuSpocName: ['', [Validators.required]], // Internal SPOC Name
-      lpuSpocUid: ['', [Validators.required]],  // Internal SPOC UID
-      lpuSpocEmail: ['', [Validators.required, Validators.email]],// Internal SPOC Email
-      remarks: ['', [Validators.required]] // Internal SPOC Email
+      lpuSpocUid: ['', [Validators.required]], // Internal SPOC UID
+      lpuSpocEmail: ['', [Validators.required, Validators.email]], // Internal SPOC Email
+      remarks: ['', [Validators.required]], // Internal SPOC Email
     });
   }
-
 
   // Helper for Template to check validation
   isInvalid(controlName: string): boolean {
@@ -859,18 +884,18 @@ calculateScrollWidth(): void {
   // Helper to get display name for form fields
   getFieldDisplayName(fieldName: string): string {
     const fieldNames: { [key: string]: string } = {
-      'mouOrganisation': 'Partner Organisation Name',
-      'selectedDivisions': 'Divisions Involved',
-      'startDate': 'Start Date',
-      'endDate': 'End Date',
-      'spocName': 'SPOC Name',
-      'spocEmail': 'SPOC Email',
-      'spocContact': 'SPOC Contact',
-      'lpuSpocName': 'LPU SPOC Name',
-      'lpuSpocUid': 'LPU SPOC UID',
-      'remarks': 'Renew Remarks',
-      'mouid': 'Original Mouid',
-      'lpuSpocEmail': 'LPU SPOC Email'
+      mouOrganisation: 'Partner Organisation Name',
+      selectedDivisions: 'Divisions Involved',
+      startDate: 'Start Date',
+      endDate: 'End Date',
+      spocName: 'SPOC Name',
+      spocEmail: 'SPOC Email',
+      spocContact: 'SPOC Contact',
+      lpuSpocName: 'LPU SPOC Name',
+      lpuSpocUid: 'LPU SPOC UID',
+      remarks: 'Renew Remarks',
+      mouid: 'Original Mouid',
+      lpuSpocEmail: 'LPU SPOC Email',
     };
     return fieldNames[fieldName] || fieldName;
   }
@@ -915,7 +940,9 @@ calculateScrollWidth(): void {
 
     this.mouForm.patchValue({
       mouId: row.id,
-      selectedDivisions: row.schoolDivisionInvolved ? row.schoolDivisionInvolved.split(',') : [],
+      selectedDivisions: row.schoolDivisionInvolved
+        ? row.schoolDivisionInvolved.split(',')
+        : [],
       mouOrganisation: row.mouTitle,
       startDate: startIso,
       endDate: endIso,
@@ -925,7 +952,7 @@ calculateScrollWidth(): void {
       spocContact: row.spocContactNo,
       lpuSpocName: row.lpuSpocName,
       lpuSpocUid: row.lpuSpocUID,
-      lpuSpocEmail: row.lpuSpocEmail
+      lpuSpocEmail: row.lpuSpocEmail,
     });
 
     // Set display variables
@@ -940,17 +967,26 @@ calculateScrollWidth(): void {
     this.CurrentSchool = row.schoolDivisionInvolved;
 
     if (!this.OpenMouRenewalModal) {
-      console.error('OpenMouRenewalModal template not found. Ensure the template has #OpenMouRenewalModal in the component HTML and is not blocked by *ngIf.');
+      console.error(
+        'OpenMouRenewalModal template not found. Ensure the template has #OpenMouRenewalModal in the component HTML and is not blocked by *ngIf.',
+      );
       return;
     }
     // defer open to next tick so ViewChild is resolved if template rendered conditionally
     setTimeout(() => {
-      this.modalService.open(this.OpenMouRenewalModal!, { size: 'xl', windowClass: 'modal-xl', backdrop: 'static' }).result.then(() => {
-        setTimeout(() => {
-          window.dispatchEvent(new Event('resize'));
-        }, 200);
-        // Modal closed
-      }).catch(() => { });
+      this.modalService
+        .open(this.OpenMouRenewalModal!, {
+          size: 'xl',
+          windowClass: 'modal-xl',
+          backdrop: 'static',
+        })
+        .result.then(() => {
+          setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+          }, 200);
+          // Modal closed
+        })
+        .catch(() => {});
     }, 0);
   }
 
@@ -960,7 +996,8 @@ calculateScrollWidth(): void {
   Tab3statusFilter: string = 'all';
   searchQuery: any = '';
 
-  @ViewChild('ViewRenewedMouDetailsModal') ViewRenewedMouDetailsModal: TemplateRef<any>;
+  @ViewChild('ViewRenewedMouDetailsModal')
+  ViewRenewedMouDetailsModal: TemplateRef<any>;
   renewedMouDocumentDetails: any[] = [];
 
   onCategoryChange(event: any): void {
@@ -981,7 +1018,7 @@ calculateScrollWidth(): void {
 
   applyFiltersTab1(): void {
     // First filter by status
-    let filtered = this.MouActivityDocumentsMaster.filter(item => {
+    let filtered = this.MouActivityDocumentsMaster.filter((item) => {
       if (this.Tab1statusFilter === 'all') {
         return true;
       }
@@ -991,7 +1028,13 @@ calculateScrollWidth(): void {
       } else if (this.Tab1statusFilter === 'expired') {
         return item.mouStatus == 'Expired' && item.renewalCount == 0;
       } else if (this.Tab1statusFilter === 'renewed') {
-        return item.renewalCount > 0 || item.renewalCount !== 'null' && item.renewalCount !== null && item.renewalCount !== undefined && item.renewalCount !== '0';
+        return (
+          item.renewalCount > 0 ||
+          (item.renewalCount !== 'null' &&
+            item.renewalCount !== null &&
+            item.renewalCount !== undefined &&
+            item.renewalCount !== '0')
+        );
       }
       return true;
     });
@@ -999,7 +1042,7 @@ calculateScrollWidth(): void {
     // Then apply search filter if exists
     const query = this.searchQuery.trim().toLowerCase();
     if (query) {
-      filtered = filtered.filter(item => {
+      filtered = filtered.filter((item) => {
         return Object.entries(item).some(([key, val]) => {
           if (val !== null && val !== undefined) {
             let valueString = String(val).toLowerCase();
@@ -1007,7 +1050,11 @@ calculateScrollWidth(): void {
             // Special handling for mouid (Numeric & "MOU/x" String Comparison)
             if (key === 'id') {
               const numericId = Number(val);
-              if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
+              if (
+                !isNaN(numericId) &&
+                (numericId.toString().includes(query) ||
+                  `mou/${numericId}`.includes(query))
+              ) {
                 return true;
               }
             }
@@ -1026,15 +1073,17 @@ calculateScrollWidth(): void {
   OpenAllMouRenewalHistory(row: any): void {
     this.mouId = row.id;
     this.getRenewedMouDetails(row.id);
-    this.modalService.open(this.ViewRenewedMouDetailsModal, { size: 'lg', backdrop: 'static' }).result.then(() => {
-      // Modal closed
-    }).catch(() => {
-      window.location.reload()
-
-    });
+    this.modalService
+      .open(this.ViewRenewedMouDetailsModal, { size: 'lg', backdrop: 'static' })
+      .result.then(() => {
+        // Modal closed
+      })
+      .catch(() => {
+        window.location.reload();
+      });
   }
 
-  // Tab 2 Filters 
+  // Tab 2 Filters
 
   onStatusChangeTab2(event: any): void {
     this.applyFiltersTab2();
@@ -1090,42 +1139,36 @@ calculateScrollWidth(): void {
   // }
 
   applyFiltersTab2(): void {
-
     let filtered = this.MouActivityAssignedMeMaster.filter(
-      x => x.actionAssignedBy === this.EmployeeCode
+      (x) => x.actionAssignedBy === this.EmployeeCode,
     );
 
     // -----------------------------
     // School Division Filter
     // -----------------------------
 
-    filtered = filtered.filter(item => this.matchSchoolDivision(item));
+    filtered = filtered.filter((item) => this.matchSchoolDivision(item));
 
-    filtered = filtered.filter(item => this.matchMouCategory(item, this.SelectedMouCategoryTab2));
+    filtered = filtered.filter((item) =>
+      this.matchMouCategory(item, this.SelectedMouCategoryTab2),
+    );
 
     // -----------------------------
     // Status Filter
     // -----------------------------
 
     switch (this.Tab2statusFilter) {
-
       case 'active':
-        filtered = filtered.filter(
-          x => x.mouStatus === 'Active'
-        );
+        filtered = filtered.filter((x) => x.mouStatus === 'Active');
         break;
 
       case 'expired':
-        filtered = filtered.filter(
-          x => x.mouStatus === 'Expired'
-        );
+        filtered = filtered.filter((x) => x.mouStatus === 'Expired');
         break;
 
       case 'renewed':
         filtered = filtered.filter(
-          x =>
-            x.mouStatus === 'Renewed' ||
-            x.renewalVersionCount > 0
+          (x) => x.mouStatus === 'Renewed' || x.renewalVersionCount > 0,
         );
         break;
     }
@@ -1134,25 +1177,20 @@ calculateScrollWidth(): void {
     // Search Filter
     // -----------------------------
 
-    const query = (this.searchTextTab2 || '')
-      .trim()
-      .toLowerCase();
+    const query = (this.searchTextTab2 || '').trim().toLowerCase();
 
     if (query) {
-
       // Normalize search
       const normalizedQuery = query.replace(/\s+/g, '');
 
-      filtered = filtered.filter(item => {
-
+      filtered = filtered.filter((item) => {
         // Search by Old MOU Id
         if (item.mouId != null) {
-
           const oldId = item.mouId.toString().toLowerCase();
 
           if (
             oldId.includes(normalizedQuery) ||
-            (`mou/${oldId}`).includes(normalizedQuery)
+            `mou/${oldId}`.includes(normalizedQuery)
           ) {
             return true;
           }
@@ -1160,12 +1198,11 @@ calculateScrollWidth(): void {
 
         // Search by New MOU Id
         if (item.newMouId != null) {
-
           const newId = item.newMouId.toString().toLowerCase();
 
           if (
             newId.includes(normalizedQuery) ||
-            (`mou/${newId}`).includes(normalizedQuery)
+            `mou/${newId}`.includes(normalizedQuery)
           ) {
             return true;
           }
@@ -1173,19 +1210,13 @@ calculateScrollWidth(): void {
 
         // Search remaining fields
         return Object.entries(item).some(([_, value]) => {
-
           if (value == null) {
             return false;
           }
 
-          return String(value)
-            .toLowerCase()
-            .includes(normalizedQuery);
-
+          return String(value).toLowerCase().includes(normalizedQuery);
         });
-
       });
-
     }
 
     // -----------------------------
@@ -1195,11 +1226,12 @@ calculateScrollWidth(): void {
     filtered.sort((a, b) => b.id - a.id);
 
     this.filteredMouActivityAssignedMe = filtered;
-
   }
   private matchSchoolDivision(item: any): boolean {
-
-    if (this.selectedSchoolDivision2 === '0' || this.selectedSchoolDivision2 === '-1') {
+    if (
+      this.selectedSchoolDivision2 === '0' ||
+      this.selectedSchoolDivision2 === '-1'
+    ) {
       return true;
     }
 
@@ -1216,18 +1248,18 @@ calculateScrollWidth(): void {
   }
 
   getActiveCountTab2(): number {
-    return this.filteredMouActivityAssignedMe.filter(item => {
+    return this.filteredMouActivityAssignedMe.filter((item) => {
       return item.mouStatus === 'Active';
     }).length;
   }
 
   getExpiredCountTab2(): number {
-    return this.filteredMouActivityAssignedMe.filter(item => {
+    return this.filteredMouActivityAssignedMe.filter((item) => {
       return item.mouStatus === 'Expired';
     }).length;
   }
   getRenewedCountTab2(): number {
-    return this.filteredMouActivityAssignedMe.filter(item => {
+    return this.filteredMouActivityAssignedMe.filter((item) => {
       return item.mouStatus === 'Renewed';
     }).length;
   }
@@ -1235,12 +1267,14 @@ calculateScrollWidth(): void {
   OpenAllMouRenewalHistoryTab2(row: any): void {
     this.mouId = row.id;
     this.getRenewedMouDetails(row.id);
-    this.modalService.open(this.ViewRenewedMouDetailsModal, { size: 'lg', backdrop: 'static' }).result.then(() => {
-      // Modal closed
-    }).catch(() => {
-      window.location.reload()
-
-    });
+    this.modalService
+      .open(this.ViewRenewedMouDetailsModal, { size: 'lg', backdrop: 'static' })
+      .result.then(() => {
+        // Modal closed
+      })
+      .catch(() => {
+        window.location.reload();
+      });
   }
 
   //  Tab -3 Filters
@@ -1254,7 +1288,10 @@ calculateScrollWidth(): void {
   }
 
   private matchSchoolDivision3(item: any): boolean {
-    if (this.selectedSchoolDivision3 === '0' || this.selectedSchoolDivision3 === '-1') {
+    if (
+      this.selectedSchoolDivision3 === '0' ||
+      this.selectedSchoolDivision3 === '-1'
+    ) {
       return true;
     }
     if (!item.schoolDivisionId) {
@@ -1269,17 +1306,19 @@ calculateScrollWidth(): void {
 
   applyFiltersTab3(): void {
     let filtered = this.MouActivityAssignedOthersMaster.filter(
-      x => x.actionAssignedBy !== this.EmployeeCode
+      (x) => x.actionAssignedBy !== this.EmployeeCode,
     );
 
     // Filter by School Division
-    filtered = filtered.filter(item => this.matchSchoolDivision3(item));
+    filtered = filtered.filter((item) => this.matchSchoolDivision3(item));
 
-    filtered = filtered.filter(item => this.matchMouCategory(item, this.SelectedMouCategoryTab3));
+    filtered = filtered.filter((item) =>
+      this.matchMouCategory(item, this.SelectedMouCategoryTab3),
+    );
 
     // Filter by Status
     if (this.Tab3statusFilter !== 'all') {
-      filtered = filtered.filter(item => {
+      filtered = filtered.filter((item) => {
         if (this.Tab3statusFilter === 'active') {
           return item.mouStatus === 'Active';
         } else if (this.Tab3statusFilter === 'expired') {
@@ -1295,16 +1334,22 @@ calculateScrollWidth(): void {
     const query = (this.searchTextTab3 || '').trim().toLowerCase();
     if (query) {
       const normalizedQuery = query.replace(/\s+/g, '');
-      filtered = filtered.filter(item => {
+      filtered = filtered.filter((item) => {
         if (item.mouId != null) {
           const oldId = item.mouId.toString().toLowerCase();
-          if (oldId.includes(normalizedQuery) || (`mou/${oldId}`).includes(normalizedQuery)) {
+          if (
+            oldId.includes(normalizedQuery) ||
+            `mou/${oldId}`.includes(normalizedQuery)
+          ) {
             return true;
           }
         }
         if (item.newMouId != null) {
           const newId = item.newMouId.toString().toLowerCase();
-          if (newId.includes(normalizedQuery) || (`mou/${newId}`).includes(normalizedQuery)) {
+          if (
+            newId.includes(normalizedQuery) ||
+            `mou/${newId}`.includes(normalizedQuery)
+          ) {
             return true;
           }
         }
@@ -1319,40 +1364,44 @@ calculateScrollWidth(): void {
     this.filteredMouActivityAssignedOthers = filtered;
   }
 
-
   getActiveCountTab3(): number {
-    return this.filteredMouActivityAssignedOthers.filter(item => {
+    return this.filteredMouActivityAssignedOthers.filter((item) => {
       return item.mouStatus === 'Active';
     }).length;
   }
 
   getExpiredCountTab3(): number {
-    return this.filteredMouActivityAssignedOthers.filter(item => {
+    return this.filteredMouActivityAssignedOthers.filter((item) => {
       return item.mouStatus === 'Expired';
     }).length;
   }
   getRenewedCountTab3(): number {
-    return this.filteredMouActivityAssignedOthers.filter(item => {
+    return this.filteredMouActivityAssignedOthers.filter((item) => {
       return item.mouStatus === 'Renewed';
     }).length;
   }
 
   getRenewedMouDetails(mouId: any): void {
-    this.mouDocumentsService.GetRenewedMouDetails(mouId).subscribe((response) => {
-      if (response.item1.length > 0) {
-        this.renewedMouDocumentDetails = response.item1;
-      } else {
-        this.renewedMouDocumentDetails = [];
-      }
-    });
+    this.mouDocumentsService
+      .GetRenewedMouDetails(mouId)
+      .subscribe((response) => {
+        if (response.item1.length > 0) {
+          this.renewedMouDocumentDetails = response.item1;
+        } else {
+          this.renewedMouDocumentDetails = [];
+        }
+      });
   }
 
   @ViewChild('ngSelectComponent') ngSelectComponent: NgSelectComponent;
   @ViewChild('viewDescModal') viewDescModal: TemplateRef<any>;
-  @ViewChild('viewActivityActionTakenModalAll') viewActivityActionTakenModalAll: TemplateRef<any>;
+  @ViewChild('viewActivityActionTakenModalAll')
+  viewActivityActionTakenModalAll: TemplateRef<any>;
   @ViewChild('activityModal') activityModal: TemplateRef<any>;
-  @ViewChild('viewMouActivityActionTakenModal') viewMouActivityActionTakenModal: TemplateRef<any>;
+  @ViewChild('viewMouActivityActionTakenModal')
+  viewMouActivityActionTakenModal: TemplateRef<any>;
   @ViewChild('AssignNewUIDModal') AssignNewUIDModal: TemplateRef<any>;
+  @ViewChild('SendReminderModal') SendReminderModal!: TemplateRef<any>;
 
   searchTextTab1: string = '';
   MouActivityDocumentsMaster: any[] = [];
@@ -1411,7 +1460,14 @@ calculateScrollWidth(): void {
   filteredMouActionTakenDocuments: any[] = [];
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
 
-  MouidX: any; IdX: any; MouTitleX: any; StartDateX: any; EndDateX: any; ActivityDetailsX: any; RemarksX: any;
+  MouidX: any;
+  IdX: any;
+  MouTitleX: any;
+  StartDateX: any;
+  EndDateX: any;
+  ActivityDetailsX: any;
+  RemarksX: any;
+  isDrcStaff: boolean = false;
 
   constructor(
     private lpuPlannerServiceService: LpuPlannerServiceService,
@@ -1421,14 +1477,16 @@ calculateScrollWidth(): void {
     private storageService: StorageService,
     private authService: AuthService,
     private modalService: NgbModal,
-    private mouDocumentsService: MouDocumentsService
-  ) { }
+    private mouDocumentsService: MouDocumentsService,
+  ) {}
 
   ngOnInit(): void {
     this.initForm();
     this.mouActivities = mouActivities;
     const stMain = document.getElementById('stMain');
-    if (stMain) stMain.innerHTML = '<span class="themeClr text-center"> MOU </span>Activity Action <span class="themeClr">Plan </span> <br/><span class="ms-3">   HOS /COS / Admin </span> ';
+    if (stMain)
+      stMain.innerHTML =
+        '<span class="themeClr text-center"> MOU </span>Activity Action <span class="themeClr">Plan </span> <br/><span class="ms-3">   HOS /COS / Admin </span> ';
 
     const imgLogo = document.getElementById('imgLogo');
     if (imgLogo) imgLogo.style.width = '164px';
@@ -1444,10 +1502,13 @@ calculateScrollWidth(): void {
   }
   getToken(id: any) {
     this.authService.loginTemp(id).subscribe({
-      next: data => {
+      next: (data) => {
         this.storageService.saveUser(data);
         var authToken = this.storageService.getUser();
-        if (this.storageService.isLoggedIn() == false && authToken == 'Token Expired') {
+        if (
+          this.storageService.isLoggedIn() == false &&
+          authToken == 'Token Expired'
+        ) {
           this.LoginFailed('Token Expired');
         }
         this.getAllPlannerSession();
@@ -1457,29 +1518,42 @@ calculateScrollWidth(): void {
         this.setupEmployeeControl();
         this.GetAllCategories();
       },
-      error: _err => {
+      error: (_err) => {
         this.LoginFailed(_err);
-      }
+      },
     });
   }
 
   getAllPlannerSession(): void {
     this.mouDocumentsService.GetAllOBPPlannerSessions().subscribe({
-      next: response => {
+      next: (response) => {
         if (response.item1) {
           this.allPlannerSessions = response.item1;
         }
-      }
+      },
     });
   }
 
   GetEmployeeDetails(): void {
     this.mouDocumentsService.GetEmployeeDetails().subscribe({
-      next: response => {
+      next: (response) => {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
-          this.EmployeeCode = response.item1[0].employeeCode; // // Hardcoded as per original
+          this.EmployeeCode = '11840'; // response.item1[0].employeeCode; // // Hardcoded as per original
+          const drcStaffUids = [
+            '31309',
+            '34350',
+            '16865',
+            '29364',
+            '31930',
+            '31352',
+            '30683',
+            '22648',
+            '11840',
+          ];
+          this.isDrcStaff = drcStaffUids.includes(this.EmployeeCode.toString());
+
           this.ContactNoX = response.item1[0].contactNo;
           this.Department = response.item1[0].department;
           this.DepartmentName = response.item1[0].departmentName;
@@ -1489,34 +1563,41 @@ calculateScrollWidth(): void {
           this.isLoginFailed = false;
 
           this.GetAllMouDocumentsForApprovals(this.EmployeeCode);
-          this.GetAllActivtiesAssigned(this.EmployeeCode, this.selectedPlannerSession);
+          this.GetAllActivtiesAssigned(
+            this.EmployeeCode,
+            this.selectedPlannerSession,
+          );
         } else {
           this.EmployeeDetails = [];
           this.showNoDataFoundMessage = true;
           this.isLoginFailed = true;
         }
       },
-      error: err => this.LoginFailed(err)
+      error: (err) => this.LoginFailed(err),
     });
   }
 
   reloadGrid1() {
-    this.selectedPlannerSession = "0";
-    this.searchTextTab1 = "";
+    this.selectedPlannerSession = '0';
+    this.searchTextTab1 = '';
     this.GetAllMouDocumentsForApprovals(this.EmployeeCode);
   }
 
   GetAllMouDocumentsForApprovals(IdCode: any): void {
     this.mouDocumentsService.GetMouDocumentToAssignActivity(IdCode).subscribe({
-      next: response => {
+      next: (response) => {
         if (response.item1.length > 0) {
           this.MouActivityDocumentsMaster = response.item1;
           // Apply Initial Sort
-          this.MouActivityDocumentsMaster.sort((a, b) => (b.id - a.id));
+          this.MouActivityDocumentsMaster.sort((a, b) => b.id - a.id);
           // Initialize filtered list
-          this.filteredMouActivityDocuments = [...this.MouActivityDocumentsMaster];
+          this.filteredMouActivityDocuments = [
+            ...this.MouActivityDocumentsMaster,
+          ];
 
-          this.SchoolDivisionInvolved = this.getDivisionNameById(this.MouActivityDocumentsMaster[0].schoolDivisionInvolved);
+          this.SchoolDivisionInvolved = this.getDivisionNameById(
+            this.MouActivityDocumentsMaster[0].schoolDivisionInvolved,
+          );
           this.setupColumns(this.MouActivityDocumentsMaster[0], 'tab1');
           this.loadingIndicator = false;
         } else {
@@ -1527,78 +1608,99 @@ calculateScrollWidth(): void {
         // Load Tab 3 Data after Tab 1
         this.GetOthersActivtiesAssigned('0', this.selectedPlannerSession);
       },
-      error: err => this.LoginFailed(err)
+      error: (err) => this.LoginFailed(err),
     });
   }
 
   reloadGrid2() {
-    this.selectedPlannerSession = "0";
-    this.searchTextTab2 = "";
+    this.selectedPlannerSession = '0';
+    this.searchTextTab2 = '';
     this.GetAllActivtiesAssigned(this.EmployeeCode, '0');
   }
   GetAllActivtiesAssigned(IdCode: any, sessionId: any): void {
     this.loadingIndicator = true;
-    this.mouDocumentsService.GetAllActivitiesAssignedwithSession(IdCode, sessionId).subscribe({
-      next: response => {
-        if (response.item1 && response.item1.length > 0) {
+    this.mouDocumentsService
+      .GetAllActivitiesAssignedwithSession(IdCode, sessionId)
+      .subscribe({
+        next: (response) => {
+          if (response.item1 && response.item1.length > 0) {
+            this.MouActivityAssignedMeMaster = response.item1;
+            this.filteredMouActivityAssignedMe = [
+              ...this.MouActivityAssignedMeMaster,
+            ];
 
-          this.MouActivityAssignedMeMaster = response.item1;
-          this.filteredMouActivityAssignedMe = [...this.MouActivityAssignedMeMaster];
-          this.filteredMouActivityAssignedMe = response.item1.filter((activity: any) => {
-            return activity.actionAssignedBy == this.EmployeeCode;
-          });
+            if (this.isDrcStaff) {
+              this.filteredMouActivityAssignedMe = response.item1; // Combine all for DRC staff
+            } else {
+              this.filteredMouActivityAssignedMe = response.item1.filter(
+                (activity: any) => {
+                  return activity.actionAssignedBy == this.EmployeeCode;
+                },
+              );
+            }
 
-          this.filteredMouActivityAssignedMe.sort((a, b) => b.id - a.id); // Assuming ID exists, mostly checks createdOn usually
-          this.setupColumns(this.MouActivityAssignedMeMaster[0], 'assigned');
-          this.showNoDataFoundMessage = false;
-        } else {
-          this.MouActivityAssignedMeMaster = [];
-          this.filteredMouActivityAssignedMe = [];
-          this.showNoDataFoundMessage = true;
-        }
-        setTimeout(() => { this.loadingIndicator = false; }, 1500);
-      },
-      error: err => {
-        this.loadingIndicator = false;
-        this.LoginFailed(err);
-      }
-    });
+            this.filteredMouActivityAssignedMe.sort((a, b) => b.id - a.id); // Assuming ID exists, mostly checks createdOn usually
+            this.setupColumns(this.MouActivityAssignedMeMaster[0], 'assigned');
+            this.showNoDataFoundMessage = false;
+          } else {
+            this.MouActivityAssignedMeMaster = [];
+            this.filteredMouActivityAssignedMe = [];
+            this.showNoDataFoundMessage = true;
+          }
+          setTimeout(() => {
+            this.loadingIndicator = false;
+          }, 1500);
+        },
+        error: (err) => {
+          this.loadingIndicator = false;
+          this.LoginFailed(err);
+        },
+      });
   }
 
   reloadGrid() {
-    this.selectedPlannerSession = "0";
-    this.searchTextTab3 = "";
+    this.selectedPlannerSession = '0';
+    this.searchTextTab3 = '';
     this.GetOthersActivtiesAssigned(this.EmployeeCode, '0');
   }
   // TAB 3 DATA
 
   GetOthersActivtiesAssigned(IdCode: any, sessionId: any): void {
     this.loadingIndicator = true;
-    this.mouDocumentsService.GetAllActivitiesAssignedwithSession('0', '0').subscribe({
-      next: response => {
-        if (response.item1 && response.item1.length > 0) {
-          this.MouActivityAssignedOthersMaster = response.item1;
+    this.mouDocumentsService
+      .GetAllActivitiesAssignedwithSession('0', '0')
+      .subscribe({
+        next: (response) => {
+          if (response.item1 && response.item1.length > 0) {
+            this.MouActivityAssignedOthersMaster = response.item1;
 
-          this.MouActivityAssignedOthersMaster = response.item1.filter((activity: any) => {
-            return activity.actionAssignedBy !== this.EmployeeCode;
-          });
+            this.MouActivityAssignedOthersMaster = response.item1.filter(
+              (activity: any) => {
+                return activity.actionAssignedBy !== this.EmployeeCode;
+              },
+            );
 
-          this.MouActivityAssignedOthersMaster.sort((a, b) => a.id - b.id);
-          this.setupColumns(this.MouActivityAssignedOthersMaster[0], 'assigned');
-          this.showNoDataFoundMessage = false;
-          this.filterTab3();
-        } else {
-          this.MouActivityAssignedOthersMaster = [];
-          this.filteredMouActivityAssignedOthers = [];
-          this.showNoDataFoundMessage = true;
-        }
-        setTimeout(() => { this.loadingIndicator = false; }, 1500);
-      },
-      error: err => {
-        this.loadingIndicator = false;
-        this.LoginFailed(err);
-      }
-    });
+            this.MouActivityAssignedOthersMaster.sort((a, b) => a.id - b.id);
+            this.setupColumns(
+              this.MouActivityAssignedOthersMaster[0],
+              'assigned',
+            );
+            this.showNoDataFoundMessage = false;
+            this.filterTab3();
+          } else {
+            this.MouActivityAssignedOthersMaster = [];
+            this.filteredMouActivityAssignedOthers = [];
+            this.showNoDataFoundMessage = true;
+          }
+          setTimeout(() => {
+            this.loadingIndicator = false;
+          }, 1500);
+        },
+        error: (err) => {
+          this.loadingIndicator = false;
+          this.LoginFailed(err);
+        },
+      });
   }
 
   GetAllActivities(): void {
@@ -1609,10 +1711,10 @@ calculateScrollWidth(): void {
 
   GetEmployeeData(): void {
     this.mouDocumentsService.GetEmployeeData().subscribe({
-      next: response => {
+      next: (response) => {
         this.EmployeeData = response.item1.length > 0 ? response.item1 : [];
       },
-      error: err => console.error(err)
+      error: (err) => console.error(err),
     });
   }
 
@@ -1638,7 +1740,7 @@ calculateScrollWidth(): void {
           }, 1500);
         }
       },
-      complete: () => this.clearFields()
+      complete: () => this.clearFields(),
     });
   }
 
@@ -1647,7 +1749,6 @@ calculateScrollWidth(): void {
     formData.append('RecordId', this.IdX);
     formData.append('Uid', this.AssignedToUid);
     formData.append('MouId', this.MouidX);
-
 
     this.mouDocumentsService.ActivityPlanUpdateUID(formData).subscribe({
       next: (data: any) => {
@@ -1661,7 +1762,6 @@ calculateScrollWidth(): void {
           }, 1500);
         } else {
           this.showAlert('Failed to Update UID!', 'error');
-
         }
       },
       error: (err) => {
@@ -1670,8 +1770,7 @@ calculateScrollWidth(): void {
       complete: () => {
         this.clearFields();
         this.reloadGrid2();
-      }
-
+      },
     });
   }
 
@@ -1680,7 +1779,7 @@ calculateScrollWidth(): void {
       return [...data];
     }
     const lowerQuery = query.trim().toLowerCase();
-    return data.filter(item => {
+    return data.filter((item) => {
       return Object.entries(item).some(([key, val]) => {
         if (val === null || val === undefined) return false;
         const valueString = String(val).toLowerCase();
@@ -1689,7 +1788,10 @@ calculateScrollWidth(): void {
         if (key === 'mouId') {
           const numericId = Number(val);
           if (!isNaN(numericId)) {
-            if (numericId.toString().includes(lowerQuery) || `mou/${numericId}`.toLowerCase().includes(lowerQuery)) {
+            if (
+              numericId.toString().includes(lowerQuery) ||
+              `mou/${numericId}`.toLowerCase().includes(lowerQuery)
+            ) {
               return true;
             }
           }
@@ -1700,11 +1802,17 @@ calculateScrollWidth(): void {
   }
 
   filterTab1() {
-    this.filteredMouActivityDocuments = this.genericSearch(this.MouActivityDocumentsMaster, this.searchTextTab1);
+    this.filteredMouActivityDocuments = this.genericSearch(
+      this.MouActivityDocumentsMaster,
+      this.searchTextTab1,
+    );
   }
 
   filterTab2() {
-    this.filteredMouActivityAssignedMe = this.genericSearch(this.MouActivityAssignedMeMaster, this.searchTextTab2);
+    this.filteredMouActivityAssignedMe = this.genericSearch(
+      this.MouActivityAssignedMeMaster,
+      this.searchTextTab2,
+    );
   }
 
   filterTab3() {
@@ -1714,7 +1822,10 @@ calculateScrollWidth(): void {
   setSessionId(event: any) {
     const selectedId = event.target.value;
     this.selectedPlannerSession = selectedId;
-    this.GetAllActivtiesAssigned(this.EmployeeCode, this.selectedPlannerSession);
+    this.GetAllActivtiesAssigned(
+      this.EmployeeCode,
+      this.selectedPlannerSession,
+    );
     this.GetOthersActivtiesAssigned('0', this.selectedPlannerSession);
   }
 
@@ -1723,13 +1834,30 @@ calculateScrollWidth(): void {
 
     const allKeys = Object.keys(dataRow);
     const exclusions = [
-      'newMouId', 'filePath', 'activityDetails', 'activityPerformed', 'mouStartDate',
-      'mouEndDate', 'mouStatus', 'approvedBy', 'createdBy', 'mouId', 'schoolDivisionInvolved',
-      'isApproved', 'approvalDate', 'disapprovalReason', 'uid', 'id', 'spocContactNo',
-      'createdOn', 'actionAssignedBy', 'sessionAcademicYear', 'mouTitle'
+      'newMouId',
+      'filePath',
+      'activityDetails',
+      'activityPerformed',
+      'mouStartDate',
+      'mouEndDate',
+      'mouStatus',
+      'approvedBy',
+      'createdBy',
+      'mouId',
+      'schoolDivisionInvolved',
+      'isApproved',
+      'approvalDate',
+      'disapprovalReason',
+      'uid',
+      'id',
+      'spocContactNo',
+      'createdOn',
+      'actionAssignedBy',
+      'sessionAcademicYear',
+      'mouTitle',
     ];
 
-    const filteredCols = allKeys.filter(key => !exclusions.includes(key));
+    const filteredCols = allKeys.filter((key) => !exclusions.includes(key));
 
     if (type === 'tab1') {
       this.columns = filteredCols;
@@ -1747,9 +1875,10 @@ calculateScrollWidth(): void {
   onInput() {
     const inputValue = (this.employeeControl.value || '').toLowerCase();
     if (inputValue) {
-      this.filteredEmployeesData = this.EmployeeData.filter(employee =>
-        employee.employeeName.toLowerCase().includes(inputValue) ||
-        employee.employeeCode.toLowerCase().includes(inputValue)
+      this.filteredEmployeesData = this.EmployeeData.filter(
+        (employee) =>
+          employee.employeeName.toLowerCase().includes(inputValue) ||
+          employee.employeeCode.toLowerCase().includes(inputValue),
       ).slice(0, 10);
     } else {
       this.filteredEmployeesData = [];
@@ -1761,7 +1890,9 @@ calculateScrollWidth(): void {
   selectEmployee(employee: Employee) {
     this.ResponsiblePerson = employee.employeeCode;
     this.AssignedToUid = employee.employeeCode;
-    this.employeeControl.setValue(`${employee.employeeName} (${employee.employeeCode})`);
+    this.employeeControl.setValue(
+      `${employee.employeeName} (${employee.employeeCode})`,
+    );
     this.filteredEmployeesData = [];
     this.showSuggestions = false;
     this.checkFormValidity();
@@ -1771,19 +1902,27 @@ calculateScrollWidth(): void {
   onKeydown(event: KeyboardEvent) {
     if (this.filteredEmployeesData.length > 0) {
       if (event.key === 'ArrowDown') {
-        this.activeSuggestionIndex = (this.activeSuggestionIndex + 1) % this.filteredEmployeesData.length;
+        this.activeSuggestionIndex =
+          (this.activeSuggestionIndex + 1) % this.filteredEmployeesData.length;
       } else if (event.key === 'ArrowUp') {
-        this.activeSuggestionIndex = (this.activeSuggestionIndex - 1 + this.filteredEmployeesData.length) % this.filteredEmployeesData.length;
+        this.activeSuggestionIndex =
+          (this.activeSuggestionIndex - 1 + this.filteredEmployeesData.length) %
+          this.filteredEmployeesData.length;
       } else if (event.key === 'Enter') {
-        if (this.activeSuggestionIndex >= 0 && this.activeSuggestionIndex < this.filteredEmployeesData.length) {
-          this.selectEmployee(this.filteredEmployeesData[this.activeSuggestionIndex]);
+        if (
+          this.activeSuggestionIndex >= 0 &&
+          this.activeSuggestionIndex < this.filteredEmployeesData.length
+        ) {
+          this.selectEmployee(
+            this.filteredEmployeesData[this.activeSuggestionIndex],
+          );
         }
       }
     }
   }
 
   hideSuggestions() {
-    setTimeout(() => this.showSuggestions = false, 200);
+    setTimeout(() => (this.showSuggestions = false), 200);
   }
 
   checkFormValidity(): boolean {
@@ -1821,47 +1960,58 @@ calculateScrollWidth(): void {
     this.EndDateX = rows['endDate'];
     this.ActivityDetailsX = rows['activityDetails'];
     this.RemarksX = rows['remarks'];
-    this.modalService.open(this.AssignNewUIDModal, { size: 'lg' }).result.then(() => window.location.reload()).catch(() => { });
+    this.modalService
+      .open(this.AssignNewUIDModal, { size: 'lg' })
+      .result.then(() => window.location.reload())
+      .catch(() => {});
   }
 
   ViewAllActionTaken(rows: any) {
     this.MouidX = rows['mouId'];
     this.GetAllActionDetails(this.MouidX);
-    this.modalService.open(this.viewMouActivityActionTakenModal, { size: 'lg' }).result.then((result) => {
-      window.location.reload();
-    }).catch((res) => { });
+    this.modalService
+      .open(this.viewMouActivityActionTakenModal, { size: 'lg' })
+      .result.then((result) => {
+        window.location.reload();
+      })
+      .catch((res) => {});
   }
 
   GetAllActionDetails(id: any) {
-    this.mouDocumentsService.GetMouActivityActionTakenDetails(id).subscribe((response) => {
-      if (response.item1.length > 0) {
-        this.dataSource = response.item1;
-        this.allMouActionTakenDetails = response.item1;
-      } else {
-        this.allMouActionTakenDetails = [];
-      }
-    });
+    this.mouDocumentsService
+      .GetMouActivityActionTakenDetails(id)
+      .subscribe((response) => {
+        if (response.item1.length > 0) {
+          this.dataSource = response.item1;
+          this.allMouActionTakenDetails = response.item1;
+        } else {
+          this.allMouActionTakenDetails = [];
+        }
+      });
   }
   openActivityModal(row: any): void {
     this.selectedRow = row;
-    this.modalService.open(this.activityModal, { size: 'lg' }).result.then((result) => {
-    });
+    this.modalService
+      .open(this.activityModal, { size: 'lg' })
+      .result.then((result) => {});
   }
 
   exportToExcel(data: any[], type: 'tab2' | 'tab3'): void {
     const fileName = 'Mou Plan Report.xlsx';
-    const exportedData = data.map(item => ({
+    const exportedData = data.map((item) => ({
       NewMOUId: item.newMouId ?? 'N/A',
-      OldMOUId: "MOU/" + item.mouId,
+      OldMOUId: 'MOU/' + item.mouId,
       'Name of Mou Organisation': item.mouTitle,
       'MOU Activity Assigned to Faculty UID': item.uid,
       'MOU Activity Assigned BY ': item.actionAssignedBy,
       'Assigned Date': item.createdOn,
       'Activity Start Date': item.startDate,
       'Activity End Date': item.endDate,
-      'Remarks': item.remarks,
-      'Details of Allocated MOU Activity': this.removeNumberPrefix(item.activityDetails),
-      'Session': item.sessionAcademicYear,
+      Remarks: item.remarks,
+      'Details of Allocated MOU Activity': this.removeNumberPrefix(
+        item.activityDetails,
+      ),
+      Session: item.sessionAcademicYear,
     }));
 
     const ws = XLSX.utils.json_to_sheet(exportedData);
@@ -1873,14 +2023,17 @@ calculateScrollWidth(): void {
   exportTab1(): void {
     this.exportToExcelLegacy(this.MouActivityDocumentsMaster);
   }
-  exportTab2(): void { this.exportToExcel(this.filteredMouActivityAssignedMe, 'tab2'); }
-  exportTab3(): void { this.exportToExcel(this.filteredMouActivityAssignedOthers, 'tab3'); }
+  exportTab2(): void {
+    this.exportToExcel(this.filteredMouActivityAssignedMe, 'tab2');
+  }
+  exportTab3(): void {
+    this.exportToExcel(this.filteredMouActivityAssignedOthers, 'tab3');
+  }
 
   exportToExcelLegacy(data: any[]): void {
-
-    const exportedData = data.map(item => ({
+    const exportedData = data.map((item) => ({
       NewMOUId: item.newMouId ?? 'N/A',
-      OldMOUId: "MOU/" + item.mouId,
+      OldMOUId: 'MOU/' + item.mouId,
       MouStatus: item.mouStatus,
       'Name of Mou Organisation': item.mouTitle,
       'Uploaded By': item.createdBy ?? 'N/A',
@@ -1889,8 +2042,9 @@ calculateScrollWidth(): void {
       'SPOC Contact': item.spocContactNo ?? 'N/A',
       'Action Status': item.isApproved == 1 ? 'Approved' : 'Pending',
       'Approval Date': item.approvalDate ?? 'N/A',
-      'Start': item.mouStartDate, 'End': item.mouEndDate,
-      'Link': item.filePath
+      Start: item.mouStartDate,
+      End: item.mouEndDate,
+      Link: item.filePath,
     }));
     const ws = XLSX.utils.json_to_sheet(exportedData);
     const wb = XLSX.utils.book_new();
@@ -1900,13 +2054,23 @@ calculateScrollWidth(): void {
 
   LoginFailed(_NewError: any) {
     this.isLoginFailed = true;
-    swal.fire({ title: 'Login Failed', text: 'Login details are Invalid!', icon: 'warning' });
+    swal.fire({
+      title: 'Login Failed',
+      text: 'Login details are Invalid!',
+      icon: 'warning',
+    });
     const element = document.getElementById('ActivityPage');
     if (element) element.hidden = true;
   }
 
-  private showAlert(title: string, icon: 'success' | 'error', reload: boolean = false) {
-    swal.fire({ title, icon }).then(() => { if (reload) window.location.reload(); });
+  private showAlert(
+    title: string,
+    icon: 'success' | 'error',
+    reload: boolean = false,
+  ) {
+    swal.fire({ title, icon }).then(() => {
+      if (reload) window.location.reload();
+    });
   }
 
   removeNumberPrefix(activityDetails: string): string {
@@ -1918,22 +2082,29 @@ calculateScrollWidth(): void {
   //   return division ? division.schoolDivision : `ID ${id} not found`;
   // }
   getDivisionNameById(id: any): string {
-
     if (!id) {
       return '';
     }
 
     const division = this.allSchoolDivisions.find(
-      x => x.id.toString() === id.toString().trim()
+      (x) => x.id.toString() === id.toString().trim(),
     );
 
     return division ? division.schoolDivision : '';
   }
 
-  onSelectFile(a: any) { window.open(a.filePath, '_blank'); }
-  onSelectFileX(a: any) { window.open(this.ServerUrl + a.filePath, '_blank'); }
-  onSelectActivityDocument(a: any) { window.open(a.actionTakenDocument, '_blank'); }
-  onActivitySelected(event: any) { this.selectedActivityId = event.target.value; }
+  onSelectFile(a: any) {
+    window.open(a.filePath, '_blank');
+  }
+  onSelectFileX(a: any) {
+    window.open(this.ServerUrl + a.filePath, '_blank');
+  }
+  onSelectActivityDocument(a: any) {
+    window.open(a.actionTakenDocument, '_blank');
+  }
+  onActivitySelected(event: any) {
+    this.selectedActivityId = event.target.value;
+  }
 
   partnerNamesMap: { [key: number]: string } = {};
   partnerName: string | undefined;
@@ -1945,7 +2116,12 @@ calculateScrollWidth(): void {
   reminderSending: { [key: string]: boolean } = {};
 
   onDownloadFile(remoteUrl: string): void {
-    swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
+    swal.fire({
+      title: 'Downloading...',
+      didOpen: () => {
+        swal.showLoading(null);
+      },
+    });
 
     this.mouDocumentsService.downloadMOUFile(remoteUrl).subscribe({
       next: (blob: Blob) => {
@@ -1971,47 +2147,56 @@ calculateScrollWidth(): void {
         } else {
           swal.fire('Error', 'Could not connect to the server', 'error');
         }
-      }
+      },
     });
   }
 
   ReminderEmailTab2(rows: any) {
-
     if (!rows) {
       console.error('Rows data is null or undefined');
       return;
     }
 
+    this.selectedRow = rows; // Store the row for later use
+    this.employeeControl.setValue('');
+    this.filteredEmployeesData = [];
+    this.showSuggestions = false;
+    this.AssignedToUid = '';
+
+    this.modalService.open(this.SendReminderModal, {
+      size: 'lg',
+      backdrop: 'static',
+    });
+  }
+
+  ConfirmSendReminder() {
+    const rows = this.selectedRow;
     const key = String(rows?.id ?? rows?.mouId ?? '');
 
+    if (!this.AssignedToUid) {
+      swal.fire('Error', 'Please select a UID to send the reminder', 'error');
+      return;
+    }
+
     // Prevent duplicate sends / respect previous success
-    if (this.reminderSending[key]) {
-      return;
-    }
-    if (this.reminderDisabled[key]) {
-      // already sent successfully earlier
-      return;
-    }
+    if (this.reminderSending[key]) return;
+    if (this.reminderDisabled[key]) return;
 
     this.reminderSending[key] = true;
 
     this.MouidX = rows?.mouId ?? '';
-    const uid = rows?.uid ?? '';
     const AssignedBy = rows?.actionAssignedBy ?? '';
 
     this.MouTitleX = rows?.mouTitle ?? '';
-
-    // Correct property names
     this.StartDateX = rows?.startDate ?? '';
     this.EndDateX = rows?.endDate ?? '';
-
     this.ActivityDetailsX = rows?.activityDetails ?? '';
     this.RemarksX = rows?.remarks ?? '';
-    const formData = new FormData();
 
+    const formData = new FormData();
     formData.append('MouId', this.MouidX);
-    formData.append('Id', rows.id); // Ensure MouId is included if needed by API
-    formData.append('Uid', uid);
+    formData.append('Id', rows.id);
+    formData.append('Uid', this.AssignedToUid); // Use the selected UID
     formData.append('Remarks', this.RemarksX);
     formData.append('StartDate', this.StartDateX);
     formData.append('EndDate', this.EndDateX);
@@ -2020,11 +2205,16 @@ calculateScrollWidth(): void {
     formData.append('ActionAssignedBy', AssignedBy);
     formData.append('ActivityDetails', this.ActivityDetailsX);
 
-    // });
+    const emailSubject =
+      'Reminder: Pending MoU Activities for Academic Year 2026-2027';
+    const emailBody = `Dear Sir/Madam, this is a gentle reminder that certain MoU-related activities are still pending for action in your account. You are kindly requested to review and complete the necessary action at the earliest to clear the pendency. Kindly upload the MoU-related activities for the academic year 2026-2027 by using path: MoU -> MoU Activity -> Take Action and complete the required action at the earliest. For any further queries or assistance, you are requested to visit the Department of Research Collaboration, Block 38-207, Cabin No. 1 or 4 or 8.`;
+    // Dear Sir/Madam, This is a gentle reminder that certain MoU-related activities are still pending for action in your account. You are kindly requested to review and complete the necessary action at the earliest to clear the pendency. Kindly upload the Mou-related activities for the academic year 2026-24 by using path Mou-> Mou Activity -> Take action and complete the required action. For any queries or assistance, your are requested to visit the Department of Research Collaboration, Block 38-207 , Cabin no -1 or 4 or 8.
+    formData.append('EmailSubject', emailSubject);
+    formData.append('EmailBody', emailBody);
+    this.modalService.dismissAll();
 
     this.mouDocumentsService.MouReminderEmail(formData).subscribe({
       next: (data: any) => {
-
         const result = data?.item1?.[0]?.msg;
         if (result === 'Successfully' || result === 'success') {
           // mark disabled for this row on success
@@ -2038,7 +2228,6 @@ calculateScrollWidth(): void {
           this.reminderDisabled[key] = false;
           this.showAlert('Sending Email Failed', 'error');
         }
-
       },
       error: (err) => {
         console.error('API Error:', err);
@@ -2051,12 +2240,11 @@ calculateScrollWidth(): void {
         this.reminderSending[key] = false;
         this.clearFields();
         this.reloadGrid2();
-      }
+      },
     });
   }
 
   ReminderEmailTab1(rows: any) {
-
     if (!rows) {
       console.error('Rows data is null or undefined');
       return;
@@ -2088,18 +2276,16 @@ calculateScrollWidth(): void {
 
     this.mouDocumentsService.MouReminderEmail(formData).subscribe({
       next: (data: any) => {
-
         if (data?.item1?.[0]?.msg === 'success') {
           this.showAlert('Reminder Email Sent Successfully!', 'success');
         } else {
         }
-
       },
       error: (err) => {
         console.error('API Error:', err);
         this.showAlert('Something went wrong', 'error');
       },
-      complete: () => this.clearFields()
+      complete: () => this.clearFields(),
     });
   }
 }

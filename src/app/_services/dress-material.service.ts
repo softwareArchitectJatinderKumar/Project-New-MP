@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { StorageService } from 'src/app/_services/storage.service';
 
-// const AUTH_API = 'https://projectsapi.lpu.in/';
-const AUTH_API = 'https://localhost:44362/';
+const AUTH_API = 'https://projectsapi.lpu.in/';
+// const AUTH_API = 'https://localhost:44362/';
 // const AUTH_API_LOCAL = 'https://localhost:44362/';
 
 @Injectable({
@@ -43,6 +43,7 @@ export class DressMaterialService {
   issueMaterial(material: string, quantity: number, requestPerson: string): Observable<any> {
     return this.callDressMaterialApi({
       Action: 'Add',
+      UserType:'User',
       Material: material,
       Quantity: quantity,
       RequestPerson: requestPerson
@@ -63,7 +64,8 @@ export class DressMaterialService {
    */
   getMyMaterials(): Observable<any> {
     return this.callDressMaterialApi({
-      Action: 'View'
+      Action: 'View',
+      Usertype: 'User'
     });
   }
 

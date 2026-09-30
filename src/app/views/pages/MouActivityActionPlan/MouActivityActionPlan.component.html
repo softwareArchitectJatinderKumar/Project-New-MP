@@ -28,10 +28,9 @@
         (click)="reloadGrid1()" data-bs-target="#AssignActivities" type="button" role="tab">Assign Activity</button>
 
       <button class="btn btn-lg ms-5" id="MyAllAssignActivities-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
-        (click)="reloadGrid2()" data-bs-target="#MyAllAssignActivities" type="button" role="tab">Activities Assigned (by
-        Me)</button>
+        (click)="reloadGrid2()" data-bs-target="#MyAllAssignActivities" type="button" role="tab">{{ isDrcStaff ? 'Activities Assigned' : 'Activities Assigned (by Me)' }}</button>
 
-      <button class="btn btn-lg ms-5" id="OthersAllAssignActivities-tab" data-bs-toggle="tab"
+      <button *ngIf="!isDrcStaff" class="btn btn-lg ms-5" id="OthersAllAssignActivities-tab" data-bs-toggle="tab"
         style="padding: .95rem 8rem;" (click)="reloadGrid()" data-bs-target="#OthersAllAssignActivities" type="button"
         role="tab">Activities Assigned (by Others)</button>
     </div>
@@ -147,7 +146,7 @@
                     </ng-template>
                   </ngx-datatable-column>
 
-                  
+
                      <ngx-datatable-column name=" Mou Category " [sortable]="false" prop="Id">
                         <ng-template let-row="row" ngx-datatable-cell-template>
                           <ng-container *ngIf="row.mouCategory != null">
@@ -156,7 +155,7 @@
                         </ng-template>
                       </ngx-datatable-column>
 
-                      
+
                   <ngx-datatable-column name="School Division " prop="schoolDivisionInvolved">
                     <ng-template let-row="row" let-value="value" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                       <ng-container *ngIf="row.mouStartDate != null; ">
@@ -327,7 +326,7 @@
                   </select>
                 </div>
                 <div class="col-sm-2">
-                  <!-- <input [(ngModel)]="searchTextTab2" (keyup)="filterTab2()" type="text" class="form-control"                   
+                  <!-- <input [(ngModel)]="searchTextTab2" (keyup)="filterTab2()" type="text" class="form-control"
                     placeholder="Search" /> -->
                   <input [(ngModel)]="searchTextTab2" (keyup)="applyFiltersTab2()" class="form-control"
                     placeholder="Search">
@@ -404,7 +403,7 @@
                             <span class="fw-bold ps-2"> {{ row.mouCategory }}</span>
                           </ng-container>
                         </ng-template>
-                      </ngx-datatable-column> 
+                      </ngx-datatable-column>
 
 
                       <ngx-datatable-column name="Old MOU Id" [sortable]="false" prop="Id">
@@ -651,7 +650,7 @@
                           </ng-container>
                         </ng-template>
                       </ngx-datatable-column>
-                      
+
                      <ngx-datatable-column name=" Mou Category " [sortable]="false" prop="Id">
                         <ng-template let-row="row" ngx-datatable-cell-template>
                           <ng-container *ngIf="row.mouCategory != null">
@@ -659,7 +658,7 @@
                           </ng-container>
                         </ng-template>
                       </ngx-datatable-column>
-                      
+
                       <ngx-datatable-column name="Mou Title" prop="mouTitle" [width]="200"></ngx-datatable-column>
 
                       <ngx-datatable-column name="Assigned To" prop="uid" [width]="120">
@@ -1297,7 +1296,28 @@
       </div>
 
     </div>
-
   </div>
+</ng-template>
 
+<ng-template #SendReminderModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Send Reminder Email</h5>
+    <button type="button" class="btn-close" (click)="modal.close()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="mb-4 position-relative">
+      <label>Select SPOC / Person UID</label>
+      <input type="text" class="form-control" [formControl]="employeeControl" (input)="onInput2()"
+        (focus)="showSuggestions=true" (blur)="hideSuggestions()">
+      <div *ngIf="showSuggestions && filteredEmployeesData.length" class="suggestions-list border bg-white">
+        <div *ngFor="let emp of filteredEmployeesData; let i=index" class="p-2 cursor-pointer"
+          [class.bg-light]="i===activeSuggestionIndex" (mousedown)="selectEmployee2(emp)">
+          {{emp.employeeName}} ({{emp.employeeCode}})
+        </div>
+      </div>
+    </div>
+    <div class="mt-4">
+      <button class="btn btn-danger w-100" (click)="ConfirmSendReminder()">Send Reminder Email</button>
+    </div>
+  </div>
 </ng-template>

@@ -135,10 +135,13 @@
                                                                     [scrollbarH]="true" [scrollbarV]="false"> -->
 
                                         <ngx-datatable-column *ngIf="statusFilter=='expired'" name="Renew MOU"
-                                            [width]="130" [sortable]="false" prop="Id">
+                                            [width]="200" [sortable]="false" prop="Id">
                                             <ng-template let-row="row" ngx-datatable-cell-template>
-                                                <a class="btn btn-success me-4" (click)="openRenewModal(row)">
-                                                    <i class="bi bi-arrow-repeat"></i>
+                                                <a class="btn btn-success me-2" (click)="openRenewModal(row)" title="Renew">
+                                                    <i class="bi bi-arrow-repeat"></i> Renew
+                                                </a>
+                                                <a class="btn btn-warning" (click)="openReminderModal(row)" title="Send Reminder">
+                                                    <i class="bi bi-envelope"></i> Reminder
                                                 </a>
                                             </ng-template>
                                         </ngx-datatable-column>
@@ -368,7 +371,7 @@
                                         [footerHeight]="50" [limit]="15" [headerHeight]="87" [rowHeight]="'auto'"
                                         [scrollbarH]="true" [scrollbarV]="false">
 
-                          
+
 
                                         <ngx-datatable-column name="New MOU Id" [sortable]="false" prop="newMouId">
                                             <ng-template let-row="row" ngx-datatable-cell-template>
@@ -743,8 +746,32 @@
             </ngx-datatable-column>
         </ngx-datatable>
     </div>
-
-    <div class="modal-footer justify-content-center border-0 pb-4">
-        <button type="button" class="btn btn-secondary px-4" (click)="modal.dismiss()">Close</button>
-    </div>
 </ng-template>
+
+<ng-template #SendReminderModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Send Reminder Email</h5>
+    <button type="button" class="btn-close" (click)="modal.close()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="mb-4 position-relative">
+      <label>Select SPOC / Person UID</label>
+      <input type="text" class="form-control" [formControl]="employeeControl" (input)="onInputReminder()"
+        (focus)="showSuggestions=true" (blur)="hideSuggestionsReminder()">
+      <div *ngIf="showSuggestions && filteredEmployeesData.length" class="suggestions-list border bg-white">
+        <div *ngFor="let emp of filteredEmployeesData; let i=index" class="p-2 cursor-pointer"
+          [class.bg-light]="i===activeSuggestionIndexReminder" (mousedown)="selectEmployeeReminder(emp)">
+          {{emp.employeeName}} ({{emp.employeeCode}})
+        </div>
+      </div>
+    </div>
+    <div class="mt-4">
+      <button class="btn btn-danger w-100" (click)="ConfirmSendReminder()">Send Reminder Email</button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- <div class="modal-footer justify-content-center border-0 pb-4">
+  <button type="button" class="btn btn-secondary px-4" (click)="modal.dismiss()">Close</button>
+</div>
+</ng-template> -->

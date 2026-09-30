@@ -1,0 +1,47 @@
+# Daily Activity Tasklist - September 30, 2026
+
+## MultiProject - MoU Interfaces & Integrations
+
+1. Analyzed PDF requirement documents for MoU interfaces.
+2. Attempted creation of cloned components for `MouActivityActionPlan` and `MouDocumentsReport`.
+3. Proceeded with version-controlled UI changes on existing `MouActivityActionPlan` and `mou-documents-report` components directly.
+4. Cleaned up duplicate autocomplete logic in `mou-documents-report.component.ts`.
+5. Implemented dynamic tab logic in `MouActivityActionPlan` for "Activities Assigned by Me/Others".
+6. Injected `#SendReminderModal` in the `MouActivityActionPlan` template.
+7. Injected `#SendReminderModal` in the `mou-documents-report` template.
+8. Added "Send Reminder" button to the `ngx-datatable` for Pending MoU Activities.
+9. Added "Send Reminder" button to the `ngx-datatable` for MoU Approvals (Expired MoUs).
+10. Wired `openReminderModal()` to handle selected row data in both components.
+11. Created independent autocomplete UID tracking logic (`onInputReminder`, `selectEmployeeReminder`, `hideSuggestionsReminder`) to prevent form field conflicts.
+12. Updated template bindings for UID searching in the Reminder Modal to use the new independent functions.
+13. Debugged and resolved an issue where the UID selection dropdown wasn't rendering data upon typing.
+14. Debugged a UI issue where the Reminder API returned success, but the component showed a "Failed to send reminder" popup.
+15. Fixed the API parsing logic to deeply check `data?.item1?.[0]?.msg?.toLowerCase() === 'successfully'`.
+16. Added local state (`reminderSending`, `reminderDisabled`) to prevent double-submissions on the Send Reminder button.
+17. Integrated the email draft for "Expired Memorandum of Understanding" directly into `FormData` payload.
+18. Integrated the email draft for "Pending MoU Activities" into `FormData` payload.
+19. Realized the backend's `MouSendPendingReminderEmail` API ignores custom strings and uses its own hardcoded template.
+20. Injected generic keys (`Subject`, `Body`, `Message`, `EmailSubject`, `EmailBody`) into the API request to try overriding the backend template.
+21. Traced the backend API codebase (`BackendTemplate`) for `MouSendPendingReminderEmail` to verify hardcoding behavior.
+22. Scanned `mou-documents.service.ts` for all other available email endpoints.
+23. Updated the DRC Staff hardcoded UID lists to ensure permissions were evaluated properly.
+24. Reviewed logic for `GetEmployeeDetails` and applied proper condition checking for `isDrcStaff`.
+25. Addressed a final correction from the user to ensure the "Pending MoU Activities" text draft was actively used in the `MouDocumentsReportComponent` instead of the Activity Plan component.
+26. Transcribed text from user-uploaded images to guarantee exact string matching for email drafts.
+27. Cleaned up template whitespace and layout structure around the updated datatable buttons.
+28. Addressed TypeScript compilation errors caused by mismatched property names in the component and template.
+29. Removed initial experimental clones per user's cleanup instructions.
+
+## Previous Project - Admin Dashboard UI Fixes
+
+30. Inspected layout alignment bugs on the main Admin Dashboard sidebar.
+31. Refactored responsive CSS breakpoints to handle mobile and tablet dashboard views cleanly.
+32. Updated primary color schemes and CSS tokens to match new branding requirements.
+33. Debugged and resolved JavaScript console errors triggered by undefined widget references.
+34. Optimized data fetching mechanisms for the primary dashboard analytics charts.
+35. Implemented standard loading spinners for all asynchronous grid data loads.
+36. Fixed a bug where dropdown menus were clipping underneath the navigation bar context.
+37. Corrected the "active" state CSS targeting for sidebar navigation links.
+38. Refreshed iconography across the dashboard administrative panels.
+39. Stripped redundant utility classes from the main stylesheet to improve performance.
+40. Verified accessibility standards (contrast ratios, aria-labels) across updated dashboard widgets.

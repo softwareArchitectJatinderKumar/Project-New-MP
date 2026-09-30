@@ -1,5 +1,17 @@
-import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  UntypedFormBuilder,
+  Validators,
+} from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute } from '@angular/router';
 import * as XLSX from 'xlsx';
@@ -23,15 +35,17 @@ interface Employee {
 @Component({
   selector: 'app-mou-documents-report',
   templateUrl: './mou-documents-report.component.html',
-  styleUrls: ['./mou-documents-report.component.scss']
+  styleUrls: ['./mou-documents-report.component.scss'],
 })
 export class MouDocumentsReportComponent implements OnInit {
-
   // ---------------------------------------------------------------------
   // View refs / template refs
   // ---------------------------------------------------------------------
-  @ViewChild('ChangeSchoolDivisionModal') ChangeSchoolDivisionModal: TemplateRef<any>;
-  @ViewChild('ViewRenewedMouDetailsModal') ViewRenewedMouDetailsModal: TemplateRef<any>;
+  @ViewChild('ChangeSchoolDivisionModal')
+  ChangeSchoolDivisionModal: TemplateRef<any>;
+  @ViewChild('ViewRenewedMouDetailsModal')
+  ViewRenewedMouDetailsModal: TemplateRef<any>;
+  @ViewChild('SendReminderModal') SendReminderModal!: TemplateRef<any>;
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   ColumnMode = ColumnMode;
@@ -55,12 +69,12 @@ export class MouDocumentsReportComponent implements OnInit {
   }
 
   applyRenewedFilters(): void {
-    let filtered = this.MouDocumentDetails.filter(item => {
+    let filtered = this.MouDocumentDetails.filter((item) => {
       return item.hasRenewal === true || item.hasRenewal === 'true';
     });
 
     if (this.selectedSchoolDivision2 && this.selectedSchoolDivision2 !== '0') {
-      filtered = filtered.filter(item => {
+      filtered = filtered.filter((item) => {
         if (!item.schoolDivisionInvolved) return false;
         return item.schoolDivisionInvolved
           .split(',')
@@ -70,21 +84,28 @@ export class MouDocumentsReportComponent implements OnInit {
     }
 
     if (this.selectedMouCategory2 && this.selectedMouCategory2 !== '0') {
-      filtered = filtered.filter(item => {
-        return item.mouCategory === this.selectedMouCategory2 || item.category === this.selectedMouCategory2;
+      filtered = filtered.filter((item) => {
+        return (
+          item.mouCategory === this.selectedMouCategory2 ||
+          item.category === this.selectedMouCategory2
+        );
       });
     }
 
     const query = (this.renewedSearchQuery || '').trim().toLowerCase();
     if (query) {
-      filtered = filtered.filter(item => {
+      filtered = filtered.filter((item) => {
         return Object.entries(item).some(([key, val]) => {
           if (val !== null && val !== undefined) {
             const valueString = String(val).toLowerCase();
 
             if (key === 'id') {
               const numericId = Number(val);
-              if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
+              if (
+                !isNaN(numericId) &&
+                (numericId.toString().includes(query) ||
+                  `mou/${numericId}`.includes(query))
+              ) {
                 return true;
               }
             }
@@ -122,7 +143,7 @@ export class MouDocumentsReportComponent implements OnInit {
       lpuSpocUid: 'LPU SPOC UID',
       remarks: 'Renew Remarks',
       mouid: 'Original Mouid',
-      lpuSpocEmail: 'LPU SPOC Email'
+      lpuSpocEmail: 'LPU SPOC Email',
     };
     return fieldNames[fieldName] || fieldName;
   }
@@ -141,7 +162,7 @@ export class MouDocumentsReportComponent implements OnInit {
       lpuSpocName: ['', [Validators.required]],
       lpuSpocUid: ['', [Validators.required]],
       lpuSpocEmail: ['', [Validators.required, Validators.email]],
-      remarks: ['', [Validators.required]]
+      remarks: ['', [Validators.required]],
     });
   }
 
@@ -160,10 +181,10 @@ export class MouDocumentsReportComponent implements OnInit {
 
   GetEmployeeData(): void {
     this.mouDocumentsService.GetEmployeeData().subscribe({
-      next: response => {
+      next: (response) => {
         this.EmployeeData = response.item1.length > 0 ? response.item1 : [];
       },
-      error: err => console.error(err)
+      error: (err) => console.error(err),
     });
   }
 
@@ -171,9 +192,10 @@ export class MouDocumentsReportComponent implements OnInit {
     const query = this.mouForm.get('lpuSpocName')?.value?.toLowerCase();
 
     if (query && query.length >= 2) {
-      this.filteredEmployeesData = this.EmployeeData.filter(emp =>
-        emp.employeeName.toLowerCase().includes(query) ||
-        emp.employeeCode.toLowerCase().includes(query)
+      this.filteredEmployeesData = this.EmployeeData.filter(
+        (emp) =>
+          emp.employeeName.toLowerCase().includes(query) ||
+          emp.employeeCode.toLowerCase().includes(query),
       ).slice(0, 10);
 
       this.showSuggestions = true;
@@ -189,10 +211,12 @@ export class MouDocumentsReportComponent implements OnInit {
 
     this.mouForm.patchValue({
       lpuSpocName: employee.employeeName,
-      lpuSpocUid: employee.employeeCode
+      lpuSpocUid: employee.employeeCode,
     });
 
-    this.employeeControl.setValue(`${employee.employeeName} (${employee.employeeCode})`);
+    this.employeeControl.setValue(
+      `${employee.employeeName} (${employee.employeeCode})`,
+    );
 
     this.filteredEmployeesData = [];
     this.showSuggestions = false;
@@ -200,7 +224,7 @@ export class MouDocumentsReportComponent implements OnInit {
   }
 
   hideSuggestions() {
-    setTimeout(() => this.showSuggestions = false, 200);
+    setTimeout(() => (this.showSuggestions = false), 200);
   }
 
   checkUIDValidity(): void {
@@ -219,7 +243,7 @@ export class MouDocumentsReportComponent implements OnInit {
     const allowedTypes = [
       'application/pdf',
       'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     ];
     if (!allowedTypes.includes(file.type)) {
       this.renewalFileError = 'Only PDF and Word documents are allowed.';
@@ -275,7 +299,7 @@ export class MouDocumentsReportComponent implements OnInit {
 
   GetAllCategories(): void {
     this.mouDocumentsService.GetAllCategories().subscribe({
-      next: response => {
+      next: (response) => {
         if (response.item1 && response.item1.length > 0) {
           this.mouCategories = response.item1.map((x: any) => x.items ?? x);
         } else {
@@ -284,7 +308,9 @@ export class MouDocumentsReportComponent implements OnInit {
           this.isLoginFailed = true;
         }
       },
-      error: err => { this.LoginFailed(err); }
+      error: (err) => {
+        this.LoginFailed(err);
+      },
     });
   }
 
@@ -320,12 +346,16 @@ export class MouDocumentsReportComponent implements OnInit {
     private authService: AuthService,
     public formBuilder: UntypedFormBuilder,
     private route: ActivatedRoute,
-    private fb: FormBuilder
-  ) { this.initForm(); }
+    private fb: FormBuilder,
+  ) {
+    this.initForm();
+  }
 
   ngOnInit(): void {
-    (<HTMLInputElement>document.getElementById('stMain')).innerHTML = '<span class="themeClr">MOU </span> Document <span class="themeClr">Approvals</span>';
-    (<HTMLInputElement>document.getElementById('imgLogo')).style.width = '164px';
+    (<HTMLInputElement>document.getElementById('stMain')).innerHTML =
+      '<span class="themeClr">MOU </span> Document <span class="themeClr">Approvals</span>';
+    (<HTMLInputElement>document.getElementById('imgLogo')).style.width =
+      '164px';
     this.serverUrl = 'https://files.lpu.in/umsweb/MOUDocuments/'; //Placements
     this.loadingIndicator = false;
     const loginName = this.route.snapshot.params['loginName'];
@@ -339,16 +369,16 @@ export class MouDocumentsReportComponent implements OnInit {
 
   getToken(id: any) {
     this.authService.loginTemp(id).subscribe({
-      next: data => {
+      next: (data) => {
         this.storageService.saveUser(data);
         this.GetAllUploadsDetails();
         this.GetEmployeeDetails();
         this.GetEmployeeData();
         this.GetAllCategories();
       },
-      error: err => {
+      error: (err) => {
         this.LoginFailed(err);
-      }
+      },
     });
   }
 
@@ -366,7 +396,12 @@ export class MouDocumentsReportComponent implements OnInit {
   }
 
   onDownloadFile(remoteUrl: string): void {
-    swal.fire({ title: 'Downloading...', didOpen: () => { swal.showLoading(null); } });
+    swal.fire({
+      title: 'Downloading...',
+      didOpen: () => {
+        swal.showLoading(null);
+      },
+    });
 
     this.mouDocumentsService.downloadMOUFile(remoteUrl).subscribe({
       next: (blob: Blob) => {
@@ -392,13 +427,13 @@ export class MouDocumentsReportComponent implements OnInit {
         } else {
           swal.fire('Error', 'Could not connect to the server', 'error');
         }
-      }
+      },
     });
   }
 
   GetEmployeeDetails(): void {
     this.mouDocumentsService.GetEmployeeDetails().subscribe({
-      next: response => {
+      next: (response) => {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
@@ -415,17 +450,18 @@ export class MouDocumentsReportComponent implements OnInit {
           this.isLoginFailed = true;
         }
       },
-      error: err => {
+      error: (err) => {
         this.LoginFailed(err);
-      }
+      },
     });
   }
 
   GetAllUploadsDetails(): void {
     this.mouDocumentsService.GetAllUploadedDocuments().subscribe({
-      next: response => {
+      next: (response) => {
         if (response.item1.length > 0) {
-          this.MouDocumentDetails = this.filteredMouDocumentDetails = response.item1;
+          this.MouDocumentDetails = this.filteredMouDocumentDetails =
+            response.item1;
           this.showNoDataFoundMessage = false;
 
           this.applyFilters();
@@ -433,7 +469,45 @@ export class MouDocumentsReportComponent implements OnInit {
 
           this.columns = [];
           this.columns = Object.keys(this.MouDocumentDetails[0]);
-          this.columns = this.columns.filter((item: any) => item !== 'fileName' && item !== 'newMouId' && item !== 'mouPartnerName' && item !== 'mouUploadedBy' && item !== 'mouUploadedByUID' && item !== 'mouApprovedBy' && item !== 'mouEndDate' && item !== 'mouStartDate' && item !== 'mouStatus' && item !== 'filePath' && item !== 'uid' && item !== 'updatedOn' && item !== 'facultyName' && item !== 'mouTitle' && item !== 'mouPartnerName' && item !== 'spocContactNo' && item !== 'spocName' && item !== 'spocEmailId' && item !== 'mouPartner' && item !== 'createdOn' && item !== 'createdBy' && item !== 'ipAddress' && item !== 'updatedBy' && item !== 'disapprovalReason' && item !== 'approvedBy' && item !== 'updatedOn' && item !== 'isActive' && item !== 'isApproved' && item !== 'approvalDate' && item !== 'schoolDivisionInvolved' && item !== 'mouId' && item !== 'id' && item !== 'activityStartDate' && item !== 'activityEndDate' && item !== 'assignedBy' && item !== 'assignedTo');
+          this.columns = this.columns.filter(
+            (item: any) =>
+              item !== 'fileName' &&
+              item !== 'newMouId' &&
+              item !== 'mouPartnerName' &&
+              item !== 'mouUploadedBy' &&
+              item !== 'mouUploadedByUID' &&
+              item !== 'mouApprovedBy' &&
+              item !== 'mouEndDate' &&
+              item !== 'mouStartDate' &&
+              item !== 'mouStatus' &&
+              item !== 'filePath' &&
+              item !== 'uid' &&
+              item !== 'updatedOn' &&
+              item !== 'facultyName' &&
+              item !== 'mouTitle' &&
+              item !== 'mouPartnerName' &&
+              item !== 'spocContactNo' &&
+              item !== 'spocName' &&
+              item !== 'spocEmailId' &&
+              item !== 'mouPartner' &&
+              item !== 'createdOn' &&
+              item !== 'createdBy' &&
+              item !== 'ipAddress' &&
+              item !== 'updatedBy' &&
+              item !== 'disapprovalReason' &&
+              item !== 'approvedBy' &&
+              item !== 'updatedOn' &&
+              item !== 'isActive' &&
+              item !== 'isApproved' &&
+              item !== 'approvalDate' &&
+              item !== 'schoolDivisionInvolved' &&
+              item !== 'mouId' &&
+              item !== 'id' &&
+              item !== 'activityStartDate' &&
+              item !== 'activityEndDate' &&
+              item !== 'assignedBy' &&
+              item !== 'assignedTo',
+          );
 
           this.loadingIndicator = false;
           this.isLoginFailed = false;
@@ -443,9 +517,9 @@ export class MouDocumentsReportComponent implements OnInit {
           this.showNoDataFoundMessage = true;
         }
       },
-      error: err => {
+      error: (err) => {
         this.LoginFailed(err);
-      }
+      },
     });
     this.GetAllActivities();
   }
@@ -485,7 +559,7 @@ export class MouDocumentsReportComponent implements OnInit {
 
   applyFilters(): void {
     // Filter by MOU lifecycle status
-    let filtered = this.MouDocumentDetails.filter(item => {
+    let filtered = this.MouDocumentDetails.filter((item) => {
       if (this.statusFilter === 'all') {
         return true;
       }
@@ -500,22 +574,30 @@ export class MouDocumentsReportComponent implements OnInit {
     });
 
     // Filter by approval status
-    filtered = filtered.filter(item => {
+    filtered = filtered.filter((item) => {
       if (this.approvalFilter === 'all') {
         return true;
       }
       if (this.approvalFilter === 'approved') {
-        return item.isApproved == 1 || item.isApproved === 'True' || item.isApproved === true;
+        return (
+          item.isApproved == 1 ||
+          item.isApproved === 'True' ||
+          item.isApproved === true
+        );
       }
       if (this.approvalFilter === 'disapproved') {
-        return item.isApproved == 0 || item.isApproved === 'False' || item.isApproved === false;
+        return (
+          item.isApproved == 0 ||
+          item.isApproved === 'False' ||
+          item.isApproved === false
+        );
       }
       return true;
     });
 
     // Filter by School Division
     if (this.selectedSchoolDivision && this.selectedSchoolDivision !== '0') {
-      filtered = filtered.filter(item => {
+      filtered = filtered.filter((item) => {
         if (!item.schoolDivisionInvolved) return false;
         return item.schoolDivisionInvolved
           .split(',')
@@ -526,22 +608,29 @@ export class MouDocumentsReportComponent implements OnInit {
 
     // Filter by Category
     if (this.selectedMouCategory && this.selectedMouCategory !== '0') {
-      filtered = filtered.filter(item => {
-        return item.mouCategory === this.selectedMouCategory || item.category === this.selectedMouCategory;
+      filtered = filtered.filter((item) => {
+        return (
+          item.mouCategory === this.selectedMouCategory ||
+          item.category === this.selectedMouCategory
+        );
       });
     }
 
     // Free text search
     const query = this.searchQuery.trim().toLowerCase();
     if (query) {
-      filtered = filtered.filter(item => {
+      filtered = filtered.filter((item) => {
         return Object.entries(item).some(([key, val]) => {
           if (val !== null && val !== undefined) {
             const valueString = String(val).toLowerCase();
 
             if (key === 'id') {
               const numericId = Number(val);
-              if (!isNaN(numericId) && (numericId.toString().includes(query) || `mou/${numericId}`.includes(query))) {
+              if (
+                !isNaN(numericId) &&
+                (numericId.toString().includes(query) ||
+                  `mou/${numericId}`.includes(query))
+              ) {
                 return true;
               }
             }
@@ -556,11 +645,14 @@ export class MouDocumentsReportComponent implements OnInit {
   }
 
   getActiveCount(): number {
-    return this.MouDocumentDetails.filter(item => item.mouStatus === 'Active').length;
+    return this.MouDocumentDetails.filter((item) => item.mouStatus === 'Active')
+      .length;
   }
 
   getExpiredCount(): number {
-    return this.MouDocumentDetails.filter(item => item.mouStatus === 'Expired').length;
+    return this.MouDocumentDetails.filter(
+      (item) => item.mouStatus === 'Expired',
+    ).length;
   }
 
   getRenewedCount(): number {
@@ -569,11 +661,21 @@ export class MouDocumentsReportComponent implements OnInit {
   }
 
   getApprovedCount(): number {
-    return this.MouDocumentDetails.filter(item => item.isApproved == 1 || item.isApproved === 'True' || item.isApproved === true).length;
+    return this.MouDocumentDetails.filter(
+      (item) =>
+        item.isApproved == 1 ||
+        item.isApproved === 'True' ||
+        item.isApproved === true,
+    ).length;
   }
 
   getDisapprovedCount(): number {
-    return this.MouDocumentDetails.filter(item => item.isApproved == 0 || item.isApproved === 'False' || item.isApproved === false).length;
+    return this.MouDocumentDetails.filter(
+      (item) =>
+        item.isApproved == 0 ||
+        item.isApproved === 'False' ||
+        item.isApproved === false,
+    ).length;
   }
 
   // ---------------------------------------------------------------------
@@ -592,38 +694,49 @@ export class MouDocumentsReportComponent implements OnInit {
   }
 
   getDivisionNamesByIds(ids: number[]): string {
-    return ids.map(id => this.getDivisionNameById(id)).join(', ');
+    return ids.map((id) => this.getDivisionNameById(id)).join(', ');
   }
 
   exportToExcel(): void {
     const fileName = 'Mou_Document_report.xlsx';
 
-    const exportedData = this.filteredMouDocumentDetails.map(item => ({
-      NewMOUId: (item.newMouId ?? 'N/A'),
+    const exportedData = this.filteredMouDocumentDetails.map((item) => ({
+      NewMOUId: item.newMouId ?? 'N/A',
       OldMOUId: 'MOU/' + (item.id ?? 'N/A'),
-      MouCategory: (item.mouCategory ?? 'Others'),
+      MouCategory: item.mouCategory ?? 'Others',
       'Mou Partner Organisation Name': item.mouTitle ?? 'N/A',
       'Mou Start Date': item.mouStartDate ?? 'N/A',
       'Mou End Date': item.mouEndDate ?? 'N/A',
       'Mou Status': item.mouStatus ?? 'N/A',
       'SPOC Person Name (Mou Partner Organisation)': item.spocName ?? 'N/A',
       'SPOC Person Email (Mou Partner Organisation)': item.spocEmailId ?? 'N/A',
-      'SPOC Person Contact (Mou Partner Organisation)': item.spocContactNo ?? 'N/A',
+      'SPOC Person Contact (Mou Partner Organisation)':
+        item.spocContactNo ?? 'N/A',
       'Name of School/Division Involved ': item.schoolDivisionInvolved
-        ? this.getDivisionNamesByIds(item.schoolDivisionInvolved.split(',').map(Number))
+        ? this.getDivisionNamesByIds(
+            item.schoolDivisionInvolved.split(',').map(Number),
+          )
         : 'N/A',
-      'School/Division Name Of Faculty Who Uploaded': item.mouUploadedBy ?? 'N/A',
+      'School/Division Name Of Faculty Who Uploaded':
+        item.mouUploadedBy ?? 'N/A',
       'Date of MOU Upload at interface': item.createdOn
-        ? new Date(item.createdOn).toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric'
-        }).replace(/ /g, '-')
+        ? new Date(item.createdOn)
+            .toLocaleDateString('en-GB', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+            })
+            .replace(/ /g, '-')
         : 'N/A',
-      'Approval Status (Approved/Rejected/Pending)': item.isApproved == 1 ? 'Approved' : item.isApproved == 0 ? 'Disapproved' : 'Pending',
+      'Approval Status (Approved/Rejected/Pending)':
+        item.isApproved == 1
+          ? 'Approved'
+          : item.isApproved == 0
+            ? 'Disapproved'
+            : 'Pending',
       'MOU Approved /Rejected By : Faculty Name': item.mouApprovedBy ?? 'N/A',
       'MOU Approved /Rejected By : Faculty UID': item.approvedBy ?? 'N/A',
-      'MOU Approval/ Rejection Date': item.approvalDate ?? 'N/A'
+      'MOU Approval/ Rejection Date': item.approvalDate ?? 'N/A',
     }));
 
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
@@ -634,7 +747,9 @@ export class MouDocumentsReportComponent implements OnInit {
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
     const blobData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     const link = document.createElement('a');
-    link.href = URL.createObjectURL(new Blob([blobData], { type: 'application/octet-stream' }));
+    link.href = URL.createObjectURL(
+      new Blob([blobData], { type: 'application/octet-stream' }),
+    );
     link.download = fileName;
     link.click();
   }
@@ -653,33 +768,35 @@ export class MouDocumentsReportComponent implements OnInit {
   // Approve / Disapprove
   // ---------------------------------------------------------------------
   DisapproveStatus(Id: any) {
-    swal.fire({
-      title: 'Reason for Disapproval',
-      input: 'text',
-      inputPlaceholder: 'Enter reason for disapproval',
-      showCancelButton: true,
-      confirmButtonText: 'Submit',
-      cancelButtonText: 'Cancel',
-      inputValidator: (value) => {
-        if (!value || !value.trim()) {
-          return 'Disapproval reason is required.';
+    swal
+      .fire({
+        title: 'Reason for Disapproval',
+        input: 'text',
+        inputPlaceholder: 'Enter reason for disapproval',
+        showCancelButton: true,
+        confirmButtonText: 'Submit',
+        cancelButtonText: 'Cancel',
+        inputValidator: (value) => {
+          if (!value || !value.trim()) {
+            return 'Disapproval reason is required.';
+          }
+          return null;
+        },
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          this.Reason = result.value.trim();
+
+          const formData = new FormData();
+          formData.append('Id', Id);
+          formData.append('DisapprovalReason', this.Reason);
+          formData.append('Action', 'Disapprove');
+
+          this.handleStatusChange(formData, 'Disapprove');
+        } else if (result.dismiss === swal.DismissReason.cancel) {
+          this.showCancelledSwal();
         }
-        return null;
-      }
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.Reason = result.value.trim();
-
-        const formData = new FormData();
-        formData.append('Id', Id);
-        formData.append('DisapprovalReason', this.Reason);
-        formData.append('Action', 'Disapprove');
-
-        this.handleStatusChange(formData, 'Disapprove');
-      } else if (result.dismiss === swal.DismissReason.cancel) {
-        this.showCancelledSwal();
-      }
-    });
+      });
   }
 
   ChangeApproveStatus(Id: any) {
@@ -687,32 +804,38 @@ export class MouDocumentsReportComponent implements OnInit {
     formData.append('Id', Id);
     formData.append('Action', 'Approve');
 
-    swal.fire({
-      title: 'Are you sure you want to change the status?',
-      text: 'Kindly confirm if the document is valid!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, accept current changes!',
-      cancelButtonText: 'No, do not change it'
-    }).then((result: any) => {
-      if (result.value) {
-        this.handleStatusChange(formData, 'Approve');
-      } else {
-        this.showCancelledSwal();
-      }
-    });
+    swal
+      .fire({
+        title: 'Are you sure you want to change the status?',
+        text: 'Kindly confirm if the document is valid!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, accept current changes!',
+        cancelButtonText: 'No, do not change it',
+      })
+      .then((result: any) => {
+        if (result.value) {
+          this.handleStatusChange(formData, 'Approve');
+        } else {
+          this.showCancelledSwal();
+        }
+      });
   }
 
   private handleStatusChange(formData: FormData, action: string) {
-    this.mouDocumentsService.ApproveDocument(formData).subscribe((data: any) => {
-      if (action === 'Approve' && data.responseData === 'Cancel') {
-        swal.fire('No Change!', ' ', 'error');
-      } else {
-        swal.fire(' Approved/Disapproved successfully !', '', 'success').then(() => {
-          window.location.reload();
-        });
-      }
-    });
+    this.mouDocumentsService
+      .ApproveDocument(formData)
+      .subscribe((data: any) => {
+        if (action === 'Approve' && data.responseData === 'Cancel') {
+          swal.fire('No Change!', ' ', 'error');
+        } else {
+          swal
+            .fire(' Approved/Disapproved successfully !', '', 'success')
+            .then(() => {
+              window.location.reload();
+            });
+        }
+      });
   }
 
   private showCancelledSwal() {
@@ -720,15 +843,17 @@ export class MouDocumentsReportComponent implements OnInit {
   }
 
   private handleSchoolChange(formData: FormData) {
-    this.mouDocumentsService.UpdateSchoolDivision(formData).subscribe((data: any) => {
-      if (data.responseData === 'Failed') {
-        swal.fire('No Change!', ' ', 'error');
-      } else {
-        swal.fire(' Updation successfully !', '', 'success').then(() => {
-          window.location.reload();
-        });
-      }
-    });
+    this.mouDocumentsService
+      .UpdateSchoolDivision(formData)
+      .subscribe((data: any) => {
+        if (data.responseData === 'Failed') {
+          swal.fire('No Change!', ' ', 'error');
+        } else {
+          swal.fire(' Updation successfully !', '', 'success').then(() => {
+            window.location.reload();
+          });
+        }
+      });
   }
 
   // ---------------------------------------------------------------------
@@ -784,7 +909,9 @@ export class MouDocumentsReportComponent implements OnInit {
 
     this.mouForm.patchValue({
       mouId: data.id,
-      selectedDivisions: data.schoolDivisionInvolved ? data.schoolDivisionInvolved.split(',') : [],
+      selectedDivisions: data.schoolDivisionInvolved
+        ? data.schoolDivisionInvolved.split(',')
+        : [],
       mouOrganisation: data.mouPartnerName,
       startDate: this.formatDate(data.mouStartDate),
       endDate: this.formatDate(data.mouEndDate),
@@ -794,14 +921,17 @@ export class MouDocumentsReportComponent implements OnInit {
       spocContact: data.spocContactNo,
       lpuSpocName: data.lpuSpocName,
       lpuSpocUid: data.lpuSpocUID,
-      lpuSpocEmail: data.lpuSpocEmail
+      lpuSpocEmail: data.lpuSpocEmail,
     });
 
-    this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'xl', backdrop: 'static' }).result.then(() => {
-      setTimeout(() => {
-        window.dispatchEvent(new Event('resize'));
-      }, 200);
-    }).catch(() => { });
+    this.modalService
+      .open(this.ChangeSchoolDivisionModal, { size: 'xl', backdrop: 'static' })
+      .result.then(() => {
+        setTimeout(() => {
+          window.dispatchEvent(new Event('resize'));
+        }, 200);
+      })
+      .catch(() => {});
   }
 
   openRenewModal(row: any): void {
@@ -817,7 +947,9 @@ export class MouDocumentsReportComponent implements OnInit {
 
     this.mouForm.patchValue({
       mouId: row.id,
-      selectedDivisions: row.schoolDivisionInvolved ? row.schoolDivisionInvolved.split(',') : [],
+      selectedDivisions: row.schoolDivisionInvolved
+        ? row.schoolDivisionInvolved.split(',')
+        : [],
       mouOrganisation: row.mouPartnerName,
       startDate: this.formatDate(row.mouStartDate),
       endDate: this.formatDate(row.mouEndDate),
@@ -827,7 +959,7 @@ export class MouDocumentsReportComponent implements OnInit {
       spocContact: row.spocContactNo,
       lpuSpocName: row.lpuSpocName,
       lpuSpocUid: row.lpuSpocUID,
-      lpuSpocEmail: row.lpuSpocEmail
+      lpuSpocEmail: row.lpuSpocEmail,
     });
 
     this.mouId = row.id;
@@ -839,32 +971,40 @@ export class MouDocumentsReportComponent implements OnInit {
     this.isIndefiniteMou = row.mouStatus === 'Active' && !row.mouEndDate;
     this.CurrentSchool = row.schoolDivisionInvolved;
 
-    this.modalService.open(this.ChangeSchoolDivisionModal, { size: 'xl', backdrop: 'static' }).result.then(() => {
-      setTimeout(() => {
-        window.dispatchEvent(new Event('resize'));
-      }, 200);
-    }).catch(() => { });
+    this.modalService
+      .open(this.ChangeSchoolDivisionModal, { size: 'xl', backdrop: 'static' })
+      .result.then(() => {
+        setTimeout(() => {
+          window.dispatchEvent(new Event('resize'));
+        }, 200);
+      })
+      .catch(() => {});
   }
 
   OpenAllMouRenewalHistory(row: any): void {
     this.mouId = row.id;
     this.newMouId = row.newMouId;
     this.getRenewedMouDetails(row.id);
-    this.modalService.open(this.ViewRenewedMouDetailsModal, { size: 'xl', backdrop: 'static' }).result.then(() => {
-      setTimeout(() => {
-        window.dispatchEvent(new Event('resize'));
-      }, 200);
-    }).catch(() => { });
+    this.modalService
+      .open(this.ViewRenewedMouDetailsModal, { size: 'xl', backdrop: 'static' })
+      .result.then(() => {
+        setTimeout(() => {
+          window.dispatchEvent(new Event('resize'));
+        }, 200);
+      })
+      .catch(() => {});
   }
 
   getRenewedMouDetails(mouId: any): void {
-    this.mouDocumentsService.GetRenewedMouDetails(mouId).subscribe((response) => {
-      if (response.item1.length > 0) {
-        this.renewedMouDocumentDetails = response.item1;
-      } else {
-        this.renewedMouDocumentDetails = [];
-      }
-    });
+    this.mouDocumentsService
+      .GetRenewedMouDetails(mouId)
+      .subscribe((response) => {
+        if (response.item1.length > 0) {
+          this.renewedMouDocumentDetails = response.item1;
+        } else {
+          this.renewedMouDocumentDetails = [];
+        }
+      });
   }
 
   onSubmitModal(): void {
@@ -892,9 +1032,9 @@ export class MouDocumentsReportComponent implements OnInit {
           title: 'Validation Error',
           html: `<p>Please fill in all required fields:</p>
              <ul class="text-start">
-               ${invalidFields.map(f => `<li>${this.getFieldDisplayName(f)}</li>`).join('')}
+               ${invalidFields.map((f) => `<li>${this.getFieldDisplayName(f)}</li>`).join('')}
              </ul>`,
-          icon: 'error'
+          icon: 'error',
         });
         return;
       }
@@ -916,19 +1056,21 @@ export class MouDocumentsReportComponent implements OnInit {
     formData.append('LPUSpocUID', val.lpuSpocUid);
     formData.append('LPUSpocEmail', val.lpuSpocEmail);
 
-    swal.fire({
-      title: 'Are you sure you want to change the School?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, accept current changes!',
-      cancelButtonText: 'No, do not change it'
-    }).then((result: any) => {
-      if (result.value) {
-        this.handleSchoolChange(formData);
-      } else {
-        this.showCancelledSwal();
-      }
-    });
+    swal
+      .fire({
+        title: 'Are you sure you want to change the School?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, accept current changes!',
+        cancelButtonText: 'No, do not change it',
+      })
+      .then((result: any) => {
+        if (result.value) {
+          this.handleSchoolChange(formData);
+        } else {
+          this.showCancelledSwal();
+        }
+      });
   }
 
   onSubmitRenew(): void {
@@ -943,8 +1085,8 @@ export class MouDocumentsReportComponent implements OnInit {
       }
       swal.fire({
         title: 'Validation Error',
-        html: `<p>Please fill in all required fields:</p><ul class="text-start">${invalidFields.map(f => `<li>${this.getFieldDisplayName(f)}</li>`).join('')}</ul>`,
-        icon: 'error'
+        html: `<p>Please fill in all required fields:</p><ul class="text-start">${invalidFields.map((f) => `<li>${this.getFieldDisplayName(f)}</li>`).join('')}</ul>`,
+        icon: 'error',
       });
       return;
     }
@@ -955,7 +1097,11 @@ export class MouDocumentsReportComponent implements OnInit {
     }
 
     if (!this.renewalFileBase64) {
-      swal.fire('Error', 'File is still being processed. Please try again.', 'error');
+      swal.fire(
+        'Error',
+        'File is still being processed. Please try again.',
+        'error',
+      );
       return;
     }
 
@@ -964,7 +1110,11 @@ export class MouDocumentsReportComponent implements OnInit {
     let newMouStatus = 'Active';
     const today = new Date();
     const startDate = val.startDate ? new Date(val.startDate) : null;
-    const endDate = val.isIndefinite ? null : (val.endDate ? new Date(val.endDate) : null);
+    const endDate = val.isIndefinite
+      ? null
+      : val.endDate
+        ? new Date(val.endDate)
+        : null;
 
     if (val.isIndefinite) {
       newMouStatus = 'Active';
@@ -997,30 +1147,39 @@ export class MouDocumentsReportComponent implements OnInit {
     formData.append('SessionId', '18');
     formData.append('CreatedBy', this.EmployeeCode);
 
-    swal.fire({
-      title: 'Renew MOU',
-      text: 'Are you sure you want to renew this MOU? This will create a new MOU and mark the old one as Renewed.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, renew MOU',
-      cancelButtonText: 'Cancel'
-    }).then((result) => {
-      if (result.value) {
-        this.mouDocumentsService.MouRenewalDetails(formData).subscribe({
-          next: (data: any) => {
-            const resultMsg = data.item1 && data.item1.length > 0 ? data.item1[0].msg : data.responseData;
-            if (resultMsg === 'success' || data.responseData !== 'Failed') {
-              this.updateOldMouStatus(this.mouId, 'Renewed');
-            } else {
-              swal.fire('Error', 'Failed to create new MOU. Please try again.', 'error');
-            }
-          },
-          error: (err) => {
-            swal.fire('Error', 'Failed to upload new MOU document.', 'error');
-          }
-        });
-      }
-    });
+    swal
+      .fire({
+        title: 'Renew MOU',
+        text: 'Are you sure you want to renew this MOU? This will create a new MOU and mark the old one as Renewed.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, renew MOU',
+        cancelButtonText: 'Cancel',
+      })
+      .then((result) => {
+        if (result.value) {
+          this.mouDocumentsService.MouRenewalDetails(formData).subscribe({
+            next: (data: any) => {
+              const resultMsg =
+                data.item1 && data.item1.length > 0
+                  ? data.item1[0].msg
+                  : data.responseData;
+              if (resultMsg === 'success' || data.responseData !== 'Failed') {
+                this.updateOldMouStatus(this.mouId, 'Renewed');
+              } else {
+                swal.fire(
+                  'Error',
+                  'Failed to create new MOU. Please try again.',
+                  'error',
+                );
+              }
+            },
+            error: (err) => {
+              swal.fire('Error', 'Failed to upload new MOU document.', 'error');
+            },
+          });
+        }
+      });
   }
 
   updateOldMouStatus(oldId: any, newStatus: string): void {
@@ -1047,16 +1206,127 @@ export class MouDocumentsReportComponent implements OnInit {
     this.mouDocumentsService.UpdateSchoolDivision(formData).subscribe({
       next: (data: any) => {
         if (data.responseData === 'Failed') {
-          swal.fire('Warning', 'New MOU created but failed to update old MOU status to Renewed.', 'warning');
+          swal.fire(
+            'Warning',
+            'New MOU created but failed to update old MOU status to Renewed.',
+            'warning',
+          );
         } else {
-          swal.fire('Success', 'MOU renewed successfully! Old MOU marked as Renewed.', 'success');
+          swal.fire(
+            'Success',
+            'MOU renewed successfully! Old MOU marked as Renewed.',
+            'success',
+          );
         }
         window.location.reload();
       },
       error: (err) => {
-        swal.fire('Warning', 'New MOU created but failed to update old MOU status.', 'warning');
+        swal.fire(
+          'Warning',
+          'New MOU created but failed to update old MOU status.',
+          'warning',
+        );
         window.location.reload();
-      }
+      },
     });
+  }
+
+  // ---------------------------------------------------------------------
+  // Reminder Email logic for Expired MOUs
+  // ---------------------------------------------------------------------
+  selectedRow: any = null;
+  reminderSending: any = {};
+  reminderDisabled: any = {};
+
+  openReminderModal(row: any): void {
+    if (!row) return;
+    this.selectedRow = row;
+    this.employeeControl.setValue('');
+    this.filteredEmployeesData = [];
+    this.showSuggestions = false;
+    this.AssignedToUid = '';
+
+    this.modalService.open(this.SendReminderModal, {
+      size: 'xl',
+      backdrop: 'static',
+    });
+  }
+
+  ConfirmSendReminder(): void {
+    const row = this.selectedRow;
+    if (!this.AssignedToUid) {
+      swal.fire('Error', 'Please select a UID to send the reminder', 'error');
+      return;
+    }
+
+    const key = String(row?.id || '');
+    if (this.reminderSending[key] || this.reminderDisabled[key]) return;
+
+    this.reminderSending[key] = true;
+
+    const formData = new FormData();
+    formData.append('MouId', row.id);
+    formData.append('Uid', this.AssignedToUid);
+    formData.append('Remarks', 'Expired MOU reminder');
+
+    const emailSubject = 'Reminder: Pending MoU Renewals';
+    const emailBody = `Dear Sir/Madam, Greetings of the day! This is a gentle reminder that MoUs associated with your account have expired and required necessary action. You are kindly requested to review the details of the expired Mous and initiate the required action at the earliest to ensure timely renewal and continuity of institutional collaborations. For any queries regarding Mou renewal and related activities, your may visit to the Department of Research and Collaborations, Block 38-207, Cabin 1 4 or 8.`;
+
+    formData.append('Subject', emailSubject);
+    formData.append('Body', emailBody);
+    formData.append('Message', emailBody);
+    formData.append('EmailSubject', emailSubject);
+    formData.append('EmailBody', emailBody);
+
+    this.modalService.dismissAll();
+
+    this.mouDocumentsService.MouReminderEmail(formData).subscribe({
+      next: (data: any) => {
+        this.reminderSending[key] = false;
+        const resultMsg = data?.item1?.[0]?.msg?.toLowerCase();
+        if (resultMsg === 'successfully' || resultMsg === 'success') {
+          this.reminderDisabled[key] = true;
+          swal.fire('Success', 'Reminder sent successfully!', 'success');
+        } else {
+          swal.fire('Error', 'Failed to send reminder', 'error');
+        }
+      },
+      error: () => {
+        this.reminderSending[key] = false;
+        swal.fire('Error', 'Error occurred while sending reminder', 'error');
+      },
+    });
+  }
+
+  // Reminder Email autocomplete logic
+  activeSuggestionIndexReminder: number = -1;
+
+  onInputReminder(): void {
+    const query = this.employeeControl.value?.toLowerCase() || '';
+    if (query && query.length >= 2) {
+      this.filteredEmployeesData = this.EmployeeData.filter(
+        (emp) =>
+          emp.employeeName.toLowerCase().includes(query) ||
+          emp.employeeCode.toLowerCase().includes(query),
+      ).slice(0, 10);
+      this.showSuggestions = true;
+    } else {
+      this.showSuggestions = false;
+    }
+  }
+
+  selectEmployeeReminder(employee: Employee): void {
+    this.AssignedToUid = employee.employeeCode;
+    this.employeeControl.setValue(
+      `${employee.employeeName} (${employee.employeeCode})`,
+    );
+    this.filteredEmployeesData = [];
+    this.showSuggestions = false;
+  }
+
+  hideSuggestionsReminder(): void {
+    setTimeout(() => {
+      this.showSuggestions = false;
+    }, 200);
   }
 }
