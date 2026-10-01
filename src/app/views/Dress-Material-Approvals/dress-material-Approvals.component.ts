@@ -16,7 +16,7 @@ export class DressMaterialApprovalsComponent implements OnInit {
   loginName: string = '';
   isSubmitting: boolean = false;
   loadingRecords: boolean = false;
-  activeTab: string = 'issue'; // 'issue' | 'records'
+  activeTab: 'Pending' | 'Approved' | 'Rejected' = 'Pending';
 
   // Records table
   materialRecords: DressMaterialModel[] = [];
@@ -97,7 +97,15 @@ export class DressMaterialApprovalsComponent implements OnInit {
 
     const { Material, Quantity, RequestPerson } = this.issueForm.value;
 
-    this.dressMaterialService.issueMaterial(Material, Quantity, RequestPerson).subscribe({
+    this.dressMaterialService.issueMaterial(
+      Material, 
+      Quantity, 
+      RequestPerson, 
+      this.loginName, // LoginId
+      this.loginName, // CreatedBy
+      18,             // SessionId
+      '15731'         // ApproverId
+    ).subscribe({
       next: (response: any) => {
         this.isSubmitting = false;
         const result = response?.item1?.[0] || response?.[0] || response;
@@ -110,10 +118,7 @@ export class DressMaterialApprovalsComponent implements OnInit {
             confirmButtonColor: '#6366f1'
           });
           this.issueForm.reset();
-          // Refresh records if on records tab
-          if (this.activeTab === 'records') {
-            this.loadMyRecords();
-          }
+          this.loadMyRecords();
         } else {
           Swal.fire({
             icon: 'error',
@@ -137,17 +142,19 @@ export class DressMaterialApprovalsComponent implements OnInit {
   }
 
   /** Switch active tab */
-  switchTab(tab: string): void {
+  switchTab(tab: 'Pending' | 'Approved' | 'Rejected'): void {
     this.activeTab = tab;
-    if (tab === 'records') {
-      this.loadMyRecords();
-    }
+    this.loadMyRecords();
   }
 
-  /** Load records for the current user */
+  /** Load records for the current user based on active tab */
   loadMyRecords(): void {
     this.loadingRecords = true;
-    this.dressMaterialService.getMyMaterialsForApprovals('Admin').subscribe({
+    let action: 'View ById' | 'ApprovalAuthApproved' | 'ApprovalAuthNotApproved' = 'View ById';
+    if (this.activeTab === 'Approved') action = 'ApprovalAuthApproved';
+    if (this.activeTab === 'Rejected') action = 'ApprovalAuthNotApproved';
+
+    this.dressMaterialService.getAdminMaterials(action).subscribe({
       next: (response: any) => {
         this.loadingRecords = false;
         this.materialRecords = response?.item1 || response || [];
@@ -161,55 +168,56 @@ export class DressMaterialApprovalsComponent implements OnInit {
     });
   }
 
-  /** Return a material */
-returnMaterial(materialId: number): void {
-  Swal.fire({
-    title: 'Confirm Return',
-    text: 'Please enter remarks for returning this material.',
-    input: 'textarea',
-    inputPlaceholder: 'Enter your remarks...',
-    inputAttributes: {
-      'aria-label': 'Return remarks'
-    },
-    showCancelButton: true,
-    confirmButtonColor: '#6366f1',
-    cancelButtonColor: '#94a3b8',
-    confirmButtonText: 'Yes, Approve it',
-    inputValidator: (value) => {
-      if (!value || !value.trim()) {
-        return 'Please enter remarks before approving  the material.';
-      }
-      return null;
-    }
-  }).then((result) => {
-    if (result.isConfirmed) {
-      const remarks = result.value.trim();
-
-      this.dressMaterialService.ApprovalAction(materialId, remarks,'Approve').subscribe({
-        next: (response: any) => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Approved!',
-            text: 'Material has been approved successfully.',
-            confirmButtonColor: '#6366f1'
-          });
-
-          this.loadMyRecords();
-        },
-        error: (err: any) => {
-          console.error('Approve error:', err);
-
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to approve the material.',
-            confirmButtonColor: '#ef4444'
-          });
+  /** Approve or Reject a material */
+  adminAction(materialId: number, action: 'Approve' | 'Reject'): void {
+    const isApprove = action === 'Approve';
+    Swal.fire({
+      title: isApprove ? 'Confirm Approval' : 'Confirm Rejection',
+      text: isApprove ? 'Please enter remarks for approving this material.' : 'Please enter remarks for rejecting this material.',
+      input: 'textarea',
+      inputPlaceholder: 'Enter your remarks...',
+      inputAttributes: {
+        'aria-label': 'Admin remarks'
+      },
+      showCancelButton: true,
+      confirmButtonColor: isApprove ? '#198754' : '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: isApprove ? 'Yes, Approve it' : 'Yes, Reject it',
+      inputValidator: (value) => {
+        if (!value || !value.trim()) {
+          return `Please enter remarks before ${isApprove ? 'approving' : 'rejecting'} the material.`;
         }
-      });
-    }
-  });
-}
+        return null;
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const remarks = result.value.trim();
+
+        this.dressMaterialService.ApprovalAction(materialId, remarks, action).subscribe({
+          next: (response: any) => {
+            Swal.fire({
+              icon: 'success',
+              title: isApprove ? 'Approved!' : 'Rejected!',
+              text: `Material has been ${isApprove ? 'approved' : 'rejected'} successfully.`,
+              confirmButtonColor: '#6366f1'
+            });
+
+            this.loadMyRecords();
+          },
+          error: (err: any) => {
+            console.error(`${action} error:`, err);
+
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: `Failed to ${action.toLowerCase()} the material.`,
+              confirmButtonColor: '#ef4444'
+            });
+          }
+        });
+      }
+    });
+  }
 
 
   /** Pagination helpers */

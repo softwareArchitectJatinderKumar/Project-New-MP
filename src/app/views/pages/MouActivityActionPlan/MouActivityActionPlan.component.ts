@@ -1540,7 +1540,7 @@ export class MouActivityActionPlanComponent implements OnInit {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
-          this.EmployeeCode = '11840'; // response.item1[0].employeeCode; // // Hardcoded as per original
+          // this.EmployeeCode = response.item1[0].employeeCode; // // Hardcoded as per original
           const drcStaffUids = [
             '31309',
             '34350',
@@ -1550,7 +1550,6 @@ export class MouActivityActionPlanComponent implements OnInit {
             '31352',
             '30683',
             '22648',
-            '11840',
           ];
           this.isDrcStaff = drcStaffUids.includes(this.EmployeeCode.toString());
 

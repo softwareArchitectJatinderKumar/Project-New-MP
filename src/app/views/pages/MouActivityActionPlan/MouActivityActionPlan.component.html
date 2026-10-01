@@ -28,9 +28,9 @@
         (click)="reloadGrid1()" data-bs-target="#AssignActivities" type="button" role="tab">Assign Activity</button>
 
       <button class="btn btn-lg ms-5" id="MyAllAssignActivities-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
-        (click)="reloadGrid2()" data-bs-target="#MyAllAssignActivities" type="button" role="tab">{{ isDrcStaff ? 'Activities Assigned' : 'Activities Assigned (by Me)' }}</button>
+        (click)="reloadGrid2()" data-bs-target="#MyAllAssignActivities" type="button" role="tab">{{ isDrcStaff ? 'Activities Assigned DRC Staff' : 'Activities Assigned (by Me)' }}</button>
 
-      <button *ngIf="!isDrcStaff" class="btn btn-lg ms-5" id="OthersAllAssignActivities-tab" data-bs-toggle="tab"
+      <button *ngIf="!isDrcStaff" class="btn btn-lg ms-5 d-none" id="OthersAllAssignActivities-tab" data-bs-toggle="tab"
         style="padding: .95rem 8rem;" (click)="reloadGrid()" data-bs-target="#OthersAllAssignActivities" type="button"
         role="tab">Activities Assigned (by Others)</button>
     </div>

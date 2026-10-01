@@ -97,7 +97,15 @@ export class DressMaterialComponent implements OnInit {
 
     const { Material, Quantity, RequestPerson } = this.issueForm.value;
 
-    this.dressMaterialService.issueMaterial(Material, Quantity, RequestPerson).subscribe({
+    this.dressMaterialService.issueMaterial(
+      Material, 
+      Quantity, 
+      RequestPerson, 
+      this.loginName, // LoginId
+      this.loginName, // CreatedBy
+      18,             // SessionId
+      '15731'         // ApproverId
+    ).subscribe({
       next: (response: any) => {
         this.isSubmitting = false;
         const result = response?.item1?.[0] || response?.[0] || response;

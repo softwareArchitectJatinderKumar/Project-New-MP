@@ -40,13 +40,17 @@ export class DressMaterialService {
   /**
    * Issue / Add a new dress material request.
    */
-  issueMaterial(material: string, quantity: number, requestPerson: string): Observable<any> {
+  issueMaterial(material: string, quantity: number, requestPerson: string, loginId?: string, createdBy?: string, sessionId?: number, approverId?: string): Observable<any> {
     return this.callDressMaterialApi({
       Action: 'Add',
       UserType:'User',
       Material: material,
       Quantity: quantity,
-      RequestPerson: requestPerson
+      RequestPerson: requestPerson,
+      LoginId: loginId,
+      CreatedBy: createdBy,
+      SessionId: sessionId,
+      ApproverId: approverId
     });
   }
 
@@ -64,7 +68,7 @@ export class DressMaterialService {
    */
   getMyMaterials(): Observable<any> {
     return this.callDressMaterialApi({
-      Action: 'View',
+      Action: 'ViewReport',
       Usertype: 'User'
     });
   }
@@ -72,8 +76,15 @@ export class DressMaterialService {
 
   getMyMaterialsForApprovals(role: string): Observable<any> {
     return this.callDressMaterialApi({
-      Action: 'Select',
+      Action: role === 'Admin' ? 'View ById' : 'Select',
       UserType: role
+    });
+  }
+
+  getAdminMaterials(action: 'View ById' | 'ApprovalAuthApproved' | 'ApprovalAuthNotApproved'): Observable<any> {
+    return this.callDressMaterialApi({
+      Action: action,
+      UserType: 'Admin'
     });
   }
   /**
@@ -88,9 +99,10 @@ export class DressMaterialService {
 
     ApprovalAction(materialId: number, Remarks: string, Action: string): Observable<any> {
     return this.callDressMaterialApi({
-      Action: Action,
+      Action: 'ApprovalAuth',
       MaterialId: materialId,
-      ApprovalRemarks: Remarks,
+      AdminRemarks: Remarks,
+      AdminAction: Action === 'Approve' ? 1 : 0,
       UserType:'Admin'
     });
   }

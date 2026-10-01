@@ -12,17 +12,22 @@
   </div>
 
   <!-- ===== Tab Navigation ===== -->
-  <nav class="tab-navigation d-none">
+  <nav class="tab-navigation">
     <div class="nav nav-tabs d-flex justify-content-center" id="dressMaterial-tab" role="tablist">
-      <button class="tab-btn" [class.active]="activeTab === 'issue'"
-        (click)="switchTab('issue')" type="button" role="tab">
-        <i class="feather icon-plus-circle me-2"></i>
-        <span>All Materials</span>
+      <button class="tab-btn" [class.active]="activeTab === 'Pending'"
+        (click)="switchTab('Pending')" type="button" role="tab">
+        <i class="feather icon-clock me-2"></i>
+        <span>Pending Requests</span>
       </button>
-      <button class="tab-btn d-none" [class.active]="activeTab === 'records'"
-        (click)="switchTab('records')" type="button" role="tab">
-        <i class="feather icon-list me-2"></i>
-        <span>My Requests</span>
+      <button class="tab-btn" [class.active]="activeTab === 'Approved'"
+        (click)="switchTab('Approved')" type="button" role="tab">
+        <i class="feather icon-check-circle me-2"></i>
+        <span>Approved</span>
+      </button>
+      <button class="tab-btn" [class.active]="activeTab === 'Rejected'"
+        (click)="switchTab('Rejected')" type="button" role="tab">
+        <i class="feather icon-x-circle me-2"></i>
+        <span>Rejected</span>
       </button>
     </div>
   </nav>
@@ -47,10 +52,7 @@
           <div *ngIf="materialRecords.length === 0" class="empty-state text-center py-5">
             <i class="feather icon-inbox empty-icon"></i>
             <h5 class="mt-3 text-muted">No Records Found</h5>
-            <p class="text-muted">You haven't submitted any dress material requests yet.</p>
-            <button class="btn btn-primary btn-sm" (click)="switchTab('issue')">
-              <i class="feather icon-plus me-1"></i> Create New Request
-            </button>
+            <p class="text-muted">There are currently no requests in this category.</p>
           </div>
 
           <!-- Table -->
@@ -72,38 +74,46 @@
               <tbody>
                 <tr *ngFor="let record of paginatedRecords; let i = index">
                   <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
-                  <td>{{ record.material }}</td>
-                  <td class="text-center fw-semibold">{{ record.quantity }}</td>
-                  <td>{{ record.requestPerson }}</td>
+                  <td>{{ record.Material || record.material }}</td>
+                  <td class="text-center fw-semibold">{{ record.Quantity || record.quantity }}</td>
+                  <td>{{ record.RequestPerson || record.requestPerson }}</td>
                   <td class="text-center">
-                    <span class="badge" [ngClass]="record.IsIssued ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'">
-                      {{ record.isIssued ? 'Yes' : 'No' }}
+                    <span class="badge" [ngClass]="(record.IsIssued || record.isIssued) ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'">
+                      {{ (record.IsIssued || record.isIssued) ? 'Yes' : 'No' }}
                     </span>
                   </td>
                   <td class="text-center">
-                    <span class="badge" [ngClass]="record.isReturned ? 'bg-info-subtle text-info' : 'bg-warning-subtle text-warning'">
-                      {{ record.isReturned ? 'Returned' : 'Pending' }}
+                    <span class="badge" [ngClass]="(record.IsReturned || record.isReturned) ? 'bg-info-subtle text-info' : 'bg-warning-subtle text-warning'">
+                      {{ (record.IsReturned || record.isReturned) ? 'Returned' : 'Pending' }}
                     </span>
                   </td>
                   <td class="text-center">
-                    <span class="badge" [ngClass]="record.isApproved ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'">
-                      {{ record.isApproved ? 'Approved' : 'Pending' }}
+                    <span class="badge" [ngClass]="(record.IsApproved || record.isApproved) ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'">
+                      {{ (record.IsApproved || record.isApproved) ? 'Approved' : 'Pending' }}
                     </span>
                   </td>
-                  <td>{{ record.createdOn | date:'dd MMM yyyy, hh:mm a' }}</td>
+                  <td>{{ (record.CreatedOn || record.createdOn) | date:'dd MMM yyyy, hh:mm a' }}</td>
                   <td class="text-center">
-                    <button class="btn btn-sm btn-outline-danger btn-return"
-                      *ngIf="!record.isReturned"
-                      (click)="returnMaterial(record.materialId)"
+                    <button class="btn btn-sm btn-outline-success me-1"
+                      *ngIf="record.IsApproved === null || record.isApproved === null || record.IsApproved === undefined || record.isApproved === undefined"
+                      (click)="adminAction(record.MaterialId || record.materialId, 'Approve')"
                       title="Approve">
-                      <i class="feather icon-corner-up-left me-1"></i> Approve
+                      <i class="feather icon-check me-1"></i> Approve
                     </button>
-                    <span *ngIf="record.IsReturned" class="text-muted">—</span>
+                    <button class="btn btn-sm btn-outline-danger"
+                      *ngIf="record.IsApproved === null || record.isApproved === null || record.IsApproved === undefined || record.isApproved === undefined"
+                      (click)="adminAction(record.MaterialId || record.materialId, 'Reject')"
+                      title="Reject">
+                      <i class="feather icon-x me-1"></i> Reject
+                    </button>
+                    <span *ngIf="record.IsApproved === true || record.isApproved === true" class="text-success">Approved</span>
+                    <span *ngIf="record.IsApproved === false || record.isApproved === false" class="text-danger">Rejected</span>
                   </td>
                 </tr>
               </tbody>
+              <!-- End Table -->
             </table>
-
+            
             <!-- Pagination -->
             <nav *ngIf="totalPages > 1" aria-label="Material records pagination" class="d-flex justify-content-center mt-3">
               <ul class="pagination pagination-sm">
@@ -127,117 +137,6 @@
         </div>
       </div>
     </ng-container>
-  <!-- </div> -->
 
-  <!-- ================================================================ -->
-  <!-- TAB 2: My Material Records                                       -->
-  <!-- ================================================================ -->
-  <div *ngIf="activeTab === 'records'" class=" d-none tab-body fade-in">
-
-    <!-- Loading State -->
-    <ng-container *ngIf="loadingRecords">
-      <div class="text-center py-5">
-        <div class="spinner-grow text-primary" style="width: 4rem; height: 4rem;" role="status"></div>
-        <p class="mt-3 text-muted">Loading your records...</p>
-      </div>
-    </ng-container>
-
-    <!-- Data Table -->
-    <ng-container *ngIf="!loadingRecords">
-      <div class="card records-card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="card-title mb-0">
-              <i class="feather icon-clipboard me-2"></i>
-              My Material Requests
-              <span class="badge bg-primary-subtle text-primary ms-2">{{ materialRecords.length }}</span>
-            </h5>
-          </div>
-
-          <!-- Empty State -->
-          <div *ngIf="materialRecords.length === 0" class="empty-state text-center py-5">
-            <i class="feather icon-inbox empty-icon"></i>
-            <h5 class="mt-3 text-muted">No Records Found</h5>
-            <p class="text-muted">You haven't submitted any dress material requests yet.</p>
-            <button class="btn btn-primary btn-sm" (click)="switchTab('issue')">
-              <i class="feather icon-plus me-1"></i> Create New Request
-            </button>
-          </div>
-
-          <!-- Table -->
-          <div *ngIf="materialRecords.length > 0" class="table-responsive">
-            <table class="table table-hover table-bordered align-middle records-table">
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Material</th>
-                  <th scope="col">Quantity</th>
-                  <th scope="col">Request Person</th>
-                  <th scope="col">Issued</th>
-                  <th scope="col">Returned</th>
-                  <th scope="col">Approved</th>
-                  <th scope="col">Created On</th>
-                  <th scope="col">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let record of paginatedRecords; let i = index">
-                  <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
-                  <td>{{ record.material }}</td>
-                  <td class="text-center fw-semibold">{{ record.quantity }}</td>
-                  <td>{{ record.requestPerson }}</td>
-                  <td class="text-center">
-                    <span class="badge" [ngClass]="record.IsIssued ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'">
-                      {{ record.isIssued ? 'Yes' : 'No' }}
-                    </span>
-                  </td>
-                  <td class="text-center">
-                    <span class="badge" [ngClass]="record.isReturned ? 'bg-info-subtle text-info' : 'bg-warning-subtle text-warning'">
-                      {{ record.isReturned ? 'Returned' : 'Pending' }}
-                    </span>
-                  </td>
-                  <td class="text-center">
-                    <span class="badge" [ngClass]="record.isApproved ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'">
-                      {{ record.isApproved ? 'Approved' : 'Pending' }}
-                    </span>
-                  </td>
-                  <td>{{ record.createdOn | date:'dd MMM yyyy, hh:mm a' }}</td>
-                  <td class="text-center">
-                    <button class="btn btn-sm btn-outline-danger btn-return"
-                      *ngIf="!record.isReturned"
-                      (click)="returnMaterial(record.materialId)"
-                      title="Return Material">
-                      <i class="feather icon-corner-up-left me-1"></i> Return
-                    </button>
-                    <span *ngIf="record.IsReturned" class="text-muted">—</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
-            <!-- Pagination -->
-            <nav *ngIf="totalPages > 1" aria-label="Material records pagination" class="d-flex justify-content-center mt-3">
-              <ul class="pagination pagination-sm">
-                <li class="page-item" [class.disabled]="currentPage === 1">
-                  <a class="page-link" (click)="changePage(currentPage - 1)" href="javascript:void(0)">
-                    <i class="feather icon-chevron-left"></i>
-                  </a>
-                </li>
-                <li class="page-item" *ngFor="let page of pageNumbers" [class.active]="page === currentPage">
-                  <a class="page-link" (click)="changePage(page)" href="javascript:void(0)">{{ page }}</a>
-                </li>
-                <li class="page-item" [class.disabled]="currentPage === totalPages">
-                  <a class="page-link" (click)="changePage(currentPage + 1)" href="javascript:void(0)">
-                    <i class="feather icon-chevron-right"></i>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-
-        </div>
-      </div>
-    </ng-container>
-  </div>
 
 </div>

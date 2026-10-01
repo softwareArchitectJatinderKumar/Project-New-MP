@@ -1,4 +1,6 @@
 export interface DressMaterialModel {
+Material?: string;
+RequestPerson?: string;
 Quantity: any;
 IsIssued: any;
 IsReturned: any;

@@ -163,33 +163,33 @@
               <tbody>
                 <tr *ngFor="let record of paginatedRecords; let i = index">
                   <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
-                  <td>{{ record.material }}</td>
-                  <td class="text-center fw-semibold">{{ record.quantity }}</td>
-                  <td>{{ record.requestPerson }}</td>
+                  <td>{{ record.Material || record.material }}</td>
+                  <td class="text-center fw-semibold">{{ record.Quantity || record.quantity }}</td>
+                  <td>{{ record.RequestPerson || record.requestPerson }}</td>
                   <td class="text-center">
-                    <span class="badge" [ngClass]="record.IsIssued ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'">
-                      {{ record.isIssued ? 'Yes' : 'No' }}
+                    <span class="badge" [ngClass]="(record.IsIssued || record.isIssued) ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'">
+                      {{ (record.IsIssued || record.isIssued) ? 'Yes' : 'No' }}
                     </span>
                   </td>
                   <td class="text-center">
-                    <span class="badge" [ngClass]="record.isReturned ? 'bg-info-subtle text-info' : 'bg-warning-subtle text-warning'">
-                      {{ record.isReturned ? 'Returned' : 'Pending' }}
+                    <span class="badge" [ngClass]="(record.IsReturned || record.isReturned) ? 'bg-info-subtle text-info' : 'bg-warning-subtle text-warning'">
+                      {{ (record.IsReturned || record.isReturned) ? 'Returned' : 'Pending' }}
                     </span>
                   </td>
                   <td class="text-center">
-                    <span class="badge" [ngClass]="record.isApproved ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'">
-                      {{ record.isApproved ? 'Approved' : 'Pending' }}
+                    <span class="badge" [ngClass]="(record.IsApproved || record.isApproved) ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'">
+                      {{ (record.IsApproved || record.isApproved) ? 'Approved' : 'Pending' }}
                     </span>
                   </td>
-                  <td>{{ record.createdOn | date:'dd MMM yyyy, hh:mm a' }}</td>
+                  <td>{{ (record.CreatedOn || record.createdOn) | date:'dd MMM yyyy, hh:mm a' }}</td>
                   <td class="text-center">
                     <button class="btn btn-sm btn-outline-danger btn-return"
-                      *ngIf="!record.isReturned"
-                      (click)="returnMaterial(record.materialId)"
+                      *ngIf="!(record.IsReturned || record.isReturned)"
+                      (click)="returnMaterial(record.MaterialId || record.materialId)"
                       title="Return Material">
                       <i class="feather icon-corner-up-left me-1"></i> Return
                     </button>
-                    <span *ngIf="record.IsReturned" class="text-muted">—</span>
+                    <span *ngIf="record.IsReturned || record.isReturned" class="text-muted">—</span>
                   </td>
                 </tr>
               </tbody>
