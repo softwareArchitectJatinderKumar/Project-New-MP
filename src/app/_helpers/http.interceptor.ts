@@ -25,7 +25,7 @@ export class HttpRequestInterceptor implements HttpInterceptor {
           !req.url.includes('auth/signin') &&
           error.status === 401
         ) {
-          return this.handle401Error(req, next);
+          return this.handle401Error(req, next, error);
         }
 
         return throwError(() => error);
@@ -33,7 +33,7 @@ export class HttpRequestInterceptor implements HttpInterceptor {
     );
   }
 
-  private handle401Error(request: HttpRequest<any>, next: HttpHandler) {
+  private handle401Error(request: HttpRequest<any>, next: HttpHandler, error: any) {
     if (!this.isRefreshing) {
       this.isRefreshing = true;
 
@@ -42,7 +42,7 @@ export class HttpRequestInterceptor implements HttpInterceptor {
       }
     }
 
-    return next.handle(request);
+    return throwError(() => error);
   }
 }
 

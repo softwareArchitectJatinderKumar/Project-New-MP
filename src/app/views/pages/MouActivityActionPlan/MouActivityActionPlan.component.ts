@@ -1497,6 +1497,7 @@ export class MouActivityActionPlanComponent implements OnInit {
 
     if (loginName != '' && loginName != undefined) {
       this.storageService.clean();
+      this.mouDocumentsService.clearEmployeeDetailsCache();
       this.getToken(loginName);
     }
   }
@@ -1511,8 +1512,8 @@ export class MouActivityActionPlanComponent implements OnInit {
         ) {
           this.LoginFailed('Token Expired');
         }
-        this.getAllPlannerSession();
         this.GetEmployeeDetails();
+        this.getAllPlannerSession();
         this.GetAllActivities();
         this.GetEmployeeData();
         this.setupEmployeeControl();
@@ -1540,7 +1541,8 @@ export class MouActivityActionPlanComponent implements OnInit {
         if (response.item1.length > 0) {
           this.EmployeeDetails = response.item1;
           this.EmployeeName = response.item1[0].employeeName;
-          // this.EmployeeCode = response.item1[0].employeeCode; // // Hardcoded as per original
+          this.EmployeeCode = response.item1[0].employeeCode; // // Hardcoded as per original
+          // alert(this.EmployeeCode);
           const drcStaffUids = [
             '31309',
             '34350',
@@ -2168,20 +2170,67 @@ export class MouActivityActionPlanComponent implements OnInit {
     });
   }
 
+  getReminderStatus(row: any): 'SEND' | 'SEND_AGAIN' | 'ALREADY_SENT' {
+    if (!row) return 'SEND';
+    const recordId = row.id != null ? String(row.id) : (row.Id != null ? String(row.Id) : null);
+
+    // If sent in the current session
+    if (recordId && this.reminderDisabled[recordId]) {
+      return 'ALREADY_SENT';
+    }
+
+    if (!row.reminderEmailSentOn) {
+      return 'SEND';
+    }
+
+    const sentDate = new Date(row.reminderEmailSentOn);
+    if (isNaN(sentDate.getTime())) {
+      return 'ALREADY_SENT';
+    }
+
+    const now = new Date();
+    const sentMidnight = new Date(sentDate.getFullYear(), sentDate.getMonth(), sentDate.getDate());
+    const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const diffDays = Math.floor((todayMidnight.getTime() - sentMidnight.getTime()) / (1000 * 60 * 60 * 24));
+
+    // 8th day and onwards: allow sending reminder again
+    if (diffDays >= 7) {
+      return 'SEND_AGAIN';
+    } else {
+      // 1 to 7 days count: show reminder already sent
+      return 'ALREADY_SENT';
+    }
+  }
+
+  isReminderSent(row: any): boolean {
+    return this.getReminderStatus(row) === 'ALREADY_SENT';
+  }
+
+  isReminderSending(row: any): boolean {
+    if (!row) return false;
+    const recordId = row.id != null ? String(row.id) : (row.Id != null ? String(row.Id) : null);
+    if (recordId) {
+      return !!this.reminderSending[recordId];
+    }
+    return false;
+  }
+
   ConfirmSendReminder() {
     const rows = this.selectedRow;
-    const key = String(rows?.id ?? rows?.mouId ?? '');
+    const key = rows?.id != null ? String(rows.id) : (rows?.Id != null ? String(rows.Id) : '');
 
     if (!this.AssignedToUid) {
       swal.fire('Error', 'Please select a UID to send the reminder', 'error');
       return;
     }
 
-    // Prevent duplicate sends / respect previous success
-    if (this.reminderSending[key]) return;
-    if (this.reminderDisabled[key]) return;
+    // Prevent duplicate sends if sending is in progress or already sent within 7 days
+    if (this.isReminderSending(rows)) return;
+    if (this.getReminderStatus(rows) === 'ALREADY_SENT') return;
 
-    this.reminderSending[key] = true;
+    if (key) {
+      this.reminderSending[key] = true;
+    }
 
     this.MouidX = rows?.mouId ?? '';
     const AssignedBy = rows?.actionAssignedBy ?? '';
@@ -2207,7 +2256,6 @@ export class MouActivityActionPlanComponent implements OnInit {
     const emailSubject =
       'Reminder: Pending MoU Activities for Academic Year 2026-2027';
     const emailBody = `Dear Sir/Madam, this is a gentle reminder that certain MoU-related activities are still pending for action in your account. You are kindly requested to review and complete the necessary action at the earliest to clear the pendency. Kindly upload the MoU-related activities for the academic year 2026-2027 by using path: MoU -> MoU Activity -> Take Action and complete the required action at the earliest. For any further queries or assistance, you are requested to visit the Department of Research Collaboration, Block 38-207, Cabin No. 1 or 4 or 8.`;
-    // Dear Sir/Madam, This is a gentle reminder that certain MoU-related activities are still pending for action in your account. You are kindly requested to review and complete the necessary action at the earliest to clear the pendency. Kindly upload the Mou-related activities for the academic year 2026-24 by using path Mou-> Mou Activity -> Take action and complete the required action. For any queries or assistance, your are requested to visit the Department of Research Collaboration, Block 38-207 , Cabin no -1 or 4 or 8.
     formData.append('EmailSubject', emailSubject);
     formData.append('EmailBody', emailBody);
     this.modalService.dismissAll();
@@ -2216,27 +2264,37 @@ export class MouActivityActionPlanComponent implements OnInit {
       next: (data: any) => {
         const result = data?.item1?.[0]?.msg;
         if (result === 'Successfully' || result === 'success') {
-          // mark disabled for this row on success
-          this.reminderDisabled[key] = true;
+          // mark disabled only for this specific record id on success
+          if (key) {
+            this.reminderDisabled[key] = true;
+          }
+          if (rows) {
+            rows.reminderEmailSentOn = new Date().toISOString();
+          }
           this.showAlert('Reminder Email Sent Successfully!', 'success');
         } else if (result === 'failed') {
-          // keep enabled on failure
-          this.reminderDisabled[key] = false;
+          if (key) {
+            this.reminderDisabled[key] = false;
+          }
           this.showAlert('Failed to Send Email!', 'error');
         } else {
-          this.reminderDisabled[key] = false;
+          if (key) {
+            this.reminderDisabled[key] = false;
+          }
           this.showAlert('Sending Email Failed', 'error');
         }
       },
       error: (err) => {
         console.error('API Error:', err);
-        // keep enabled on error
-        this.reminderDisabled[key] = false;
+        if (key) {
+          this.reminderDisabled[key] = false;
+        }
         this.showAlert('Something went wrong', 'error');
       },
       complete: () => {
-        // reset sending flag; if success we keep disabled true
-        this.reminderSending[key] = false;
+        if (key) {
+          this.reminderSending[key] = false;
+        }
         this.clearFields();
         this.reloadGrid2();
       },
@@ -2247,6 +2305,14 @@ export class MouActivityActionPlanComponent implements OnInit {
     if (!rows) {
       console.error('Rows data is null or undefined');
       return;
+    }
+
+    const key = rows?.id != null ? String(rows.id) : (rows?.Id != null ? String(rows.Id) : '');
+    if (this.isReminderSending(rows)) return;
+    if (this.getReminderStatus(rows) === 'ALREADY_SENT') return;
+
+    if (key) {
+      this.reminderSending[key] = true;
     }
 
     this.MouidX = rows?.mouId ?? '';
@@ -2275,16 +2341,33 @@ export class MouActivityActionPlanComponent implements OnInit {
 
     this.mouDocumentsService.MouReminderEmail(formData).subscribe({
       next: (data: any) => {
-        if (data?.item1?.[0]?.msg === 'success') {
+        if (data?.item1?.[0]?.msg === 'success' || data?.item1?.[0]?.msg === 'Successfully') {
           this.showAlert('Reminder Email Sent Successfully!', 'success');
+          if (key) {
+            this.reminderDisabled[key] = true;
+          }
+          if (rows) {
+            rows.reminderEmailSentOn = new Date().toISOString();
+          }
         } else {
+          if (key) {
+            this.reminderDisabled[key] = false;
+          }
         }
       },
       error: (err) => {
         console.error('API Error:', err);
+        if (key) {
+          this.reminderDisabled[key] = false;
+        }
         this.showAlert('Something went wrong', 'error');
       },
-      complete: () => this.clearFields(),
+      complete: () => {
+        if (key) {
+          this.reminderSending[key] = false;
+        }
+        this.clearFields();
+      },
     });
   }
 }

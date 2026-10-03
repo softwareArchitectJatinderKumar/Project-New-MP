@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { MouDocumentsService } from 'src/app/_services/mou-documents.service';
+import { StorageService } from 'src/app/_services/storage.service';
 
 export interface MouMenu {
   id: number;
@@ -13,21 +16,28 @@ export interface MouMenu {
 @Component({
   selector: 'app-mou-menu',
   templateUrl: './mou-menu.component.html',
-  styleUrls: ['./mou-menu.component.css']
+  styleUrls: ['./mou-menu.component.css'],
 })
-export class MouMenuComponent implements OnInit {
+export class MouMenuComponent implements OnInit, OnDestroy {
   loginName: string = '';
   employeeCode: string = '';
+  private destroy$ = new Subject<void>();
 
   constructor(
-    private router: Router, 
+    private router: Router,
     private route: ActivatedRoute,
-    private mouDocumentsService: MouDocumentsService
-  ) { }
+    private storageService: StorageService,
+    private mouDocumentsService: MouDocumentsService,
+  ) {}
 
   ngOnInit(): void {
     this.extractLoginName();
     this.checkMenuAccess();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   extractLoginName(): void {
@@ -42,7 +52,12 @@ export class MouMenuComponent implements OnInit {
       const urlSegments = this.router.url.split('/');
       if (urlSegments.length > 0) {
         const lastSegment = urlSegments[urlSegments.length - 1];
-        if (lastSegment && !lastSegment.includes('?') && lastSegment !== 'home' && lastSegment !== '') {
+        if (
+          lastSegment &&
+          !lastSegment.includes('?') &&
+          lastSegment !== 'home' &&
+          lastSegment !== ''
+        ) {
           this.loginName = lastSegment;
         }
       }
@@ -50,28 +65,59 @@ export class MouMenuComponent implements OnInit {
   }
 
   checkMenuAccess(): void {
-    this.mouDocumentsService.GetEmployeeDetails().subscribe({
-      next: response => {
+    // Listen for employee details emitted by any component
+    this.mouDocumentsService.employeeDetails$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((response) => {
         if (response && response.item1 && response.item1.length > 0) {
-          this.employeeCode = response.item1[0].employeeCode ? response.item1[0].employeeCode.toString().trim() : '';
+          this.employeeCode = response.item1[0].employeeCode
+            ? response.item1[0].employeeCode.toString().trim()
+            : '';
+          this.updateMenuVisibility();
         }
-        this.updateMenuVisibility();
-      },
-      error: () => {
-        this.updateMenuVisibility();
-      }
-    });
+      });
+
+    // If already logged in with a valid token, ensure details are fetched (cached via shareReplay)
+    if (this.storageService.isLoggedIn()) {
+      this.mouDocumentsService
+        .GetEmployeeDetails()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            if (response && response.item1 && response.item1.length > 0) {
+              this.employeeCode = response.item1[0].employeeCode
+                ? response.item1[0].employeeCode.toString().trim()
+                : '';
+            }
+            this.updateMenuVisibility();
+          },
+          error: () => {
+            this.updateMenuVisibility();
+          },
+        });
+    }
   }
 
   updateMenuVisibility(): void {
-    const allowedCodes = ['34350', '16865', '31309', '34589', '31930'];
+    const allowedCodes = [
+      '31309',
+      '34350',
+      '16865',
+      '29364',
+      '31930',
+      '31352',
+      '30683',
+      '22648',
+    ];
     const hasFullAccess = allowedCodes.includes(this.employeeCode);
 
-    this.menus.forEach(menu => {
+    this.menus.forEach((menu) => {
       if (hasFullAccess) {
         menu.visible = true;
       } else {
-        menu.visible = (menu.route === '/MouNewRequest' || menu.route === '/MouActivityTakeAction');
+        menu.visible =
+          menu.route === '/MouNewRequest' ||
+          menu.route === '/MouActivityTakeAction';
       }
     });
   }
@@ -82,36 +128,36 @@ export class MouMenuComponent implements OnInit {
       title: 'New MOU Request ',
       route: '/MouNewRequest',
       icon: 'bi bi-house-door-fill',
-      visible: true
+      visible: true,
     },
     {
       id: 3,
       title: 'MOU Approval',
       route: '/MouApprovals',
       icon: 'bi bi-check-circle-fill',
-      visible: true
+      visible: true,
     },
     {
       id: 4,
       title: 'MOU Plan Activity',
       route: '/MouActivityPlan',
       icon: 'bi bi-calendar-event-fill',
-      visible: true
+      visible: true,
     },
     {
       id: 5,
       title: 'MOU Take Action',
       route: '/MouActivityTakeAction',
       icon: 'bi bi-lightning-charge-fill',
-      visible: true
+      visible: true,
     },
     {
       id: 6,
       title: 'MOU Activity Approval',
       route: '/MouActivityApprovals',
       icon: 'bi bi-clipboard-check-fill',
-      visible: true
-    }
+      visible: true,
+    },
   ];
 
   navigate(menu: MouMenu): void {

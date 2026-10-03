@@ -18,17 +18,16 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { MaterialModule } from 'src/material.module'; 
 
 import { MouActivityActionPlanComponent } from './MouActivityActionPlan.component';
-import {} from './MouActivityActionPlan.component'
 import { MouMenuModule } from '../Mou-Menu-Bar/mou-menu.module';
 
 const routes: Routes = [
   {
     path: '',
-    component: MouActivityActionPlanComponent
-  }
-]
+    component: MouActivityActionPlanComponent,
+  },
+];
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
-  suppressScrollX: true
+  suppressScrollX: true,
 };
 @NgModule({
   declarations: [MouActivityActionPlanComponent],
@@ -47,14 +46,9 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     NgbModule,
     ReactiveFormsModule,
     NgSelectModule,
-    CommonModule,
-    RouterModule.forChild(routes),
-    ArchwizardModule,ReactiveFormsModule,
+    ArchwizardModule,
     MaterialModule,
-    MouMenuModule
-
-    
-
+    MouMenuModule,
   ],
   providers: [
     DatePipe,

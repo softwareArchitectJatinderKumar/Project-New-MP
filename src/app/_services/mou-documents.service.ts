@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject, throwError } from 'rxjs';
+import { shareReplay, catchError, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 import { StorageService } from './storage.service';
@@ -22,10 +23,19 @@ export class MouDocumentsService {
   FileData: string;
   fileName: string;
 
+  private employeeDetailsSubject = new BehaviorSubject<any>(null);
+  public employeeDetails$ = this.employeeDetailsSubject.asObservable();
+  private employeeDetailsRequest$: Observable<any> | null = null;
+
   constructor(
     private http: HttpClient,
     private storageService: StorageService,
   ) {}
+
+  clearEmployeeDetailsCache(): void {
+    this.employeeDetailsRequest$ = null;
+    this.employeeDetailsSubject.next(null);
+  }
 
   // added on 14-May-26
 
@@ -50,12 +60,28 @@ export class MouDocumentsService {
     // return this.http.get(AUTH_API + 'api/Mou/GetUIDWiseMouDocumentDetails?Uid=' + Id, { headers });
   }
 
-  GetEmployeeDetails(): Observable<any> {
-    let token = this.storageService.getUser();
-    let headers = new HttpHeaders()
-      .set('Authorization', 'Bearer ' + token)
-      .set('Content-Type', 'application/json');
-    return this.http.get(AUTH_API + 'api/Mou/GetEmployeeDetails', { headers });
+  GetEmployeeDetails(forceRefresh: boolean = false): Observable<any> {
+    if (!this.employeeDetailsRequest$ || forceRefresh) {
+      let token = this.storageService.getUser();
+      let headers = new HttpHeaders()
+        .set('Authorization', 'Bearer ' + token)
+        .set('Content-Type', 'application/json');
+      this.employeeDetailsRequest$ = this.http
+        .get(AUTH_API + 'api/Mou/GetEmployeeDetails', { headers })
+        .pipe(
+          tap((response: any) => {
+            if (response && response.item1) {
+              this.employeeDetailsSubject.next(response);
+            }
+          }),
+          shareReplay(1),
+          catchError((err) => {
+            this.employeeDetailsRequest$ = null;
+            return throwError(() => err);
+          })
+        );
+    }
+    return this.employeeDetailsRequest$;
   }
 
   MouRenewalDetails(dataSoft: FormData): Observable<any> {

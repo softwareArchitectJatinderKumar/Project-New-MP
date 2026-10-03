@@ -12,17 +12,15 @@ export class AdmibistrativeService {
 
   constructor(private http: HttpClient,private storageService: StorageService) { }
  
-
-
   getRMSCategory(startdate: string, endDate: string, maintenance: string, Rmstype:string, status: string): Observable<any> {
     const token = this.storageService.getUser();
     const headers = new HttpHeaders()
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json');
-  
+
     return this.http.get(
       AUTH_API + 'api/RMS/GetRMSCategoryData',
-      { 
+      {
         headers,
         params: {
           startdate:startdate,
@@ -46,7 +44,7 @@ export class AdmibistrativeService {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
     .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+    .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
     return this.http.get(
@@ -60,7 +58,7 @@ export class AdmibistrativeService {
     let token = this.storageService.getUser();
     let headers = new HttpHeaders()
     .set('Authorization', 'Bearer ' + token)
-    .set('Content-Type', 'application/json'); 
+    .set('Content-Type', 'application/json');
 
     //httpOptions.headers.set('Authentication', 'Bearer ' + token);
     return this.http.get(

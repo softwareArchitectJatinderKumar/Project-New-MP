@@ -452,22 +452,51 @@
                         <ng-template let-row="row" ngx-datatable-cell-template>
                           <ng-container *ngIf="row.uid != null && row.uid !== 'undefined'; else noFaculty">
                             <span class="fw-bold ps-2 ">{{ row.uid }}</span> <br />
-                            <div class="col-3">
+                            <div class="col-12 mt-1">
 
-                              <ng-container *ngIf="selectedRow?.activityPerformed?.length > 0; else ReminderEmails">
+                              <ng-container *ngIf="row.activityPerformed != null && row.activityPerformed?.length > 0; else ReminderEmails">
                                 <p><strong>Activity Performed:</strong></p>
                                 <p class="text-danger fw-bold">
-                                  {{ selectedRow?.activityPerformed }}
+                                  {{ row.activityPerformed }}
                                 </p>
                               </ng-container>
 
                               <ng-template #ReminderEmails>
-                                <!-- <p><strong>Send Reminder Email</strong></p> -->
-                                <button type="button" [disabled]="row.reminderEmailSentOn != null "
-                                  class="btn btn-danger" (click)="ReminderEmailTab2(row)">
-                                  <!-- Send Reminder -->
-                                  <i class="bi bi-file-earmark-text"></i>
-                                </button>
+                                <ng-container *ngIf="isReminderSending(row)">
+                                  <span class="text-warning fw-bold d-inline-flex align-items-center">
+                                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                                    Sending Reminder...
+                                  </span>
+                                </ng-container>
+
+                                <ng-container *ngIf="!isReminderSending(row)">
+                                  <!-- When reminderEmailSentOn is not null: Reminder Already sent for 7 days -->
+                                  <ng-container *ngIf="getReminderStatus(row) === 'ALREADY_SENT'">
+                                    <span class="text-success fw-bold d-inline-flex align-items-center" title="Reminder email already sent">
+                                      <i class="bi bi-check-circle-fill me-1"></i> Reminder Already Sent
+                                    </span>
+                                    <span *ngIf="row.reminderEmailSentOn" class="d-block text-muted small">
+                                      {{ row.reminderEmailSentOn | date:'dd-MMM-yyyy' }}
+                                    </span>
+                                  </ng-container>
+
+                                  <!-- On 8th day from reminderEmailSentOn date: Send Reminder Again -->
+                                  <ng-container *ngIf="getReminderStatus(row) === 'SEND_AGAIN'">
+                                    <button type="button" class="btn btn-warning btn-sm text-dark fw-bold" (click)="ReminderEmailTab2(row)" title="Send Reminder Again">
+                                      <i class="bi bi-arrow-repeat me-1"></i> Send Reminder Again
+                                    </button>
+                                    <span *ngIf="row.reminderEmailSentOn" class="d-block text-muted small mt-1">
+                                      Last sent: {{ row.reminderEmailSentOn | date:'dd-MMM-yyyy' }}
+                                    </span>
+                                  </ng-container>
+
+                                  <!-- When reminderEmailSentOn is null: Send Reminder Email btn -->
+                                  <ng-container *ngIf="getReminderStatus(row) === 'SEND'">
+                                    <button type="button" class="btn btn-danger btn-sm" (click)="ReminderEmailTab2(row)" title="Send Reminder Email">
+                                      <i class="bi bi-file-earmark-text me-1"></i> Send Reminder Email
+                                    </button>
+                                  </ng-container>
+                                </ng-container>
                               </ng-template>
                             </div>
 
@@ -933,9 +962,38 @@
 
                 <ng-template #ReminderEmails>
                   <p><strong>Send Reminder Email</strong></p>
-                  <button type="button" class="btn btn-danger" (click)="ReminderEmailTab1(selectedRow)">
-                    <i class="bi bi-envelope-exclamation"></i>
-                  </button>
+                  <ng-container *ngIf="isReminderSending(selectedRow)">
+                    <span class="text-warning fw-bold d-inline-flex align-items-center">
+                      <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                      Sending Reminder...
+                    </span>
+                  </ng-container>
+                  <ng-container *ngIf="!isReminderSending(selectedRow)">
+                    <!-- When reminderEmailSentOn is not null: Reminder Already sent for 7 days -->
+                    <ng-container *ngIf="getReminderStatus(selectedRow) === 'ALREADY_SENT'">
+                      <span class="text-success fw-bold d-inline-flex align-items-center" title="Reminder email already sent">
+                        <i class="bi bi-check-circle-fill me-1"></i> Reminder Already Sent
+                      </span>
+                      <span *ngIf="selectedRow?.reminderEmailSentOn" class="d-block text-muted small">
+                        {{ selectedRow?.reminderEmailSentOn | date:'dd-MMM-yyyy' }}
+                      </span>
+                    </ng-container>
+                    <!-- On 8th day from reminderEmailSentOn date: Send Reminder Again -->
+                    <ng-container *ngIf="getReminderStatus(selectedRow) === 'SEND_AGAIN'">
+                      <button type="button" class="btn btn-warning text-dark fw-bold" (click)="ReminderEmailTab1(selectedRow)">
+                        <i class="bi bi-arrow-repeat me-1"></i> Send Reminder Again
+                      </button>
+                      <span *ngIf="selectedRow?.reminderEmailSentOn" class="d-block text-muted small mt-1">
+                        Last sent: {{ selectedRow?.reminderEmailSentOn | date:'dd-MMM-yyyy' }}
+                      </span>
+                    </ng-container>
+                    <!-- When reminderEmailSentOn is null: Send Reminder Email btn -->
+                    <ng-container *ngIf="getReminderStatus(selectedRow) === 'SEND'">
+                      <button type="button" class="btn btn-danger" (click)="ReminderEmailTab1(selectedRow)">
+                        <i class="bi bi-envelope-exclamation me-1"></i> Send Reminder Email
+                      </button>
+                    </ng-container>
+                  </ng-container>
                 </ng-template>
               </div>
 
@@ -1317,7 +1375,10 @@
       </div>
     </div>
     <div class="mt-4">
-      <button class="btn btn-danger w-100" (click)="ConfirmSendReminder()">Send Reminder Email</button>
+      <button class="btn btn-danger w-100" [disabled]="isReminderSending(selectedRow)" (click)="ConfirmSendReminder()">
+        <span *ngIf="isReminderSending(selectedRow)" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+        {{ isReminderSending(selectedRow) ? 'Sending Reminder Email...' : 'Send Reminder Email' }}
+      </button>
     </div>
   </div>
 </ng-template>
