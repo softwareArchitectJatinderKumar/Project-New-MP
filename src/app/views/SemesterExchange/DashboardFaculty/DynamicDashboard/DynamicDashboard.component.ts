@@ -178,6 +178,50 @@ interface Employee {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DynamicDashboardComponent implements OnInit {
+
+
+
+  ResetUniversities(RegId: string): void {
+    if (!RegId) return;
+
+    Swal.fire({
+      title: 'Reset University Preferences?',
+      text: `Are you sure you want to reset university preferences for Registration No: ${RegId}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, reset it!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loadingIndicator = true;
+        const startTime = Date.now();
+
+        this.studentService
+          .ResetUniversityPreferences(RegId)
+          .pipe(finalize(() => this.stopLoader(startTime)))
+          .subscribe({
+            next: (data: any) => {
+              const msg = data?.item1?.[0]?.msg ?? data?.item1?.[0]?.Msg;
+              if (msg === 'Success') {
+                Swal.fire('Success!', 'Action was successfully Processed', 'success').then(() =>
+                  this.getSEAllApplications(),
+                );
+              } else if (msg === 'Failed') {
+                Swal.fire('Info', 'Action was not Processed', 'info');
+              } else {
+                Swal.fire('Error!', 'Failed to Reset application.', 'error');
+              }
+            },
+            error: () =>
+              Swal.fire(
+                'Error!',
+                'An error occurred while trying to Reset the application.',
+                'error',
+              ),
+          });
+      }
+    });
+  }
   // added on 16-July-26
   @ViewChild('ForwardToUIDModal') ForwardToUIDModal!: TemplateRef<any>;
   SelectedRegNo: any;
@@ -2366,7 +2410,7 @@ export class DynamicDashboardComponent implements OnInit {
             isApp === false || isApp === 0 || isApp === '0' || isApp === 'False' || isApp === 'false' ||
             String(isApp).trim().toLowerCase() === 'rejected' ||
             String(isApp).trim().toLowerCase() === 'disapproved'
-        ) && 
+        ) &&
         (
             isLock === false || isLock === 0 || isLock === '0' || isLock === 'False' || isLock === 'false' ||
             isLock === null || isLock === undefined

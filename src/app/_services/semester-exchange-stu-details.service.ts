@@ -789,4 +789,19 @@ export class SemesterExchangeStuDetailsService {
       { headers: headers, responseType: 'blob' },
     );
   }
+
+  ResetUniversityPreferences(RegId: string): Observable<any> {
+    const authToken = this.storageService.getUser();
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${authToken}`,
+    });
+
+    return this.http.post(
+      // `${this.baseUrl}api/SemesterExchangeStudent/ResetUniversityPreferences?Id=${RegId}`,
+      `'https://localhost:44362/api/SemesterExchangeStudent/ResetUniversityPreferences?Id=${RegId}`,
+      {},
+      { headers },
+    );
+  }
 }

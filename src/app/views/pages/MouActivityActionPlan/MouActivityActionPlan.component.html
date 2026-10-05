@@ -28,7 +28,8 @@
         (click)="reloadGrid1()" data-bs-target="#AssignActivities" type="button" role="tab">Assign Activity</button>
 
       <button class="btn btn-lg ms-5" id="MyAllAssignActivities-tab" data-bs-toggle="tab" style="padding: .95rem 8rem;"
-        (click)="reloadGrid2()" data-bs-target="#MyAllAssignActivities" type="button" role="tab">{{ isDrcStaff ? 'Activities Assigned DRC Staff' : 'Activities Assigned (by Me)' }}</button>
+        (click)="reloadGrid2()" data-bs-target="#MyAllAssignActivities" type="button" role="tab">{{ isDrcStaff ?
+        'Activities Assigned DRC Staff' : 'Activities Assigned (by Me)' }}</button>
 
       <button *ngIf="!isDrcStaff" class="btn btn-lg ms-5 d-none" id="OthersAllAssignActivities-tab" data-bs-toggle="tab"
         style="padding: .95rem 8rem;" (click)="reloadGrid()" data-bs-target="#OthersAllAssignActivities" type="button"
@@ -147,13 +148,13 @@
                   </ngx-datatable-column>
 
 
-                     <ngx-datatable-column name=" Mou Category " [sortable]="false" prop="Id">
-                        <ng-template let-row="row" ngx-datatable-cell-template>
-                          <ng-container *ngIf="row.mouCategory != null">
-                            <span class="fw-bold ps-2"> {{ row.mouCategory }}</span>
-                          </ng-container>
-                        </ng-template>
-                      </ngx-datatable-column>
+                  <ngx-datatable-column name=" Mou Category " [sortable]="false" prop="Id">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                      <ng-container *ngIf="row.mouCategory != null">
+                        <span class="fw-bold ps-2"> {{ row.mouCategory }}</span>
+                      </ng-container>
+                    </ng-template>
+                  </ngx-datatable-column>
 
 
                   <ngx-datatable-column name="School Division " prop="schoolDivisionInvolved">
@@ -454,7 +455,8 @@
                             <span class="fw-bold ps-2 ">{{ row.uid }}</span> <br />
                             <div class="col-12 mt-1">
 
-                              <ng-container *ngIf="row.activityPerformed != null && row.activityPerformed?.length > 0; else ReminderEmails">
+                              <ng-container
+                                *ngIf="row.activityPerformed != null && row.activityPerformed?.length > 0; else ReminderEmails">
                                 <p><strong>Activity Performed:</strong></p>
                                 <p class="text-danger fw-bold">
                                   {{ row.activityPerformed }}
@@ -464,7 +466,8 @@
                               <ng-template #ReminderEmails>
                                 <ng-container *ngIf="isReminderSending(row)">
                                   <span class="text-warning fw-bold d-inline-flex align-items-center">
-                                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                                    <span class="spinner-border spinner-border-sm me-1" role="status"
+                                      aria-hidden="true"></span>
                                     Sending Reminder...
                                   </span>
                                 </ng-container>
@@ -472,7 +475,8 @@
                                 <ng-container *ngIf="!isReminderSending(row)">
                                   <!-- When reminderEmailSentOn is not null: Reminder Already sent for 7 days -->
                                   <ng-container *ngIf="getReminderStatus(row) === 'ALREADY_SENT'">
-                                    <span class="text-success fw-bold d-inline-flex align-items-center" title="Reminder email already sent">
+                                    <span class="text-success fw-bold d-inline-flex align-items-center"
+                                      title="Reminder email already sent">
                                       <i class="bi bi-check-circle-fill me-1"></i> Reminder Already Sent
                                     </span>
                                     <span *ngIf="row.reminderEmailSentOn" class="d-block text-muted small">
@@ -482,7 +486,8 @@
 
                                   <!-- On 8th day from reminderEmailSentOn date: Send Reminder Again -->
                                   <ng-container *ngIf="getReminderStatus(row) === 'SEND_AGAIN'">
-                                    <button type="button" class="btn btn-warning btn-sm text-dark fw-bold" (click)="ReminderEmailTab2(row)" title="Send Reminder Again">
+                                    <button type="button" class="btn btn-warning btn-sm text-dark fw-bold"
+                                      (click)="ReminderEmailTab2(row)" title="Send Reminder Again">
                                       <i class="bi bi-arrow-repeat me-1"></i> Send Reminder Again
                                     </button>
                                     <span *ngIf="row.reminderEmailSentOn" class="d-block text-muted small mt-1">
@@ -492,8 +497,9 @@
 
                                   <!-- When reminderEmailSentOn is null: Send Reminder Email btn -->
                                   <ng-container *ngIf="getReminderStatus(row) === 'SEND'">
-                                    <button type="button" class="btn btn-danger btn-sm" (click)="ReminderEmailTab2(row)" title="Send Reminder Email">
-                                      <i class="bi bi-file-earmark-text me-1"></i> Send Reminder Email
+                                    <button type="button" class="btn btn-danger btn-sm" (click)="ReminderEmailTab2(row)"
+                                      title="Send Reminder Email">
+                                      <i class="bi bi-envelope"></i> Reminder
                                     </button>
                                   </ng-container>
                                 </ng-container>
@@ -535,7 +541,7 @@
                           </button>
                           <button class="btn btn-danger ms-2 me-2 " (click)="DeleteACtion(row)">
                             <!-- Modify Faculty  -->
-                          <i class="bi bi-trash "></i>
+                            <i class="bi bi-trash "></i>
                           </button>
                         </ng-template>
                       </ngx-datatable-column>
@@ -680,7 +686,7 @@
                         </ng-template>
                       </ngx-datatable-column>
 
-                     <ngx-datatable-column name=" Mou Category " [sortable]="false" prop="Id">
+                      <ngx-datatable-column name=" Mou Category " [sortable]="false" prop="Id">
                         <ng-template let-row="row" ngx-datatable-cell-template>
                           <ng-container *ngIf="row.mouCategory != null">
                             <span class="fw-bold ps-2"> {{ row.mouCategory }}</span>
@@ -837,7 +843,6 @@
         <div class="card-body vh-100">
           <h2 class="modal-title text-center" id="exampleModalLabel">MOU Action Plan Re-Assign UID </h2>
           <form #UpdateUIDForm="ngForm" (ngSubmit)="UploadUID()" class="p-4 bg-white rounded shadow-sm">
-
             <div class="row g-3 mb-3">
               <div class="col-md-6">
                 <label class="form-label fw-bold">MOU ID</label>
@@ -848,8 +853,6 @@
                 <div class="form-control bg-light">{{ MouTitleX }}</div>
               </div>
             </div>
-
-
             <div class="mb-3">
               <label for="responsiblePerson" class="form-label fw-bold">Concerned Faculty</label>
               <div class="position-relative">
@@ -860,7 +863,6 @@
                 <div class="text-danger mt-1 small" *ngIf="employeeControl.invalid && employeeControl.touched">
                   Faculty is required.
                 </div>
-
                 <!-- Suggestions -->
                 <div *ngIf="showSuggestions && filteredEmployeesData.length"
                   class="list-group position-absolute w-100 shadow-sm z-3">
@@ -875,7 +877,6 @@
                 Applying to UID: <strong>{{ AssignedToUid }}</strong>
               </div>
             </div>
-
             <!-- Dates & Activity Info in Single Row -->
             <div class="row g-3 mb-3">
               <div class="col-md-4">
@@ -891,13 +892,11 @@
                 <div class="form-control bg-light">{{ ActivityDetailsX }}</div>
               </div> -->
             </div>
-
             <!-- Remarks in One Line -->
             <div class="mb-3">
               <label class="form-label fw-bold">Remarks</label>
               <div class="form-control bg-light">{{ RemarksX }}</div>
             </div>
-
             <!-- Submit Button -->
             <div class="text-end mt-4">
               <button type="submit" class="btn btn-success px-4" [disabled]="!uploadEnabled">
@@ -905,7 +904,6 @@
               </button>
             </div>
           </form>
-
         </div>
       </div>
     </div>
@@ -971,7 +969,8 @@
                   <ng-container *ngIf="!isReminderSending(selectedRow)">
                     <!-- When reminderEmailSentOn is not null: Reminder Already sent for 7 days -->
                     <ng-container *ngIf="getReminderStatus(selectedRow) === 'ALREADY_SENT'">
-                      <span class="text-success fw-bold d-inline-flex align-items-center" title="Reminder email already sent">
+                      <span class="text-success fw-bold d-inline-flex align-items-center"
+                        title="Reminder email already sent">
                         <i class="bi bi-check-circle-fill me-1"></i> Reminder Already Sent
                       </span>
                       <span *ngIf="selectedRow?.reminderEmailSentOn" class="d-block text-muted small">
@@ -980,7 +979,8 @@
                     </ng-container>
                     <!-- On 8th day from reminderEmailSentOn date: Send Reminder Again -->
                     <ng-container *ngIf="getReminderStatus(selectedRow) === 'SEND_AGAIN'">
-                      <button type="button" class="btn btn-warning text-dark fw-bold" (click)="ReminderEmailTab1(selectedRow)">
+                      <button type="button" class="btn btn-warning text-dark fw-bold"
+                        (click)="ReminderEmailTab1(selectedRow)">
                         <i class="bi bi-arrow-repeat me-1"></i> Send Reminder Again
                       </button>
                       <span *ngIf="selectedRow?.reminderEmailSentOn" class="d-block text-muted small mt-1">
@@ -996,8 +996,6 @@
                   </ng-container>
                 </ng-template>
               </div>
-
-
             </div>
           </div>
         </div>
@@ -1228,10 +1226,7 @@
         <div *ngIf="renewalFileError" class="text-danger small">{{renewalFileError}}</div>
       </div>
     </div>
-
-
   </div>
-
   <div class="modal-footer justify-content-center border-0 pb-4">
     <button type="button" class="btn btn-secondary px-4" (click)="modal.dismiss()">Cancel</button>
     <button type="button" class="btn btn-dark px-4" (click)="onSubmitModal()">
@@ -1246,111 +1241,70 @@
     <h5 class="modal-title">
       Modify Faculty
     </h5>
-
     <button type="button" class="btn-close" (click)="modal.dismiss()">
     </button>
   </div>
-
   <div class="modal-body">
-
     <div class="card shadow-sm">
-
       <div class="card-body">
-
         <form #PUpdateUid="ngForm" (ngSubmit)="UpdateUID()">
-
           <div class="row mb-4">
-
             <div class="col-md-6">
-
               <label class="form-label">
                 MOU ID
               </label>
-
               <input class="form-control" [value]="'MOU/' + newMouid" disabled>
-
             </div>
-
             <div class="col-md-6">
-
               <label class="form-label">
                 Title
               </label>
-
               <input class="form-control" [value]="TitleS" disabled>
-
             </div>
-
           </div>
-
           <!-- Employee Search -->
-
           <div class="mb-4 position-relative">
-
             <label class="form-label">
               New Concerned Faculty
             </label>
-
             <input type="text" class="form-control" [formControl]="employeeControl3" (input)="onInput3()"
               (keydown)="onKeydown3($event)" (focus)="showSuggestions3=true" (blur)="hideSuggestions3()"
               autocomplete="off" placeholder="Search Faculty">
-
             <div *ngIf="showSuggestions3 && filteredEmployeesData3?.length"
               class="position-absolute bg-white border rounded shadow-sm w-100" style="
                 max-height:250px;
                 overflow-y:auto;
                 z-index:9999;
               ">
-
               <div *ngFor="
                   let emp of filteredEmployeesData3;
                   let i=index
                 " class="p-2 border-bottom cursor-pointer" [class.bg-light]="
                   i===activeSuggestionIndex3
                 " (mousedown)="selectEmployee3(emp)">
-
                 {{ emp.employeeName }}
                 ({{ emp.employeeCode }})
-
               </div>
-
             </div>
-
           </div>
-
           <!-- Remarks -->
-
           <div class="mb-4">
-
             <label class="form-label">
               Remarks
             </label>
-
             <textarea class="form-control" rows="4" name="remarks3" [(ngModel)]="remarks3" required>
             </textarea>
-
           </div>
-
           <!-- Buttons -->
-
           <div class="text-end">
-
             <button type="button" class="btn btn-secondary me-2" (click)="modal.dismiss()">
-
               Close
-
             </button>
-
             <button type="submit" class="btn btn-primary" [disabled]="!checkFormValidity3()">
-
               Update Faculty
-
             </button>
-
           </div>
-
         </form>
-
       </div>
 
     </div>
@@ -1376,7 +1330,8 @@
     </div>
     <div class="mt-4">
       <button class="btn btn-danger w-100" [disabled]="isReminderSending(selectedRow)" (click)="ConfirmSendReminder()">
-        <span *ngIf="isReminderSending(selectedRow)" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+        <span *ngIf="isReminderSending(selectedRow)" class="spinner-border spinner-border-sm me-1" role="status"
+          aria-hidden="true"></span>
         {{ isReminderSending(selectedRow) ? 'Sending Reminder Email...' : 'Send Reminder Email' }}
       </button>
     </div>
