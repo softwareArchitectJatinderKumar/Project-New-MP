@@ -1277,7 +1277,7 @@ export class MouDocumentsReportComponent implements OnInit {
     formData.append('Message', emailBody);
     formData.append('EmailSubject', emailSubject);
     formData.append('EmailBody', emailBody);
-
+    formData.append('InterfaceName', 'MouApprovals');
     this.modalService.dismissAll();
 
     this.mouDocumentsService.MouReminderEmail(formData).subscribe({

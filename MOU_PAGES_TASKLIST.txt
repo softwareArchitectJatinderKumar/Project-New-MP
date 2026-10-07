@@ -1,0 +1,548 @@
+====================================================================================================
+                        LPU MULTIPROJECT - MEMORANDUM OF UNDERSTANDING (MOU)
+                        COMPREHENSIVE UI & BACKEND LOGIC TASKLIST SPECIFICATION
+====================================================================================================
+Source File: e:\2025\Projects\MultiProject\src\app\app-routing.module.ts
+Document Purpose: Complete functional, technical, UI/UX, and backend/database task breakdown across
+                  all MoU pages registered in the application routing module.
+Target Format: Standalone structured tasklist (at least 25 actionable tasks per MoU page).
+
+====================================================================================================
+TABLE OF CONTENTS & PAGE ROUTE INDEX
+====================================================================================================
+1. PAGE 1: MoU Initial Approval & Forwarding Interface
+   - Route: MoUApproval/:loginName
+   - Component: MoUApprovalComponent
+   - Module: MoUApprovalModule
+   - Tasks: Tasks 1.01 to 1.30 (30 Tasks)
+
+2. PAGE 2: MoU New Request, Document Upload & Renewal Management
+   - Route: MouNewRequest/:loginName
+   - Component: MouDocumentsUploadsComponent
+   - Module: MouDocumentsUploadsModule
+   - Tasks: Tasks 2.01 to 2.30 (30 Tasks)
+
+3. PAGE 3: MoU Document Approvals, Reassignment & Reminder System (HOS/Head View)
+   - Route: MouApprovals/:loginName
+   - Component: MouDocumentsReportComponent (New-Changes)
+   - Module: MouDocumentsReportModule
+   - Tasks: Tasks 3.01 to 3.30 (30 Tasks)
+
+4. PAGE 4: MoU Activity Action Planning & Faculty Assignment
+   - Route: MouActivityPlan/:loginName
+   - Component: MouActivityActionPlanComponent
+   - Module: MouActivityActionPlanModule
+   - Tasks: Tasks 4.01 to 4.30 (30 Tasks)
+
+5. PAGE 5: MoU Activity Execution & Action Taken Workflow
+   - Route: MouActivityTakeAction/:loginName
+   - Component: MouActivityTakeActionComponent
+   - Module: MouActivityTakeActionModule
+   - Tasks: Tasks 5.01 to 5.30 (30 Tasks)
+
+6. PAGE 6: MoU Activity Action Approvals & Reviewer Workflow
+   - Route: MouActivityApprovals/:loginName
+   - Component: MouActivityApprovalsComponent
+   - Module: MouActivityApprovalsModule
+   - Tasks: Tasks 6.01 to 6.28 (28 Tasks)
+
+7. PAGE 7: MoU Master Monitoring & Date-Wise Admin Action Report
+   - Route: MouAdminAction/:loginName
+   - Component: MouReportDateWiseComponent
+   - Module: MouReportDateWiseComponentModule
+   - Tasks: Tasks 7.01 to 7.30 (30 Tasks)
+
+8. PAGE 8: MoU Executive KPI Dashboard & Mobile Monitoring
+   - Routes: moudashboard/:loginName & moudashboardmobile
+   - Component: MOUDashboardComponent
+   - Module: MOUDashboardModule
+   - Tasks: Tasks 8.01 to 8.26 (26 Tasks)
+
+Total Actionable Tasks Across All Pages: 234 Tasks
+
+
+====================================================================================================
+PAGE 1: MoU INITIAL APPROVAL & FORWARDING INTERFACE
+====================================================================================================
+Route: MoUApproval/:loginName
+Angular Module: src/app/views/pages/MoUApproval/MoUApproval.module.ts
+Component: src/app/views/pages/MoUApproval/MoUApproval.component.ts
+HTML Template: src/app/views/pages/MoUApproval/MoUApproval.component.html
+Styles: src/app/views/pages/MoUApproval/MoUApproval.component.scss
+Service Dependencies: AgreementEntryService, AuthService, StorageService, PlacementService
+Backend Controller: PlanningController / MouController
+Associated Stored Procedures: pGetMouAgreementMaster, pUpdateMouAgreementMaster, pGetDisplayemployeeByHeadUID, pVerifyMouNotingSheet
+
+--- UI / FRONTEND TASKS ---
+1.01 [UI] Setup 3-tier tab navigation in MoUApproval.component.html: Pending Vetting, Approved Agreements, and Rejected Agreements using NgbNav directives.
+1.02 [UI] Implement header breadcrumbs, page title branding ("MoU Approval"), and responsive logo layout (#stMain, #imgLogo) in ngOnInit.
+1.03 [UI] Integrate Simple-DataTables initialization with tab switching callbacks (first(), second(), third()) to ensure table rendering without layout freezing.
+1.04 [UI] Build tabular column rendering for Pending Grid: ID, Partner Name, Academic Session Year, Type, SubType, Vetting Status, Vetting Date, Responsible Person, Initiator Details (Name, Dept, Division), Forwarded UID, and File Link.
+1.05 [UI] Implement safe dynamic button event listeners for "Take Action", "Chat/Communication", "View Remarks", and "View Rejected Remarks" using event delegation.
+1.06 [UI] Build modal template #smModal (Take Action Modal) supporting decision radio buttons: "Approve Agreement", "Reject Agreement", and "Forward for Review".
+1.07 [UI] Create conditional display logic (isShowingForwardDiv) rendering an ng-select employee dropdown when the reviewer chooses to forward the dossier.
+1.08 [UI] Build employee search and selection field in modal using ng-select with binding to Allemployee list (Displaying Employee Code - Employee Name).
+1.09 [UI] Implement mandatory "Remarks / Feedback" textarea form control with character count display and real-time validation feedback.
+1.10 [UI] Create modal template #viewDescModal for displaying existing reviewer vetting remarks in a clean modal dialog.
+1.11 [UI] Implement PDF document preview button ("View") opening the agreement document in a sanitized external browser tab with target="_blank".
+1.12 [UI] Create #chatModal communication interface for inline queries and messaging between reviewer and MoU initiating faculty member.
+1.13 [UI] Add SweetAlert2 confirmation prompts prior to finalizing rejection or approval actions to prevent accidental clicks.
+1.14 [UI] Implement responsive table containers with horizontal scroll wrappers and fixed action columns for mobile/tablet screen sizes.
+1.15 [UI] Add animated loading indicators and empty state illustrations when no records exist in Pending, Approved, or Rejected tabs.
+
+--- BACKEND & SERVICE LOGIC TASKS ---
+1.16 [BACKEND] Implement token acquisition flow via AuthService.loginTemp(loginName) and persist JWT Bearer token via StorageService.saveUser.
+1.17 [BACKEND] Connect AgreementEntryService.getMouAgreementMaster() to fetch the master list of all MoU proposals under consideration.
+1.18 [BACKEND] Implement client-side filtering logic to segment TableData:
+     - Pending: (isVetting === null && isForwardUser === false) || (forwardUserVetting === null && isForwardUser === true)
+     - Approved: (isVetting === '1' && isForwardUser === false) || (forwardUserVetting === 'True' && isForwardUser === true)
+     - Rejected: (isVetting === '0' && isForwardUser === false) || (forwardUserVetting === 'False' && isForwardUser === true)
+1.19 [BACKEND] Implement AgreementEntryService.getDisplayAllemployeeByUID() to retrieve departmental faculty list eligible for forwarding.
+1.20 [BACKEND] Construct payload object for AgreementEntryService.updateMouApprovalSTatus() including:
+     - id: MoU ID
+     - isVetting: '1' for Approved, '0' for Rejected
+     - remarks: Reviewer justification notes
+     - forwardToUID: Target employee UID (if forwarding)
+     - isForwardUser: Boolean flag denoting forwarding delegation
+1.21 [BACKEND] Map backend API endpoint POST api/Planning/UpdateMouAgreementMaster to Stored Procedure pUpdateMouAgreementMaster.
+1.22 [BACKEND] Implement Stored Procedure logic for pUpdateMouAgreementMaster:
+     - Update VettingStatus, VettingDate = GETDATE(), VettingBy = @VettingUID
+     - Update ForwardToUID, ForwardUserVetting, ForwardRemarks
+     - Maintain immutable transaction log in MoU_VettingAuditTrail table
+1.23 [BACKEND] Implement AgreementEntryService.verifyMouData() mapping to api/Planning/VerifyMouNotingSheet.
+1.24 [BACKEND] Connect AgreementEntryService.getverifyMouNotingData() mapping to api/Planning/GetOBPNotingSheetData for institutional noting sheet generation.
+1.25 [BACKEND] Configure role-based security in backend controller verifying whether logged-in UID holds HOD/HOS/Dean permission for the given school.
+1.26 [BACKEND] Implement email trigger logic notifying the initiating faculty coordinator upon approval, rejection, or forward action.
+1.27 [BACKEND] Implement error interceptor and graceful error handling when token expires or network requests fail.
+1.28 [BACKEND] Build audit trail logging recording IP address, timestamp, previous status, new status, and reviewer comments.
+1.29 [BACKEND] Implement automated cache busting on TableData, ApprovedTableData, and RejectedTableData following any status mutation.
+1.30 [BACKEND] Add unit/integration tests for approval state transitions and boundary conditions (e.g. forward without UID, rejection without remarks).
+
+
+====================================================================================================
+PAGE 2: MoU NEW REQUEST, DOCUMENT UPLOAD & RENEWAL MANAGEMENT
+====================================================================================================
+Route: MouNewRequest/:loginName
+Angular Module: src/app/views/pages/mou-documents-uploads/mou-documents-uploads.module.ts
+Component: src/app/views/pages/mou-documents-uploads/mou-documents-uploads.component.ts
+HTML Template: src/app/views/pages/mou-documents-uploads/mou-documents-uploads.component.html
+Styles: src/app/views/pages/mou-documents-uploads/mou-documents-uploads.component.scss
+Service Dependencies: MouDocumentsService, LpuPlannerServiceService, AuthService, StorageService
+Backend Controller: MouController
+Associated Stored Procedures: pGetMouDocumentsUidWise, pInsertMouDocument, pRenewMouDocument, pGetMouCategoriesProperties, pDeleteMainMouAction
+
+--- UI / FRONTEND TASKS ---
+2.01 [UI] Design modern upload portal with tab navigation: "Upload New MoU", "My Uploaded MoUs", and "Renewed MoUs Ledger".
+2.02 [UI] Build reactive form MouDocumentForm with FormBuilder including validations:
+     - mouOrganisation: Required, MinLength(3), MaxLength(150)
+     - mouCategory: Required dropdown selection
+     - schoolDivisionInvolved: Multi-select dropdown
+     - startDate / endDate: Required date fields with StartDate < EndDate constraint
+     - spocName, spocEmail, spocContact: Partner SPOC details with email/phone regex
+     - lpuSpocName, lpuSpocUid: University internal coordinator details
+     - mouScope / objectives: Rich text or multiline text area
+2.03 [UI] Implement file upload zone supporting drag-and-drop with restrictions: .pdf, .docx, maximum file size 15 MB.
+2.04 [UI] Add file extension and MIME type validation in TypeScript with alert prompts for invalid formats.
+2.05 [UI] Implement dynamic summary cards on top showing live counts: Total Uploaded, Active MoUs, Expired MoUs, and Renewed MoUs.
+2.06 [UI] Build multivariate filter toolbar with:
+     - Status Filter: All, Active, Expired, Renewed
+     - Category Filter: Bound dynamically to AllMouCategories
+     - School/Division Filter: Bound to allSchoolDivisions
+     - Live Search Bar: Filtering by MoU ID (e.g., 'mou/12'), Partner Name, Category, or SPOC
+2.07 [UI] Implement ngx-datatable master table for uploaded MoUs featuring pagination, row count selector (10, 25, 50), and column sorting.
+2.08 [UI] Add custom status badges for table rows: Green ("Active"), Red ("Expired"), Blue ("Renewed"), Yellow ("Pending Vetting").
+2.09 [UI] Create modal template #ViewRenewedMouDetailsModal displaying historical renewal iterations for any selected MoU.
+2.10 [UI] Build MoU Renewal Form inside a dedicated modal capturing: Renewal Start Date, Renewal End Date, Addendum PDF file, and Revision Remarks.
+2.11 [UI] Implement single-click "Download Document" button fetching stored files via binary blob handler and opening them safely.
+2.12 [UI] Implement SweetAlert2 delete confirmation modal requiring mandatory reason remarks before submitting deletion requests.
+2.13 [UI] Implement client-side Export to Excel function using XLSX (SheetJS) generating formatted spreadsheets with timestamped filenames.
+2.14 [UI] Implement auto-complete lookup for LPU SPOC UID pre-filling employee name and department upon entering a valid 5-digit UID.
+2.15 [UI] Add UI input masks for phone numbers and standard datepickers (NgbDatepicker) for uniform cross-browser date entry.
+
+--- BACKEND & SERVICE LOGIC TASKS ---
+2.16 [BACKEND] Connect MouDocumentsService.GetUIDWiseUploadedDocuments(loginName) mapping to GET api/Mou/GetUIDWiseMouDocumentDetails?Uid={uid}.
+2.17 [BACKEND] Implement backend WebAPI controller action handling FormData in POST api/Mou/MouDocumentInsert.
+2.18 [BACKEND] Build backend file processing service:
+     - Sanitize uploaded filename and generate unique GUID-based storage name
+     - Validate file header bytes against PDF/DOCX magic numbers
+     - Save file to university document repository (e.g., /Storage/MOU/Uploads/YYYY/)
+     - Store virtual path in database record
+2.19 [BACKEND] Implement Stored Procedure pInsertMouDocument:
+     - Insert into tbl_MouAgreementMaster
+     - Insert comma-delimited school division mappings into tbl_MouSchoolDivisionMapping
+     - Insert initial status record as 'Pending' with audit timestamp
+2.20 [BACKEND] Connect MouDocumentsService.GetMouCategories() mapping to GET api/Mou/GetMouCategoriesProperties.
+2.21 [BACKEND] Implement Stored Procedure pGetMouCategoriesProperties returning active statutory collaboration categories.
+2.22 [BACKEND] Connect MouDocumentsService.MouRenewalDetails(formData) mapping to POST api/Mou/MouRenewalInsertNewRecord.
+2.23 [BACKEND] Implement Stored Procedure pRenewMouDocument:
+     - Validate whether previous MoU exists and is nearing expiry or expired
+     - Archive previous terms in tbl_MouRenewalHistory
+     - Increment RenewalCount and update NewEndDate, RenewalDate, and AddendumFilePath
+2.24 [BACKEND] Connect MouDocumentsService.GetRenewedMouDetails(mouId) mapping to GET api/Mou/GetRenewedMouDetails?MouId={mouId}.
+2.25 [BACKEND] Connect MouDocumentsService.DeleteMainMouAction(formData) mapping to POST api/Mou/MouDocumentDeleteAction.
+2.26 [BACKEND] Implement soft-delete logic in Stored Procedure pDeleteMainMouAction storing DeletionReasonRemarks, DeletedByUID, and DeletedOn timestamp.
+2.27 [BACKEND] Connect MouDocumentsService.downloadMOUFile(fileUrl) returning Observable<Blob> with dynamic Authorization header.
+2.28 [BACKEND] Build backend streaming endpoint api/Mou/DownloadMOUFiles/MOUDownloadFiles with MIME type application/pdf and content-disposition attachment.
+2.29 [BACKEND] Implement duplicate prevention check in backend rejecting duplicate submissions with the same organization name in the same active date range.
+2.30 [BACKEND] Build scheduled notification job sending automated email alerts to SPOC 90 days, 60 days, and 30 days before MoU expiry.
+
+
+====================================================================================================
+PAGE 3: MoU DOCUMENT APPROVALS, REASSIGNMENT & REMINDERS (HOS / HEAD VIEW)
+====================================================================================================
+Route: MouApprovals/:loginName
+Angular Module: src/app/views/pages/mou-documents-report/New-Changes/mou-documents-report.module.ts
+Component: src/app/views/pages/mou-documents-report/New-Changes/mou-documents-report.component.ts
+HTML Template: src/app/views/pages/mou-documents-report/New-Changes/mou-documents-report.component.html
+Styles: src/app/views/pages/mou-documents-report/New-Changes/mou-documents-report.component.scss
+Service Dependencies: MouDocumentsService, LpuPlannerServiceService, AuthService, StorageService
+Backend Controller: MouController
+Associated Stored Procedures: pGetAllUploadedMOUDocuments, pApproveMouDocument, pUpdateSchoolInvolved, pMouSendPendingReminderEmail, pDeleteMainMouAction
+
+--- UI / FRONTEND TASKS ---
+3.01 [UI] Setup 2-tier tab bar in MouDocumentsReportComponent: "Approval Action" and "View Renewed MOU" with active pill styling.
+3.02 [UI] Build top filter bar featuring Export to Excel, MOU Status (All/Active/Expired/Renewed), Approval Status (All/Approved/Disapproved), Category filter, School/Division filter, and live text search.
+3.03 [UI] Implement interactive summary metrics bar dynamically calculating counts for: Active, Expired, Renewed, Approved, and Disapproved MoUs based on active filters.
+3.04 [UI] Create top-scroll-sync directive or synchronized scrollbar elements linking top scrollbar with ngx-datatable horizontal body scroll.
+3.05 [UI] Implement ngx-datatable with columns: MoU ID, Organization Name, Category, Validity (Start - End), SPOC Details, School/Division, Approval Status, Documents, and Action Buttons.
+3.06 [UI] Build modal template #ChangeSchoolDivisionModal allowing HOD/HOS to modify participating schools/divisions for an agreement.
+3.07 [UI] Implement multi-select dropdown for schools/divisions in modal pre-populating existing assigned divisions.
+3.08 [UI] Build modal template #SendReminderModal allowing supervisory heads to send official reminder emails to departmental SPOCs regarding pending or expired agreements.
+3.09 [UI] Implement autocomplete search for employee UID/Name inside SendReminderModal with input listener onInputReminder and suggestion selection selectEmployeeReminder.
+3.10 [UI] Add state locking flags (reminderSending, reminderDisabled) on the "Send Reminder" button to prevent duplicate submissions.
+3.11 [UI] Create modal template #ViewRenewedMouDetailsModal displaying detailed historical terms, addendums, and duration extensions for renewed MoUs.
+3.12 [UI] Implement SweetAlert2 decision prompt for approving or disapproving an MoU with a mandatory textarea for justification remarks.
+3.13 [UI] Add action buttons in data table rows: "Approve", "Disapprove", "Reassign Division", "Send Reminder", "View Document", and "Delete".
+3.14 [UI] Implement client-side Excel export (exportToExcel()) using XLSX generating clean column headers and sanitized cell values.
+3.15 [UI] Style responsive data grid with custom SCSS ensuring fixed table header, hover highlights, and compact padding on high-density displays.
+
+--- BACKEND & SERVICE LOGIC TASKS ---
+3.16 [BACKEND] Connect MouDocumentsService.GetAllUploadedDocuments() mapping to GET api/Mou/GetAllUploadedDocuments.
+3.17 [BACKEND] Implement backend endpoint and Stored Procedure pGetAllUploadedMOUDocuments returning universal institutional MoU records with renewal counts and approval states.
+3.18 [BACKEND] Connect MouDocumentsService.ApproveDocument(formData) mapping to POST api/Mou/ApprovalAction.
+3.19 [BACKEND] Implement backend action for ApprovalAction:
+     - Extract RecordId, ApprovalStatus ('Approved' | 'Disapproved'), Remarks, and ApproverUID
+     - Update tbl_MouAgreementMaster with ApprovalDate = GETDATE()
+     - Log action in audit trail table
+3.20 [BACKEND] Connect MouDocumentsService.UpdateSchoolDivision(formData) mapping to POST api/Mou/MouUpdateSchoolInvolved.
+3.21 [BACKEND] Implement Stored Procedure pUpdateSchoolInvolved:
+     - Delete old division associations in tbl_MouSchoolDivisionMapping for given MouId
+     - Re-insert updated list of SchoolDivisionIDs
+     - Record updated timestamp and modifying user UID
+3.22 [BACKEND] Connect MouDocumentsService.MouReminderEmail(formData) mapping to POST api/Mou/MouSendPendingReminderEmail.
+3.23 [BACKEND] Implement backend email dispatching service in MouSendPendingReminderEmail:
+     - Fetch target employee official email, HOD email, and MoU details
+     - Populate predefined HTML email template for "Expired Memorandum of Understanding" or "Pending MoU Activities"
+     - Send email via University SMTP relay with delivery tracking
+     - Return JSON response { item1: [{ msg: 'successfully' }] }
+3.24 [BACKEND] Parse reminder API response ensuring safe evaluation of data?.item1?.[0]?.msg?.toLowerCase() === 'successfully'.
+3.25 [BACKEND] Connect MouDocumentsService.GetEmployeeDetails() with BehaviorSubject caching (shareReplay(1)) to prevent redundant HTTP requests for employee master data.
+3.26 [BACKEND] Implement clearEmployeeDetailsCache() method to invalidate cache when forced refresh is requested.
+3.27 [BACKEND] Connect MouDocumentsService.DeleteMainMouAction(formData) mapping to POST api/Mou/MouDocumentDeleteAction for supervisory deletion.
+3.28 [BACKEND] Connect MouDocumentsService.GetUIDWiseUploadedDocuments() to fetch user-specific records when non-admin users access the interface.
+3.29 [BACKEND] Implement role validation ensuring only authorized HOS/DRC staff can perform supervisory approvals and division reassignments.
+3.30 [BACKEND] Implement backend rate limiting on email reminder endpoints to prevent spamming faculty members.
+
+
+====================================================================================================
+PAGE 4: MoU ACTIVITY ACTION PLANNING & FACULTY ASSIGNMENT
+====================================================================================================
+Route: MouActivityPlan/:loginName
+Angular Module: src/app/views/pages/MouActivityActionPlan/MouActivityActionPlan.module.ts
+Component: src/app/views/pages/MouActivityActionPlan/MouActivityActionPlan.component.ts
+HTML Template: src/app/views/pages/MouActivityActionPlan/MouActivityActionPlan.component.html
+Styles: src/app/views/pages/MouActivityActionPlan/MouActivityActionPlan.component.scss
+Service Dependencies: MouDocumentsService, AgreementEntryService, LpuPlannerServiceService, AuthService, StorageService
+Backend Controller: MouController
+Associated Stored Procedures: pGetMouDocumentsforApprovals, pGetAllActivitiesAssigned, pSaveMouActivityPlan, pReassignActivitytoNewUID, pDeleteMouActivity
+
+--- UI / FRONTEND TASKS ---
+4.01 [UI] Setup 3-tier navigation tabs:
+     - Tab 1: "Assign Activity" (Active MoUs eligible for activity scheduling)
+     - Tab 2: "Activities Assigned (by Me)" / "Activities Assigned DRC Staff" (based on isDrcStaff)
+     - Tab 3: "Activities Assigned (by Others)" (for department-wide cross-monitoring)
+4.02 [UI] Build top user profile card displaying logged-in Employee Name, UID, and Department Name fetched from token authentication.
+4.03 [UI] Implement dual horizontal scrollbars (topScroll and tableWrapper) with synchronized scroll handlers (syncTopScroll, syncBottomScroll) to support wide datatables.
+4.04 [UI] Build filter controls on Tab 1: MoU Category dropdown, School/Division dropdown, Status filter (All, Active, Expired, Renewed), Apply Filter, and Reset buttons.
+4.05 [UI] Implement modal template #AssignActivityModal for scheduling new activities containing:
+     - MoU Details summary (MoU ID, Partner Organization, Validity Period)
+     - Academic Session dropdown (e.g. 2025-2026, 2026-2027)
+     - Activity Category dropdown (e.g. Workshop, Guest Lecture, Internship, Joint Research)
+     - Activity Name / Title text input with required validation
+     - Target Planned Date picker (constrained within MoU start and end dates)
+     - Expected Beneficiary Count (Students / Faculty) numeric input
+     - Remarks and Expected Outcomes textarea
+4.06 [UI] Implement faculty coordinator lookup in modal using ng-select with live search against employee master directory.
+4.07 [UI] Build datatable on Tab 2 displaying all planned activities: Activity ID, MoU ID, Partner Name, Category, Title, Responsible Faculty UID/Name, Planned Date, Status Badge, and Action Buttons.
+4.08 [UI] Build modal template #ReassignUIDModal allowing department heads to reassign a planned activity to a different faculty member.
+4.09 [UI] Implement SweetAlert2 delete confirmation dialog capturing mandatory deletion remarks before removing an activity plan.
+4.10 [UI] Implement modal template #SendReminderModal for sending activity execution reminder emails to assigned faculty coordinators.
+4.11 [UI] Build Excel export buttons for Tab 1 (exportTab1()) and Tab 2 (exportTab2()) with disabled states when filtered arrays are empty.
+4.12 [UI] Implement tab reload handlers (reloadGrid1(), reloadGrid2(), reloadGrid()) triggering change detection and scrollbar recalculations.
+4.13 [UI] Add status pill badges: "Planned - Pending Execution", "Action Submitted", "Approved by HOD", "Rejected - Revision Required".
+4.14 [UI] Create responsive layout adjustments ensuring clean stacking of filter inputs and buttons on mobile and tablet viewport widths.
+4.15 [UI] Implement custom debounce timer (debounceTime(300)) on search inputs to eliminate sluggish UI rendering during filtering.
+
+--- BACKEND & SERVICE LOGIC TASKS ---
+4.16 [BACKEND] Connect MouDocumentsService.GetMouDocumentsforApproval(loginName) mapping to GET api/Mou/GetMouDocumentsforApproval?Uid={uid}.
+4.17 [BACKEND] Connect MouDocumentsService.MOUGetAllActivitiesAssigned(loginName) mapping to GET api/Mou/GetAllActivitiesAssigned?Uid={uid}.
+4.18 [BACKEND] Implement MouDocumentsService.GetAllActivitiesAssignedwithSession(loginName, sessionId) for session-filtered activity queries.
+4.19 [BACKEND] Implement MouDocumentsService.GetAllOBPPlannerSessions() mapping to GET api/LpuObpAutomation/GetOBPPlannerSessions.
+4.20 [BACKEND] Connect MouDocumentsService.MouNewActivityPlanAddNew(formData) mapping to POST api/Mou/MouNewActivityPlan.
+4.21 [BACKEND] Implement Stored Procedure pSaveMouActivityPlan:
+     - Validate that target MoU is currently active (GETDATE() BETWEEN StartDate AND EndDate)
+     - Validate that PlannedExecutionDate <= MouEndDate
+     - Insert record into tbl_MouActivityPlanMaster
+     - Set initial status to 'Planned'
+     - Return generated ActivityPlanId
+4.22 [BACKEND] Connect MouDocumentsService.ReassignNewUID(formData) mapping to POST api/Mou/ReassingActivitytoNewUID.
+4.23 [BACKEND] Implement Stored Procedure pReassignActivitytoNewUID:
+     - Update AssignedUID = @NewUID, ReassignedBy = @ModifierUID, ReassignedOn = GETDATE()
+     - Record reassignment entry in tbl_MouActivityAuditLog
+     - Dispatch notification email to newly assigned faculty member
+4.24 [BACKEND] Connect MouDocumentsService.MOUDeleteAction(formData) mapping to POST api/Mou/MouActivityDeleteAction.
+4.25 [BACKEND] Implement Stored Procedure pDeleteMouActivity executing soft-delete with ReasonRemarks and DeletingUID.
+4.26 [BACKEND] Connect MouDocumentsService.GetAllActivities() mapping to GET api/Mou/GetMouActivityProperties for populating activity type masters.
+4.27 [BACKEND] Implement permission check in backend verifying whether user is authorized DRC staff or department head before allowing activity assignment.
+4.28 [BACKEND] Implement notification service alerting assigned faculty coordinator when a new activity is delegated to their UID.
+4.29 [BACKEND] Implement backend validation blocking activity creation if the parent MoU has been disapproved or expired.
+4.30 [BACKEND] Add error handling and rollback mechanisms ensuring transactional safety during bulk activity assignments.
+
+
+====================================================================================================
+PAGE 5: MoU ACTIVITY EXECUTION & ACTION TAKEN WORKFLOW
+====================================================================================================
+Route: MouActivityTakeAction/:loginName
+Angular Module: src/app/views/pages/MouActivityTakeAction/MouActivityTakeAction.module.ts
+Component: src/app/views/pages/MouActivityTakeAction/MouActivityTakeAction.component.ts
+HTML Template: src/app/views/pages/MouActivityTakeAction/MouActivityTakeAction.component.html
+Styles: src/app/views/pages/MouActivityTakeAction/MouActivityTakeAction.component.scss
+Service Dependencies: MouDocumentsService, AgreementEntryService, ObpAutoAssignService, AuthService, StorageService
+Backend Controller: MouController
+Associated Stored Procedures: pGetAllMouActivityPlanRequest, pGetAllMouActivityActionTakenMaster, pInsertMouActivityActionTaken, pMouActionTakenDocumentsOperations
+
+--- UI / FRONTEND TASKS ---
+5.01 [UI] Setup 2-tier navigation tabs:
+     - Tab 1: "Take Action" (Activities assigned to the logged-in user pending execution report)
+     - Tab 2: "My Action Taken" (Executed activities submitted for approval)
+5.02 [UI] Build user identity summary bar showing Employee Name, UID, Department Name, and active academic session.
+5.03 [UI] Implement ResizeObserver integration on datatable containers (tab1WidthObserver, tab2WidthObserver) to synchronize custom top scrollbars dynamically with datatable body width.
+5.04 [UI] Build filter toolbar on Tab 1 with Export to Excel, Category dropdown, School/Division dropdown, and text search input.
+5.05 [UI] Implement ngx-datatable for pending activities displaying: New MOU ID, Partner Name, Activity Category, Title, Planned Date, Target Count, and "Take Action" button.
+5.06 [UI] Build modal template #TakeActionModal for submitting activity completion evidence containing:
+     - Activity summary header (Title, Partner, Planned Date)
+     - Actual Event Date picker
+     - Total Beneficiaries / Participants Achieved numeric input
+     - Industry Resource Persons Involved text field
+     - Executive Summary & Measurable Outcomes textarea
+     - File upload control for composite evidence dossier (.pdf format, max 20 MB)
+5.07 [UI] Implement file upload progress bar and client-side validation ensuring evidence document is attached before allowing submission.
+5.08 [UI] Build datatable on Tab 2 ("My Action Taken") showing: Action ID, Activity Title, Execution Date, Reported Beneficiaries, Approval Status (Pending/Approved/Disapproved), Approver Remarks, Attached Evidence, and Manage Attachments.
+5.09 [UI] Build modal template #ManageDocumentsModal supporting multi-document operations (upload supplementary photos, attendance sheets, certificates).
+5.10 [UI] Implement document list inside modal allowing coordinators to view existing uploaded attachments or delete supplementary files.
+5.11 [UI] Add status badges in Tab 2: Yellow ("Pending Approval"), Green ("Approved by HOD"), Red ("Disapproved - Re-submit Required").
+5.12 [UI] Implement tab switch listeners (onAssignActivitiesTabShown(), onMyAllAssignActivitiesTabShown()) re-initializing scrollbars and triggering data refresh.
+5.13 [UI] Implement Export to Excel function converting both pending and submitted action datasets into clean Excel workbooks.
+5.14 [UI] Add SweetAlert2 confirmation prompts before submitting action reports to warn coordinators that reports cannot be altered once approved.
+5.15 [UI] Implement responsive styling supporting mobile and tablet layouts with scroll indicators.
+
+--- BACKEND & SERVICE LOGIC TASKS ---
+5.16 [BACKEND] Connect MouDocumentsService.MouDocumentstoTakeAction(loginName) mapping to GET api/Mou/GetMouDocumentstoTakeAction?Uid={uid}.
+5.17 [BACKEND] Implement backend endpoint and Stored Procedure pGetAllMouActivityPlanRequest returning all active assigned activities for the logged-in UID.
+5.18 [BACKEND] Connect MouDocumentsService.MouActionsTakenData(loginName, sessionId) mapping to GET api/Mou/GetMouActivityActionTakenWithSession?Uid={uid}&SessionId={sessionId}.
+5.19 [BACKEND] Connect MouDocumentsService.InsertMouActivityActionTaken(formData) mapping to POST api/Mou/MouActivityActionTakenInsert.
+5.20 [BACKEND] Implement backend endpoint processing multipart/form-data:
+     - Validate uploaded evidence file size and signature
+     - Store evidence file in /Storage/MOU/ActivityProof/YYYY/
+     - Save metadata into tbl_MouActivityActionTakenMaster
+     - Transition activity plan status to 'Submitted - Pending Approval'
+5.21 [BACKEND] Implement Stored Procedure pInsertMouActivityActionTaken:
+     - Insert record into tbl_MouActivityActionTakenMaster
+     - Update tbl_MouActivityPlanMaster status flag
+     - Insert file reference into tbl_MouActivityDocumentsMapping
+5.22 [BACKEND] Connect MouDocumentsService.MouActionTakenDocumentsOperations(formData) mapping to POST api/Mou/MouActionTakenDocumentsOperations.
+5.23 [BACKEND] Implement Stored Procedure supporting multi-document operations: Insert new supplementary document, delete attachment, or update metadata.
+5.24 [BACKEND] Connect MouDocumentsService.GetAllActionTakenUploadedDocument(formData) mapping to POST api/Mou/GetUploadedDocumentDetails.
+5.25 [BACKEND] Connect MouDocumentsService.downloadMOUFileWithFolder(fileUrl, folderPath) supporting blob streaming of activity evidence documents.
+5.26 [BACKEND] Implement notification trigger dispatching email to department HOD/HOS when faculty submits a completed activity report.
+5.27 [BACKEND] Implement backend validation ensuring reported event date falls within the validity span of the parent MoU.
+5.28 [BACKEND] Add audit logging recording submission timestamp, client IP, file hash, and coordinator remarks.
+5.29 [BACKEND] Implement error handling for large file uploads with timeout configurations and descriptive error messages.
+5.30 [BACKEND] Build automated cleanup routine purging orphaned temporary files created during aborted upload sessions.
+
+
+====================================================================================================
+PAGE 6: MoU ACTIVITY ACTION APPROVALS & REVIEWER WORKFLOW
+====================================================================================================
+Route: MouActivityApprovals/:loginName
+Angular Module: src/app/views/pages/MouActivityApprovals/MouActivityApprovals.module.ts
+Component: src/app/views/pages/MouActivityApprovals/MouActivityApprovals.component.ts
+HTML Template: src/app/views/pages/MouActivityApprovals/MouActivityApprovals.component.html
+Styles: src/app/views/pages/MouActivityApprovals/MouActivityApprovals.component.scss
+Service Dependencies: MouDocumentsService, LpuPlannerServiceService, AuthService, StorageService
+Backend Controller: MouController
+Associated Stored Procedures: pGetMouActivityActionTakenDetails, pApproveMouActionTakenDocument
+
+--- UI / FRONTEND TASKS ---
+6.01 [UI] Setup header section displaying reviewer details (Employee Name, UID, Department) and summary metrics bar.
+6.02 [UI] Implement interactive count badges for: Total Approved (approvedCount), Total Disapproved (disapprovedCount), and Total Pending (pendingCount).
+6.03 [UI] Build filter toolbar including Status filter (All, Approved, Disapproved, Pending), Category filter, School/Division dropdown, Search query, and Export to Excel button.
+6.04 [UI] Implement top synchronized scrollbar (topScrollbar, topScrollbarContent, gridContainer) using ngAfterViewInit and ngAfterViewChecked hooks.
+6.05 [UI] Implement ngx-datatable with columns: Action ID, MoU ID, Partner Organization, Activity Category, Title, Coordinator Name/UID, Event Date, Beneficiaries Reported, Evidence File, and Decision Actions.
+6.06 [UI] Build modal template #ReviewActivityModal allowing reviewer to inspect full submission details:
+     - Activity description and objectives
+     - Coordinator executive summary and outcomes
+     - Number of participants / beneficiaries
+     - Interactive embedded PDF viewer or secure download link for attached evidence
+6.07 [UI] Build decision action form inside modal featuring:
+     - Verdict toggle buttons: "Approve Activity" / "Disapprove / Request Revisions"
+     - Mandatory "Reviewer Feedback / Remarks" textarea
+     - Quality Rating selector (1 to 5 Stars or Grade A/B/C)
+6.08 [UI] Implement SweetAlert2 confirmation dialog upon submitting approval or disapproval action.
+6.09 [UI] Add status styling: Green badge for Approved, Red for Disapproved, Yellow for Pending.
+6.10 [UI] Implement client-side Export to Excel function filtering out unapproved records or exporting the exact filtered view.
+6.11 [UI] Add loading spinner overlay (loadingIndicator) during asynchronous HTTP calls and empty state template when no records match filter criteria.
+6.12 [UI] Add live text search filtering simultaneously across Partner Name, Activity Title, Coordinator Name, and MoU ID.
+6.13 [UI] Ensure modal closes cleanly and table automatically refreshes without requiring a full browser page reload.
+6.14 [UI] Apply responsive SCSS styling ensuring clean viewing on desktop, tablet, and mobile screens.
+
+--- BACKEND & SERVICE LOGIC TASKS ---
+6.15 [BACKEND] Connect MouDocumentsService.GetMouActivityActionTakenDetails(loginName) mapping to GET api/Mou/GetMouActivityActionTakenDetails?Mouid={loginName}.
+6.16 [BACKEND] Implement backend endpoint and Stored Procedure pGetMouActivityActionTakenDetails returning submitted activity reports awaiting supervisor vetting.
+6.17 [BACKEND] Connect MouDocumentsService.ApproveMouActionTakenDocument(formData) mapping to POST api/Mou/MouActionTakenDocumentApproval.
+6.18 [BACKEND] Implement backend endpoint processing multipart/form-data:
+     - Extract ActionId, ApprovalStatus ('Approved' | 'Disapproved'), Remarks, and ApproverUID
+     - Update tbl_MouActivityActionTakenMaster with ApprovalStatus, ApprovalRemarks, ApprovedBy = @UID, ApprovedOn = GETDATE()
+     - If Approved: update OBP metric tracking tables crediting department milestone
+     - If Disapproved: set status to 'Disapproved' allowing faculty coordinator to resubmit
+6.19 [BACKEND] Implement Stored Procedure pApproveMouActionTakenDocument maintaining transactional integrity across approval tables and metric counters.
+6.20 [BACKEND] Connect MouDocumentsService.downloadMOUFile(fileUrl) to allow reviewers to securely stream and inspect submitted evidence documents.
+6.21 [BACKEND] Connect MouDocumentsService.GetMouCategories() to populate category filter dropdowns.
+6.22 [BACKEND] Implement email notification dispatching verdict and reviewer feedback to the submitting faculty coordinator.
+6.23 [BACKEND] Implement role verification ensuring only authorized HOD, HOS, or DQA officers can approve or disapprove activity submissions.
+6.24 [BACKEND] Build audit trail logging recording decision timestamp, reviewer UID, previous status, new status, and feedback text.
+6.25 [BACKEND] Implement backend check ensuring an activity cannot be approved if the parent MoU has expired or been disapproved.
+6.26 [BACKEND] Add error handling and user friendly alert messages when network or database failures occur.
+6.27 [BACKEND] Implement automated recalculation of approvedCount, disapprovedCount, and pendingCount upon completion of each approval action.
+6.28 [BACKEND] Build integration tests verifying status transitions and boundary validations for activity approvals.
+
+
+====================================================================================================
+PAGE 7: MoU MASTER MONITORING & DATE-WISE ADMIN ACTION REPORT
+====================================================================================================
+Route: MouAdminAction/:loginName
+Angular Module: src/app/views/pages/MouReportDateWise/MouReportDateWise.module.ts
+Component: src/app/views/pages/MouReportDateWise/MouReportDateWise.component.ts
+HTML Template: src/app/views/pages/MouReportDateWise/MouReportDateWise.component.html
+Styles: src/app/views/pages/MouReportDateWise/MouReportDateWise.component.scss
+Service Dependencies: MouDocumentsService, AgreementEntryService, RMSService, AuthService, StorageService
+Backend Controller: MouController / PlanningController
+Associated Stored Procedures: pGetMouReportDateWise, pGetAllMouActivitiesForAdminAction, pGetAllEmployeeData, pGetMouActivityActionTakenDetails
+
+--- UI / FRONTEND TASKS ---
+7.01 [UI] Design executive administrative dashboard featuring dual date range pickers (fromDate and toDate) with NgForm getMetric.
+7.02 [UI] Build session selection dropdown allowing administrators to query MoU activities by academic session (e.g. GetAllMouActivitiesForAdminAction(Session)).
+7.03 [UI] Implement summary stat counters on top showing: Total Agreements, Total Approved (approvedCount), Total Disapproved (disapprovedCount), and Pending Approvals (pendingCount).
+7.04 [UI] Build filter bar containing Approval Status dropdown (all, approved, disapproved, pending), School/Division dropdown, Search query, and Export to Excel button.
+7.05 [UI] Implement custom synchronized top scrollbar (#topScrollbar, #topScrollbarContent, #gridContainer) handling large multi-column grids.
+7.06 [UI] Implement master data table displaying: MoU ID, Organization Name, Category, Date of Execution, Expiry Date, Assigned Division, Coordinator UID & Name, Activity Count, and Approval Status.
+7.07 [UI] Build modal template #viewMouActivityActionTakenModal displaying drill-down details of all actions taken against an agreement.
+7.08 [UI] Build modal template #viewMouActionPlannedModal displaying roadmap of all planned activities for any selected MoU.
+7.09 [UI] Build modal template #viewDescModal showing complete administrative notes, vetting history, and approval remarks.
+7.10 [UI] Build modal template #verticalCenteredModal providing comprehensive partnership profile view (partner contact info, scope, document links).
+7.11 [UI] Implement client-side dynamic search query filtering instantly across all columns without requiring server re-fetch.
+7.12 [UI] Implement Excel export pipeline converting date-wise datasets into structured multi-column Excel workbooks using SheetJS.
+7.13 [UI] Add date formatting pipes (DatePipe) displaying timestamps in user friendly format ('dd-MMM-yyyy').
+7.14 [UI] Add visual indicators highlighting dormant agreements (MoUs signed with zero planned or executed activities).
+7.15 [UI] Apply responsive design ensuring filter controls and modals adapt cleanly across tablet and desktop resolutions.
+
+--- BACKEND & SERVICE LOGIC TASKS ---
+7.16 [BACKEND] Connect MouDocumentsService.GetAllMouActivitiesForAdminAction(session) mapping to GET api/Mou/GetAllMouActivitiesForAdminAction?SessionId={session}.
+7.17 [BACKEND] Connect MouDocumentsService.MouActivityandActionDetails(startDate, endDate) mapping to GET api/Mou/GetAllMouActivityAndActionDetails?StartDate={startDate}&EndDate={endDate}.
+7.18 [BACKEND] Implement backend endpoint and Stored Procedure pGetMouReportDateWise querying agreements, renewals, and executed activities filtered by date range.
+7.19 [BACKEND] Connect MouDocumentsService.GetEmployeeData() mapping to GET api/Mou/GetAllEmployeeData for resolving coordinator names and departments.
+7.20 [BACKEND] Connect MouDocumentsService.GetAllMouActivitiesForExportToExcel(uid) for generating comprehensive NAAC/NIRF reporting spreadsheets.
+7.21 [BACKEND] Implement backend streaming service api/Mou/ExportDateWiseReportToExcel delivering pre-formatted Excel sheets.
+7.22 [BACKEND] Connect MouDocumentsService.GetMouActivityActionTakenDetails(id) to support drill-down modal inspection.
+7.23 [BACKEND] Connect MouDocumentsService.GetAllCategories() to populate categorization filters.
+7.24 [BACKEND] Implement administrative security checks restricting access to university executive leadership, DQA directors, and system administrators.
+7.25 [BACKEND] Optimize Stored Procedure queries with indexing on StartDate, EndDate, SchoolDivisionInvolved, and Status to ensure sub-second query times on large historical datasets.
+7.26 [BACKEND] Build analytical aggregation views summarizing MoU performance by school, average activities per MoU, and student participation counts.
+7.27 [BACKEND] Implement server-side pagination and caching for date queries spanning more than 3 academic sessions.
+7.28 [BACKEND] Implement audit trail logging tracking administrative data exports and confidential report access.
+7.29 [BACKEND] Add comprehensive exception handling and descriptive error responses in WebAPI controllers.
+7.30 [BACKEND] Build automated test suites validating date range edge cases (e.g. reverse date ranges, leap years, multi-year spans).
+
+
+====================================================================================================
+PAGE 8: MoU EXECUTIVE KPI DASHBOARD & MOBILE MONITORING
+====================================================================================================
+Routes: moudashboard/:loginName & moudashboardmobile
+Angular Module: src/app/views/pages/moudashboard/moudashboard.module.ts
+Component: src/app/views/pages/moudashboard/moudashboard.component.ts
+HTML Template: src/app/views/pages/moudashboard/moudashboard.component.html
+Styles: src/app/views/pages/moudashboard/moudashboard.component.scss
+Service Dependencies: PlacementService, AuthService, StorageService
+Backend Controller: PlacementController / PlanningController
+Associated Stored Procedures: pGetMouDashboardMetrics, pGetMouStrategicGoals
+
+--- UI / FRONTEND TASKS ---
+8.01 [UI] Setup responsive card grid showcasing strategic university collaboration goals styled with SDG-inspired colorful cards.
+8.02 [UI] Implement interactive flip / hover cards (.card-back, .card-body-hover) revealing detailed metrics upon mouseover or tap.
+8.03 [UI] Display quantitative KPI counters inside each goal card:
+     - Total Metric Target (rowAtt.target)
+     - MoUs Uploaded / Achieved (rowAtt.mouAchieved)
+     - Planned Activities Count (rowAtt.totalPlannedActivity)
+     - Activities Completed Count (rowAtt.completedActivity)
+8.04 [UI] Build circular progress gauges or progress bars visually depicting percentage completion of MoU targets per domain.
+8.05 [UI] Implement "More Info" interactive button on cards opening domain-specific drilldown dialogs.
+8.06 [UI] Incorporate curated domain iconography (rowAtt.imgIcon) representing Academic, Industry, Research, Placement, and Global domains.
+8.07 [UI] Implement header styling with dynamic title branding (#stMain) and responsive LPU logo display (#imgLogo).
+8.08 [UI] Build dedicated mobile stylesheet and view (moudashboardmobile) optimized for smartphone viewport rendering with touch gestures.
+8.09 [UI] Add animated counting effects (countUp) on KPI metric numbers on initial page load.
+8.10 [UI] Add color theme classes dynamically mapped from data attributes (.card-body-color-1, .card-body-color-2).
+8.11 [UI] Implement loading shimmer placeholders while executive dashboard data is being retrieved.
+8.12 [UI] Add full-screen presentation toggle button for executive board room displays and review meetings.
+8.13 [UI] Create responsive breakpoints adapting seamlessly from single column on mobile to 4 columns on large 4K displays.
+
+--- BACKEND & SERVICE LOGIC TASKS ---
+8.14 [BACKEND] Implement token authentication flow in ngOnInit via AuthService.loginTemp(loginName) saving user session to StorageService.
+8.15 [BACKEND] Connect PlacementService.getmouData(9) mapping to GET api/Placement/GetMouDashboardData?type=9.
+8.16 [BACKEND] Implement backend WebAPI controller action returning consolidated KPI summary object:
+     - Area Description
+     - Annual Target Count
+     - MoUs Signed and Active
+     - Total Planned Activities
+     - Total Executed & Approved Activities
+     - Theme Colors and Asset Icon URIs
+8.17 [BACKEND] Build Stored Procedure pGetMouDashboardMetrics calculating high-speed aggregated metrics across tbl_MouAgreementMaster and tbl_MouActivityActionTakenMaster.
+8.18 [BACKEND] Implement Redis or MemoryCache caching in .NET WebAPI for dashboard metrics with 15-minute sliding expiration to ensure ultra-low database overhead.
+8.19 [BACKEND] Implement cache eviction hook triggered whenever new MoUs or activity completions are approved.
+8.20 [BACKEND] Implement mobile API endpoint returning lightweight JSON payload for low-bandwidth mobile connections.
+8.21 [BACKEND] Build role authorization checks ensuring confidential strategic goal metrics are only accessible to permitted executive roles.
+8.22 [BACKEND] Implement error interceptor displaying fallback cached metrics if real-time database query encounters a timeout.
+8.23 [BACKEND] Add logging tracking executive dashboard access frequency and device types (Desktop vs. Mobile).
+8.24 [BACKEND] Implement scheduled database maintenance maintaining summary index tables for real-time dashboard computation.
+8.25 [BACKEND] Build cross-browser testing suite verifying SVG icons and CSS animations across Chrome, Safari, Firefox, and Edge.
+8.26 [BACKEND] Add end-to-end integration tests verifying data accuracy between raw database records and aggregated dashboard KPI counts.
+
+
+====================================================================================================
+COMPREHENSIVE SUMMARY MATRIX
+====================================================================================================
+| # | Page Route                   | Main Component               | Angular Module                 | UI Tasks | Backend Tasks | Total |
+|---|------------------------------|------------------------------|--------------------------------|----------|---------------|-------|
+| 1 | MoUApproval/:loginName       | MoUApprovalComponent         | MoUApprovalModule              | 15       | 15            | 30    |
+| 2 | MouNewRequest/:loginName     | MouDocumentsUploadsComponent | MouDocumentsUploadsModule      | 15       | 15            | 30    |
+| 3 | MouApprovals/:loginName      | MouDocumentsReportComponent  | MouDocumentsReportModule       | 15       | 15            | 30    |
+| 4 | MouActivityPlan/:loginName   | MouActivityActionPlanComp.   | MouActivityActionPlanModule    | 15       | 15            | 30    |
+| 5 | MouActivityTakeAction/:login | MouActivityTakeActionComp.   | MouActivityTakeActionModule    | 15       | 15            | 30    |
+| 6 | MouActivityApprovals/:login  | MouActivityApprovalsComp.    | MouActivityApprovalsModule     | 14       | 14            | 28    |
+| 7 | MouAdminAction/:loginName    | MouReportDateWiseComponent   | MouReportDateWiseCompModule    | 15       | 15            | 30    |
+| 8 | moudashboard/:loginName      | MOUDashboardComponent        | MOUDashboardModule             | 13       | 13            | 26    |
+|---|------------------------------|------------------------------|--------------------------------|----------|---------------|-------|
+|   | TOTALS                       | 8 Components                 | 8 Modules                      | 117      | 117           | 234   |
+====================================================================================================
+File generated on: 2026-10-07
+Location: e:\2025\Projects\MultiProject\MOU_PAGES_TASKLIST.txt
+====================================================================================================
