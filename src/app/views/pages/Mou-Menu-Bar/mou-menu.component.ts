@@ -117,7 +117,8 @@ export class MouMenuComponent implements OnInit, OnDestroy {
       } else {
         menu.visible =
           menu.route === '/MouNewRequest' ||
-          menu.route === '/MouActivityTakeAction';
+          menu.route === '/MouActivityTakeAction' ||
+          menu.route === '/ListMous';
       }
     });
   }
@@ -128,6 +129,13 @@ export class MouMenuComponent implements OnInit, OnDestroy {
       title: 'New MOU Request ',
       route: '/MouNewRequest',
       icon: 'bi bi-house-door-fill',
+      visible: true,
+    },
+    {
+      id: 2,
+      title: "List of MoU's",
+      route: '/ListMous',
+      icon: 'bi bi-card-checklist',
       visible: true,
     },
     {

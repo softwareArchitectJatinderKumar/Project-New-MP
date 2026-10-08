@@ -326,6 +326,13 @@ const routes: Routes = [
           ),
       }, //Bug sheet Point 2 Export to Excel is Working  18-March-25  SP pGetMouDocumentsUidWise
 
+      {
+        path: 'ListMous/:loginName', ////22-sep-25 added new mouid 1 // 23-sep-25 added newmouid , ExportExcel fixed on 12-May-26 added Mou Renewal Page
+        loadChildren: () =>
+          import('./views/pages/Mou-List-Details/mou-list.module').then(
+            (m) => m.MouListModule,
+          ),
+      },
       // MOU APPROVALS From HOS OR HEAD
       {
         path: 'MouApprovals/:loginName', ////22-sep-25 added new mouid 1 // 23-sep-25 added newmouid , ExportExcel fixed on 12-May-26 added Mou Renewal Page

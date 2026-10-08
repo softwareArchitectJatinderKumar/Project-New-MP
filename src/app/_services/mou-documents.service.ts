@@ -8,13 +8,13 @@ import { StorageService } from './storage.service';
 
 const AUTH_API = 'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
 const AUTH_API_LOCAL = 'https://projectsapi.lpu.in/';
-const AUTH_API_LOCALs = 'https://projectsapi.lpu.in/'; //'https://localhost:7125/';
-const AUTH_API_LOCAs = 'https://projectsapi.lpu.in/'; //'https://localhost:7125/';
+const AUTH_API_LOCALs = 'https://projectsapi.lpu.in/'; //'https://localhost:44362/';
+const AUTH_API_LOCAs = 'https://projectsapi.lpu.in/'; //'https://localhost:44362/';
 
-// const AUTH_API = 'https://localhost:7135/';//'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
-// const AUTH_API_LOCAL = 'https://localhost:7135/';
-// const AUTH_API_LOCALs = 'https://localhost:7135/'; //'https://localhost:7125/';
-// const AUTH_API_LOCAs = 'https://localhost:7135/'; //'https://localhost:7125/';
+// const AUTH_API = 'https://localhost:44362/';//'https://projectsapi.lpu.in/'; //'https://projectsapi.lpu.in/';
+// const AUTH_API_LOCAL = 'https://localhost:44362/';
+// const AUTH_API_LOCALs = 'https://localhost:44362/'; //'https://localhost:44362/';
+// const AUTH_API_LOCAs = 'https://localhost:44362/'; //'https://localhost:44362/';
 
 @Injectable({
   providedIn: 'root',
@@ -78,7 +78,7 @@ export class MouDocumentsService {
           catchError((err) => {
             this.employeeDetailsRequest$ = null;
             return throwError(() => err);
-          })
+          }),
         );
     }
     return this.employeeDetailsRequest$;
@@ -406,7 +406,7 @@ export class MouDocumentsService {
         EmployeeCode +
         '&SessionId=' +
         SessionId,
-      // 'https://localhost:7135/api/Mou/GetAllActivitiesAssignedwithSession?Uid=' + EmployeeCode + '&SessionId=' + SessionId,
+      // 'https://localhost:44362/api/Mou/GetAllActivitiesAssignedwithSession?Uid=' + EmployeeCode + '&SessionId=' + SessionId,
 
       { headers },
     );
@@ -506,7 +506,7 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders().set('Authorization', 'Bearer ' + authToken);
     return this.http.post(
-      //  'https://localhost:7135/api/Mou/MouSendPendingReminderEmail',
+      //  'https://localhost:44362/api/Mou/MouSendPendingReminderEmail',
       AUTH_API + 'api/Mou/ReassingActivitytoNewUID',
       dataSoft,
       { headers },
@@ -517,7 +517,7 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders().set('Authorization', 'Bearer ' + authToken);
     return this.http.post(
-      //  'https://localhost:7135/api/Mou/MouActionTakenDocumentsOperations',
+      //  'https://localhost:44362/api/Mou/MouActionTakenDocumentsOperations',
       AUTH_API + 'api/Mou/MouActionTakenDocumentsOperations',
       dataSoft,
       { headers },
@@ -528,7 +528,7 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders().set('Authorization', 'Bearer ' + authToken);
     return this.http.post(
-      //  'https://localhost:7135/api/Mou/MouActionTakenDocumentsOperations',
+      //  'https://localhost:44362/api/Mou/MouActionTakenDocumentsOperations',
       AUTH_API + 'api/Mou/GetUploadedDocumentDetails',
       dataSoft,
       { headers },
@@ -538,7 +538,7 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders().set('Authorization', 'Bearer ' + authToken);
     return this.http.get(
-      //  'https://localhost:7135/api/Mou/MouActionTakenDocumentsOperations',
+      //  'https://localhost:44362/api/Mou/MouActionTakenDocumentsOperations',
       AUTH_API + 'api/Mou/GetMouCategoriesProperties',
       { headers },
     );
@@ -548,7 +548,7 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders().set('Authorization', 'Bearer ' + authToken);
     return this.http.post(
-      //  'https://localhost:7135/api/Mou/MouActivityDeleteAction',
+      //  'https://localhost:44362/api/Mou/MouActivityDeleteAction',
       AUTH_API + 'api/Mou/MouActivityDeleteAction',
       dataSoft,
       { headers },
@@ -559,7 +559,7 @@ export class MouDocumentsService {
     let authToken = this.storageService.getUser();
     let headers = new HttpHeaders().set('Authorization', 'Bearer ' + authToken);
     return this.http.post(
-      //  'https://localhost:7135/api/Mou/MouActivityDeleteAction',
+      //  'https://localhost:44362/api/Mou/MouActivityDeleteAction',
       AUTH_API + 'api/Mou/MouDocumentDeleteAction',
       dataSoft,
       { headers },
