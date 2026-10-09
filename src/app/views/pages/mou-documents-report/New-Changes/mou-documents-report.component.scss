@@ -387,3 +387,38 @@ $surface-soft: #f8f9fb;
     font-weight: 500;
   }
 }
+
+// ---------------------------------------------------------------------
+// Reminder details in Renew MOU grid column
+// ---------------------------------------------------------------------
+.reminder-info-card {
+  background-color: #fff9e6;
+  border: 1px solid #ffd166;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 11.5px;
+  line-height: 1.35;
+  text-align: left;
+  max-width: 230px;
+
+  .reminder-line {
+    margin-bottom: 3px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .reminder-label {
+    font-weight: 600;
+    color: #855d00;
+    display: block;
+    font-size: 11px;
+  }
+
+  .reminder-value {
+    color: #212529;
+    font-weight: 500;
+    display: block;
+    word-break: break-word;
+  }
+}

@@ -1632,6 +1632,7 @@ export class MouActivityActionPlanComponent implements OnInit {
 
             if (this.isDrcStaff) {
               this.filteredMouActivityAssignedMe = response.item1; // Combine all for DRC staff
+              console.log(this.filteredMouActivityAssignedMe);
             } else {
               this.filteredMouActivityAssignedMe = response.item1.filter(
                 (activity: any) => {
@@ -2172,7 +2173,8 @@ export class MouActivityActionPlanComponent implements OnInit {
 
   getReminderStatus(row: any): 'SEND' | 'SEND_AGAIN' | 'ALREADY_SENT' {
     if (!row) return 'SEND';
-    const recordId = row.id != null ? String(row.id) : (row.Id != null ? String(row.Id) : null);
+    const recordId =
+      row.id != null ? String(row.id) : row.Id != null ? String(row.Id) : null;
 
     // If sent in the current session
     if (recordId && this.reminderDisabled[recordId]) {
@@ -2189,9 +2191,20 @@ export class MouActivityActionPlanComponent implements OnInit {
     }
 
     const now = new Date();
-    const sentMidnight = new Date(sentDate.getFullYear(), sentDate.getMonth(), sentDate.getDate());
-    const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const diffDays = Math.floor((todayMidnight.getTime() - sentMidnight.getTime()) / (1000 * 60 * 60 * 24));
+    const sentMidnight = new Date(
+      sentDate.getFullYear(),
+      sentDate.getMonth(),
+      sentDate.getDate(),
+    );
+    const todayMidnight = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+    const diffDays = Math.floor(
+      (todayMidnight.getTime() - sentMidnight.getTime()) /
+        (1000 * 60 * 60 * 24),
+    );
 
     // 8th day and onwards: allow sending reminder again
     if (diffDays >= 7) {
@@ -2208,7 +2221,8 @@ export class MouActivityActionPlanComponent implements OnInit {
 
   isReminderSending(row: any): boolean {
     if (!row) return false;
-    const recordId = row.id != null ? String(row.id) : (row.Id != null ? String(row.Id) : null);
+    const recordId =
+      row.id != null ? String(row.id) : row.Id != null ? String(row.Id) : null;
     if (recordId) {
       return !!this.reminderSending[recordId];
     }
@@ -2217,7 +2231,12 @@ export class MouActivityActionPlanComponent implements OnInit {
 
   ConfirmSendReminder() {
     const rows = this.selectedRow;
-    const key = rows?.id != null ? String(rows.id) : (rows?.Id != null ? String(rows.Id) : '');
+    const key =
+      rows?.id != null
+        ? String(rows.id)
+        : rows?.Id != null
+          ? String(rows.Id)
+          : '';
 
     if (!this.AssignedToUid) {
       swal.fire('Error', 'Please select a UID to send the reminder', 'error');
@@ -2252,6 +2271,7 @@ export class MouActivityActionPlanComponent implements OnInit {
     formData.append('IpAddress', '');
     formData.append('ActionAssignedBy', AssignedBy);
     formData.append('ActivityDetails', this.ActivityDetailsX);
+    formData.append('InterfaceName', 'MouTakeAction');
 
     const emailSubject =
       'Reminder: Pending MoU Activities for Academic Year 2026-2027';
@@ -2307,7 +2327,12 @@ export class MouActivityActionPlanComponent implements OnInit {
       return;
     }
 
-    const key = rows?.id != null ? String(rows.id) : (rows?.Id != null ? String(rows.Id) : '');
+    const key =
+      rows?.id != null
+        ? String(rows.id)
+        : rows?.Id != null
+          ? String(rows.Id)
+          : '';
     if (this.isReminderSending(rows)) return;
     if (this.getReminderStatus(rows) === 'ALREADY_SENT') return;
 
@@ -2341,7 +2366,10 @@ export class MouActivityActionPlanComponent implements OnInit {
 
     this.mouDocumentsService.MouReminderEmail(formData).subscribe({
       next: (data: any) => {
-        if (data?.item1?.[0]?.msg === 'success' || data?.item1?.[0]?.msg === 'Successfully') {
+        if (
+          data?.item1?.[0]?.msg === 'success' ||
+          data?.item1?.[0]?.msg === 'Successfully'
+        ) {
           this.showAlert('Reminder Email Sent Successfully!', 'success');
           if (key) {
             this.reminderDisabled[key] = true;

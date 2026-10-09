@@ -135,14 +135,64 @@
                                                                     [scrollbarH]="true" [scrollbarV]="false"> -->
 
                                         <ngx-datatable-column *ngIf="statusFilter=='expired'" name="Renew MOU"
-                                            [width]="200" [sortable]="false" prop="Id">
+                                            [width]="250" [sortable]="false" prop="id">
                                             <ng-template let-row="row" ngx-datatable-cell-template>
-                                                <a class="btn btn-success me-2" (click)="openRenewModal(row)" title="Renew">
-                                                    <i class="bi bi-arrow-repeat"></i> Renew
-                                                </a>
-                                                <a class="btn btn-warning" (click)="openReminderModal(row)" title="Send Reminder">
-                                                    <i class="bi bi-envelope"></i> Reminder
-                                                </a>
+                                                <div class="d-flex flex-column gap-2 py-1">
+                                                    <div>
+                                                        <a class="btn btn-success btn-sm" (click)="openRenewModal(row)" title="Renew">
+                                                            <i class="bi bi-arrow-repeat"></i> Renew
+                                                        </a>
+                                                    </div>
+
+                                                    <!-- Spinner while sending -->
+                                                    <div *ngIf="isReminderSending(row)" class="text-muted small">
+                                                        <span class="spinner-border spinner-border-sm me-1" role="status"></span> Sending reminder...
+                                                    </div>
+
+                                                    <ng-container *ngIf="!isReminderSending(row)">
+                                                        <!-- When reminder already sent within 7 days: show reminder details only -->
+                                                        <ng-container *ngIf="getReminderStatus(row) === 'ALREADY_SENT'">
+                                                            <div class="reminder-info-card">
+                                                                <div class="reminder-line">
+                                                                    <span class="reminder-label"><i class="bi bi-calendar-event me-1"></i>Reminder sent on:</span>
+                                                                    <span class="reminder-value">{{ row.emailSentOn }}</span>
+                                                                </div>
+                                                                <div class="reminder-line" *ngIf="row.emailSentBy">
+                                                                    <span class="reminder-label"><i class="bi bi-person-fill me-1"></i>Reminder sent by:</span>
+                                                                    <span class="reminder-value">{{ row.emailSentBy }}</span>
+                                                                </div>
+                                                            </div>
+                                                        </ng-container>
+
+                                                        <!-- When reminder sent 7 days or older: show reminder details and Resend Reminder button -->
+                                                        <ng-container *ngIf="getReminderStatus(row) === 'SEND_AGAIN'">
+                                                            <div class="reminder-info-card mb-1">
+                                                                <div class="reminder-line">
+                                                                    <span class="reminder-label"><i class="bi bi-calendar-event me-1"></i>Reminder sent on:</span>
+                                                                    <span class="reminder-value">{{ row.emailSentOn }}</span>
+                                                                </div>
+                                                                <div class="reminder-line" *ngIf="row.emailSentBy">
+                                                                    <span class="reminder-label"><i class="bi bi-person-fill me-1"></i>Reminder sent by:</span>
+                                                                    <span class="reminder-value">{{ row.emailSentBy }}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <a class="btn btn-warning btn-sm" (click)="resendReminder(row)" title="Resend Reminder">
+                                                                    <i class="bi bi-arrow-clockwise me-1"></i> Resend Reminder
+                                                                </a>
+                                                            </div>
+                                                        </ng-container>
+
+                                                        <!-- When reminder not sent yet: show Reminder button -->
+                                                        <ng-container *ngIf="getReminderStatus(row) === 'SEND'">
+                                                            <div>
+                                                                <a class="btn btn-warning btn-sm" (click)="openReminderModal(row)" title="Send Reminder">
+                                                                    <i class="bi bi-envelope me-1"></i> Reminder
+                                                                </a>
+                                                            </div>
+                                                        </ng-container>
+                                                    </ng-container>
+                                                </div>
                                             </ng-template>
                                         </ngx-datatable-column>
 
@@ -750,7 +800,7 @@
 
 <ng-template #SendReminderModal let-modal>
   <div class="modal-header">
-    <h5 class="modal-title">Send Reminder Email</h5>
+    <h5 class="modal-title">{{ isResendReminder ? 'Resend Reminder Email' : 'Send Reminder Email' }}</h5>
     <button type="button" class="btn-close" (click)="modal.close()"></button>
   </div>
   <div class="modal-body">
@@ -766,7 +816,9 @@
       </div>
     </div>
     <div class="mt-4">
-      <button class="btn btn-danger w-100" (click)="ConfirmSendReminder()">Send Reminder Email</button>
+      <button class="btn btn-danger w-100" (click)="ConfirmSendReminder()">
+        {{ isResendReminder ? 'Resend Reminder Email' : 'Send Reminder Email' }}
+      </button>
     </div>
   </div>
 </ng-template>

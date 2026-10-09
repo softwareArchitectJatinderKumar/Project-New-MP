@@ -463,7 +463,7 @@ export class MouDocumentsReportComponent implements OnInit {
           this.MouDocumentDetails = this.filteredMouDocumentDetails =
             response.item1;
           this.showNoDataFoundMessage = false;
-
+          console.log(this.MouDocumentDetails);
           this.applyFilters();
           this.applyRenewedFilters();
 
@@ -506,7 +506,15 @@ export class MouDocumentsReportComponent implements OnInit {
               item !== 'activityStartDate' &&
               item !== 'activityEndDate' &&
               item !== 'assignedBy' &&
-              item !== 'assignedTo',
+              item !== 'assignedTo' &&
+              item !== 'emailSentBy' &&
+              item !== 'emailSentOn' &&
+              item !== 'reminderEmailSentOn' &&
+              item !== 'hasRenewal' &&
+              item !== 'lpuSpocEmail' &&
+              item !== 'lpuSpocName' &&
+              item !== 'lpuSpocUID' &&
+              item !== 'mouCategory',
           );
 
           this.loadingIndicator = false;
@@ -737,10 +745,12 @@ export class MouDocumentsReportComponent implements OnInit {
       'MOU Approved /Rejected By : Faculty Name': item.mouApprovedBy ?? 'N/A',
       'MOU Approved /Rejected By : Faculty UID': item.approvedBy ?? 'N/A',
       'MOU Approval/ Rejection Date': item.approvalDate ?? 'N/A',
+      'Reminder Sent On': item.emailSentOn ?? 'N/A',
+      'Reminder Sent By': item.emailSentBy ?? 'N/A',
     }));
 
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportedData);
-    const wscols = Array(17).fill({ wpx: 220 });
+    const wscols = Array(19).fill({ wpx: 220 });
     ws['!cols'] = wscols;
 
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
@@ -1238,13 +1248,182 @@ export class MouDocumentsReportComponent implements OnInit {
   reminderSending: any = {};
   reminderDisabled: any = {};
 
-  openReminderModal(row: any): void {
+  parseDate(dateVal: any): Date | null {
+    if (!dateVal) return null;
+    if (dateVal instanceof Date)
+      return isNaN(dateVal.getTime()) ? null : dateVal;
+
+    const str = String(dateVal).trim();
+    if (!str) return null;
+
+    const monthMap: { [key: string]: number } = {
+      jan: 0,
+      feb: 1,
+      mar: 2,
+      apr: 3,
+      may: 4,
+      jun: 5,
+      jul: 6,
+      aug: 7,
+      sep: 8,
+      oct: 9,
+      nov: 10,
+      dec: 11,
+    };
+
+    // Match DD Mon YYYY or DD-Mon-YYYY (e.g. 09 Oct 2026)
+    const dmyWordMatch = str.match(
+      /^(\d{1,2})[-/ ]([A-Za-z]{3,9})[-,/ ]+(\d{4})/,
+    );
+    if (dmyWordMatch) {
+      const day = parseInt(dmyWordMatch[1], 10);
+      const mStr = dmyWordMatch[2].toLowerCase().slice(0, 3);
+      const year = parseInt(dmyWordMatch[3], 10);
+      if (monthMap[mStr] !== undefined) {
+        return new Date(year, monthMap[mStr], day);
+      }
+    }
+
+    // Match YYYY-MM-DD
+    const ymdMatch = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+    if (ymdMatch) {
+      const year = parseInt(ymdMatch[1], 10);
+      const month = parseInt(ymdMatch[2], 10) - 1;
+      const day = parseInt(ymdMatch[3], 10);
+      return new Date(year, month, day);
+    }
+
+    // Match DD/MM/YYYY or DD-MM-YYYY
+    const dmyMatch = str.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+    if (dmyMatch) {
+      const day = parseInt(dmyMatch[1], 10);
+      const month = parseInt(dmyMatch[2], 10) - 1;
+      const year = parseInt(dmyMatch[3], 10);
+      return new Date(year, month, day);
+    }
+
+    const d = new Date(str);
+    return isNaN(d.getTime())
+      ? null
+      : new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  isReminderOlderThan7Days(emailSentOn: any): boolean {
+    if (!emailSentOn) return false;
+    const sentDate = this.parseDate(emailSentOn);
+    if (!sentDate) return false;
+
+    const now = new Date();
+    const todayMidnight = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+    const sentMidnight = new Date(
+      sentDate.getFullYear(),
+      sentDate.getMonth(),
+      sentDate.getDate(),
+    );
+
+    const diffDays = Math.floor(
+      (todayMidnight.getTime() - sentMidnight.getTime()) /
+        (1000 * 60 * 60 * 24),
+    );
+    return diffDays >= 7;
+  }
+
+  getReminderStatus(row: any): 'SEND' | 'ALREADY_SENT' | 'SEND_AGAIN' {
+    if (!row) return 'SEND';
+    const recordId =
+      row.id != null ? String(row.id) : row.Id != null ? String(row.Id) : null;
+    if (recordId && this.reminderDisabled[recordId]) {
+      return 'ALREADY_SENT';
+    }
+
+    const emailSentOn = row.emailSentOn || row.reminderEmailSentOn;
+    if (!emailSentOn) {
+      return 'SEND';
+    }
+
+    const sentDate = this.parseDate(emailSentOn);
+    if (!sentDate) {
+      return 'ALREADY_SENT';
+    }
+
+    const now = new Date();
+    const sentMidnight = new Date(
+      sentDate.getFullYear(),
+      sentDate.getMonth(),
+      sentDate.getDate(),
+    );
+    const todayMidnight = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+    const diffDays = Math.floor(
+      (todayMidnight.getTime() - sentMidnight.getTime()) /
+        (1000 * 60 * 60 * 24),
+    );
+
+    // 7 days or older: allow resending reminder
+    if (diffDays >= 7) {
+      return 'SEND_AGAIN';
+    } else {
+      return 'ALREADY_SENT';
+    }
+  }
+
+  isReminderSending(row: any): boolean {
+    if (!row) return false;
+    const recordId =
+      row.id != null ? String(row.id) : row.Id != null ? String(row.Id) : null;
+    return recordId ? !!this.reminderSending[recordId] : false;
+  }
+
+  isResendReminder: boolean = false;
+
+  resendReminder(row: any): void {
+    this.openReminderModal(row, true);
+  }
+
+  openReminderModal(row: any, isResend: boolean = false): void {
     if (!row) return;
     this.selectedRow = row;
-    this.employeeControl.setValue('');
+    this.isResendReminder = isResend;
+    const key = String(row?.id || row?.Id || '');
+    if (key) {
+      this.reminderDisabled[key] = false;
+      this.reminderSending[key] = false;
+    }
     this.filteredEmployeesData = [];
     this.showSuggestions = false;
-    this.AssignedToUid = '';
+
+    // Pre-populate associated UID from row (uid, mouUploadedByUID, or lpuSpocUID)
+    const targetUid = String(
+      row?.uid || row?.mouUploadedByUID || row?.lpuSpocUID || '',
+    ).trim();
+
+    if (targetUid) {
+      this.AssignedToUid = targetUid;
+      const foundEmp = this.EmployeeData?.find(
+        (emp) => String(emp.employeeCode).trim() === targetUid,
+      );
+      if (foundEmp) {
+        this.employeeControl.setValue(
+          `${foundEmp.employeeName} (${foundEmp.employeeCode})`,
+        );
+      } else {
+        const fallbackName =
+          row?.mouUploadedBy || row?.facultyName || row?.lpuSpocName || '';
+        this.employeeControl.setValue(
+          fallbackName ? `${fallbackName} (${targetUid})` : targetUid,
+        );
+      }
+    } else {
+      this.AssignedToUid = '';
+      this.employeeControl.setValue('');
+    }
 
     this.modalService.open(this.SendReminderModal, {
       size: 'xl',
@@ -1259,15 +1438,21 @@ export class MouDocumentsReportComponent implements OnInit {
       return;
     }
 
-    const key = String(row?.id || '');
+    const key = String(row?.id || row?.Id || '');
     if (this.reminderSending[key] || this.reminderDisabled[key]) return;
 
     this.reminderSending[key] = true;
 
     const formData = new FormData();
-    formData.append('MouId', row.id);
+    formData.append('MouId', row?.id || row?.Id);
+    formData.append('Id', row?.id || row?.Id);
     formData.append('Uid', this.AssignedToUid);
-    formData.append('Remarks', 'Expired MOU reminder');
+    formData.append(
+      'Remarks',
+      this.isResendReminder
+        ? 'Resend expired MOU reminder'
+        : 'Expired MOU reminder',
+    );
 
     const emailSubject = 'Reminder: Pending MoU Renewals';
     const emailBody = `Dear Sir/Madam, Greetings of the day! This is a gentle reminder that MoUs associated with your account have expired and required necessary action. You are kindly requested to review the details of the expired Mous and initiate the required action at the earliest to ensure timely renewal and continuity of institutional collaborations. For any queries regarding Mou renewal and related activities, your may visit to the Department of Research and Collaborations, Block 38-207, Cabin 1 4 or 8.`;
@@ -1286,7 +1471,27 @@ export class MouDocumentsReportComponent implements OnInit {
         const resultMsg = data?.item1?.[0]?.msg?.toLowerCase();
         if (resultMsg === 'successfully' || resultMsg === 'success') {
           this.reminderDisabled[key] = true;
-          swal.fire('Success', 'Reminder sent successfully!', 'success');
+          const successMsg = this.isResendReminder
+            ? 'Reminder email resent successfully!'
+            : 'Reminder sent successfully!';
+          swal.fire('Success', successMsg, 'success');
+          if (row) {
+            row.emailSentOn = new Date().toLocaleDateString('en-GB', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+            });
+            const currentUser = this.storageService.getUser();
+            const uid =
+              currentUser?.uid ||
+              currentUser?.employeeCode ||
+              currentUser?.userId ||
+              '';
+            const name = currentUser?.employeeName || currentUser?.name || '';
+            const userStr = `${uid} ${name}`.trim();
+            row.emailSentBy = userStr || this.AssignedToUid;
+          }
+          this.GetAllUploadsDetails();
         } else {
           swal.fire('Error', 'Failed to send reminder', 'error');
         }
