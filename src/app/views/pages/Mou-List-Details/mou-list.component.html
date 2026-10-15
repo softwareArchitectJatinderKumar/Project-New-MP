@@ -19,7 +19,7 @@
         <!-- Separate Active and Expired Tabs -->
         <ul class="nav nav-pills custom-mou-tabs" role="tablist">
           <li class="nav-item" role="presentation">
-            <button class="nav-link" [class.active]="selectedTab === 'active'"
+            <button class="nav-link m-2 p-2" [class.active]="selectedTab === 'active'"
               (click)="onTabChange('active')" type="button" role="tab" id="tab-active-mous">
               <i class="bi bi-check-circle-fill me-1 text-success tab-icon"></i>
               <span>Active MoUs</span>
@@ -29,7 +29,7 @@
             </button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link" [class.active]="selectedTab === 'expired'"
+            <button class="nav-link m-2 p-2" [class.active]="selectedTab === 'expired'"
               (click)="onTabChange('expired')" type="button" role="tab" id="tab-expired-mous">
               <i class="bi bi-clock-history me-1 text-danger tab-icon"></i>
               <span>Expired MoUs</span>
@@ -39,7 +39,7 @@
             </button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link" [class.active]="selectedTab === 'all'"
+            <button class="nav-link m-2 p-2" [class.active]="selectedTab === 'all'"
               (click)="onTabChange('all')" type="button" role="tab" id="tab-all-mous">
               <i class="bi bi-collection-fill me-1 text-primary tab-icon"></i>
               <span>All MoUs</span>

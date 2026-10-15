@@ -72,7 +72,8 @@ export class MouListDocumentsComponent implements OnInit {
   ngOnInit(): void {
     const stMain = document.getElementById('stMain');
     if (stMain) {
-      stMain.innerHTML = '<span class="themeClr">List of </span> MoU\'s';
+      stMain.innerHTML =
+        '<span class="themeClr">List </span> of <span class="themeClr"> MoU\'s  </span>';
     }
     const imgLogo = document.getElementById('imgLogo');
     if (imgLogo) {

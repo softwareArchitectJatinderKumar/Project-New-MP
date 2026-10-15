@@ -51,10 +51,10 @@ $surface-soft: #f8fafc;
 .custom-mou-tabs {
   display: inline-flex;
   gap: 6px;
-  background-color: #f1f5f9;
+  // background-color: #f1f5f9;
   padding: 4px;
   border-radius: 8px;
-  border: 1px solid $border;
+  // border: 1px solid $border;
   margin-bottom: 0;
 
   .nav-item {
@@ -64,7 +64,7 @@ $surface-soft: #f8fafc;
       padding: 0.45rem 1rem;
       font-size: 0.835rem;
       font-weight: 600;
-      color: #475569;
+      // color: #475569;
       border-radius: 6px;
       border: 1px solid transparent;
       background: transparent;
