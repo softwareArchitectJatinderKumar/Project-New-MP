@@ -1,0 +1,693 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Title>Interface and Module Development Report</Title>
+  <Author>Developer</Author>
+  <Created>2026-10-15T10:00:00Z</Created>
+  <Version>16.00</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <AllowPNG/>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>12000</WindowHeight>
+  <WindowWidth>24000</WindowWidth>
+  <WindowTopX>0</WindowTopX>
+  <WindowTopY>0</WindowTopY>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Center"/>
+   <Borders/>
+   <Font ss:FontName="Times New Roman" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <!-- Top summary label style -->
+  <Style ss:ID="sTopLabel">
+   <Alignment ss:Vertical="Center" ss:Horizontal="Left"/>
+   <Font ss:FontName="Times New Roman" ss:Size="11" ss:Color="#000000"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+   </Borders>
+  </Style>
+  <!-- Top input cell style for manual entry -->
+  <Style ss:ID="sTopInput">
+   <Alignment ss:Vertical="Center" ss:Horizontal="Left"/>
+   <Font ss:FontName="Times New Roman" ss:Size="11" ss:Color="#000000"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+   </Borders>
+  </Style>
+  <!-- Top formula summary value style -->
+  <Style ss:ID="sTopFormula">
+   <Alignment ss:Vertical="Center" ss:Horizontal="Left"/>
+   <Font ss:FontName="Times New Roman" ss:Size="11" ss:Bold="1" ss:Color="#000000"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+   </Borders>
+  </Style>
+  <!-- DETAILS header style -->
+  <Style ss:ID="sDetailsHeader">
+   <Alignment ss:Vertical="Center" ss:Horizontal="Left"/>
+   <Font ss:FontName="Times New Roman" ss:Size="11" ss:Color="#000000"/>
+  </Style>
+  <!-- Table column header style -->
+  <Style ss:ID="sTableHeader">
+   <Alignment ss:Vertical="Center" ss:Horizontal="Left"/>
+   <Font ss:FontName="Times New Roman" ss:Size="11" ss:Color="#000000"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+   </Borders>
+  </Style>
+  <!-- Data S.no style -->
+  <Style ss:ID="sDataSno">
+   <Alignment ss:Vertical="Top" ss:Horizontal="Center"/>
+   <Font ss:FontName="Times New Roman" ss:Size="10" ss:Color="#000000"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+   </Borders>
+  </Style>
+  <!-- Data interface name style -->
+  <Style ss:ID="sDataName">
+   <Alignment ss:Vertical="Top" ss:Horizontal="Left" ss:WrapText="1"/>
+   <Font ss:FontName="Times New Roman" ss:Size="10" ss:Color="#000000"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+   </Borders>
+  </Style>
+  <!-- Data technology style -->
+  <Style ss:ID="sDataTech">
+   <Alignment ss:Vertical="Top" ss:Horizontal="Left"/>
+   <Font ss:FontName="Times New Roman" ss:Size="10" ss:Color="#000000"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+   </Borders>
+  </Style>
+  <!-- Data unique feature style -->
+  <Style ss:ID="sDataFeature">
+   <Alignment ss:Vertical="Top" ss:Horizontal="Left" ss:WrapText="1"/>
+   <Font ss:FontName="Times New Roman" ss:Size="10" ss:Color="#000000"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#000000"/>
+   </Borders>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="Interface Details">
+  <Table ss:ExpandedColumnCount="4" ss:ExpandedRowCount="86" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="20">
+   <Column ss:Index="1" ss:AutoFitWidth="0" ss:Width="50"/>
+   <Column ss:Index="2" ss:AutoFitWidth="0" ss:Width="280"/>
+   <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="190"/>
+   <Column ss:Index="4" ss:AutoFitWidth="0" ss:Width="480"/>
+
+   <!-- Row 1: Name: -->
+   <Row ss:Height="22">
+    <Cell ss:StyleID="sTopLabel"><Data ss:Type="String">Name:</Data></Cell>
+    <Cell ss:StyleID="sTopInput"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="sTopInput"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="sTopInput"><Data ss:Type="String"></Data></Cell>
+   </Row>
+
+   <!-- Row 2: UID: -->
+   <Row ss:Height="22">
+    <Cell ss:StyleID="sTopLabel"><Data ss:Type="String">UID:</Data></Cell>
+    <Cell ss:StyleID="sTopInput"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="sTopInput"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="sTopInput"><Data ss:Type="String"></Data></Cell>
+   </Row>
+
+   <!-- Row 3: Department -->
+   <Row ss:Height="22">
+    <Cell ss:StyleID="sTopLabel"><Data ss:Type="String">Department</Data></Cell>
+    <Cell ss:StyleID="sTopInput"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="sTopInput"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="sTopInput"><Data ss:Type="String"></Data></Cell>
+   </Row>
+
+   <!-- Row 4: Total no. of interfaces/modules developed -->
+   <Row ss:Height="22">
+    <Cell ss:StyleID="sTopLabel"><Data ss:Type="String">Total no. of interfaces/modules developed</Data></Cell>
+    <Cell ss:StyleID="sTopFormula" ss:Formula="=COUNTA(R11C2:R86C2)"><Data ss:Type="Number">76</Data></Cell>
+    <Cell ss:StyleID="sTopInput"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="sTopInput"><Data ss:Type="String"></Data></Cell>
+   </Row>
+
+   <!-- Row 5: No. of interfaces/modules on new technology -->
+   <Row ss:Height="22">
+    <Cell ss:StyleID="sTopLabel"><Data ss:Type="String">No. of interfaces/modules on new technology</Data></Cell>
+    <Cell ss:StyleID="sTopFormula" ss:Formula="=COUNTIF(R11C3:R86C3,&quot;*New*&quot;)"><Data ss:Type="Number">47</Data></Cell>
+    <Cell ss:StyleID="sTopInput"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="sTopInput"><Data ss:Type="String"></Data></Cell>
+   </Row>
+
+   <!-- Row 6: No. of interfaces/modules on old technology -->
+   <Row ss:Height="22">
+    <Cell ss:StyleID="sTopLabel"><Data ss:Type="String">No. of interfaces/modules on old technology</Data></Cell>
+    <Cell ss:StyleID="sTopFormula" ss:Formula="=COUNTIF(R11C3:R86C3,&quot;*Old*&quot;)"><Data ss:Type="Number">29</Data></Cell>
+    <Cell ss:StyleID="sTopInput"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="sTopInput"><Data ss:Type="String"></Data></Cell>
+   </Row>
+
+   <!-- Row 7: Blank row -->
+   <Row ss:Height="15">
+    <Cell><Data ss:Type="String"></Data></Cell>
+   </Row>
+
+   <!-- Row 8: DETAILS: -->
+   <Row ss:Height="22">
+    <Cell ss:StyleID="sDetailsHeader"><Data ss:Type="String">DETAILS:</Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+   </Row>
+
+   <!-- Row 9: Blank row -->
+   <Row ss:Height="15">
+    <Cell><Data ss:Type="String"></Data></Cell>
+   </Row>
+
+   <!-- Row 10: Table Header -->
+   <Row ss:Height="25">
+    <Cell ss:StyleID="sTableHeader"><Data ss:Type="String">S no.</Data></Cell>
+    <Cell ss:StyleID="sTableHeader"><Data ss:Type="String">Name of interface</Data></Cell>
+    <Cell ss:StyleID="sTableHeader"><Data ss:Type="String">New technology/old technology</Data></Cell>
+    <Cell ss:StyleID="sTableHeader"><Data ss:Type="String">Unique feature</Data></Cell>
+   </Row>
+
+   <!-- Data Rows: Active / New Technology (Routes 1 - 47) -->
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">User Authentication &amp; Authorization Portal (auth)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Centralized secure authentication supporting role-based access control (RBAC), JWT token management, and route guard integration.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">2</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Placement IT Help Desk - Final Approval / Admin Action</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Administrative final sign-off workflow, ticket resolution audit trail, and escalation handling with status updates.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">3</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Placement IT Help Desk - Ticket Registration</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Interactive issue registration form featuring category classification, priority tagging, attachment upload, and auto-dispatch.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">4</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Placement IT Help Desk - Staff Ticket Action &amp; Resolution</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Staff-facing action portal allowing quick ticket assignment, intermediate remarks logging, and resolution status dispatch.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">5</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Multiple Metric Dashboard - Target Management</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Multi-metric target setting interface allowing dynamic target allocation, goal tracking, and organizational KPI measurement.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">6</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">OBP Admin Dashboard - Master Details Control</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Comprehensive master configuration console for Outcome-Based Planning (OBP), entity hierarchies, and aggregate analytics.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">7</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">OBP Metric Program Assistant (PA) Bindings</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Interactive mapping tool linking outcome metrics directly to Program Assistants with real-time validation and binding status.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">8</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">OBP Department Head Mapping</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Hierarchical assignment interface connecting department heads with associated metric portfolios and operational assistants.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">9</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Semester Exchange - Staff Login Portal</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Dedicated secure login authentication portal for semester exchange administrative and dealing staff.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">10</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Semester Exchange - Student Registration (New Way)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Optimized multi-stage student registration workflow supporting document uploads, eligibility pre-checks, and registration tokens.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">11</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Semester Exchange - Dynamic Application (New Logic)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Advanced dynamic form engine with conditional field rendering, partner university selection, and instant data validation.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">12</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Semester Exchange - Student Dashboard &amp; Edit Portal</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Personalized student dashboard providing live application lifecycle tracking, discrepancy alerts, and field editing capabilities.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">13</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Semester Exchange - Tabbed Next Steps Workflow</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Structured tabbed navigation guiding students step-by-step through university allotment, visa processing, and fee clearance.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">14</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Semester Exchange - HOD Dealing Dashboard</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Department Head dealing panel for evaluating student nominations, verifying departmental NOCs, and recording decisions.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">15</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Semester Exchange - Head of Wing (HOW) Dashboard</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">High-level wing administrative dashboard featuring bulk approval mechanisms, departmental comparisons, and review filters.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">16</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Semester Exchange - DIA HOD Dealing Dashboard</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Department of International Affairs (DIA) HOD console for vetting foreign university tie-ups and international exchange dossiers.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">17</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Semester Exchange - Counsellor Dealing Dashboard</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Student counseling workbench for assessing credit transfer compatibility, course mapping, and interview evaluation notes.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">18</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Semester Exchange - Comprehensive Application Details (New UI)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Role-adaptive complete view of student profile, attached certificates, course equivalencies, and multi-tier approval audit trails.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">19</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Semester Exchange - Counsellor Dashboard (New UI)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Modernized counsellor workspace equipped with interview scheduling, scoring matrices, and candidate recommendation tracking.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">20</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Semester Exchange - Faculty Dashboard (New UI)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Updated faculty evaluator interface enabling course-by-course syllabus comparison, credit mapping, and digital endorsement.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">21</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Semester Exchange - HOD Dashboard (New UI)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Redesigned executive HOD dashboard with interactive KPI stat cards, fast-track approvals, and student status distribution.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">22</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Semester Exchange - HOW Dashboard (New UI)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Consolidated wing dashboard providing cross-departmental statistics, pending approval counters, and analytical drill-downs.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">23</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Semester Exchange - HOD Admin Panel Navigation Bar</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Unified top menu administrative bar providing rapid navigation across migration, exchange, and institutional management modules.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">24</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Semester Exchange - View All Applications Portal</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Enterprise data grid featuring multi-column sorting, advanced search filters, status badges, and Excel export capability.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">25</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Semester Exchange - All Partner Universities Directory</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Master directory listing partner universities, international rankings, active MoU status, and eligible academic programs.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">26</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Research Journal - Admin Management Portal</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Administrative CMS for university research journals, managing volume releases, issue dates, and submitted manuscripts.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">27</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Research Journal - Editorial Board Interface</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Public and administrative profile showcase for chief editors, associate editors, reviewers, and their institutional affiliations.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">28</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Research Journal - About &amp; Publication Guidelines</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Dynamic information page displaying journal aims and scope, indexing recognitions, publication ethics, and author guidelines.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">29</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">University Event Calendar - Viewer Interface</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Interactive calendar view visualizing institutional academic events, conferences, sports meets, and holiday schedules.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">30</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Staff Dress Material - Requisition Interface</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Self-service staff uniform requisition module with size measurement capture, entitlement checks, and dispatch request logging.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">31</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Staff Dress Material - Approvals Management</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Multi-stage approval console for validating employee dress material entitlements, vendor purchase orders, and issuance tracking.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">32</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">University Event Calendar - Admin Management</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Centralized event management portal allowing event scheduling, venue bookings, brochure uploads, and calendar synchronization.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">33</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Summer School - Student Registration &amp; Portal</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Public-facing summer school portal showcasing available specialized short courses, guest faculty details, and online enrollment.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">34</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Summer School - Master Configuration &amp; Admin</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Back-office administration for configuring summer school batches, syllabus structures, seat quotas, and applicant rosters.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">35</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Student Grievance Redressal Committee (SGRC) Cases Portal</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Confidential grievance submission and case tracking system with hearing notice generation, evidence uploads, and committee minutes.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">36</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Memorandum of Understanding (MoU) - Approval Workflow</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Hierarchical vetting portal for prospective institutional MoUs, routing agreements through legal review, HODs, and leadership.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">37</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Placement Details - Dynamic Reporting &amp; Analytics</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Dynamic reporting dashboard delivering real-time placement statistics, recruiting partner performance, and offer distributions.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">38</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">MoU Management - New Request, Uploads &amp; Renewal</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">End-to-end MoU submission interface supporting multi-document uploads, renewal triggers, stored procedure integration, and Excel export.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">39</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">MoU Master Directory - List &amp; Status Tracking</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Comprehensive searchable directory of all signed MoUs with validity timelines, expiry alerts, partner details, and quick action modals.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">40</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">MoU Approvals &amp; Documents Report (HOS / Head)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">HOS/Head evaluation portal for reviewing uploaded MoU legal drafts, verifying commitments, and authorizing final approvals.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">41</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">MoU Activity - Action Planning Console</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Operational planning tool to schedule academic activities, webinars, joint research projects, and student exchanges under active MoUs.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">42</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">MoU Activity - Action Execution &amp; Evidence Submission</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Interface for activity coordinators to document execution, submit participant lists, attach geotagged event photos, and log impact.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">43</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">MoU Activity - Action Approvals &amp; Compliance</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Verification portal for reviewing executed MoU activities against planned milestones and approving compliance certifications.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">44</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">MoU Admin Action &amp; Date-Wise Audit Reporting</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Advanced date-wise analytical reporting console tracking MoU lifecycle milestones, operational KPIs, and administrative audit trails.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">45</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">School Divisions - Metric &amp; Planner Data Progress</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Real-time progress tracker comparing academic school performance against assigned outcome planners with dynamic status indicators.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">46</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">UMS Criteria Master Configuration Interface</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Master configuration panel for university criteria scoring, weightage distribution, and accreditation compliance parameters.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">47</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Placement Coordinator - Dynamic Performance Report</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">New technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Customizable reporting module for placement coordinators to filter students by CGPA, branch, attendance, and selection outcomes.</Data></Cell>
+   </Row>
+
+   <!-- Data Rows: Old Technology (Legacy / Replaced modules 48 - 76) -->
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">48</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">OBP Metric Allocation Transfer Tool (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Administrative utility for batch reassigning and transferring OBP metric responsibilities between academic departments.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">49</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Auto Assign Metric &amp; OBP Auto Planners (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Automated rule-based algorithm engine for distributing academic metrics and targets among faculty coordinators.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">50</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">RMS Distance Tracking &amp; Travel Report (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Reporting module calculating official transit distances, travel allowances, and field visit logs for resource staff.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">51</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Estate Actionable Point - Task Completion (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Field task resolution interface for logging campus maintenance repairs, inspection sign-offs, and completion timestamps.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">52</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Estate Actionable Point - Master Tracking (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Campus infrastructure maintenance ticketing system tracking actionable points, assigned supervisors, and resolution SLA.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">53</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Placement Drive - Student Registration Portal (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Student placement registration interface for opting into campus recruitment drives and submitting initial resumes.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">54</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Placement Drive - HOD Clearance &amp; Approval (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Departmental clearance portal for verifying academic eligibility and attendance compliance before placement drive entry.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">55</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Resource Management System (RMS) - Dashboard (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Central dashboard tracking departmental resource requisitions, staff allocations, and operational inventory statistics.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">56</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">MoU Executive Overview Dashboard (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Preliminary dashboard summarizing total active MoUs, partner countries, and department-wise agreements.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">57</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Agreement Data Entry &amp; Record Keeping (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Data entry interface for archiving paper-based bilateral agreements, institutional clauses, and signatory details.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">58</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">RMS Activity &amp; Audit Transaction Log (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Historical transaction logging tool recording every RMS record change, user stamp, and state transition.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">59</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Agreement Activity Planning Module (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Basic calendar scheduler for registering collaborative seminars and faculty visits under active institutional agreements.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">60</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">RMS Pendency &amp; Delayed Requisition Report (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Overdue task analyzer highlighting pending resource approvals, delayed material dispatches, and SLA breaches.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">61</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Career Services &amp; Student Mentorship (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Advisory portal linking graduating students with career counselors, resume reviewers, and mock interviewers.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">62</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">MoU Mobile Overview Interface (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Responsive mobile-friendly view summarizing key institutional MoU metrics for leadership on handheld devices.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">63</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Construction RMS - Civil Infrastructure Monitoring (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Civil works management module monitoring ongoing construction project milestones, contractor logs, and material requisitions.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">64</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Alumni Relations &amp; Engagement Network (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Institutional alumni networking platform managing graduate directory, chapter events, and alumni contribution initiatives.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">65</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Parent Communication &amp; Academic Progress Portal (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Automated parent notification system dispatching student semester grades, attendance warnings, and campus notices.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">66</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Planner Score &amp; Performance Ranking Matrix (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Ranking engine scoring departmental planners based on milestone achievement speed and outcome delivery quality.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">67</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">University Administrative Summary Report (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Comprehensive institutional report consolidating operational data across academic, estate, and HR departments.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">68</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">RMS Telephonic Daily Status Report (DSR) (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Call center logging system recording telephonic queries, grievance follow-ups, and daily operational status.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">69</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Research Journal Editor &amp; Modification Tool (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Early-generation journal editing tool for correcting published manuscript metadata and updating editorial lists.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">70</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">RMS QR Code Scanner &amp; Verification (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Barcode and QR scanning interface for authenticating physical gate passes, asset tags, and delivery dispatches.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">71</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">RMS DSR Performance Rating &amp; Feedback Report (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Staff evaluation interface analyzing client satisfaction ratings, response times, and daily resolution metrics.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">72</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">RMS Dealing Official Caseload Report (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Operational caseload monitor displaying active tickets, resolved files, and turnaround benchmarks per dealing officer.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">73</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">OBP Stage-Wise Construction Dashboard (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Physical infrastructure progress monitor tracking site excavation, structural framing, and finishing phases.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">74</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">OBP Estate Final Verification &amp; Handover (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Estate audit module certifying completion of civil works, safety sign-offs, and final facility handover.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">75</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Outreach Appointments &amp; Meeting Scheduler (Legacy)</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Calendar appointment system coordinating institutional outreach visits, school visits, and guest delegation meetings.</Data></Cell>
+   </Row>
+   <Row ss:Height="32">
+    <Cell ss:StyleID="sDataSno"><Data ss:Type="Number">76</Data></Cell>
+    <Cell ss:StyleID="sDataName"><Data ss:Type="String">Legacy Criteria Master Configuration Module</Data></Cell>
+    <Cell ss:StyleID="sDataTech"><Data ss:Type="String">Old technology</Data></Cell>
+    <Cell ss:StyleID="sDataFeature"><Data ss:Type="String">Legacy criteria structure for university management system accreditation frameworks.</Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Print>
+    <ValidPrinterInfo/>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>10</ActiveRow>
+     <ActiveCol>1</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>

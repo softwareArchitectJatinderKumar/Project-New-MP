@@ -1,0 +1,148 @@
+Name:,Jatinder Kumar,,,
+UID:,31309,,,
+Department,Software Development V,,,
+Total no. of interfaces/modules developed  = 129,,,,
+No. of interfaces/modules on new technology == 104,,,,
+No. of interfaces/modules on old technology =  25,,,,
+,,,,
+S no.,Name of interface,New technology/old technology,Unique feature,Future Aspects
+1,Placement IT Help Desk - Final Approval / Admin Action,New technology,"Administrative final sign-off workflow, ticket resolution audit trail, and escalation handling with status updates.",To improvise using AI 
+2,Placement IT Help Desk - Ticket Registration,New technology,"Interactive issue registration form featuring category classification, priority tagging, attachment upload, and auto-dispatch.",To improvise using AI 
+3,Placement IT Help Desk - Staff Ticket Action & Resolution,New technology,"Staff-facing action portal allowing quick ticket assignment, intermediate remarks logging, and resolution status dispatch.",To improvise using AI 
+4,Multiple Metric Dashboard - Target Management,New technology,"Multi-metric target setting interface allowing dynamic target allocation, goal tracking, and organizational KPI measurement.",To improvise using AI 
+5,OBP Admin Dashboard - Master Details Control,New technology,"Comprehensive master configuration console for Outcome-Based Planning (OBP), entity hierarchies, and aggregate analytics.",To improvise using AI 
+6,OBP Metric Program Assistant (PA) Bindings,New technology,Interactive mapping tool linking outcome metrics directly to Program Assistants with real-time validation and binding status.,To improvise using AI 
+7,OBP Department Head Mapping,New technology,Hierarchical assignment interface connecting department heads with associated metric portfolios and operational assistants.,To improvise using AI 
+8,Semester Exchange - Student Registration (New Way),New technology,"Optimized multi-stage student registration workflow supporting document uploads, eligibility pre-checks, and registration tokens.",Handed Over Pooja Ma'am Team
+9,Semester Exchange - Student Dashboard & Edit Portal,New technology,"Personalized student dashboard providing live application lifecycle tracking, discrepancy alerts, and field editing capabilities.",Handed Over Pooja Ma'am Team
+10,Semester Exchange - HOD Dealing Dashboard,New technology,"Department Head dealing panel for evaluating student nominations, verifying departmental NOCs, and recording decisions.",Handed Over Pooja Ma'am Team
+11,Semester Exchange - Head of Wing (HOW) Dashboard,New technology,"High-level wing administrative dashboard featuring bulk approval mechanisms, departmental comparisons, and review filters.",Handed Over Pooja Ma'am Team
+12,Semester Exchange - DIA HOD Dealing Dashboard,New technology,Department of International Affairs (DIA) HOD console for vetting foreign university tie-ups and international exchange dossiers.,Handed Over Pooja Ma'am Team
+13,Semester Exchange - Counsellor Dealing Dashboard,New technology,"Student counseling workbench for assessing credit transfer compatibility, course mapping, and interview evaluation notes.",Handed Over Pooja Ma'am Team
+14,Semester Exchange - Counsellor Dashboard (New UI),New technology,"Modernized counsellor workspace equipped with interview scheduling, scoring matrices, and candidate recommendation tracking.",Handed Over Pooja Ma'am Team
+15,Semester Exchange - Faculty Dashboard (New UI),New technology,"Updated faculty evaluator interface enabling course-by-course syllabus comparison, credit mapping, and digital endorsement.",Handed Over Pooja Ma'am Team
+16,Semester Exchange - HOD Dashboard (New UI),New technology,"Redesigned executive HOD dashboard with interactive KPI stat cards, fast-track approvals, and student status distribution.",Handed Over Pooja Ma'am Team
+17,Semester Exchange - HOW Dashboard (New UI),New technology,"Consolidated wing dashboard providing cross-departmental statistics, pending approval counters, and analytical drill-downs.",Handed Over Pooja Ma'am Team
+18,Semester Exchange - HOD Admin Panel Navigation Bar,New technology,"Unified top menu administrative bar providing rapid navigation across migration, exchange, and institutional management modules.",Handed Over Pooja Ma'am Team
+19,Semester Exchange - View All Applications Portal,New technology,"Enterprise data grid featuring multi-column sorting, advanced search filters, status badges, and Excel export capability.",Handed Over Pooja Ma'am Team
+20,Semester Exchange - All Partner Universities Directory,New technology,"Master directory listing partner universities, international rankings, active MoU status, and eligible academic programs.",Handed Over Pooja Ma'am Team
+21,Summer School - Student Registration & Portal,New technology,"Public-facing summer school portal showcasing available specialized short courses, guest faculty details, and online enrollment.",To improvise using AI 
+22,Summer School - Master Configuration & Admin,New technology,"Back-office administration for configuring summer school batches, syllabus structures, seat quotas, and applicant rosters.",To improvise using AI 
+23,Student Grievance Redressal Committee (SGRC) Cases Portal,New technology,"Confidential grievance submission and case tracking system with hearing notice generation, evidence uploads, and committee minutes.",To improvise using AI 
+24,Placement Details - Dynamic Reporting & Analytics,New technology,"Dynamic reporting dashboard delivering real-time placement statistics, recruiting partner performance, and offer distributions.",To improvise using AI 
+25,MoU Management - New Request  Uploads & Renewal,New technology,"End-to-end MoU submission interface supporting multi-document uploads, renewal triggers, stored procedure integration, and Excel export.",Handed Over Aman SirTeam
+26,MoU Master Directory - List & Status Tracking,New technology,"Comprehensive searchable directory of all signed MoUs with validity timelines, expiry alerts, partner details, and quick action modals.",Handed Over Aman SirTeam
+27,MoU Approvals & Documents Report (HOS / Head),New technology,"HOS/Head evaluation portal for reviewing uploaded MoU legal drafts, verifying commitments, and authorizing final approvals.",Handed Over Aman SirTeam
+28,MoU Activity - Action Planning Console,New technology,"Operational planning tool to schedule academic activities, webinars, joint research projects, and student exchanges under active MoUs.",Handed Over Aman SirTeam
+29,MoU Activity - Action Approvals & Compliance,New technology,Verification portal for reviewing executed MoU activities against planned milestones and approving compliance certifications.,Handed Over Aman SirTeam
+30,MoU Admin Action & Date-Wise Audit Reporting,New technology,"Advanced date-wise analytical reporting console tracking MoU lifecycle milestones, operational KPIs, and administrative audit trails.",Handed Over Aman SirTeam
+31,Meeting Master (Create/Schedule Meetings),Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+32,Meeting Details,Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+33,Minutes of Meeting Report,Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+34,Staff Movement Register,Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+35,Daily Activities,Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+36,Meeting Schedule v/s Held,Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+37,"Meeting Schedule,",Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+38,"Delete Meeting Id and Add Department,",Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+39,"CC /MCC Report,",Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+40,"RB3 Meeting Schedule Master,",Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+41,"Manpower Requisition Tracking System,",Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+42,"MOM Crux Report,",Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+43,"Meeting Attendance Marking,",Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+44,"MOM Detailed Report (Presided By),",Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+45,"Meeting Proceeding Task Reassignment,",Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+46,"Verification By Head For Compliance of Meeting Proceedings,",Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+47,"Request for Actionable to Non Actionable,",Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+48,"Actionable Point Conversion Approval,",Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+49,"Actionable Points Crux Report (New),",Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+50,"Actionable Point Verification,",Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+51,Minutes of Meeting Consolidated Report,Old technology,New Interface to be taken or assigned ,To migrate in Angular LTS with AI
+52,Editors Login (EditorsLogin),New technology,Dedicated authentication portal for journal editors and editorial administrators,To improvise using AI 
+53,Editor Dashboard - Manage Editor Details (EdsEditorDashboard),New technology,Management interface for editorial profiles,To improvise using AI 
+54,Editor - Menu & Role Wise User Management (:Menu/:Role/EdsManageUser),New technology,Hierarchical role-based access management filtered by editorial menus,To improvise using AI 
+55,Editor - User Management Dashboard (EdsManageUser),New technology,Centralized user administration directory for authors,To improvise using AI 
+56,Editor - Manage Manuscripts Lifecycle (EdsManageManuscript),New technology,Full manuscript tracking,To improvise using AI 
+57,Secure Password Change (:Id/:name/SecurityIssue),New technology,Journal-scoped secure password update and security alert verification,To improvise using AI 
+58,New Journal Configuration Form (NewJournalForms),New technology,Form interface for configuring and registering new academic journals,To improvise using AI 
+59,User Signup Portal (signup),New technology,Global registration interface for new authors,To improvise using AI 
+60,Journal-Scoped User Signup (:Id/:name/signup),New technology,Context-aware registration binding users to a specific journal domain,To improvise using AI 
+61,Journal-Scoped External User Login (:Id/:name/ExternalLogin),New technology,Contextual login authentication for external reviewers and guest scholars,To improvise using AI 
+62,External User Login (ExternalLogin),New technology,General external contributor login portal with session validation,To improvise using AI 
+63,Internal User Login (Login),New technology,Role-based internal staff authentication portal,To improvise using AI 
+64,Journal-Scoped Internal Login (:Id/:name/Login),New technology,Journal-specific internal staff and editor access portal,To improvise using AI 
+65,Journal Home Portal (Default Route),New technology,Primary journal homepage showcasing featured articles,To improvise using AI 
+66,Journal Research Directory (Research),New technology,Searchable repository of published research papers with categorical filtering,To improvise using AI 
+67,Journal Conferences (Conferences),New technology,Academic conference proceedings,To improvise using AI 
+68,Contact Us (Contactus),New technology,Interactive inquiry and communication interface with editorial office,To improvise using AI 
+69,About Journal Details (:Id/:name/About),New technology,Detailed journal scope,To improvise using AI 
+70,Journal Issues & Archives (:Id/:name/GetIssues),New technology,Volume-wise archive browser with PDF download capabilities,To improvise using AI 
+71,Editorial Board Directory (:Id/:name/EditorialBoard),New technology,Public display of Chief Editors,To improvise using AI 
+72,Author Guidelines - Manuscript Preparation (:Id/:name/AuthorGuidelines/ManuScriptPrepare),New technology,Standardized manuscript formatting rules,To improvise using AI 
+73,Author Guidelines - Manuscript Workflow (:Id/:name/AuthorGuidelines/ManuScriptWorkFlow),New technology,Visual step-by-step workflow guide illustrating peer review and publication stages,To improvise using AI 
+74,Policy - Editorial Policy (:Id/:name/Policies/EditorialPolicy),New technology,Statement of editorial integrity,To improvise using AI 
+75,Policy - Peer Review Policy (:Id/:name/Policies/PeerReviewPolicy),New technology,Comprehensive description of double-blind peer review framework and timelines,To improvise using AI 
+76,Policy - Open Access Policy (:Id/:name/Policies/OpenAccessPolicy),New technology,Open access licensing model,To improvise using AI 
+77,Policy - Plagiarism Policy (:Id/:name/Policies/PlagiarismPolicy),New technology,Similarity screening criteria,To improvise using AI 
+78,Policy - Publication Charge Policy (:Id/:name/Policies/PublicationChargePolicy),New technology,Article Processing Charge (APC) transparency,To improvise using AI 
+79,Policy - Complaint Policy (:Id/:name/Policies/ComplaintPolicy),New technology,Formal dispute resolution mechanism and editorial appeal handling protocols,To improvise using AI 
+80,Policy - Copyright Policy (:Id/:name/Policies/CopyrightPolicy),New technology,Author copyright retention rules and licensing distribution agreements,To improvise using AI 
+81,Policy - Conflict of Interest Policy (:Id/:name/Policies/ConflictInterestPolicy),New technology,Mandatory competing financial and non-financial interest disclosure standards,To improvise using AI 
+82,Policy - Corrections & Retraction Policy (:Id/:name/Policies/CorrectionsRetractionPolicy),New technology,COPE-compliant post-publication errata,To improvise using AI 
+83,Policy - CrossMark Policy (:Id/:name/Policies/CrossMarkPolicy),New technology,CrossMark system integration guidelines for maintaining verified document records,To improvise using AI 
+84,Policy - Digital & Self Archiving Policy (:Id/:name/Policies/DigitalandSelfPolicy),New technology,Institutional repository self-archiving permissions and embargo period guidelines,To improvise using AI 
+85,Manuscript Online Submission (:Id/:name/SubmitManuScript),New technology,Multi-step manuscript submission wizard with metadata capture and file attachment,To improvise using AI 
+86,Author Manuscript Status Report (:Id/:name/MyManuScript),New technology,Real-time author tracking dashboard for tracking submission review progress,To improvise using AI 
+87,Advanced Privileged Login (AdvancedLogin),New technology,High-security authentication gateway for system administrators and publishers,To improvise using AI 
+88,Publisher - Update Journal Details (UpdateJournalsDetails),New technology,Publisher management portal to edit journal metadata,To improvise using AI 
+89,Publisher Central Dashboard (PublisherDashboard),New technology,Global publisher command center monitoring publication statistics across journals,To improvise using AI 
+90,Publisher - All Journals Directory (AllJournals),New technology,Central catalog listing all hosted academic journals with status controls,To improvise using AI 
+91,Publisher - Role & Menu Wise User Details (:Menu/:Role/AllUsersDetails),New technology,Role-based user filtering and permissions configuration interface,To improvise using AI 
+92,Publisher - All Users Management (AllUsersDetails),New technology,Master user directory with search,To improvise using AI 
+93,Editors Admin - Manuscript CRUD (ManuscriptCrudDashboard),New technology,Full administrative CRUD dashboard for manuscript metadata and record management,To improvise using AI 
+94,Editors Admin - Manuscript Details & Actions (EditorDashboard),New technology,Comprehensive manuscript review workspace with reviewer assignment controls,To improvise using AI 
+95,Editors Admin - Reviewers Remarks Evaluation (ReviewersRemarks),New technology,Comparative analysis interface for reviewing multiple reviewer evaluations,To improvise using AI 
+96,Editors Admin - Password & Key Update (UpdateKey),New technology,Credential management and API secret key configuration for editors,To improvise using AI 
+97,Editors Admin - Add New Volume & Issue (NewVolume),New technology,Form interface for creating new journal volumes,To improvise using AI 
+98,Editors Admin - View All Volumes & Issues (AllVolumesIssues),New technology,Master table of all past and forthcoming journal volumes and published issues,To improvise using AI 
+99,Editors Admin - Update Issue Metadata (EditIssueDetails),New technology,Issue modification interface for cover image uploads,To improvise using AI 
+100,Editors Admin - Manage Editorial Board CRUD (ManageEditorDetails),New technology,Administrative management of editorial board member profiles,To improvise using AI 
+101,Reviewers Admin - Assigned Manuscripts (ReviewersDashboard),New technology,Reviewer dashboard listing assigned articles,To improvise using AI 
+102,Reviewers Admin - My Reviews & Remarks (MyReviews),New technology,Completed peer evaluations history and archived review feedback,To improvise using AI 
+103,Account Password Reset & Recovery (:Id/:name/RecoverPasswordReset),New technology,Password reset flow with cryptographic email validation token,To improvise using AI 
+104,Role-Wise Journal Login Gateway (:Id/:name/RolewiseLogin),New technology,Multi-role authentication gateway directing users to Author,To improvise using AI 
+105,Role-Wise Editor - Manuscript Details (:Id/:name/UserED),New technology,Scoped editor workspace displaying live manuscript submissions and evaluation metrics,To improvise using AI 
+106,Role-Wise Editor - Reviewers Remarks (:Id/:name/UserRRD),New technology,Role-scoped interface for reviewing peer reviewer comments and recommending acceptance,To improvise using AI 
+107,Role-Wise Editor - Add New Issue (:Id/:name/EDNewIssue),New technology,Enhanced issue creation page with automated indexing and article assignment logic,To improvise using AI 
+108,Role-Wise Editor - All Journal Issues (:Id/:name/EDAllssues),New technology,Scoped issue catalog for managing current,To improvise using AI 
+109,Role-Wise Author - New Manuscript Submission (:Id/:name/AuthorDashboard),New technology,Author submission dashboard for uploading new manuscripts and supplementary data,To improvise using AI 
+110,Role-Wise Author - View All Submitted Manuscripts (:Id/:name/ViewManuscripts),New technology,Author tracking report for tracking review stages,To improvise using AI 
+111,Role-Wise Reviewer - Manuscript Assessment (:Id/:name/ReviewerDashboard),New technology,Secure blinded manuscript viewer and evaluation toolkit for peer reviewers,To improvise using AI 
+112,Role-Wise Reviewer - Submit Review Remarks (:Id/:name/ReviewersRemarks),New technology,Structured feedback submission interface with scoring rubrics and confidential comments,To improvise using AI 
+113,User Forgot Password Interface (:Id/:name/ForgotPassword),New technology,Self-service password reset request interface with OTP validation link delivery,To improvise using AI 
+114,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
