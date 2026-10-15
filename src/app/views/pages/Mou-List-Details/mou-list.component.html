@@ -4,8 +4,8 @@
   <div class="card shadow-sm border-0 mb-3">
     <div class="card-body p-3">
 
-      <!-- Header Title & Badges -->
-      <div class="d-flex flex-wrap justify-content-between align-items-center pb-2 mb-3 border-bottom">
+      <!-- Header Title & Separate Active / Expired / All Tabs -->
+      <div class="d-flex flex-wrap justify-content-between align-items-center pb-2 mb-3 border-bottom gap-3">
         <div class="d-flex align-items-center gap-2">
           <div class="mou-header-icon d-flex align-items-center justify-content-center">
             <i class="bi bi-card-checklist fs-5"></i>
@@ -16,24 +16,42 @@
           </div>
         </div>
 
-        <div class="d-flex flex-wrap align-items-center gap-2 mt-2 mt-md-0">
-          <span class="badge bg-light text-dark border">
-            <i class="bi bi-collection me-1 text-primary"></i> Total: <strong>{{ getTotalCount() }}</strong>
-          </span>
-          <span class="badge bg-success-subtle text-success border border-success-subtle">
-            <i class="bi bi-check-circle me-1"></i> Active: <strong>{{ getActiveCount() }}</strong>
-          </span>
-          <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
-            <i class="bi bi-clock-history me-1"></i> Expired: <strong>{{ getExpiredCount() }}</strong>
-          </span>
-          <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle"
-            *ngIf="searchQuery || selectedSchoolDivision !== '0' || selectedMouCategory !== '0'">
-            <i class="bi bi-funnel me-1"></i> Filtered: <strong>{{ filteredMouDocumentDetails.length }}</strong>
-          </span>
-        </div>
+        <!-- Separate Active and Expired Tabs -->
+        <ul class="nav nav-pills custom-mou-tabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="selectedTab === 'active'"
+              (click)="onTabChange('active')" type="button" role="tab" id="tab-active-mous">
+              <i class="bi bi-check-circle-fill me-1 text-success tab-icon"></i>
+              <span>Active MoUs</span>
+              <span class="badge ms-2" [ngClass]="selectedTab === 'active' ? 'tab-badge-active' : 'tab-badge-inactive-active'">
+                {{ getActiveCount() }}
+              </span>
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="selectedTab === 'expired'"
+              (click)="onTabChange('expired')" type="button" role="tab" id="tab-expired-mous">
+              <i class="bi bi-clock-history me-1 text-danger tab-icon"></i>
+              <span>Expired MoUs</span>
+              <span class="badge ms-2" [ngClass]="selectedTab === 'expired' ? 'tab-badge-active' : 'tab-badge-inactive-expired'">
+                {{ getExpiredCount() }}
+              </span>
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" [class.active]="selectedTab === 'all'"
+              (click)="onTabChange('all')" type="button" role="tab" id="tab-all-mous">
+              <i class="bi bi-collection-fill me-1 text-primary tab-icon"></i>
+              <span>All MoUs</span>
+              <span class="badge ms-2" [ngClass]="selectedTab === 'all' ? 'tab-badge-active' : 'tab-badge-inactive-all'">
+                {{ getTotalCount() }}
+              </span>
+            </button>
+          </li>
+        </ul>
       </div>
 
-      <!-- Filters & Controls Row (4 + 3 + 2 + 1 + 2 = 12) -->
+      <!-- Filters & Controls Row -->
       <div class="row g-2 align-items-end">
         <div class="col-lg-4 col-md-6">
           <label class="filter-label">Search</label>
@@ -70,7 +88,7 @@
           </select>
         </div>
 
-        <div class="col-lg-1 col-md-4 col-sm-6">
+        <div class="col-lg-1 col-md-3 col-sm-6">
           <label class="filter-label">Per Page</label>
           <select class="form-select form-select-sm" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange($event)">
             <option [ngValue]="5">5</option>
@@ -80,12 +98,19 @@
           </select>
         </div>
 
-        <div class="col-lg-2 col-md-4 col-sm-6">
+        <div class="col-lg-2 col-md-3 col-sm-6">
           <label class="filter-label">Export</label>
           <button (click)="exportToExcel()" class="btn btn-sm btn-dark w-100"
             [disabled]="filteredMouDocumentDetails.length == 0">
             <i class="bi bi-file-earmark-excel me-1 text-success"></i> Export Excel
           </button>
+        </div>
+
+        <div class="col-lg-5 col-md-12 text-md-end text-muted small align-self-center pt-2 pt-lg-0"
+          *ngIf="searchQuery || selectedSchoolDivision !== '0' || selectedMouCategory !== '0'">
+          <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">
+            <i class="bi bi-funnel me-1"></i> Filtered: <strong>{{ filteredMouDocumentDetails.length }}</strong>
+          </span>
         </div>
       </div>
 
@@ -208,23 +233,46 @@
               </ng-template>
             </ngx-datatable-column>
 
-            <!-- 9. MOU Document -->
-            <ngx-datatable-column name="MOU Document" [width]="130" [minWidth]="110" [sortable]="false" prop="filePath">
+            <!-- 9. MOU Category -->
+            <ngx-datatable-column name="MOU Category" [width]="150" [minWidth]="120" [sortable]="true" prop="mouCategory">
               <ng-template let-row="row" ngx-datatable-cell-template>
-                <ng-container *ngIf="row.filePath; else NoFile">
-                  <button class="btn btn-sm btn-secondary"
-                    (click)="onDownloadFile(row.filePath)"
-                    [disabled]="row.filePath < 1"
-                    title="Download MOU Document">
-                    <i class="bi bi-download me-1"></i> Download
-                  </button>
-                </ng-container>
-                <ng-template #NoFile>
-                  <span class="cell-muted">No Doc Uploaded</span>
+                <div class="cell-school-text" *ngIf="row.mouCategory || row.category; else fallbackCat">
+                  {{ row.mouCategory || row.category }}
+                </div>
+                <ng-template #fallbackCat>
+                  <span class="cell-muted">NA</span>
                 </ng-template>
               </ng-template>
             </ngx-datatable-column>
 
+            <!-- 10. MOU Document (Visible and Accessible Only to DRC Team) -->
+             <ng-container *ngIf="isDrcStaff; else facultyRestricted">
+            <ngx-datatable-column name="MOU Document" [width]="140" [minWidth]="115" [sortable]="false" prop="filePath">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                <!-- Accessible only to DRC Team -->
+
+                  <ng-container *ngIf="row.filePath; else NoFile">
+                    <button class="btn btn-sm btn-outline-primary py-1 px-2 d-inline-flex align-items-center gap-1"
+                      (click)="onDownloadFile(row.filePath)"
+                      title="Download MOU Document">
+                      <i class="bi bi-file-earmark-arrow-down"></i> Download
+                    </button>
+                  </ng-container>
+                  <ng-template #NoFile>
+                    <span class="cell-muted">No Doc Uploaded</span>
+                  </ng-template>
+
+              </ng-template>
+            </ngx-datatable-column>
+            </ng-container>
+
+                <!-- Restricted for all other Faculty -->
+                <ng-template #facultyRestricted>
+                  <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle py-1 px-2 d-inline-flex align-items-center gap-1"
+                    title="MoU document access restricted to DRC Team">
+                    <i class="bi bi-lock-fill"></i> Restricted
+                  </span>
+                </ng-template>
           </ngx-datatable>
 
         </div>

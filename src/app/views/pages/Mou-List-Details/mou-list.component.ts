@@ -20,7 +20,6 @@ interface SchoolDivision {
 })
 export class MouListDocumentsComponent implements OnInit {
   @ViewChild(DatatableComponent) table!: DatatableComponent;
-
   ColumnMode = ColumnMode;
 
   isLoginFailed: boolean = false;
@@ -36,10 +35,25 @@ export class MouListDocumentsComponent implements OnInit {
   EmployeeName: any = '';
   EmployeeCode: any = '';
   Department: any = '';
-  DepartmentName: any;
+  DepartmentName: any = '';
+  // DRC access control (Documents restricted for other faculty)
+  isDrcStaff: boolean = false;
+  readonly drcStaffUids: string[] = [
+    '31309',
+    '34350',
+    '16865',
+    '29364',
+    '31930',
+    '31352',
+    '30683',
+    '22648',
+  ];
 
   allSchoolDivisions: SchoolDivision[] = [];
   mouCategories: string[] = [];
+
+  // Top tabs: 'active' | 'expired' | 'all'
+  selectedTab: string = 'active';
 
   searchQuery: string = '';
   selectedSchoolDivision: any = '0';
@@ -68,6 +82,17 @@ export class MouListDocumentsComponent implements OnInit {
     this.serverUrl = 'https://files.lpu.in/umsweb/MOUDocuments/';
     this.loadingIndicator = false;
 
+    // Listen to shared employeeDetails in case already emitted
+    this.mouDocumentsService.employeeDetails$.subscribe((res) => {
+      if (res && res.item1 && res.item1.length > 0) {
+        this.checkDrcAccess(
+          res.item1[0].employeeCode,
+          res.item1[0].departmentName,
+          res.item1[0].department,
+        );
+      }
+    });
+
     const loginName = this.route.snapshot.params['loginName'];
     if (loginName != '' && loginName != undefined) {
       this.isLoginFailed = false;
@@ -75,6 +100,26 @@ export class MouListDocumentsComponent implements OnInit {
     } else {
       this.LoginFailed('Invalid Login Details');
     }
+  }
+
+  checkDrcAccess(code?: any, deptName?: any, dept?: any): void {
+    const empCodeStr = (code ?? this.EmployeeCode ?? '').toString().trim();
+    const deptStr = (
+      deptName ??
+      this.DepartmentName ??
+      dept ??
+      this.Department ??
+      ''
+    )
+      .toString()
+      .toLowerCase();
+
+    this.isDrcStaff =
+      this.drcStaffUids.includes(empCodeStr) ||
+      deptStr.includes('drc') ||
+      deptStr.includes('division of research') ||
+      deptStr.includes('research & collaboration') ||
+      deptStr.includes('research and collaboration');
   }
 
   getToken(id: any): void {
@@ -116,6 +161,11 @@ export class MouListDocumentsComponent implements OnInit {
           this.Department = response.item1[0].department;
           this.DepartmentName = response.item1[0].departmentName;
           this.isLoginFailed = false;
+          this.checkDrcAccess(
+            this.EmployeeCode,
+            this.DepartmentName,
+            this.Department,
+          );
         } else {
           this.EmployeeDetails = [];
           this.isLoginFailed = true;
@@ -200,8 +250,18 @@ export class MouListDocumentsComponent implements OnInit {
   }
 
   // ---------------------------------------------------------------------
-  // Filtering (school / category / search)
+  // Filtering (tabs / school / category / search)
   // ---------------------------------------------------------------------
+  onTabChange(tab: string): void {
+    if (this.selectedTab === tab) return;
+    this.selectedTab = tab;
+    this.tableOffset = 0;
+    if (this.table) {
+      this.table.offset = 0;
+    }
+    this.applyFilters();
+  }
+
   search(): void {
     this.applyFilters();
   }
@@ -231,8 +291,27 @@ export class MouListDocumentsComponent implements OnInit {
     this.tableOffset = event.offset;
   }
 
+  isItemActive(item: any): boolean {
+    const status = (item.mouStatus || '').toString().trim().toLowerCase();
+    if (status === 'active') return true;
+    if (!status && item.mouStartDate && !item.mouEndDate) return true;
+    return false;
+  }
+
+  isItemExpired(item: any): boolean {
+    const status = (item.mouStatus || '').toString().trim().toLowerCase();
+    return status === 'expired';
+  }
+
   applyFilters(): void {
     let filtered = [...this.MouDocumentDetails];
+
+    // Filter by Active / Expired Tab
+    if (this.selectedTab === 'active') {
+      filtered = filtered.filter((item) => this.isItemActive(item));
+    } else if (this.selectedTab === 'expired') {
+      filtered = filtered.filter((item) => this.isItemExpired(item));
+    }
 
     // Filter by School / Division
     if (
@@ -267,11 +346,11 @@ export class MouListDocumentsComponent implements OnInit {
     }
 
     // Filter by MOU Category
-    if (
-      this.selectedMouCategory &&
-      this.selectedMouCategory !== '0'
-    ) {
-      const targetCat = this.selectedMouCategory.toString().trim().toLowerCase();
+    if (this.selectedMouCategory && this.selectedMouCategory !== '0') {
+      const targetCat = this.selectedMouCategory
+        .toString()
+        .trim()
+        .toLowerCase();
       filtered = filtered.filter((item) => {
         const cat1 = (item.mouCategory || '').toString().trim().toLowerCase();
         const cat2 = (item.category || '').toString().trim().toLowerCase();
@@ -308,7 +387,10 @@ export class MouListDocumentsComponent implements OnInit {
 
         const schoolMatch =
           (item.schoolDivisionInvolved &&
-            item.schoolDivisionInvolved.toString().toLowerCase().includes(query)) ||
+            item.schoolDivisionInvolved
+              .toString()
+              .toLowerCase()
+              .includes(query)) ||
           (item.schoolDivisionInvolved &&
             this.getDivisionNames(item.schoolDivisionInvolved)
               .toLowerCase()
@@ -325,7 +407,8 @@ export class MouListDocumentsComponent implements OnInit {
           item.mouStatus && item.mouStatus.toLowerCase().includes(query);
 
         const categoryMatch =
-          (item.mouCategory && item.mouCategory.toLowerCase().includes(query)) ||
+          (item.mouCategory &&
+            item.mouCategory.toLowerCase().includes(query)) ||
           (item.category && item.category.toLowerCase().includes(query));
 
         return (
@@ -353,17 +436,13 @@ export class MouListDocumentsComponent implements OnInit {
   }
 
   getActiveCount(): number {
-    return this.MouDocumentDetails.filter(
-      (item) =>
-        item.mouStatus === 'Active' ||
-        (!item.mouStatus && item.mouStartDate && !item.mouEndDate),
-    ).length;
+    return this.MouDocumentDetails.filter((item) => this.isItemActive(item))
+      .length;
   }
 
   getExpiredCount(): number {
-    return this.MouDocumentDetails.filter(
-      (item) => item.mouStatus === 'Expired',
-    ).length;
+    return this.MouDocumentDetails.filter((item) => this.isItemExpired(item))
+      .length;
   }
 
   // ---------------------------------------------------------------------
@@ -419,8 +498,7 @@ export class MouListDocumentsComponent implements OnInit {
             ? 'Active'
             : 'N/A'),
       'SPOC Name': item.lpuSpocName || item.spocName || 'N/A',
-      'SPOC UID':
-        item.lpuSpocUID || item.uid || item.mouUploadedByUID || 'N/A',
+      'SPOC UID': item.lpuSpocUID || item.uid || item.mouUploadedByUID || 'N/A',
       'SPOC School': item.schoolDivisionInvolved
         ? this.getDivisionNames(item.schoolDivisionInvolved)
         : item.mouUploadedBy || 'N/A',
@@ -454,6 +532,15 @@ export class MouListDocumentsComponent implements OnInit {
   }
 
   onDownloadFile(remoteUrl: string): void {
+    if (!this.isDrcStaff) {
+      swal.fire({
+        title: 'Access Restricted',
+        text: 'MoU documents are visible and accessible only to the DRC Team.',
+        icon: 'warning',
+      });
+      return;
+    }
+
     if (!remoteUrl) return;
     swal.fire({
       title: 'Downloading...',
