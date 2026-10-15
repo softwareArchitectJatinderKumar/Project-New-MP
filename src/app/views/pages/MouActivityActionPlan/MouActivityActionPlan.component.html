@@ -482,8 +482,8 @@
                                     <span *ngIf="row.reminderEmailSentOn" class="d-block text-success fw-bold">
                                       <i class="bi bi-calendar-event me-1"></i>
                                       {{ row.reminderEmailSentOn | date:'dd-MMM-yyyy' }}
-                                      <i class="bi bi-person-fill me-1"></i>
-                                      {{row.emailSentBy}}
+                                      <!-- <i class="bi bi-person-fill me-1"></i>
+                                      {{row.emailSentBy}} -->
                                     </span>
                                   </ng-container>
 
@@ -491,13 +491,13 @@
                                   <ng-container *ngIf="getReminderStatus(row) === 'SEND_AGAIN'">
                                     <button type="button" class="btn btn-warning btn-sm text-dark fw-bold"
                                       (click)="ReminderEmailTab2(row)" title="Send Reminder Again">
-                                      <i class="bi bi-arrow-repeat me-1"></i> Send Again
+                                      <i class="bi bi-arrow-repeat me-1"></i> Resend
                                     </button>
                                     <span *ngIf="row.reminderEmailSentOn" class="d-block text-danger fw-bold mt-1">
-                                      <i class="bi bi-calendar-event me-1"></i>
+                                     Reminder Sent on
                                       {{ row.reminderEmailSentOn | date:'dd-MMM-yyyy' }}
-                                      <i class="bi bi-person-fill me-1"></i>
-                                      {{row.emailSentBy}}
+                                      <!-- <i class="bi bi-person-fill me-1"></i>
+                                      {{row.emailSentBy}} -->
                                     </span>
                                   </ng-container>
 
